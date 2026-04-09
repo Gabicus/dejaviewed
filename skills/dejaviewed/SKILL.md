@@ -1,11 +1,12 @@
 ---
 name: dejaviewed
 description: >
-  Turn Instagram saved posts into a searchable, curated dark-mode catalog site.
-  Full pipeline: scrape IG saves → classify → tier → extract links → download thumbnails
-  → write deep-dive guides → render static HTML with masonry layout, creator graph,
-  category filters, and outbound links. Triggers: "dejaviewed", "instagram catalog",
-  "saved posts catalog", "instagram saves site", "curate my saves".
+  Turn saved posts and bookmarks from ANY platform into a searchable, curated dark-mode
+  catalog site with an auto-generated Action Plan. Supports Instagram, TikTok, Twitter/X,
+  Chrome/Edge/Firefox bookmarks, Pinterest, Reddit, YouTube. Full pipeline: ingest from
+  any source → classify → tier → extract links → thumbnails → deep-dive guides → Action
+  Plan → render static HTML. Triggers: "dejaviewed", "instagram catalog", "saved posts",
+  "curate my saves", "bookmark catalog", "action plan from saves".
 skill_api_version: 1
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, WebFetch, WebSearch
@@ -58,22 +59,48 @@ The user MUST provide or set up before the skill runs:
 
 ```
 <project>/
+├── adapters/
+│   ├── chrome_bookmarks.py         # Chrome bookmark extractor
+│   ├── edge_bookmarks.py           # Edge bookmark extractor
+│   ├── firefox_bookmarks.py        # Firefox bookmark extractor (SQLite)
+│   └── merge_sources.py            # Cross-source merger + dedup
 ├── data/
 │   ├── <collection>_urls.json      # input: IG URLs per collection
 │   ├── <collection>_posts_pathb.jsonl  # raw scrape results (full captions)
-│   ├── catalog.jsonl               # enriched+classified records (ALL collections merged)
-│   └── curation.json               # tiers, buckets, stacks, themes
+│   ├── chrome_bookmarks.jsonl      # extracted Chrome bookmarks
+│   ├── firefox_bookmarks.jsonl     # extracted Firefox bookmarks
+│   ├── catalog.jsonl               # enriched+classified records (ALL sources merged)
+│   ├── curation.json               # tiers, buckets, stacks, themes
+│   └── actions.json                # auto-generated action plan data
 ├── guides/
 │   └── <slug>.md                   # deep-dive markdown guides
 ├── site/
-│   ├── index.html                  # main catalog (all collections)
+│   ├── index.html                  # main catalog (all sources)
+│   ├── actions.html                # ACTION PLAN — "what to do with all of it"
 │   ├── <collection>.html           # per-collection pages
 │   ├── guides/<slug>.html          # rendered guide pages
 │   └── thumb/<shortcode>.jpg       # post thumbnails
-├── path_b.py                       # cookie-based scraper
+├── path_b.py                       # cookie-based IG scraper
+├── build_actions.py                # action plan generator
 ├── render.py                       # static site renderer
 └── fetch_thumbs.py                 # thumbnail downloader
 ```
+
+## Supported Sources
+
+| Source | Adapter | Auth Required | Status |
+|--------|---------|---------------|--------|
+| **Instagram** | `path_b.py` | Chrome profile copy | ✅ Built |
+| **Chrome Bookmarks** | `adapters/chrome_bookmarks.py` | None (local JSON) | ✅ Built |
+| **Firefox Bookmarks** | `adapters/firefox_bookmarks.py` | None (local SQLite) | ✅ Built |
+| **Edge Bookmarks** | `adapters/edge_bookmarks.py` | None (local JSON) | ✅ Built |
+| **TikTok** | `adapters/tiktok_adapter.py` | Chrome profile copy | 🔜 Planned |
+| **Twitter/X Bookmarks** | `adapters/twitter_adapter.py` | API bearer token | 🔜 Planned |
+| **Pinterest Boards** | `adapters/pinterest_adapter.py` | Chrome profile copy | 🔜 Planned |
+| **Reddit Saved** | `adapters/reddit_adapter.py` | OAuth token | 🔜 Planned |
+| **YouTube Watch Later** | `adapters/youtube_adapter.py` | Chrome profile copy | 🔜 Planned |
+
+All adapters normalize into the same JSONL schema. Use `adapters/merge_sources.py` to combine with cross-source dedup.
 
 ---
 
@@ -329,13 +356,62 @@ Guides → Repos → Skills → Tools → Platforms → Art → Design → UI/UX
 - Filter state managed via `Set` objects for categories and tiers
 - Segment click: extract post ID from href anchor, reset filters, smooth scroll + brief outline highlight
 
-### Phase 8: Non-IG Content (optional)
+### Phase 8: Browser Bookmarks + Other Sources
 
-If the user has additional curated content beyond IG saves (repos, guides, archive collections, tools):
+**Auto-detect available sources:**
+```bash
+# Check for Chrome bookmarks
+python3 adapters/chrome_bookmarks.py --out data/chrome_bookmarks.jsonl
+
+# Check for Firefox bookmarks  
+python3 adapters/firefox_bookmarks.py --out data/firefox_bookmarks.jsonl
+
+# Check for Edge bookmarks
+python3 adapters/edge_bookmarks.py --out data/edge_bookmarks.jsonl
+
+# Merge all sources (dedup by URL, keep richer metadata)
+python3 adapters/merge_sources.py \
+  --sources data/catalog.jsonl data/chrome_bookmarks.jsonl data/firefox_bookmarks.jsonl \
+  --out data/catalog_merged.jsonl --dedup-by url
+```
+
+Each adapter normalizes bookmarks into the same schema as IG records. Cross-source dedup: if the same URL appears from Chrome AND Instagram, the merger keeps the richer record (IG caption > bookmark title) and adds `sources: ["instagram", "chrome"]`.
+
+If the user has additional curated content beyond saves/bookmarks (repos, guides, archive collections, tools):
 - Merge into catalog.jsonl with `creator: "@userhandle"`, `media_type: "catalog"`
 - Type field: `repo`, `skill`, `tool`, `guide`, `platform`, `resource`
 - These get "Browse ↗" buttons (green) instead of "Open post ↗"
 - Same title/summary/link quality standards apply
+
+### Phase 9: Action Plan (THE KILLER FEATURE)
+
+The catalog answers "what did I save?" — the Action Plan answers **"what should I actually DO?"**
+
+```bash
+python3 build_actions.py
+```
+
+This reads catalog.jsonl and generates `data/actions.json` — a structured rollup that groups the best items by action type:
+
+| Section | What it shows |
+|---------|--------------|
+| **Clone These Repos** | S/A tier repos with git clone commands |
+| **Install These Tools** | Tools with pip/npm/brew install commands |
+| **Read These Deep-Dives** | Our written guides, linked to guide pages |
+| **Try These Techniques** | Techniques with what you'd need to try them |
+| **Bookmark These Platforms** | Services/platforms worth keeping |
+| **Design & Art Resources** | Archives, collections, inspiration |
+| **Teasers & DM-Bait** | Honest notes on gated/thin content |
+
+Each action item:
+- Has a concrete title and "why" sentence
+- Links back to the source catalog card(s)
+- Includes runnable commands where applicable (click-to-copy)
+- Shows tier badge and outbound links
+
+Also generates a **Save Profile** — a witty 1-2 sentence assessment of the user's hoarding habits based on the distribution (e.g., "You save mostly repos and tools but only 5% are guides — you hoard more than you study.")
+
+The Action Plan page renders as `site/actions.html` with its own nav tab.
 
 ---
 

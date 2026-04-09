@@ -330,9 +330,10 @@ def handle_to_url(handle):
 
 def header_html(active, prefix=""):
     nav = []
-    for key, label in [("index","ALL"),("ai1","AI1"),("ai2","AI2"),("ai3","AI3"),("ai4","AI4")]:
+    for key, label in [("index","ALL"),("actions","ACTIONS"),("ai1","AI1"),("ai2","AI2"),("ai3","AI3"),("ai4","AI4")]:
         cls = " active" if active == key else ""
         href = f"{prefix}index.html" if key == "index" else f"{prefix}{key}.html"
+        if key == "actions": cls += " actions-nav"
         nav.append(f'<a class="{cls.strip()}" href="{href}">{label}</a>')
     return f"""<header class="site"><div class="wrap head-row">
   <div class="brand">
@@ -501,16 +502,39 @@ def creators_html(ps):
 
 # ---------- Quick commands (index only) ----------
 def commands_html():
-    rows = [
-        (f"/{SKILL} <ig-saved-url>", f"Run the {SKILL} pipeline on a saved collection"),
+    install_rows = [
+        ("git clone git@github.com:Gabicus/dejaviewed.git ~/.claude/plugins/dejaviewed", "Plugin install (full — adds /dejaviewed command)"),
+        ("git clone git@github.com:Gabicus/dejaviewed.git /tmp/dv && cp -r /tmp/dv/skills/dejaviewed ~/.claude/skills/", "Skill-only install (lighter)"),
+        (f"/{SKILL}", f"Invoke the skill once installed"),
+    ]
+    prereq_rows = [
+        ("pip install browser-cookie3 requests", "Python deps for cookie-safe IG scraping"),
+        ("cp -r ~/.config/google-chrome/Default /path/to/project/.profile-copy/Default", "Copy Chrome profile (while Chrome is closed)"),
+    ]
+    quick_rows = [
         ("git clone https://github.com/google-gemini/gemini-cli", "Free Claude Code alternative — 1000 reqs/day"),
         ("git clone https://github.com/onyx-dot-app/onyx", "Self-hosted ChatGPT/Claude replacement"),
         ("git clone https://github.com/Tencent-Hunyuan/Hunyuan3D-2", "Open image-to-3D mesh generator"),
         ("npx @smithery/cli install n8n-mcp", "n8n workflow MCP server for Claude Code"),
-        ("pip install browser-cookie3 requests", "Cookie-safe scraper deps used by loredrop"),
     ]
-    body = "".join(f'<div class="cmd-row"><code>{esc(c)}</code> <span>{esc(d)}</span></div>' for c,d in rows)
-    return f'<div class="commands"><h3>⚡ Quick commands</h3>{body}</div>'
+    def row_html(rows):
+        return "".join(f'<div class="cmd-row"><code>{esc(c)}</code> <span>{esc(d)}</span></div>' for c,d in rows)
+    return f"""<div class="commands">
+  <h3>📦 Install DejaViewed</h3>
+  <p style="font-size:11px;color:var(--text-dim);margin:0 0 10px;line-height:1.5">
+    Clone the <a href="https://github.com/Gabicus/dejaviewed" target="_blank" rel="noopener" style="color:var(--accent)">Gabicus/dejaviewed</a> repo.
+    Works with Claude Code — adds the <code>/{SKILL}</code> slash command.
+  </p>
+  {row_html(install_rows)}
+  <h3 style="margin-top:18px">⚙️ Prerequisites</h3>
+  <p style="font-size:11px;color:var(--text-dim);margin:0 0 10px;line-height:1.5">
+    You need a copied Chrome profile with an active Instagram session and two Python packages.
+    See <a href="https://github.com/Gabicus/dejaviewed#prerequisites" target="_blank" rel="noopener" style="color:var(--accent)">full setup guide</a>.
+  </p>
+  {row_html(prereq_rows)}
+  <h3 style="margin-top:18px">⚡ Quick commands</h3>
+  {row_html(quick_rows)}
+</div>"""
 
 # ---------- App JS ----------
 APP_JS = r"""
@@ -736,6 +760,120 @@ for coll in ["ai1","ai2","ai3","ai4"]:
 
 (OUT / "index.html").write_text(page_shell(f"{TITLE} — AI Edition", "index", posts, "", show_commands=True))
 print(f"wrote index.html ({len(posts)} posts)")
+
+# ---------- Actions page ----------
+actions_path = DATA / "actions.json"
+if actions_path.exists():
+    actions = json.loads(actions_path.read_text())
+    stats = actions.get("stats", {})
+    sections = actions.get("sections", [])
+
+    # Build stats banner
+    stats_html = f"""<div class="actions-stats">
+      <div class="stat-row">
+        <div class="ban"><div class="v">{stats.get('total_saves',0)}</div><div class="l">saves analyzed</div></div>
+        <div class="ban"><div class="v">{len(sections)}</div><div class="l">action categories</div></div>
+        <div class="ban"><div class="v">{sum(len(s.get('items',[])) for s in sections)}</div><div class="l">action items</div></div>
+        <div class="ban"><div class="v">{stats.get('sources_count', len(stats.get('sources',[])))}</div><div class="l">sources</div></div>
+      </div>
+      <p class="save-profile">{esc(stats.get('save_profile',''))}</p>
+    </div>"""
+
+    # Build section HTML
+    sections_html = ""
+    for sec in sections:
+        items_html = ""
+        for item in sec.get("items", []):
+            cmd_html = ""
+            if item.get("command"):
+                cmd_html = f'<div class="action-cmd"><code>{esc(item["command"])}</code></div>'
+            links_html = ""
+            if item.get("links"):
+                pills = "".join(f'<a href="{esc(l["url"])}" target="_blank" rel="noopener">{esc(l["label"])}</a>' for l in item["links"][:6])
+                links_html = f'<div class="action-links">{pills}</div>'
+            source_html = ""
+            if item.get("source_cards"):
+                refs = " ".join(f'<a href="index.html#{esc(sc)}">→</a>' for sc in item["source_cards"][:3])
+                source_html = f'<span class="source-refs">{refs}</span>'
+            tier = item.get("tier", "C")
+            items_html += f"""<div class="action-item tier-{tier}">
+              <div class="action-head">
+                <span class="tier {tier}">{tier}</span>
+                <h4>{esc(item.get('title',''))}</h4>
+                {source_html}
+              </div>
+              <p class="action-why">{esc(item.get('why',''))}</p>
+              {cmd_html}{links_html}
+            </div>"""
+
+        sections_html += f"""<section class="action-section" id="{esc(sec.get('id',''))}">
+          <h2>{sec.get('icon','')} {esc(sec.get('title',''))}</h2>
+          <p class="section-sub">{esc(sec.get('subtitle',''))}</p>
+          {items_html}
+        </section>"""
+
+    # Actions-specific CSS additions
+    actions_css = r"""
+.actions-hero{text-align:center;padding:48px 0 32px}
+.actions-hero h1{font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#fbbf24 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 8px}
+.actions-hero .sub{color:var(--text-dim);font-size:13px;max-width:600px;margin:0 auto;line-height:1.6}
+.actions-stats{margin:0 auto 36px;max-width:900px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.save-profile{font-size:13px;color:var(--text-dim);text-align:center;line-height:1.6;font-style:italic;padding:14px 20px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.action-section{margin-bottom:36px}
+.action-section h2{font-size:20px;font-weight:900;letter-spacing:-0.02em;margin:0 0 4px;color:#fff}
+.section-sub{font-size:12px;color:var(--text-mute);margin:0 0 16px;line-height:1.5}
+.action-item{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;border-left-width:3px;transition:all .15s}
+.action-item:hover{border-color:var(--border-hi);background:var(--panel-2)}
+.action-item.tier-S{border-left-color:var(--s)}.action-item.tier-A{border-left-color:var(--a)}
+.action-item.tier-B{border-left-color:var(--b)}.action-item.tier-C{border-left-color:var(--c)}
+.action-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.action-head h4{margin:0;font-size:13px;font-weight:700;color:#fff;flex:1}
+.action-why{font-size:12px;color:var(--text-dim);margin:0 0 8px;line-height:1.5}
+.action-cmd{margin:8px 0}
+.action-cmd code{display:block;background:rgba(0,0,0,.45);border:1px solid var(--border);padding:8px 12px;border-radius:6px;font-size:11.5px;color:var(--c-repo);white-space:pre-wrap;word-break:break-all;cursor:pointer}
+.action-cmd code:hover{background:rgba(0,0,0,.6);border-color:var(--c-repo)}
+.action-links{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.action-links a{font-size:10.5px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);transition:all .15s;white-space:nowrap}
+.action-links a:hover{background:rgba(167,139,250,.12);border-color:var(--accent);color:#fff}
+.source-refs{display:flex;gap:4px}
+.source-refs a{font-size:10px;color:var(--text-mute);background:var(--panel-2);padding:2px 6px;border-radius:4px;border:1px solid var(--border)}
+.source-refs a:hover{color:var(--accent)}
+.actions-nav{background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(244,114,182,.15))!important;border-color:rgba(251,191,36,.3)!important;color:var(--s)!important}
+@media(max-width:700px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+"""
+
+    actions_page = f"""<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Action Plan · {TITLE}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>{CSS}{actions_css}</style></head><body>
+{header_html("actions")}
+<div class="wrap">
+  <div class="actions-hero">
+    <h1>Action Plan</h1>
+    <p class="sub">You saved {stats.get('total_saves',0)} things across {len(stats.get('sources',[]))} sources. Here's what to actually <strong>do</strong> with all of it — sorted by impact, runnable where possible, linked back to the original saves.</p>
+  </div>
+  {stats_html}
+  {sections_html}
+</div>
+<footer class="site"><div class="wrap">
+  <a href="index.html">← Back to catalog</a> ·
+  Curated by <a href="{IG_URL}">{HANDLE}</a> · Built with <code>{SKILL}</code>
+</div></footer>
+<script>
+document.querySelectorAll('.action-cmd code').forEach(el=>{{
+  el.title='Click to copy';
+  el.addEventListener('click',()=>{{navigator.clipboard.writeText(el.textContent).then(()=>{{el.style.borderColor='var(--c-repo)';setTimeout(()=>el.style.borderColor='',800)}});}});
+}});
+</script>
+</body></html>"""
+
+    (OUT / "actions.html").write_text(actions_page)
+    print(f"wrote actions.html ({sum(len(s.get('items',[])) for s in sections)} action items)")
+else:
+    print("skipping actions.html (no data/actions.json — run build_actions.py first)")
 
 # ---------- Guide pages ----------
 for slug in guide_files:
