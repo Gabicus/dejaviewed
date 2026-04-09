@@ -1,0 +1,548 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>llms.txt — The Website Manifest for LLM Agents · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg-2:#0f0f1a;--surface:#12121a;
+  --panel:rgba(255,255,255,0.03);--panel-2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text-dim:#a0a0b8;--text-mute:#6a6a80;
+  --accent:#a78bfa;--accent-2:#f472b6;
+  --c-repo:#4cda8c;--c-tool:#f0a050;--c-skill:#e060a0;--c-guide:#a78bfa;
+  --c-platform:#e0d040;--c-resource:#40d0e0;--c-art:#f05060;--c-design:#fb7185;--c-uiux:#60a5fa;
+  --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
+  background-attachment:fixed}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
+.head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tagline{color:var(--text-dim);font-size:13px;font-weight:500;margin-top:2px}
+.brand .tagline a{color:var(--accent-2);font-weight:700}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+
+.skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
+.skill-callout strong{color:#fff}
+.skill-callout code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:12.5px;font-family:'JetBrains Mono',Menlo,monospace;color:var(--accent)}
+.skill-callout details{margin-top:12px}
+.skill-callout summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}
+.skill-callout pre{margin:10px 0 0;padding:14px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;line-height:1.55;font-family:'JetBrains Mono',Menlo,monospace;color:var(--text-dim);white-space:pre-wrap}
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:30px}
+  header.site{position:static}
+  .grid{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 30px}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<header class="site"><div class="wrap head-row">
+  <div class="brand">
+    <h1>DejaViewed</h1>
+    <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
+  </div>
+  <nav class="nav"><a class="actions-nav" href="../dejaviewed.html">DEJAVIEWED</a><a class="active" href="../index.html">ALL</a><span class="src-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="../ai1.html">AI1</a><a class="sub" href="../ai2.html">AI2</a><a class="sub" href="../ai3.html">AI3</a><a class="sub" href="../ai4.html">AI4</a></span></span></nav>
+</div></header>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># llms.txt — The Website Manifest for LLM Agents
+
+**Spec site:** https://llmstxt.org
+**Proposal (Sep 2024):** Jeremy Howard, Answer.AI — https://www.answer.ai/posts/2024-09-03-llmstxt.html
+**Reference repo:** https://github.com/AnswerDotAI/llms-txt
+**Adoption (Oct 2025, BuiltWith):** ~844,000 sites
+**Canonical location:** `/llms.txt` at the domain root (alongside `robots.txt`)
+
+> **One-line framing.** `llms.txt` is the file you put at the root of your website so that LLM agents — Claude, ChatGPT, Perplexity, Cursor, Gemini, whatever — can figure out what your site *is* and *what matters on it* without having to crawl, render, and guess from the HTML. It's the "manifest" layer for AI-era web discovery, sitting next to `robots.txt` and `sitemap.xml` but aimed at a different reader.
+
+---
+
+## What it is
+
+`llms.txt` is a proposed standard, introduced by Jeremy Howard (fast.ai / Answer.AI) in September 2024, for a single Markdown file hosted at the root of a website that gives large language models a compact, structured, high-signal overview of the site. The format is unusual in one important way: it uses **Markdown**, not XML or JSON, specifically because the consumer is a language model that already parses Markdown natively and benefits from prose context around link lists.
+
+There are two companion artifacts:
+
+1. **`/llms.txt`** — the short, curated index. Think of it as "here is what this site is, and here are pointers to the dozen or so pages that actually matter." This file is meant to fit comfortably in a model's context window.
+2. **`/llms-full.txt`** — an optional, much longer file (co-developed by Mintlify and Anthropic) that inlines the *full Markdown* of every important page in one document. Useful when you want an agent to have the entire docs corpus in a single fetch without walking links.
+
+Both live at predictable, fixed paths at the domain root. There is no registration, no API, no keys. It is a web standard in the Robots Exclusion Protocol tradition: just drop a file, and the agents that care will find it.
+
+### How it differs from existing web metadata files
+
+| File | Primary reader | Purpose | Format |
+|---|---|---|---|
+| `robots.txt` | Crawlers | Tell bots where they may and may not go | Line-based directives |
+| `sitemap.xml` | Search engines | List every URL for exhaustive indexing | XML |
+| `humans.txt` | Humans | Credit the team behind a site | Free-form text |
+| **`llms.txt`** | **LLM agents** | **Explain what the site is and which pages carry the meaning** | **Markdown** |
+| `llms-full.txt` | LLM agents | Inline full content of key pages in one doc | Markdown |
+
+The critical distinction is *curation vs. exhaustiveness*. A sitemap is a phonebook: every URL, flat, no commentary. `llms.txt` is an index card on the front of the site that says "here is what we do, and here are the ten links an agent should read first." Search engines can afford to crawl 50,000 URLs; an LLM agent answering a user question has a 200k-token budget and 3 seconds. The whole point is to make the agent's first fetch the one that actually matters.
+
+`robots.txt` governs *access*. `llms.txt` governs *attention*. They are complementary, not competing.
+
+---
+
+## How it works
+
+### The spec, condensed
+
+The format is deliberately minimal. The only hard requirement is a single H1 at the top. Everything else is recommended but optional.
+
+```markdown
+# Project or Site Name
+
+> Optional one-paragraph description as a Markdown blockquote. This is the
+> "elevator pitch" the model will read first. Keep it tight — one or two
+> sentences that a model can use as a summary when someone asks "what is
+> this site?"
+
+Optional free-form Markdown prose giving extra context: who runs the site,
+what it's for, any important caveats, how the content is organized. You
+can link freely; links here are treated as inline references.
+
+## Docs
+
+- [Getting Started](https://example.com/docs/getting-started): One-line description of what this page covers.
+- [API Reference](https://example.com/docs/api): The full REST API.
+- [CLI Guide](https://example.com/docs/cli): Command-line usage.
+
+## Examples
+
+- [Tutorial: Hello World](https://example.com/examples/hello): Minimal walkthrough.
+- [Cookbook](https://example.com/examples/cookbook): Common recipes.
+
+## Optional
+
+- [Changelog](https://example.com/changelog): Release history.
+- [Blog](https://example.com/blog): Long-form writing.
+```
+
+**Rules of the road:**
+
+- **H1 is required.** It's the name of the site/project. Exactly one.
+- **Blockquote is the summary.** If present, it goes immediately after the H1, and it's the single most important piece of metadata.
+- **H2 sections group links.** Common section names in the wild: `Docs`, `Examples`, `API`, `Guides`, `Blog`, `Policies`, `Optional`.
+- **Each link is a bullet of the form `[Title](URL): one-line description`.** The description is what the model uses to decide whether to fetch the link.
+- **An `## Optional` section is treated as lower priority.** Models that are context-constrained may skip it entirely. Use it for "nice to have but not load-bearing" links.
+- **All URLs should be absolute** (full `https://...`), not relative, because agents may fetch this file from cache or a mirror.
+
+That's the whole spec. No versioning headers, no front-matter, no required metadata fields. Plain Markdown a human can hand-write in five minutes.
+
+### The `llms-full.txt` variant
+
+`llms-full.txt` takes every page in your "Docs" section (or whatever you consider canonical) and concatenates the raw Markdown of each page into one file, with `## Page Title` headers separating them. The goal is "single fetch, full context." This was co-developed by Mintlify and Anthropic and is now part of the broader proposal. Anthropic, Stripe, Vercel, Cursor, Cloudflare, Pinecone, and Windsurf all publish one.
+
+Rule of thumb:
+- **`llms.txt`** → index of pointers, always ship this.
+- **`llms-full.txt`** → inlined body, ship this if your docs are < ~500k tokens and you want agents to have one-shot access.
+
+### Companion: `.md` versions of every page
+
+The third leg of the proposal is that every HTML page should also be served as a plain Markdown version at the same URL with a `.md` suffix (e.g., `example.com/docs/api` → `example.com/docs/api.md`). This is what `nbdev`, Mintlify, Fern, and a growing number of docs platforms now do automatically. It lets an agent fetch a clean, parser-friendly version of any page linked from `llms.txt` without having to scrape HTML. Fern goes a step further and detects LLM bot user-agents and serves the Markdown version directly at the original URL, claiming a 90%+ token reduction versus rendered HTML.
+
+---
+
+## Key mechanics
+
+### Who's adopted it
+
+As of late 2025, real `llms.txt` files in production include:
+
+- **Anthropic** (docs.anthropic.com/llms.txt) — the flagship reference implementation, co-developed with Mintlify.
+- **Stripe**, **Cloudflare**, **Vercel**, **Supabase** — canonical dev-tool adopters.
+- **Cursor**, **Windsurf** — AI-native IDEs that both publish and consume.
+- **Pinecone**, **Coinbase**, **Mintlify**, **Perplexity** — AI infra and docs-heavy companies.
+- Every site hosted by **Mintlify**, **Fern**, **Docusaurus (via plugin)**, **GitBook**, and several other docs platforms — these auto-generate `llms.txt` and `llms-full.txt` on build, which is how adoption jumped from "a handful of early movers" to ~844k sites in under 12 months.
+
+Notable *non*-adopters: most CMS-based marketing sites, most WordPress blogs, and most e-commerce storefronts. The long tail is still wide open.
+
+### Who reads it
+
+Consumption is less well-documented than publication, but in practice:
+
+- **Cursor, Windsurf, Claude Code, Continue, Aider** — when pointed at a library, many will check `/llms.txt` before crawling the docs site.
+- **Perplexity and ChatGPT's browsing/search modes** — will opportunistically read `llms.txt` when building a retrieval plan.
+- **Agent frameworks** (LangChain, LlamaIndex, Mastra, CrewAI) — have helpers/loaders for fetching `llms-full.txt` as a one-shot document source.
+- **Claude's WebFetch tool** — does not yet auto-prefer `llms.txt`, but will honor it if you instruct the agent to check.
+
+The honest state of the world: publication is ahead of consumption. Shipping `llms.txt` today is primarily a bet on the near-future agent web, plus a free SEO/GEO (Generative Engine Optimization) signal that costs 30 minutes to put in place.
+
+### Tools that generate it
+
+- **Mintlify** — auto-generates `/llms.txt`, `/llms-full.txt`, and `.md` versions of every page for all hosted docs. Zero config.
+- **Fern** — same, plus the bot-detection serve-Markdown-at-original-URL trick.
+- **`llmstxt` npm / Python packages** — scrape a sitemap and produce a draft `llms.txt` you can hand-edit.
+- **llmstxtgenerator.org, seomator.com, Mintlify's free generator** — web-based form-fill tools for non-technical site owners.
+- **Docusaurus plugin `@signalwire/docusaurus-plugin-llms-txt`**, **Nextra**, **Astro Starlight** — framework-level plugins that generate the file at build time from your existing docs tree.
+- **Hand-written** — for a portfolio site, just write it. It's a 30-line Markdown file.
+
+---
+
+## Quick start
+
+### 1. Publish the simplest possible version (5 minutes)
+
+Write this file, save it as `llms.txt`, put it at the root of your site so it's served at `https://yourdomain.com/llms.txt`, and deploy:
+
+```markdown
+# Your Site Name
+
+> One-sentence description of what this site is and who runs it.
+
+## Main pages
+
+- [About](https://yourdomain.com/about): Who I am and what I do.
+- [Work](https://yourdomain.com/work): Portfolio of projects.
+- [Contact](https://yourdomain.com/contact): How to reach me.
+```
+
+That's it. You now have a valid `llms.txt`.
+
+### 2. Verify it's reachable
+
+```bash
+curl -I https://yourdomain.com/llms.txt     # expect 200 OK, text/plain or text/markdown
+curl    https://yourdomain.com/llms.txt     # sanity check the body
+```
+
+Make sure `robots.txt` does **not** disallow `/llms.txt` for the bots you want to read it. Most agent user-agents ignore `robots.txt` entirely, but the file should be allowed for completeness.
+
+### 3. Add `llms-full.txt` if your site has real written content
+
+If you have a blog, essays, or docs totaling under ~500k tokens, generate a concatenated `llms-full.txt` and ship it too.
+
+### 4. Add `.md` twins for key pages
+
+If you control the rendering layer, serve a `.md` version of each canonical page at the same URL + `.md` suffix. In Next.js, this is a middleware rewrite plus a Markdown serializer. In a static site, it's a build step.
+
+---
+
+## Sample: a working `llms.txt` for `1gabe.com`
+
+Here is a complete, ready-to-ship sample for Victor's portfolio site. Drop it at `https://1gabe.com/llms.txt`, edit the link list to match the actual page structure, and you're done.
+
+```markdown
+# 1gabe — Victor Gabriel
+
+> Portfolio, experiments, and field notes from Victor Gabriel: creative
+> technologist working at the intersection of AI, design engineering, and
+> algorithmic trading. Based in the US.
+
+This site is a living portfolio. It collects production work (web and
+product), independent research (mostly AI and quantitative trading),
+writing, and selected visual / generative experiments. Everything is
+hand-built; there is no CMS. If you are an agent trying to understand
+what Victor does and what to link to when someone asks about him, start
+with the About page and the Work index.
+
+## About
+
+- [About](https://1gabe.com/about): Bio, background, current focus, and contact details.
+- [Now](https://1gabe.com/now): What Victor is actively working on this month.
+- [Uses](https://1gabe.com/uses): Hardware, software, and tooling stack.
+
+## Work
+
+- [Work Index](https://1gabe.com/work): Chronological portfolio of shipped projects.
+- [Unicron](https://1gabe.com/work/unicron): Personal AI trading and research platform (Legion Command, Arena, Oversight).
+- [Trading Agent Team](https://1gabe.com/work/trading-agent-team): Multi-agent crypto research system with graduated take-profit and ensemble strategies.
+- [AI Catalogs](https://1gabe.com/work/ai-catalogs): Curated deep-dive guides on AI tools, repos, and techniques.
+- [wv-art.com](https://1gabe.com/work/wv-art): Sister site — visual and generative art archive.
+
+## Writing
+
+- [Writing Index](https://1gabe.com/writing): All essays and field notes.
+- [Field Notes](https://1gabe.com/writing/field-notes): Short-form observations from ongoing projects.
+- [Post-Mortems](https://1gabe.com/writing/post-mortems): Retrospectives on shipped work.
+
+## Experiments
+
+- [Experiments Index](https://1gabe.com/experiments): Generative, creative-coding, and interactive prototypes.
+- [Visual Lab](https://1gabe.com/experiments/visual): Browser-based visual experiments (Canvas, WebGL, shaders).
+- [Agent Lab](https://1gabe.com/experiments/agents): LLM agent prototypes and tool demos.
+
+## Contact
+
+- [Contact](https://1gabe.com/contact): Email, social, and inquiries.
+
+## Optional
+
+- [Archive](https://1gabe.com/archive): Older work kept for reference.
+- [Colophon](https://1gabe.com/colophon): How this site is built.
+- [RSS](https://1gabe.com/feed.xml): Writing feed.
+```
+
+**Notes on this sample:**
+
+- The blockquote is the single highest-leverage piece of text in the whole file. It should read like a one-sentence answer to "who is Victor?" — because that is literally how a model will use it.
+- The short prose paragraph after the blockquote is optional but valuable for a portfolio. It tells the agent *how to think about the site* before it starts fetching links. Models that respect this guidance produce dramatically better answers when someone asks "what does Victor do?"
+- Each link description is a single phrase. Resist the urge to write full sentences — the model will read the destination page for detail.
+- `Work`, `Writing`, `Experiments`, `Contact` are in the main body. `Archive`, `Colophon`, and `RSS` are under `## Optional` so context-constrained agents know they can skip them.
+- If `1gabe.com` ever hits a point where the written content is substantial, add a companion `llms-full.txt` that inlines the body of `About`, `Now`, and every entry under `Writing`.
+
+### A parallel sample for `wv-art.com`
+
+For a visual-art archive, the structure changes slightly — the agent needs to understand that most of the value is in images, not text, so the blockquote should set that expectation:
+
+```markdown
+# wv-art — Visual & Generative Art Archive
+
+> Visual and generative art archive by Victor Gabriel. Mostly image-based
+> work: algorithmic drawings, generative series, photography, and
+> selected commissions. For a written bio or non-visual work, see
+> https://1gabe.com.
+
+## Series
+
+- [Series Index](https://wv-art.com/series): All ongoing and completed series.
+- [Featured Series](https://wv-art.com/series/featured): Curated highlights.
+
+## Process
+
+- [Process](https://wv-art.com/process): How the work is made — tools, techniques, code.
+- [Studio](https://wv-art.com/studio): Physical and digital studio setup.
+
+## Shop & Contact
+
+- [Prints](https://wv-art.com/prints): Available prints and editions.
+- [Commissions](https://wv-art.com/commissions): Commission inquiries.
+- [Contact](https://wv-art.com/contact): Direct contact.
+
+## Optional
+
+- [Archive](https://wv-art.com/archive): Older and one-off work.
+- [About](https://wv-art.com/about): Artist statement.
+```
+
+---
+
+## What we could build with it
+
+- **Auto-generator for Victor's sites.** A small Node or Python script that walks `1gabe.com` and `wv-art.com`, reads the existing site map and page titles, and produces a draft `llms.txt` the first time, then keeps it in sync on every deploy. Wire it into the build step.
+- **Claude Code / Cursor skill: "add llms.txt to this project."** A skill that detects the framework (Next, Astro, Docusaurus, Mintlify, Hugo, raw static), picks the right generation path, and drops a ready-to-edit draft at the right location.
+- **Portfolio-specific template library.** Victor could publish a small set of opinionated `llms.txt` templates for portfolio sites, art sites, and small-studio sites — the format is still dominated by dev-tool docs, and the creative / portfolio corner of the spec is underserved.
+- **Audit tool.** A CLI that fetches a site's `llms.txt`, validates it against the (loose) spec, checks that every link resolves, measures total token count, and flags missing `.md` twins. Good companion to existing SEO auditors.
+- **`llms-full.txt` inliner with smart truncation.** For sites that are too big to inline everything, a tool that uses embedding similarity to pick the N most semantically "central" pages and inlines only those, within a configurable token budget.
+- **GEO reporting dashboard.** Track which agents actually fetch your `/llms.txt` by user-agent and log it. Useful signal for whether the investment is paying off.
+- **Integration with the AI catalog itself.** Ship an `llms.txt` for this `ai-catalogs` repo so that other agents discovering it can get an indexed view of every guide. A natural fit — each guide here already follows a consistent pattern.
+
+---
+
+## Cross-references
+
+- **Jeremy Howard's original proposal** — https://www.answer.ai/posts/2024-09-03-llmstxt.html
+- **The spec site** — https://llmstxt.org
+- **AnswerDotAI/llms-txt reference repo** — https://github.com/AnswerDotAI/llms-txt
+- **Mintlify's guide and generator** — https://www.mintlify.com/blog/what-is-llms-txt, https://www.mintlify.com/library/free-llms-txt
+- **Real-world examples roundup** — https://www.mintlify.com/blog/real-llms-txt-examples
+- **Search Engine Land coverage** — https://searchengineland.com/llms-txt-proposed-standard-453676
+- **Ahrefs explainer** — https://ahrefs.com/blog/what-is-llms-txt/
+- **BuiltWith adoption tracker** — https://trends.builtwith.com/ (search "llms.txt")
+
+Related in this catalog:
+- Any future guide on **Generative Engine Optimization (GEO)** — `llms.txt` is the concrete artifact side of that broader topic.
+- Any future guide on **Fern / Mintlify / Docusaurus** — the docs platforms most responsible for adoption so far.
+
+---
+
+## Should Victor ship this?
+
+Yes, on both `1gabe.com` and `wv-art.com`, today. It is a 30-minute job, zero maintenance cost once wired into a build step, zero downside, and a non-trivial upside as more agents start honoring it. The sample above is deliberately complete enough to paste in, swap the real link URLs for whichever section slugs the sites actually use, and ship. Add an `llms-full.txt` companion for `1gabe.com` once the writing section has enough content to justify it. For `wv-art.com`, the short version is sufficient — the art is the point, and the role of the file is just to tell the agent that.
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

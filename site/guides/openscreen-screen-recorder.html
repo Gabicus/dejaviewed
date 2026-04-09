@@ -1,0 +1,370 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OpenScreen — Free Open-Source Screen Studio Alternative · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg-2:#0f0f1a;--surface:#12121a;
+  --panel:rgba(255,255,255,0.03);--panel-2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text-dim:#a0a0b8;--text-mute:#6a6a80;
+  --accent:#a78bfa;--accent-2:#f472b6;
+  --c-repo:#4cda8c;--c-tool:#f0a050;--c-skill:#e060a0;--c-guide:#a78bfa;
+  --c-platform:#e0d040;--c-resource:#40d0e0;--c-art:#f05060;--c-design:#fb7185;--c-uiux:#60a5fa;
+  --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
+  background-attachment:fixed}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
+.head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tagline{color:var(--text-dim);font-size:13px;font-weight:500;margin-top:2px}
+.brand .tagline a{color:var(--accent-2);font-weight:700}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+
+.skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
+.skill-callout strong{color:#fff}
+.skill-callout code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:12.5px;font-family:'JetBrains Mono',Menlo,monospace;color:var(--accent)}
+.skill-callout details{margin-top:12px}
+.skill-callout summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}
+.skill-callout pre{margin:10px 0 0;padding:14px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;line-height:1.55;font-family:'JetBrains Mono',Menlo,monospace;color:var(--text-dim);white-space:pre-wrap}
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:30px}
+  header.site{position:static}
+  .grid{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 30px}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<header class="site"><div class="wrap head-row">
+  <div class="brand">
+    <h1>DejaViewed</h1>
+    <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
+  </div>
+  <nav class="nav"><a class="actions-nav" href="../dejaviewed.html">DEJAVIEWED</a><a class="active" href="../index.html">ALL</a><span class="src-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="../ai1.html">AI1</a><a class="sub" href="../ai2.html">AI2</a><a class="sub" href="../ai3.html">AI3</a><a class="sub" href="../ai4.html">AI4</a></span></span></nav>
+</div></header>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># OpenScreen — Free Open-Source Screen Studio Alternative
+
+**GitHub:** https://github.com/siddharthvaddem/openscreen
+**License:** MIT
+**Stack:** Electron + React + TypeScript + Vite + PixiJS + Tailwind
+**Platforms:** macOS 13+, Windows, Linux (PipeWire)
+**Repo path:** `repos/openscreen/` (clone pending — sandbox blocked git clone in this session; run `git clone https://github.com/siddharthvaddem/openscreen.git repos/openscreen` manually)
+
+---
+
+## What it is
+
+OpenScreen is a free, open-source desktop screen recorder built as a deliberate clone of [Screen Studio](https://screen.studio) — the $229 macOS app that single-handedly defined the "polished product demo with smooth auto-zoom and animated cursor" aesthetic that's now everywhere on X and YouTube. The creator's pitch is refreshingly honest: "a much simpler take, just the basics for folks who want control and don't want to pay."
+
+That framing is accurate. OpenScreen is not trying to match Screen Studio feature-for-feature. It nails the core that makes Screen Studio recordings instantly recognizable — **automatic cursor-aware zooms**, cinematic backgrounds, motion blur, clean exports — while skipping fancier pro features. In exchange you get: free, MIT-licensed, cross-platform (Mac / Windows / Linux), and source available.
+
+The closest analogs:
+- **Screen Studio** — $229, macOS only, polished, the gold standard; OpenScreen clones its core loop
+- **[Cap](https://cap.so/)** — open-source, Rust + Tauri, more feature-rich, focused on async video messaging (Loom-style)
+- **Tella** — cloud-hosted SaaS, polished but subscription and not local
+- **OBS Studio** — free, pro-grade, zero polish (no auto-zoom, no cursor animation)
+- **QuickTime / Windows Snipping Tool** — free but bare-metal, no editing
+
+OpenScreen sits in the "free and polished enough for 90% of demos" slot that nothing else really filled before — Cap is close but much heavier.
+
+## How it works
+
+OpenScreen is an Electron desktop app. The recording and editing pipeline is:
+
+1. **Capture** — Electron's `desktopCapturer` API pulls a MediaStream for the selected screen/window. On macOS 14.2+ it requests the audio capture entitlement; on Linux it relies on PipeWire's screen capture portal. Windows has first-class system audio support.
+2. **Cursor tracking** — alongside the video stream, OpenScreen records high-resolution cursor position events. This is the secret sauce: because cursor data is captured as discrete events rather than baked into the video, the editor can later generate smooth animated cursors and compute zoom targets that actually track where attention is.
+3. **Editor / compositor** — a **PixiJS** scene composites the raw screen recording, a generated synthetic cursor (styled and animated), a background layer (wallpapers, colors, gradients), and effects like motion blur. PixiJS gives it hardware-accelerated 2D rendering which is why the preview is smooth.
+4. **Timeline** — built on `dnd-timeline` for draggable segments, trims, and speed ramps.
+5. **Auto-zoom engine** — analyzes cursor velocity and click events to place zoom keyframes automatically; you can also drop manual zooms with configurable depth and duration.
+6. **Export** — renders the composed timeline out to MP4/WebM at configurable aspect ratios and resolutions.
+
+## Core features (what actually works)
+
+- Record a specific window or the full screen
+- **Automatic zooms** driven by cursor/click events, with adjustable depth and duration
+- **Manual zoom keyframes** on the timeline
+- **Animated synthetic cursor** — larger, smoothed, styled separately from the OS cursor
+- Microphone + system audio capture (system audio on Windows and macOS 14.2+; Linux via PipeWire)
+- Background customization — wallpapers, solid colors, gradients
+- Motion blur effect for smooth zoom transitions
+- Annotations — text, arrows, images
+- Segment trim, split, speed adjust
+- Multiple aspect ratios (16:9, 9:16, 1:1, etc.) and export resolutions
+- Local-first, no cloud, no account
+
+## System requirements
+
+- **macOS:** 13 Ventura or later; macOS 14.2+ recommended for system audio capture
+- **Windows:** 10/11, works with system audio out of the box
+- **Linux:** Must have PipeWire (most modern distros — Fedora, recent Ubuntu, Arch — do); X11-only systems won't work
+- **RAM:** 8 GB minimum, 16 GB recommended for 4K/long recordings (Electron + PixiJS + raw frame buffers add up)
+- **GPU:** Any modern integrated GPU; PixiJS uses WebGL
+- **Disk:** Enough free space for raw recordings — plan ~1 GB per 5 minutes at 1440p
+
+## Quick start
+
+**Install from releases (recommended):**
+Download from the GitHub Releases page.
+
+macOS:
+```bash
+# After downloading the .dmg and dragging to Applications
+xattr -rd com.apple.quarantine /Applications/Openscreen.app
+open /Applications/Openscreen.app
+```
+(The `xattr` step is required because the app isn't notarized — Gatekeeper will otherwise refuse to launch it.)
+
+Linux (AppImage):
+```bash
+chmod +x Openscreen-Linux-*.AppImage
+./Openscreen-Linux-*.AppImage
+```
+
+Windows: run the installer `.exe`.
+
+**Build from source** (for hacking or if no release matches your platform):
+```bash
+git clone https://github.com/siddharthvaddem/openscreen.git
+cd openscreen
+npm install
+npm run dev        # launches Electron in dev mode with hot reload
+npm run build      # produces a platform installer in dist/
+```
+
+## Gotchas
+
+- **No notarization on macOS** — every release needs the `xattr` dequarantine step or Gatekeeper blocks it. If you share a recording workflow with non-technical people, point them at a notarized alternative instead.
+- **Linux system audio is hit-or-miss.** PipeWire portal support varies by distro and desktop environment. If system audio doesn't work, fall back to capturing mic + running the app's audio through a virtual sink.
+- **Electron overhead.** Startup is 1-2 seconds slower than native apps, and RAM usage sits around 400-700 MB while idle. Not ideal for older laptops.
+- **Feature gap vs Screen Studio:** no multi-camera picture-in-picture, no advanced speed ramps, no per-clip color grading, no teleprompter. If those matter, stay on Screen Studio.
+- **Project is young.** Expect rough edges, occasional crashes, active development. Check the issue tracker before committing to it for mission-critical recordings.
+
+## How it compares
+
+| Feature | OpenScreen | Screen Studio | Cap | OBS | QuickTime |
+|---|---|---|---|---|---|
+| Price | Free | $229 | Free / paid cloud | Free | Free |
+| OSS | Yes (MIT) | No | Yes | Yes | No |
+| Auto zoom | Yes | Yes (best) | Yes | No | No |
+| Animated cursor | Yes | Yes (best) | Yes | No | No |
+| Backgrounds/wallpapers | Yes | Yes | Yes | Manual | No |
+| Motion blur | Yes | Yes | Yes | No | No |
+| Annotations | Yes | Yes | Limited | Plugin | No |
+| Cross-platform | Mac/Win/Linux | Mac only | Mac/Win/Linux | All | Mac only |
+| Polish | Good, young | Best in class | Very good | Pro but ugly | Basic |
+| Cloud sharing | No | Optional | Built-in | No | No |
+
+The honest call: if you're already paying for Screen Studio, keep using it — it's still the benchmark. If you're on Windows or Linux, or you want open-source, OpenScreen is the most direct clone of the Screen Studio aesthetic available for free. Cap is a strong alternative, especially if you want cloud sharing, but it's optimized more for async messaging than cinematic demo recording.
+
+## What we could build with it / use it for
+
+- **Record Unicron and trading-agent-team demos** with the same cinematic feel as Screen Studio, without the $229 tag, for X/YouTube/blog posts
+- **Tutorial content** for Claude Code workflows, skill chains, AgentOps usage — the auto-zoom is exactly the style that's visually dominant on CodeTok
+- **Bug repros** for open-source PRs — the animated cursor makes it obvious what you clicked; much clearer than QuickTime
+- **Design review recordings** — record a web app, annotate, export in mobile aspect ratio for responsive-test showcases
+- **Hack the editor** — because it's MIT + PixiJS, you can add custom effects, export presets, or AI-driven auto-zoom by forking the cursor-analysis module
+- **Self-host it behind a shared drop folder** as a team's standard recording tool so everyone produces consistently styled demos
+- **Feed recordings into SentrySearch** for a searchable internal demo library
+
+## Bottom line
+
+OpenScreen is a legitimately useful free alternative to Screen Studio for the exact style of product demo everyone is making in 2026. The feature set is narrower than Cap but more focused on the cinematic-demo aesthetic, and it works on Windows and Linux where Screen Studio does not. Worth cloning, worth having installed, worth using for any public-facing recording that doesn't justify a Screen Studio license.
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

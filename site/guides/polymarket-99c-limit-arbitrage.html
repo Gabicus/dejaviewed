@@ -1,0 +1,402 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Polymarket 99c Limit Order Arbitrage — Scalping the Resolution Tail · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg-2:#0f0f1a;--surface:#12121a;
+  --panel:rgba(255,255,255,0.03);--panel-2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text-dim:#a0a0b8;--text-mute:#6a6a80;
+  --accent:#a78bfa;--accent-2:#f472b6;
+  --c-repo:#4cda8c;--c-tool:#f0a050;--c-skill:#e060a0;--c-guide:#a78bfa;
+  --c-platform:#e0d040;--c-resource:#40d0e0;--c-art:#f05060;--c-design:#fb7185;--c-uiux:#60a5fa;
+  --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
+  background-attachment:fixed}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
+.head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tagline{color:var(--text-dim);font-size:13px;font-weight:500;margin-top:2px}
+.brand .tagline a{color:var(--accent-2);font-weight:700}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+
+.skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
+.skill-callout strong{color:#fff}
+.skill-callout code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:12.5px;font-family:'JetBrains Mono',Menlo,monospace;color:var(--accent)}
+.skill-callout details{margin-top:12px}
+.skill-callout summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}
+.skill-callout pre{margin:10px 0 0;padding:14px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;line-height:1.55;font-family:'JetBrains Mono',Menlo,monospace;color:var(--text-dim);white-space:pre-wrap}
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:30px}
+  header.site{position:static}
+  .grid{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 30px}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<header class="site"><div class="wrap head-row">
+  <div class="brand">
+    <h1>DejaViewed</h1>
+    <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
+  </div>
+  <nav class="nav"><a class="actions-nav" href="../dejaviewed.html">DEJAVIEWED</a><a class="active" href="../index.html">ALL</a><span class="src-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="../ai1.html">AI1</a><a class="sub" href="../ai2.html">AI2</a><a class="sub" href="../ai3.html">AI3</a><a class="sub" href="../ai4.html">AI4</a></span></span></nav>
+</div></header>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Polymarket 99c Limit Order Arbitrage — Scalping the Resolution Tail
+
+There's a specific, dumb, beautiful trade on Polymarket: post resting 99¢ bids on contracts that are almost certainly going to resolve to $1. When someone panics, needs liquidity, or fat-fingers a market sell, you eat their order at 99¢, wait a day or two, and collect $1. One cent of edge times 30-50 basis points of fee drag nets ~0.5% per cycle — but the cycles are short, the risk is well-characterized, and the capital turnover is extreme.
+
+This is not alpha in the "predict the future" sense. It is **liquidity provision at the tail of a binary distribution**. The edge is structural.
+
+---
+
+## 1. What it is
+
+Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). In the hours and days before resolution, many contracts have a near-certain outcome. A political contract where the result is already declared but not yet resolved. A sports contract past the final whistle. A weather contract where the day's high has already been printed. The "true" price is $1, but the order book has people selling at 98, 97, 96 for various reasons: exit-to-redeploy, position-close, loss-harvesting, or panic.
+
+The trade: post resting limit buy orders at 99¢ (or 98, 97 laddered) and let liquidity takers hit you. When the contract resolves, you redeem for $1.
+
+---
+
+## 2. How it works — the mechanics
+
+### Polymarket's order book
+
+Polymarket runs a CLOB (Central Limit Order Book) on Polygon. Orders are signed messages held off-chain; fills settle on-chain via the Conditional Tokens Framework (CTF). Key facts:
+
+- **Price range:** $0.01 to $0.99 (you cannot post at $1.00 exactly).
+- **Tick size:** $0.01 on most markets, sometimes $0.001.
+- **Fees:** scale as `min(price, 1 − price) * fee_rate`. At $0.99, your effective fee is based on 0.01 — essentially free. This is the *critical* mechanical reason the strategy is even possible.
+- **Settlement:** When a market resolves YES, holders of YES tokens can redeem 1:1 for USDC. NO tokens burn. Redemption is permissionless and instant after resolution.
+- **Merging:** You can also merge YES + NO tokens at any time into 1 USDC via the CTF contract, which is the other exit path.
+
+### Why resting 99¢ bids get filled
+
+Even on a contract "everyone knows" will resolve YES, sellers show up because:
+
+1. **Capital rotation.** Someone with a $10k position wants to redeploy before resolution rather than wait two days — they'll take 99¢ to move on.
+2. **Tax harvesting.** Realizing a gain at 99¢ vs waiting for $1 has cleaner bookkeeping.
+3. **Panic / FUD.** Rumors of oracle disputes, delays, or manipulation. Occasionally right, usually wrong.
+4. **Fat fingers.** Market sells by people who meant to market buy, or by scripts with broken sign logic.
+5. **Resolution risk tail.** Actual non-zero probability of a dispute or adverse resolution. *This is the one real risk you are being paid for.*
+
+### The math
+
+Round-trip PnL on a single fill:
+
+```
+PnL = (payout − entry) − fees
+    = ($1.00 − $0.99) − (2 × fee_rate × $0.01)   [fees on both sides capped by min(p, 1−p)]
+    ≈ $0.01 − $0.0002
+    ≈ $0.0098 per share ≈ 0.99% gross return
+```
+
+But capital turnover is high. If you cycle every 24 hours, that's ~250% annualized simple, compounded. With laddering (bids at 97, 98, 99) you catch more fills at higher gross margin:
+
+- 97¢ fill → 3¢ gross, ~2.9¢ net → ~3% return
+- 98¢ fill → 2¢ gross, ~1.9¢ net → ~1.9% return
+- 99¢ fill → 1¢ gross, ~0.98¢ net → ~1% return
+
+Expected weighted return per capital deployed depends entirely on fill distribution, which depends entirely on what kind of "almost-certain" contracts you target.
+
+---
+
+## 3. Key mechanics — what to target
+
+Not every contract is tradeable this way. The sweet spot:
+
+- **Resolution within 24-72 hours.** Longer holds compress annualized return and expose you to more disputes.
+- **Clean resolution source.** Weather station data, election commission, sports final score. Avoid interpretation-heavy markets ("Will X tweet about Y") — those are where disputes happen.
+- **Liquid enough to fill.** You need at least a few dozen USDC of daily volume at the 95-99 range for the strategy to be worth running.
+- **Post-certainty window.** The actual outcome is known but resolution hasn't executed. For elections, this is the 48-72 hours between "AP calls it" and "Polymarket oracle confirms." For sports, it's the 1-24 hours after the game. For weather, it's the post-midnight period after the daily high is recorded.
+- **Avoid any market with oracle controversy.** Check Discord, Twitter, and the market's dispute history.
+
+---
+
+## 4. Automation — how to replicate
+
+The Polymarket CLOB has a Python client (`py-clob-client`) and a REST/WebSocket API. Full automation takes maybe 300 lines of Python.
+
+### Minimum viable bot
+
+```python
+from py_clob_client.client import ClobClient
+from py_clob_client.clob_types import OrderArgs, OrderType
+
+client = ClobClient(host="https://clob.polymarket.com", key=PRIVATE_KEY, chain_id=137)
+client.set_api_creds(client.create_or_derive_api_creds())
+
+# 1. Scan all markets with end_date within 72h
+markets = client.get_markets()
+targets = [m for m in markets if is_near_resolution(m) and is_clean_source(m)]
+
+# 2. For each target's YES token, post a laddered bid
+for m in targets:
+    token_id = m["tokens"][0]["token_id"]  # YES
+    for price, size in [(0.99, 100), (0.98, 50), (0.97, 25)]:
+        order = client.create_order(OrderArgs(
+            price=price, size=size, side="BUY",
+            token_id=token_id
+        ))
+        client.post_order(order, OrderType.GTC)
+
+# 3. Watch fills via WS, redeem after resolution
+```
+
+### Sizing and risk
+
+- **Cap per market.** Never more than ~2% of capital in any single market. Oracle disputes are the tail risk and they hit a single market at a time.
+- **Diversify across 20-50 concurrent markets.** This is the whole point — aggregate the tail so a single bad resolution doesn't blow up the strategy.
+- **Hard stop on dispute signals.** Monitor UMA (Polymarket's oracle) dispute status. If a market enters dispute, cancel orders immediately and consider merging YES/NO to exit.
+- **Time-based cancel.** If a bid hasn't filled within its expected window, cancel and rotate capital.
+
+### Existing tools
+
+- **`direkturcrypto/polymarket-terminal`** — public repo for copy/scalp/sniper on Polymarket. Not exactly this strategy but the CLOB plumbing is reusable.
+- **`py-clob-client`** — official Polymarket Python client. The only dependency you actually need.
+
+---
+
+## 5. Risks — the honest list
+
+1. **Oracle disputes.** UMA can rule against the "obvious" outcome. Rare but has happened (contested election calls, ambiguous sports outcomes). This is the *real* risk you're being paid 1¢ for. If UMA rules NO on a contract where you bought YES at 99¢, you lose ~$0.99 per share. One bad resolution can erase months of edge. **Mitigation: diversification + hard dispute filter + never touch contested markets.**
+2. **Smart contract risk.** CTF contract bugs, Polygon bridge issues, Polymarket operator actions.
+3. **Resolution delays.** Your capital sits longer than modeled, compressing annualized return. Not catastrophic, just disappointing.
+4. **Front-running / adverse selection.** The 1¢ of panic sellers knows something you don't about 5% of the time. That's priced in.
+5. **Regulatory.** US persons technically can't trade Polymarket. This is Victor's call, not mine to advise on.
+6. **Competition from other bots.** This strategy is known. Depth at 99¢ has thinned as more bots run it. You need to be either faster, or post at 97-98¢ and accept more fill variance.
+
+---
+
+## 6. How this plugs into Victor's trading-agent-team
+
+This is a **capital-efficient, low-touch, low-correlation strategy** that fits the Unicron multi-strategy arena model well. It doesn't compete with the fast-cycler or Oracle Commander — it runs in parallel on Polymarket collateral while the perp strategies run on Hyperliquid collateral.
+
+**Concrete integration ideas:**
+
+1. **Pure-rules execution, zero AI in the hot path** — matches Victor's rule from `feedback_rules_vs_agents.md`. The selection logic ("clean source, <72h to resolution, not disputed") is 100% deterministic. No LLM, no ML. The AI layer only runs at market-discovery time: nightly, an agent scans new markets and classifies them as eligible / not eligible with reasoning. Humans review the classification before markets go live.
+
+2. **Watchdog pattern is a perfect fit.** Unicron's oversight spec already has a watchdog layer. For this strategy, the watchdog monitors UMA dispute events per open market. Dispute detected → cancel + exit via YES/NO merge immediately. This is the highest-leverage line of code in the whole bot.
+
+3. **Challenge-game sweep.** Parameters: bid ladder shape `[97, 98, 99]` weights, per-market cap, time-to-resolution threshold, source-cleanliness score. Fitness: Sharpe of simulated PnL on replayed Polymarket historical data (available via their Subgraph). Cheap to evaluate, clear optimum surface.
+
+4. **Paired with the weather bot.** The weather strategy (`polymarket-weather-trading.md`) builds a stable of positions it wants to exit close to resolution. The 99c bot is the *counterparty* to those exits. Running both strategies internally means the weather bot's exit cost goes to zero against your own book — that's a genuine operational synergy.
+
+5. **Low capital to validate.** $500-$2000 is enough to run this live and get statistically meaningful fill data in a week. Much lower barrier than the perp strategies.
+
+**Where to file it in the repo:** `/unicron/strategies/polymarket_99c/` with a shared `polymarket_clob.py` module also used by the weather strategy. Backtest harness uses Polymarket's Subgraph for historical order-book snapshots — same data layer as the weather bot.
+
+---
+
+## 7. TL;DR
+
+You are selling insurance against Polymarket resolution tail risk at ~1% per cycle. The edge is structural (Polymarket's fee curve + forced liquidity providers on almost-resolved markets). The risk is oracle disputes, which you diversify away by spreading across 30+ concurrent markets and filtering out anything contested. Automation is ~300 lines. Annualized return is in the 30-100% range depending on fill-rate and dispute variance. It is not "free money" — the 1¢ is the premium you're collecting for taking a real, small, well-understood tail.
+
+## Sources
+
+- [Polymarket Limit Orders Docs](https://docs.polymarket.com/polymarket-learn/trading/limit-orders)
+- [Polymarket Help Center — Limit Orders](https://help.polymarket.com/en/articles/13364444-limit-orders)
+- [Polymarket Help Center — How Prices Are Calculated](https://help.polymarket.com/en/articles/13364488-how-are-prices-calculated)
+- [How the Order Book Works — Guru Polymarket](https://gurupolymarket.com/en/tutorials/how-the-order-book-works/)
+- [Polymarket Buying NO / Selling YES (Code Pointer)](https://codepointer.substack.com/p/polymarket-buying-no-selling-yes)
+- [direkturcrypto/polymarket-terminal](https://github.com/direkturcrypto/polymarket-terminal)
+- [Scalping on Polymarket (Straits Markets)](https://straits-markets.com/2026/02/02/scalping-on-polymarket-in-simple-terms-how-prediction-markets-work-and-why-beginners-lose/)
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

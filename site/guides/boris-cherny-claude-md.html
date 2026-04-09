@@ -1,0 +1,459 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boris Cherny's CLAUDE.md — The Canonical Template · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg-2:#0f0f1a;--surface:#12121a;
+  --panel:rgba(255,255,255,0.03);--panel-2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text-dim:#a0a0b8;--text-mute:#6a6a80;
+  --accent:#a78bfa;--accent-2:#f472b6;
+  --c-repo:#4cda8c;--c-tool:#f0a050;--c-skill:#e060a0;--c-guide:#a78bfa;
+  --c-platform:#e0d040;--c-resource:#40d0e0;--c-art:#f05060;--c-design:#fb7185;--c-uiux:#60a5fa;
+  --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
+  background-attachment:fixed}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
+.head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tagline{color:var(--text-dim);font-size:13px;font-weight:500;margin-top:2px}
+.brand .tagline a{color:var(--accent-2);font-weight:700}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+
+.skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
+.skill-callout strong{color:#fff}
+.skill-callout code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:12.5px;font-family:'JetBrains Mono',Menlo,monospace;color:var(--accent)}
+.skill-callout details{margin-top:12px}
+.skill-callout summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}
+.skill-callout pre{margin:10px 0 0;padding:14px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;line-height:1.55;font-family:'JetBrains Mono',Menlo,monospace;color:var(--text-dim);white-space:pre-wrap}
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:30px}
+  header.site{position:static}
+  .grid{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 30px}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<header class="site"><div class="wrap head-row">
+  <div class="brand">
+    <h1>DejaViewed</h1>
+    <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
+  </div>
+  <nav class="nav"><a class="actions-nav" href="../dejaviewed.html">DEJAVIEWED</a><a class="active" href="../index.html">ALL</a><span class="src-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="../ai1.html">AI1</a><a class="sub" href="../ai2.html">AI2</a><a class="sub" href="../ai3.html">AI3</a><a class="sub" href="../ai4.html">AI4</a></span></span></nav>
+</div></header>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Boris Cherny's CLAUDE.md — The Canonical Template
+
+**Author of the pattern:** Boris Cherny — Anthropic staff engineer, creator of Claude Code (originally built as a side project in his first month at Anthropic; by the time Claude Code launched publicly in May 2025, over 80% of Anthropic's engineers were using it daily).
+
+**Why it matters:** Boris's own CLAUDE.md and the workflow rules he published on X became the de facto template that the wider community now cargo-cults. If you've seen a CLAUDE.md with sections like "Workflow Orchestration," "Self-Improvement Loop," and "Verification Before Done," you're looking at a descendant of Boris's file. His team at Anthropic keeps a CLAUDE.md in git at roughly 2.5k tokens — the reference weight class.
+
+This guide reconstructs the template, explains *why* each section exists, and compares it to what Victor already runs in `/home/victor/.claude/CLAUDE.md`.
+
+---
+
+## What it is
+
+CLAUDE.md is the single highest-leverage file in the Claude Code harness. Claude Code injects it into the context window at the **start of every session**, before the user's first message. It's the only persistent memory primitive that survives compaction, resumes, and cross-session restarts. Nothing else — not chat history, not subagent output, not tool results — is guaranteed to stick.
+
+Boris's core insight: *CLAUDE.md is a compounding asset*. Every correction you give Claude should be distilled into a rule in CLAUDE.md, so future sessions never make the same mistake twice. The file is not documentation for humans — it is a behavioral contract for the model.
+
+## How it works under the hood
+
+- Claude Code auto-discovers `./CLAUDE.md` (project), `~/.claude/CLAUDE.md` (global), and `.claude/CLAUDE.md` in parent dirs (walks up the tree).
+- All discovered files are **concatenated and prepended** to the system prompt.
+- `/init` scaffolds a starter CLAUDE.md by scanning the project (language, framework, build/test commands, style).
+- `#` prefix in a normal Claude message auto-appends that line to CLAUDE.md — Boris's favorite shortcut for the self-improvement loop.
+- Target weight: **under 200 lines / under 2-3k tokens**. Larger files measurably reduce instruction adherence — Claude starts "forgetting" rules buried mid-file.
+
+## Key mechanics (Boris's rules, annotated)
+
+Boris's publicly posted rules crystallize into these sections. The exact wording varies by gist (there are at least four circulating community copies), but the structure is consistent:
+
+### 1. Workflow Orchestration — "Plan first, execute second"
+
+```markdown
+## Workflow
+- For any non-trivial task (3+ steps or architectural decisions), enter plan mode first.
+- Write the plan to disk before executing. Get explicit approval before you start editing files.
+- Break work into phases. Each phase ends with a verification step.
+- Never start coding without a written goal and a verification strategy.
+```
+
+*Why:* Claude's default behavior is to dive in. Forcing a written plan makes the model's reasoning visible, lets the human catch bad assumptions cheaply, and creates a contract it can check itself against later. This is the pattern the Superpowers `writing-plans` + `executing-plans` chain formalizes.
+
+### 2. Subagents — "Keep the main context clean"
+
+```markdown
+## Subagents
+- Use subagents liberally. The main conversation is a precious resource.
+- Dispatch anything exploratory (searching, reading unknown files, running tests) to a subagent.
+- Subagents return summaries, not transcripts. You don't burn tokens on the tool noise.
+- Parallelize independent tasks — spawn 3-5 subagents at once rather than serially.
+```
+
+*Why:* The main context window is where the actual planning and decision-making happens. Every file you read, every failed test output, every grep result eats tokens that could be used for reasoning. Subagents are a context-compression mechanism.
+
+### 3. Verification Before Done — "Never claim completion without proof"
+
+```markdown
+## Verification
+- Before claiming any task is complete: run the tests, run the linter, run the type checker.
+- If the user's request implies "it should work" — prove it works end-to-end, don't just compile.
+- If you wrote a function, write a test. If you wrote a test, run it. If it fails, fix it.
+- Never say "done" if you haven't verified. Say "I believe this is done pending X."
+```
+
+*Why:* The single most common failure mode of LLMs is confident false completion. Boris's rule: the model must produce evidence, not assertion.
+
+### 4. Self-Improvement Loop — "Every correction becomes a rule"
+
+```markdown
+## Self-Improvement
+- When I correct you, end your response with:
+  "Updating CLAUDE.md so I don't make this mistake again."
+- Then actually update CLAUDE.md with a new rule that would have prevented the mistake.
+- Ruthlessly edit CLAUDE.md over time. Delete rules that no longer apply. Merge duplicates.
+```
+
+*Why:* This is the compounding mechanism. Boris's own quote: *"Invest in your CLAUDE.md. After every correction, end with 'Update your CLAUDE.md so you don't make that mistake again.' Claude is effective at writing rules for itself."* Over weeks, Claude's mistake rate on your codebase measurably drops.
+
+### 5. Autonomous Bug Fixing — "Reproduce, then fix"
+
+```markdown
+## Bugs
+- Before fixing: reproduce the bug with a failing test.
+- The test must fail for the right reason (the bug), not a different reason (typo, missing import).
+- Only then write the fix. Re-run the test. Confirm it passes. Run the full suite.
+- If the bug is ambiguous, ask for clarification before coding.
+```
+
+*Why:* Mirrors TDD discipline and cuts the "fixed something unrelated" failure mode.
+
+### 6. Project context (the boilerplate head of the file)
+
+```markdown
+# Project Name
+Language: Python 3.12
+Framework: FastAPI + SQLAlchemy
+Package manager: uv
+Tests: pytest (run with `uv run pytest`)
+Lint: ruff (run with `uv run ruff check`)
+Typecheck: mypy (strict mode)
+
+## Conventions
+- Prefer dataclasses over dicts for structured data.
+- All public functions get type hints.
+- Never use `print` — use the `logging` module.
+- Tests live in `tests/` mirroring `src/` layout.
+```
+
+*Why:* This is the cheap, obvious part everyone gets right. It's the behavioral rules above that distinguish Boris's template from a README.
+
+## Quick start
+
+```bash
+# In any project, scaffold a starter file
+cd my-project
+claude
+> /init
+
+# Then iterate — every time Claude makes a mistake, tell it:
+> "That was wrong. Update CLAUDE.md so you don't do it again."
+
+# Or use the # shortcut to append a rule inline
+> # Always run `uv run pytest` not `pytest`
+
+# Keep it lean — check length regularly
+wc -l CLAUDE.md   # target: under 200 lines
+```
+
+**Copy-paste starter** (drop into any project root):
+
+```markdown
+# [Project Name]
+[One-line description.]
+
+Stack: [language, framework, package manager]
+Build: `[command]`
+Test: `[command]`
+Lint: `[command]`
+
+## Workflow
+- For any task with 3+ steps, enter plan mode. Write the plan before editing.
+- Use subagents for exploration, searching, and reading unknown files.
+- Never claim "done" without running tests + lint + typecheck.
+
+## Conventions
+- [Style rule 1]
+- [Style rule 2]
+
+## Verification
+- Before shipping: `[test command]` && `[lint command]` && `[typecheck command]`
+- All must pass. No exceptions.
+
+## Bugs
+- Reproduce with a failing test before fixing.
+- Test must fail for the right reason.
+
+## Self-improvement
+- When corrected, update this file with a rule that would have prevented the mistake.
+- Every rule in this file earned its place by catching a real bug.
+```
+
+## Contrast with Victor's global CLAUDE.md
+
+Victor's `/home/victor/.claude/CLAUDE.md` is a **fundamentally different genre** of CLAUDE.md than Boris's. Key differences worth understanding:
+
+| Dimension | Boris's template | Victor's global |
+|---|---|---|
+| **Scope** | Per-project behavioral contract | Global meta-orchestrator across ALL projects |
+| **Length** | ~200 lines, ~2.5k tokens | ~250 lines but dense with tables |
+| **Focus** | Workflow discipline (plan → execute → verify) | Skill routing + knowledge base pointers |
+| **Self-improvement loop** | Yes — "every correction becomes a rule" | Implicit via the forge/retro/flywheel skills |
+| **Trigger mapping** | Not present | Extensive — keyword → skill table |
+| **Domain knowledge** | Project-specific conventions | AI3 resource catalog, installed plugins/MCPs |
+| **Security rules** | Not present | Top-level CRITICAL block on secret protection |
+
+**What Victor's file does that Boris's doesn't:**
+- Maps user trigger words to specific skill invocations (Boris has no skills system at his abstraction level).
+- Treats the knowledge flywheel (`/flywheel`, `/forge`, `/inject`) as default-on.
+- Enumerates the installed plugin/MCP inventory so Claude knows what tools exist.
+- Points to an external resource catalog (`ai3-resources/`) that the agent can cross-reference.
+
+**What Boris's file does that Victor's doesn't (at the global level):**
+- Explicit plan-mode gating for non-trivial tasks.
+- Explicit verification-before-done discipline (Victor delegates this to the `verification-before-completion` superpower).
+- The self-improvement loop as a first-class mechanic ("every correction becomes a rule").
+- Lean, project-specific behavioral rules with teeth.
+
+**The gap to close:** Victor's global CLAUDE.md is excellent at orchestration but light on direct behavioral discipline — it relies on the skill layer to enforce plan mode, TDD, and verification. Boris's pattern pushes that discipline directly into the file so it's enforced even in lightweight sessions where no skill was explicitly invoked. A hybrid per-project CLAUDE.md that inherits Victor's global triggers and adds a Boris-style Workflow/Verification/Self-improvement block would capture both.
+
+## Gotchas
+
+1. **Length creep kills adherence.** Past ~300 lines, Claude starts ignoring rules in the middle of the file. Ruthlessly prune.
+2. **CLAUDE.md is not documentation.** Don't write prose, write rules. "The foo module does X" is dead weight; "Always use the foo module's `safe_parse`, never `parse`" is a rule with teeth.
+3. **Rules without teeth are ignored.** "Prefer X" is weaker than "Never Y." Boris's negative-constraint framing ("NEVER commit with --no-verify") works because it names the exact failure mode.
+4. **The self-improvement loop only works if you actually run it.** The discipline is: every time you correct Claude, ask it to update CLAUDE.md. If you skip that step once, the loop is broken.
+5. **Global + project files concatenate.** Don't repeat global rules in every project file — Claude reads both.
+6. **Community gists are not canonical.** There are at least four different "Boris's CLAUDE.md" gists circulating. They agree on structure but differ on wording. Treat them all as reference, not gospel.
+
+## What we could build with it
+
+- **A per-project CLAUDE.md generator** that fuses Victor's global orchestration rules with Boris's behavioral discipline blocks, auto-populated from project introspection (stack detection, test/lint commands).
+- **A CLAUDE.md linter** that flags length creep, rule duplication, weak positive framing, and un-earned rules (rules without git blame showing a corresponding correction).
+- **A self-improvement loop hook** — a PostToolUse hook that detects user corrections in the transcript and prompts Claude to propose a CLAUDE.md diff.
+- **A rule-provenance tracker** — every rule in CLAUDE.md links back to the commit/conversation that introduced it, so stale rules can be pruned with evidence.
+
+## Sources
+
+- [How Boris Uses Claude Code (compiled site)](https://howborisusesclaudecode.com/)
+- [Boris Cherny's CLAUDE.md gist (hqman mirror)](https://gist.github.com/hqman/e29cb6386c539d795767e8c3fd2c959b)
+- [boris-team-tips.md gist (joyrexus mirror)](https://gist.github.com/joyrexus/e20ead11b3df4de46ab32b4a7269abe0)
+- [Boris Cherny's Workflow Orchestration agent.md (gavinwright-engr)](https://gist.github.com/gavinwright-engr/499e96574d7a10d939b34388a3774924)
+- [Claude Code setup from Boris Cherny (Artur-at-work)](https://gist.github.com/Artur-at-work/6d3ee182bc32052dfd283a831350f282)
+- [Inside the Development Workflow of Claude Code's Creator — InfoQ](https://www.infoq.com/news/2026/01/claude-code-creator-workflow/)
+- [How the Creator of Claude Code Actually Uses Claude Code — Push to Prod](https://getpushtoprod.substack.com/p/how-the-creator-of-claude-code-actually)
+- [Writing a good CLAUDE.md — HumanLayer blog](https://www.humanlayer.dev/blog/writing-a-good-claude-md)
+- [XDA: I set up Claude Code the way its creator does](https://www.xda-developers.com/set-up-claude-code-like-boris-cherny/)
+- [Boris Cherny on Threads — "Invest in your CLAUDE.md"](https://www.threads.com/@boris_cherny/post/DUMZuyJkpSJ/invest-in-your-claude-md-after-every-correction-end-with-update-your-claude-md)
+- [Claude Code memory docs](https://code.claude.com/docs/en/memory)
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

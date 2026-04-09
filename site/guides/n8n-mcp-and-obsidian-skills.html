@@ -1,0 +1,533 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>n8n-mcp + obsidian-skills — Two High-Leverage Claude Code Extensions · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg-2:#0f0f1a;--surface:#12121a;
+  --panel:rgba(255,255,255,0.03);--panel-2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text-dim:#a0a0b8;--text-mute:#6a6a80;
+  --accent:#a78bfa;--accent-2:#f472b6;
+  --c-repo:#4cda8c;--c-tool:#f0a050;--c-skill:#e060a0;--c-guide:#a78bfa;
+  --c-platform:#e0d040;--c-resource:#40d0e0;--c-art:#f05060;--c-design:#fb7185;--c-uiux:#60a5fa;
+  --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
+  background-attachment:fixed}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
+.head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tagline{color:var(--text-dim);font-size:13px;font-weight:500;margin-top:2px}
+.brand .tagline a{color:var(--accent-2);font-weight:700}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+
+.skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
+.skill-callout strong{color:#fff}
+.skill-callout code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:12.5px;font-family:'JetBrains Mono',Menlo,monospace;color:var(--accent)}
+.skill-callout details{margin-top:12px}
+.skill-callout summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}
+.skill-callout pre{margin:10px 0 0;padding:14px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;line-height:1.55;font-family:'JetBrains Mono',Menlo,monospace;color:var(--text-dim);white-space:pre-wrap}
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:30px}
+  header.site{position:static}
+  .grid{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 30px}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<header class="site"><div class="wrap head-row">
+  <div class="brand">
+    <h1>DejaViewed</h1>
+    <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
+  </div>
+  <nav class="nav"><a class="actions-nav" href="../dejaviewed.html">DEJAVIEWED</a><a class="active" href="../index.html">ALL</a><span class="src-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="../ai1.html">AI1</a><a class="sub" href="../ai2.html">AI2</a><a class="sub" href="../ai3.html">AI3</a><a class="sub" href="../ai4.html">AI4</a></span></span></nav>
+</div></header>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># n8n-mcp + obsidian-skills — Two High-Leverage Claude Code Extensions
+
+Two of the most useful community-built extensions to Claude Code as of April 2026. Both are in the same category — *"expose a large, structured external system to Claude so it can reason about it natively"* — but they attack very different domains: **n8n-mcp** (czlonkowski) unlocks workflow automation, and **obsidian-skills** (kepano) unlocks personal knowledge management. Covered in one guide because they're architectural siblings and often end up installed together on the same workbench.
+
+---
+
+## Part 1: n8n-mcp — 1,396 n8n nodes exposed to Claude
+
+**Author:** Romuald Czlonkowski (@czlonkowski)
+**Repo:** https://github.com/czlonkowski/n8n-mcp
+**License:** MIT
+**Stars:** ~17.8k (as of April 2026) — one of the most successful community MCP servers.
+
+### What it is
+
+An MCP (Model Context Protocol) server that loads every n8n node's schema, documentation, and operation metadata into a searchable database and exposes it to Claude as tools. With it installed, Claude can *natively* design, validate, and (optionally) deploy n8n workflows without hallucinating node names, property shapes, or connection rules.
+
+n8n is a workflow automation platform (think Zapier, but self-hostable and massively more powerful). It has ~1,400 nodes covering every major SaaS, database, LLM, file format, and protocol. The problem: that's too much surface area for an LLM to know from training alone — Claude will cheerfully invent nodes that don't exist, miss required fields, and wire up connections that won't run. n8n-mcp fixes that by making node metadata a first-class tool Claude can query.
+
+### How it works under the hood
+
+- **Database:** better-sqlite3 (default, native) or sql.js fallback. Pre-built, ships with the package.
+- **Coverage (as of latest release):**
+  - 1,396 nodes total (812 core + 584 community)
+  - 99% property coverage with detailed schemas
+  - 63.6% operation coverage
+  - 87% documentation coverage pulled from the official n8n docs
+  - 265 AI-capable tool variants fully documented
+  - 2,646 pre-extracted configurations from popular templates
+  - 2,709 complete workflow templates with metadata
+- **Two modes:**
+  1. **Documentation-only mode** — no n8n instance required. Claude can search nodes, read schemas, validate workflow JSON, and generate workflow files. You copy-paste the output into n8n yourself.
+  2. **Full mode** — give it `N8N_API_URL` + `N8N_API_KEY` and Claude can create, update, execute, and monitor workflows directly in your n8n instance.
+- **Tools exposed to Claude** (selected):
+  - Search nodes by name, category, or capability
+  - Fetch a node's full property schema
+  - Validate a workflow JSON before execution
+  - Browse templates by use case
+  - Filter community nodes by verified status
+  - (Full mode) create/update/execute workflows, read execution logs
+
+### Key mechanics
+
+**Installation (5 options, ranked by Victor's likely preference):**
+
+1. **NPX (quickest local)** — no install, just point Claude at the binary:
+   ```bash
+   npx n8n-mcp
+   ```
+2. **Docker** — pre-built image:
+   ```bash
+   docker pull ghcr.io/czlonkowski/n8n-mcp:latest   # ~280MB
+   ```
+3. **Hosted free tier** at dashboard.n8n-mcp.com — 100 tool calls/day, API key signup only. Zero install.
+4. **Railway one-click** — if you want a persistent cloud MCP.
+5. **Local dev clone** — for hacking on it. Clone, `npm install`, `npm run build`, point Claude at `dist/index.js`.
+
+**Claude Code configuration (documentation-only, safest default):**
+
+Add to `~/.config/Claude/claude_desktop_config.json` (Linux) or `~/.claude/settings.json` for Claude Code:
+
+```json
+{
+  "mcpServers": {
+    "n8n-mcp": {
+      "command": "npx",
+      "args": ["n8n-mcp"],
+      "env": {
+        "MCP_MODE": "stdio",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true"
+      }
+    }
+  }
+}
+```
+
+**The `MCP_MODE: "stdio"` env var is required** — without it, the server writes log noise to stdout and Claude Code fails to parse the JSON-RPC stream. This is gotcha #1.
+
+**Full mode (Claude can deploy workflows directly):**
+
+```json
+{
+  "mcpServers": {
+    "n8n-mcp": {
+      "command": "npx",
+      "args": ["n8n-mcp"],
+      "env": {
+        "MCP_MODE": "stdio",
+        "LOG_LEVEL": "error",
+        "DISABLE_CONSOLE_OUTPUT": "true",
+        "N8N_API_URL": "http://localhost:5678",
+        "N8N_API_KEY": "your-n8n-api-key-here",
+        "WEBHOOK_SECURITY_MODE": "moderate"
+      }
+    }
+  }
+}
+```
+
+For Docker, swap the n8n URL to `http://host.docker.internal:5678`.
+
+**Privacy:** Telemetry is on by default. Disable with `N8N_MCP_TELEMETRY_DISABLED=true`.
+
+### Quick start
+
+```bash
+# 1. Install the MCP in Claude Code config (see above)
+# 2. Restart Claude Code so it picks up the new MCP server
+# 3. In any conversation, just ask:
+
+> Build me an n8n workflow that watches a Gmail inbox for invoices,
+  extracts the PDF attachment, runs it through the OpenAI node to pull
+  out vendor/amount/date, appends to a Google Sheet, and posts a
+  summary to Slack.
+
+# Claude will:
+#  - query n8n-mcp for the Gmail, PDF Extract, OpenAI, Sheets, Slack nodes
+#  - read their actual schemas (not hallucinate)
+#  - validate the workflow JSON against the MCP's validator
+#  - return a complete workflow.json you can import into n8n
+#  - (full mode) deploy it directly to your n8n instance
+```
+
+### Gotchas
+
+1. **Never point full-mode MCP at your production n8n.** The docs are emphatic: always work on a dev instance. The MCP has no undo and Claude can edit any workflow it can see.
+2. **`MCP_MODE: "stdio"` is mandatory** for Claude Code. Omit it and you get opaque JSON parsing errors.
+3. **Memory footprint:** better-sqlite3 uses ~100-120MB; sql.js fallback ~150-200MB. Fine on a dev machine, worth knowing on a resource-constrained server.
+4. **Webhook security:** Default "strict" blocks localhost webhooks. For local dev, set `WEBHOOK_SECURITY_MODE=moderate`.
+5. **Coverage isn't 100%.** Operation coverage is 63.6% — rarer nodes may have incomplete action metadata. Claude will tell you when it's extrapolating vs. reading from the DB.
+
+### What we could build with it
+
+- **Automated n8n workflow generator from natural language** — the obvious one, and the headline feature.
+- **Workflow audit / simplification pipeline** — feed a messy existing n8n export to Claude, let it use the MCP to rewrite it cleaner.
+- **n8n + trading integration** — for Victor's trading agent team, n8n could orchestrate off-chain triggers (news sentiment, social signals, funding rate webhooks) feeding into the Legion Command decision layer. n8n-mcp lets Claude design those pipelines fluently.
+- **Self-editing workflows** — pair n8n-mcp with a scheduled Claude job (via the `schedule` skill) that reviews the previous day's executions and proposes workflow improvements.
+- **Template gallery search** — with 2,709 templates in the MCP database, Claude becomes a natural-language template browser.
+
+---
+
+## Part 2: obsidian-skills — Kepano's Obsidian toolkit for Claude
+
+**Author:** Stephan Ango (@kepano) — CEO of Obsidian, well-known in the PKM/note-taking community.
+**Repo:** https://github.com/kepano/obsidian-skills
+**License:** Check repo
+**Status:** Active, following the emerging "Agent Skills" specification.
+
+### What it is
+
+A collection of **five agent skills** built to the open Agent Skills specification, designed to let any skills-compatible agent (Claude Code, Codex CLI, OpenCode, etc.) work directly with Obsidian vaults. The skills handle Obsidian's specific flavors of markdown, its Bases feature (database views over notes), JSON Canvas files, and vault CLI operations.
+
+The point: Obsidian is the dominant markdown PKM system. Claude Code is the dominant coding agent. Until obsidian-skills, there was no clean way for Claude to read, write, or manipulate an Obsidian vault while respecting Obsidian's conventions (wikilinks, properties, callouts, templates, Bases formulas). Kepano — literally the CEO of Obsidian — shipped the reference implementation.
+
+### The five skills
+
+1. **`obsidian-markdown`** — Create and edit **Obsidian Flavored Markdown**. Handles:
+   - Wikilinks (`[[Note Name]]`, `[[Note Name|alias]]`)
+   - Embeds (`![[Note Name]]`, `![[image.png]]`)
+   - Callouts (`> [!note]`, `> [!warning]`)
+   - Properties (YAML frontmatter with Obsidian-specific types: `tags`, `aliases`, date types)
+   - Block references (`[[Note Name#^block-id]]`)
+2. **`obsidian-bases`** — Create and manipulate **Obsidian Bases** (the database-view-over-notes feature introduced in 2025). Handles views, filters, formulas, summaries. This is the only tool outside Obsidian itself that understands Bases syntax.
+3. **`json-canvas`** — Work with **JSON Canvas** files (the open spec Obsidian uses for its infinite canvas feature). Create nodes, edges, groups, connections — perfect for agent-generated mind maps or visual plans.
+4. **`obsidian-cli`** — Shell-level interaction with Obsidian vaults. Useful for plugin developers, theme developers, and bulk vault operations.
+5. **`defuddle`** — Extract clean markdown from web pages using the Defuddle tool (kepano's readability/clipper engine). This is the "web → vault" ingestion step.
+
+### Installation
+
+Five install methods depending on your agent:
+
+```bash
+# Claude Code — per-vault install (most common)
+cd ~/vaults/my-vault
+mkdir -p .claude
+cd .claude
+# Copy the skill directories from the repo into here
+# (or git clone the repo and symlink the skill subdirs)
+
+# Codex CLI
+cp -r obsidian-skills/* ~/.codex/skills/
+
+# OpenCode
+git clone https://github.com/kepano/obsidian-skills ~/.opencode/skills/
+```
+
+Per the repo's instructions: *"Add the contents of this repo to a `/.claude` folder in the root of your Obsidian vault."* That makes them available whenever Claude Code is launched inside that vault.
+
+### Key mechanics
+
+- **Skills follow the Agent Skills spec** — they're portable across any skills-compatible agent, not locked to Claude.
+- **Each skill is a single `SKILL.md` file** (plus optional reference files) — lightweight, inspectable, editable.
+- **The skills teach Claude Obsidian's syntax and semantics**, not just the file format. Claude learns that `[[Note]]` creates a link, `![[Note]]` embeds content, frontmatter `tags:` uses Obsidian's tag index, etc.
+- **Vault-local install is the intended pattern** — different vaults can have different skills installed, and the skills travel with the vault if it's synced.
+
+### Quick start
+
+```bash
+# 1. Clone or copy obsidian-skills into your vault's .claude folder
+cd ~/Documents/ObsidianVault
+git clone https://github.com/kepano/obsidian-skills .claude/obsidian-skills
+
+# 2. Launch Claude Code from inside the vault
+cd ~/Documents/ObsidianVault
+claude
+
+# 3. Ask it to do Obsidian-native things:
+> Read all notes tagged #project/active, summarize each, and create a
+  new note "Active Projects Dashboard" with links and 2-line summaries.
+
+> Clip this URL into a new note with proper frontmatter and tags:
+  https://www.example.com/article
+
+> Build a JSON Canvas visualizing how my notes in the "Claude Code"
+  folder link to each other.
+
+> Create an Obsidian Base that shows all notes with status="in-progress"
+  sorted by last modified, with formulas for days-since-touched.
+```
+
+### Gotchas
+
+1. **Vault path assumptions.** The skills expect to be run from inside the vault root. Running from a subfolder can confuse relative path resolution.
+2. **Obsidian sync conflicts.** If Obsidian Sync / iCloud / Syncthing is running on the vault, Claude's writes can race with the sync layer. Close/pause sync during heavy edits.
+3. **Bases is new.** The `obsidian-bases` skill tracks Obsidian's Bases feature, which is still evolving. If your Obsidian version predates Bases, that skill is a no-op.
+4. **Wikilink targets aren't validated.** Claude will happily create `[[Broken Link]]` pointing to a non-existent note. Use Obsidian's graph view or an "unresolved links" plugin to catch these.
+5. **Don't mix with MCP servers that also touch the vault.** If you have an Obsidian MCP AND obsidian-skills, decide which one is authoritative — otherwise Claude will sometimes use one and sometimes the other with inconsistent conventions.
+
+### What we could build with it
+
+- **Auto-journaling agent** — every evening, Claude reads the day's git commits, calendar, and browser history and writes a dated journal note with wikilinks to relevant project notes.
+- **PR review → Obsidian knowledge base** — fold every PR review into a permanent note with links to the relevant code areas, trade-offs considered, and decisions made. Builds an org-specific engineering knowledge graph over time.
+- **Research clipper pipeline** — point Claude at a list of URLs, let it use `defuddle` to pull clean markdown, tag via LLM, and file into the vault under the right folder.
+- **Meeting note orchestration** — given a transcript, Claude creates a properly-tagged meeting note, extracts action items as `- [ ]` tasks with due dates, and links them to relevant project notes.
+- **Canvas-based project planning** — use `json-canvas` to let Claude visualize project dependencies as a real Obsidian canvas you can open and rearrange by hand.
+- **Knowledge base hygiene agent** — scheduled Claude job that finds duplicate notes, stale tags, orphaned links, and proposes cleanups.
+
+---
+
+## Why these two together
+
+n8n-mcp and obsidian-skills are the same idea at different altitudes:
+
+| | n8n-mcp | obsidian-skills |
+|---|---|---|
+| **Domain** | Workflow automation | Personal knowledge management |
+| **Shape** | MCP server (tool endpoints) | Agent skills (markdown instructions) |
+| **Knowledge substrate** | SQLite DB of node schemas | Obsidian syntax + file conventions |
+| **Coverage** | 1,396 nodes | 5 skill domains |
+| **Typical user** | Developer automating systems | Knowledge worker managing notes |
+| **Claude gains** | Ability to design valid workflows | Ability to manipulate vaults natively |
+
+**Together they cover "automate the world" + "remember the world."** A Claude Code workbench with both installed can:
+1. Use obsidian-skills to turn a brainstorm into a structured set of notes + canvas.
+2. Use n8n-mcp to translate any of those notes into a live automation.
+3. Use obsidian-skills again to write the results back into the vault as a closed loop.
+
+This is the PKM-meets-automation pattern and it's genuinely new in early 2026.
+
+## Install recommendation for Victor
+
+Victor already has 5 MCP servers (Figma, Playwright, Context7, GitHub, Ruflo) and 13 custom skills. Adding these:
+
+- **n8n-mcp**: HIGH value if Victor wants off-chain automation wiring for the trading agent team (news triggers, funding-rate webhooks, Discord bot orchestration). Documentation-only mode is zero-risk — install it now. Full mode only once there's an actual n8n instance worth targeting.
+- **obsidian-skills**: HIGH value if Victor uses Obsidian (unclear from CLAUDE.md whether he does). If yes, install in the vault. If no, skip — this is a domain-specific toolkit, not a general-purpose one.
+
+## Repos
+
+Both repos were attempted to be cloned to `/home/victor/Desktop/Projects/claude/ai-catalogs/repos/` during research but the sandboxed environment declined bash cloning. Manual clone recommended:
+
+```bash
+cd /home/victor/Desktop/Projects/claude/ai-catalogs/repos/
+git clone https://github.com/czlonkowski/n8n-mcp.git
+git clone https://github.com/kepano/obsidian-skills.git
+```
+
+Both are worth keeping — n8n-mcp for the pre-built SQLite schema database (useful reference even without running the server), obsidian-skills for the SKILL.md files (useful templates for Victor's own skill authoring, plus ready to drop into any vault).
+
+## Sources
+
+- [czlonkowski/n8n-mcp on GitHub](https://github.com/czlonkowski/n8n-mcp)
+- [kepano/obsidian-skills on GitHub](https://github.com/kepano/obsidian-skills)
+- [n8n-mcp hosted dashboard](https://dashboard.n8n-mcp.com)
+- [n8n workflow automation platform](https://n8n.io)
+- [Obsidian](https://obsidian.md)
+- [JSON Canvas spec](https://jsoncanvas.org)
+- [Defuddle (kepano's readability engine)](https://github.com/kepano/defuddle)
+- [Agent Skills specification](https://github.com/anthropics/skills)
+- [Model Context Protocol spec](https://modelcontextprotocol.io)
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

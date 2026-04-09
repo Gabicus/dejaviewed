@@ -1,0 +1,494 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI2 — Open Source &amp; Tools · DejaViewed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg-2:#0f0f1a;--surface:#12121a;
+  --panel:rgba(255,255,255,0.03);--panel-2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text-dim:#a0a0b8;--text-mute:#6a6a80;
+  --accent:#a78bfa;--accent-2:#f472b6;
+  --c-repo:#4cda8c;--c-tool:#f0a050;--c-skill:#e060a0;--c-guide:#a78bfa;
+  --c-platform:#e0d040;--c-resource:#40d0e0;--c-art:#f05060;--c-design:#fb7185;--c-uiux:#60a5fa;
+  --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
+  background-attachment:fixed}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
+.head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tagline{color:var(--text-dim);font-size:13px;font-weight:500;margin-top:2px}
+.brand .tagline a{color:var(--accent-2);font-weight:700}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+
+.skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
+.skill-callout strong{color:#fff}
+.skill-callout code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:12.5px;font-family:'JetBrains Mono',Menlo,monospace;color:var(--accent)}
+.skill-callout details{margin-top:12px}
+.skill-callout summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}
+.skill-callout pre{margin:10px 0 0;padding:14px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;line-height:1.55;font-family:'JetBrains Mono',Menlo,monospace;color:var(--text-dim);white-space:pre-wrap}
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:30px}
+  header.site{position:static}
+  .grid{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 30px}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<header class="site"><div class="wrap head-row">
+  <div class="brand">
+    <h1>DejaViewed</h1>
+    <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
+  </div>
+  <nav class="nav"><a class="actions-nav" href="dejaviewed.html">DEJAVIEWED</a><a class="" href="index.html">ALL</a><span class="src-group active-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="ai1.html">AI1</a><a class="sub active" href="ai2.html">AI2</a><a class="sub" href="ai3.html">AI3</a><a class="sub" href="ai4.html">AI4</a></span></span></nav>
+</div></header>
+<div class="wrap"><div class="skill-callout">
+  <strong>✨ Built with the <code>dejaviewed</code> skill for Claude Code.</strong> You've saved this before.
+  <div style="margin-top:10px;color:var(--text-dim)">
+    <strong>Install:</strong> <code>/plugin install dejaviewed</code> &nbsp;·&nbsp;
+    <strong>Invoke:</strong> <code>/dejaviewed &lt;instagram-saved-url&gt;</code> &nbsp;·&nbsp;
+    or just ask Claude: <em>"dejaviewed these IG saves"</em>
+  </div>
+  <details><summary>📋 Copy the example prompt that built this catalog</summary>
+<pre>Hi Claude. I have these Instagram saved collections — please run the dejaviewed workflow on them:
+
+https://www.instagram.com/&lt;user&gt;/saved/&lt;collection&gt;/&lt;id&gt;/
+https://www.instagram.com/&lt;user&gt;/saved/&lt;collection-2&gt;/&lt;id2&gt;/
+
+Full pipeline:
+ 1. Scrape every post (cookies+requests primary, MCP Playwright fallback). Cookie-safe.
+ 2. Classify every post (summary, type, domains, tools, repos, audience, deep-dive flag).
+ 3. Write a deep-dive guide for every high-signal topic in guides/&lt;slug&gt;.md and clone the repo.
+ 4. Curate S/A/B/C tiers, thematic buckets, project stacks, and a 'start here' list.
+ 5. Render a mobile-first dark HTML catalog: one page per collection + combined index.
+ 6. Header callout crediting my IG handle and explaining how to install/invoke dejaviewed.
+
+My IG handle is @myhandle.</pre></details>
+  <div style="margin-top:10px;color:var(--text-mute);font-size:12px">Cookie-safe scraping: cookie values are never logged, printed, or written to disk — only existence checks.</div>
+</div></div>
+<section class="hero"><div class="wrap">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <h2>AI2 — Open Source & Tools</h2>
+      <p class="why">Self-hosted models, open terminals, developer tools, and the weekend-build surface area for a solo engineer.</p>
+      <div class="bans">
+  <div class="ban"><div class="v">24</div><div class="l">Posts</div></div>
+  <div class="ban"><div class="v">20</div><div class="l">Creators</div></div>
+  <div class="ban"><div class="v">5</div><div class="l">S-tier</div></div>
+  <div class="ban"><div class="v">9</div><div class="l">A-tier</div></div>
+  <div class="ban"><div class="v">1</div><div class="l">Repos</div></div>
+  <div class="ban"><div class="v">5</div><div class="l">Deep dives</div></div>
+  <div class="ban"><div class="v">14</div><div class="l">Stacks</div></div>
+</div>
+    </div>
+    <div><div class="creators">
+  <h3>👥 20 creators cited</h3>
+  <div class="sub">Each bar = one creator. Each segment = one saved post, colored by tier. Click a segment to jump to its card.</div>
+  <div class="bar-scroll"><div class="bar-list"><div class="bar-row"><a class="handle" href="https://instagram.com/chase.h.ai" target="_blank" rel="noopener">@chase.h.ai</a><div class="bar-track"><a class="seg tS" style="width:33.333%" href="#post-DUzg0n1jRK-" title="7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers — S-tier"></a><a class="seg tC" style="width:33.333%" href="#post-DV4JihMx_vD" title="Claude Code agent guides — @chase.h.ai DM-bait — C-tier"></a><a class="seg tC" style="width:33.333%" href="#post-DVryCC1jfi1" title="Claude Code agent guides — @chase.h.ai — C-tier"></a></div><div class="n">3</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/evolving.ai" target="_blank" rel="noopener">@evolving.ai</a><div class="bar-track"><a class="seg tS" style="width:33.333%" href="#post-DVQ5o6YDfsp" title="Boris Cherny's Claude Code workflow — parallel worktrees + plan mode — S-tier"></a><a class="seg tA" style="width:33.333%" href="#post-DU5Wjs2DbWS" title="Claude Opus 4.6 — McKinsey-style research prompts (TAM/SWOT/CAC) — A-tier"></a></div><div class="n">2</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/keshavsuki" target="_blank" rel="noopener">@keshavsuki</a><div class="bar-track"><a class="seg tS" style="width:33.333%" href="#post-DV6QY8QjoRW" title="Boris Cherny's personal CLAUDE.md — plan-first, self-improving rules — S-tier"></a><a class="seg tS" style="width:33.333%" href="#post-DVzvsgijOLT" title="primer.md + memory.sh — live-updating CLAUDE.md companion — S-tier"></a></div><div class="n">2</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/tech.unicorn" target="_blank" rel="noopener">@tech.unicorn</a><div class="bar-track"><a class="seg tA" style="width:33.333%" href="#post-DVKJlJYEsmm" title="Anthropic blocks Claude Max subscription tokens in 3rd-party tools — A-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/pala3d" target="_blank" rel="noopener">@pala3d</a><div class="bar-track"><a class="seg tA" style="width:33.333%" href="#post-DVoReJNCGxT" title="DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz — A-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/toddybuilds" target="_blank" rel="noopener">@toddybuilds</a><div class="bar-track"><a class="seg tA" style="width:33.333%" href="#post-DV3fvORksud" title="Claude Code dashboard — have Claude set up its own status UI — A-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/techtiff.ai" target="_blank" rel="noopener">@techtiff.ai</a><div class="bar-track"><a class="seg tA" style="width:33.333%" href="#post-DVfZdeqDvyl" title="iOS Shortcut -&gt; Claude — text a task, phone runs it automatically — A-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/soojintech" target="_blank" rel="noopener">@soojintech</a><div class="bar-track"><a class="seg tA" style="width:33.333%" href="#post-DVRnpZsj21m" title="CLAUDE.md explained — vibe-coding primer — A-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/jens.heitmann" target="_blank" rel="noopener">@jens.heitmann</a><div class="bar-track"><a class="seg tA" style="width:33.333%" href="#post-DVbfcdTkZ7R" title="Claude Code design uplevel — 3 systems for better UI output — A-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/casey.aicreates" target="_blank" rel="noopener">@casey.aicreates</a><div class="bar-track"><a class="seg tA" style="width:33.333%" href="#post-DToMeKHjuQk" title="Claude Code + Chrome — browser-driven coding combo — A-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/mindwired.ai" target="_blank" rel="noopener">@mindwired.ai</a><div class="bar-track"><a class="seg tS" style="width:33.333%" href="#post-DVMmXlME6mZ" title="Boris Cherny — 10-15 parallel Claude sessions + evolving CLAUDE.md — S-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/kylewhitrow" target="_blank" rel="noopener">@kylewhitrow</a><div class="bar-track"><a class="seg tA" style="width:33.333%" href="#post-DV4OGI0D1hS" title="Claude Code design skill — @kylewhitrow — A-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/yousuckatprogramming" target="_blank" rel="noopener">@yousuckatprogramming</a><div class="bar-track"><a class="seg tC" style="width:33.333%" href="#post-DURb7uHl1fn" title="Bash reference manual mirror — unexpected location easter egg — C-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/brahada_irl" target="_blank" rel="noopener">@brahada_irl</a><div class="bar-track"><a class="seg tC" style="width:33.333%" href="#post-DVuULwWjApN" title="Open-source geopolitics terminal — OSINT feeds + AI instability scores — C-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/stevearnesonofficial" target="_blank" rel="noopener">@stevearnesonofficial</a><div class="bar-track"><a class="seg tC" style="width:33.333%" href="#post-DVmBYgnDzp2" title="Claude Code + NotebookLM integration setup — C-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/gregisenberg" target="_blank" rel="noopener">@gregisenberg</a><div class="bar-track"><a class="seg tB" style="width:33.333%" href="#post-DVbL-pREaBi" title="Greg Isenberg — how to design stunning AI apps (not vibe-coded ugly) — B-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/itsaiandy" target="_blank" rel="noopener">@itsaiandy</a><div class="bar-track"><a class="seg tB" style="width:33.333%" href="#post-DVzqCC0jfH4" title="AI particle simulator — text-to-science-animation — B-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/angus.sewell" target="_blank" rel="noopener">@angus.sewell</a><div class="bar-track"><a class="seg tC" style="width:33.333%" href="#post-DVyek2-kbZg" title="Vibe-coded website prompts — @angus.sewell — C-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/practicalyai" target="_blank" rel="noopener">@practicalyai</a><div class="bar-track"><a class="seg tC" style="width:33.333%" href="#post-DVrzz3Qj8kK" title="Claude tips part 8 + free beginner course — @practicalyai — C-tier"></a></div><div class="n">1</div></div><div class="bar-row"><a class="handle" href="https://instagram.com/coding_cosmos" target="_blank" rel="noopener">@coding_cosmos</a><div class="bar-track"><a class="seg tC" style="width:33.333%" href="#post-DVYacGjk9G3" title="Coding mentor links — @coding_cosmos teaser — C-tier"></a></div><div class="n">1</div></div></div></div>
+  <div class="legend"><span><i style="background:var(--s)"></i>S</span><span><i style="background:var(--a)"></i>A</span><span><i style="background:var(--b)"></i>B</span><span><i style="background:var(--c)"></i>C</span><span style="margin-left:auto">click bar → jump to post</span></div>
+</div></div>
+  </div>
+</div></section>
+<div class="wrap">
+  
+  <div class="layout">
+    <aside class="sidebar">
+  <h4>Search</h4>
+  <input id="search" class="search" placeholder="captions, tools, repos…">
+  <h4>Category</h4>
+  <div class="btn-group"><button class="cat-btn on" data-cat="all"><span><span class="dot"></span> All</span><span class="n">24</span></button><button class="cat-btn" data-cat="repo"><span><span class="dot"></span> Repos</span><span class="n">1</span></button><button class="cat-btn" data-cat="guide"><span><span class="dot"></span> Guides</span><span class="n">8</span></button><button class="cat-btn" data-cat="skill"><span><span class="dot"></span> Skills</span><span class="n">11</span></button><button class="cat-btn" data-cat="tool"><span><span class="dot"></span> Tools</span><span class="n">19</span></button><button class="cat-btn" data-cat="platform"><span><span class="dot"></span> Platforms</span><span class="n">2</span></button><button class="cat-btn" data-cat="resource"><span><span class="dot"></span> Resources</span><span class="n">3</span></button><button class="cat-btn" data-cat="art"><span><span class="dot"></span> Art</span><span class="n">2</span></button><button class="cat-btn" data-cat="design"><span><span class="dot"></span> Design</span><span class="n">3</span></button><button class="cat-btn" data-cat="uiux"><span><span class="dot"></span> UI / UX</span><span class="n">4</span></button></div>
+  <h4>Tier</h4>
+  <div class="tier-row">
+    <button class="tier-pill" data-t="S">S</button>
+    <button class="tier-pill" data-t="A">A</button>
+    <button class="tier-pill" data-t="B">B</button>
+    <button class="tier-pill" data-t="C">C</button>
+  </div>
+  
+  <h4>Sort</h4>
+  <select id="sort" class="sort-select">
+    <option value="tier">Tier (S→C)</option>
+    <option value="date">Date (newest)</option>
+    <option value="creator">Creator (A→Z)</option>
+  </select>
+</aside>
+    <main class="main" id="main-content"></main>
+  </div>
+</div>
+<footer class="site"><div class="wrap">
+  Curated by <a href="https://instagram.com/6ab3">@6ab3</a> · Built with the <code>dejaviewed</code> skill for Claude Code<br>
+  <span style="font-size:11px">All content sourced from public Instagram posts. Cookie-safe scraping. <span id="count"></span></span>
+</div></footer>
+<script>const POSTS=[{"post_url": "https://www.instagram.com/p/DVQ5o6YDfsp/", "creator": "@evolving.ai", "collection": "ai2", "date": "February 26, 2026", "media_type": "image", "caption_original": "💻🧠 The team behind Claude Code just shared they actually uses it internally and why many new users struggle at the start.\n\nIn a recent thread on X, Boris Cherny explained that the team’s workflow looks very different from how most people approach the tool.\n\nInstead of running one session, they often spin up 3 to 5 git worktrees in parallel, each with its own Claude session, which they describe as a major productivity unlock.\n\nThey also begin every complex task in plan mode and focus heavily on writing a strong plan before implementation. If something breaks or drifts off course, they go back to planning rather than forcing a fix.\n\nAnother key habit is updating Claude’s own rules after mistakes so the same errors do not repeat. Over time, this lowers the mistake rate and improves reliability. The team also builds reusable skills, uses subagents for focused tasks, and even asks Claude to fix bugs directly from logs or Slack threads.\n\nThe main difference is mindset. Beginners treat it like chat. The team treats it like a structured system built on planning, parallel work, and feedback.\n\nWhat are your thoughts on this? 🤔💬\n—\n\n➡️ If you want to keep up with all the AI news, useful tips, and important developments, join 80k+ subscribers reading our free newsletter", "summary": "@evolving.ai summarizes Boris Cherny's X thread on how the Anthropic team actually uses Claude Code: 3-5 git worktrees in parallel, start every complex task in plan mode, update rules after every mistake, build reusable skills and subagents.", "type": "technique", "domains": ["agents", "llm"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["parallel git worktrees", "subagent orchestration"], "key_takeaways": ["Adopt 3-5 parallel worktrees per feature as default Claude Code workflow", "This matches Victor's dispatching-parallel-agents skill"], "deep_dive_candidate": true, "deep_dive_topic": "claude-code-parallel-worktrees", "card_title": "Boris Cherny's Claude Code workflow — parallel worktrees + plan mode", "drop": false, "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}, {"label": "evolving.ai", "url": "https://evolving.ai"}], "tier": "S", "guide_slug": "claude-code-parallel-worktrees", "categories": ["guide", "skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DURb7uHl1fn/", "creator": "@yousuckatprogramming", "collection": "ai2", "date": "February 2, 2026", "media_type": "image", "caption_original": "an alternative mirror for the bash reference manual appears in an unexpected place!", "summary": "@yousuckatprogramming flags that an alternative mirror of the bash reference manual shows up in an unexpected place. Meme-ish but useful bash-doc pointer.", "type": "inspiration", "domains": [], "audience": "intermediate", "medium": "code", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Bash reference manual mirror — unexpected location easter egg", "drop": false, "tier": "C", "guide_slug": null, "categories": ["resource"]}, {"post_url": "https://www.instagram.com/p/DVKJlJYEsmm/", "creator": "@tech.unicorn", "collection": "ai2", "date": "February 24, 2026", "media_type": "image", "caption_original": "you on Open Claw? 👀👇SAVE THIS. I have an AI agent running my ENTIRE business 🤖\n\nTeam management. Content across 6 platforms. Invoices. Notion updates. All automated on a $200/mo Claude Max subscription.\n\nThen Anthropic silently killed it overnight 💀 (ok technically this was against their terms of use starting Jan 9th lol…) \n\nBut still. No email. No warning. They blocked subscription tokens in every third-party tool. \n\nThousands of developers woke up to broken workflows.\n\nThe real cost nobody’s talking about 💸\n\n→ Claude Max: $200/mo flat\n→ Same usage on API keys: $500-$1,000+/mo\n→ Heavy usage like mine: $2,000+/mo 😅😅😭\n→ 2.5-10x price increase. Zero notice.\n\nYour 3 options right now (SAVE THIS) 🔖\n\n1️⃣ API keys- same models, 3-5x more expensive\n2️⃣ Switch models- DeepSeek, Gemini, Llama, GPT-4o\n3️⃣ Multi-model router- route tasks to the cheapest capable model. Never depend on one provider again 🧠\n\nIf your stack depends on one AI company’s pricing decision, you don’t have a business. You have a liability ⚠️\n\nI’m rebuilding with option 3. Full breakdown in the next video 👆\n\n#Claude #Anthropic #OpenClaw #AI Developer", "summary": "@tech.unicorn on Anthropic killing subscription-token access in third-party tools (Jan 9 ToS change), spiking effective cost from $200/mo to $500-$2000/mo on API. Suggests multi-model routers (DeepSeek/Gemini/Llama/GPT-4o) as the mitigation.", "type": "news", "domains": ["agents", "automation"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Max", "Open Claw", "Anthropic", "Claude", "DeepSeek", "Gemini", "Llama", "Notion"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": ["Subscription-token automation is TOS-risky; use API keys for production agents"], "deep_dive_candidate": true, "deep_dive_topic": "open-claw-claude-automation", "card_title": "Anthropic blocks Claude Max subscription tokens in 3rd-party tools", "drop": false, "links": [{"label": "Anthropic", "url": "https://anthropic.com"}, {"label": "Claude", "url": "https://claude.ai"}, {"label": "Gemini", "url": "https://gemini.google.com"}, {"label": "Notion", "url": "https://notion.so"}], "tier": "A", "guide_slug": null, "categories": ["platform", "tool"]}, {"post_url": "https://www.instagram.com/p/DVoReJNCGxT/", "creator": "@pala3d", "collection": "ai2", "date": "March 8, 2026", "media_type": "image", "caption_original": "DATA CONTROL\n\nThis project is built around a system designed to visualize scientific datasets such as those from NASA, CERN, and other open research sources in real time. The system allows different types of scientific data to be imported and translated into data-driven particle structures and visual environments.\n\nThe project was developed using a pipeline based on Kinect, TouchDesigner, and Unreal Engine, enabling human motion to directly interact with and control the data-driven particle systems in real time.\n\nThe work is based on data visualization techniques. Translating complex datasets into visual structures has been a scientific and artistic practice for centuries, and this project continues that tradition through contemporary generative systems.\n\nThe system was created entirely through human–machine interaction and does not use artificial intelligence in any stage of its production.\n\nThe idea for this system has been imagined for nearly 20 years and was partly inspired by fictional characters such as Tony Stark and Magneto.\n\n#unrealengine #marvel #touchdesigner #cinema #cinematic", "summary": "@pala3d's 'DATA CONTROL' project: real-time visualization of NASA/CERN datasets as particle systems, body-controlled via Kinect through TouchDesigner into Unreal Engine. Pipeline explicitly human-made, no AI. Reference for data-viz/creative-coding stack.", "type": "demo", "domains": ["creative-coding", "3d", "data"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Kinect", "TouchDesigner", "Unreal Engine"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": true, "deep_dive_topic": "scientific-data-touchdesigner-viz", "card_title": "DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz", "drop": false, "links": [{"label": "TouchDesigner", "url": "https://derivative.ca"}], "tier": "A", "guide_slug": null, "categories": ["art", "tool"]}, {"post_url": "https://www.instagram.com/p/DV6QY8QjoRW/", "creator": "@keshavsuki", "collection": "ai2", "date": "March 15, 2026", "media_type": "image", "caption_original": "Comment “boris” for the full file 👇\n\nBoris Cherny is a staff engineer at Anthropic. He shared his personal CLAUDE.md, the rules Claude Code follows every session automatically.\n\nHere is what makes it different from what most people write.\n\nPlan first. Write the plan before touching any code. If something goes wrong mid-task, stop and re-plan. Never push through.\n\nSubagents. Offload complex work, keep the main context clean, throw more compute at hard problems.\n\nSelf-improvement loop. Every correction becomes a rule in tasks/lessons.md. Next session reads it and applies it. Mistake rate drops over time.\n\nVerification standard. Never mark a task complete without proving it works. Run tests, check logs. Ask yourself: would a staff engineer approve this?\n\nDemand elegance. For non-trivial changes, pause and ask if there is a more elegant solution. If a fix feels hacky, rebuild it properly.\n\nAutonomous bug fixing. When given a bug, just fix it. Go to the logs, find the root cause, resolve it.\n\nGit discipline. Commit at logical checkpoints. Never push to main without confirming the branch.\n\nMost people treat CLAUDE.md as notes. Boris treats it as a contract. Claude Code is held to these standards every session automatically.\n\nComment “boris” for the full file. 👇", "summary": "@keshavsuki dissects Boris Cherny's (Anthropic) personal CLAUDE.md: plan-first, subagents for complex work, self-improving lessons.md loop, hard verification standard, elegance demand, autonomous bug fixing, git discipline. High-signal template for CLAUDE.md design.", "type": "technique", "domains": ["agents", "llm"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Anthropic", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["CLAUDE.md authoring", "subagent offloading"], "key_takeaways": [], "deep_dive_candidate": true, "deep_dive_topic": "boris-cherny-claude-md", "card_title": "Boris Cherny's personal CLAUDE.md — plan-first, self-improving rules", "drop": false, "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Anthropic", "url": "https://anthropic.com"}, {"label": "Claude", "url": "https://claude.ai"}], "tier": "S", "guide_slug": "boris-cherny-claude-md", "categories": ["guide", "skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DV3fvORksud/", "creator": "@toddybuilds", "collection": "ai2", "date": "March 14, 2026", "media_type": "image", "caption_original": "If you’re messing around with Claude but feel a bit overwhelmed with all the different things you can add, get Claude to set up a nice dashboard like this one :))", "summary": "@toddybuilds tip: if Claude feels overwhelming, ask Claude to generate a dashboard that summarizes what it's doing. Light but useful meta-prompt idea.", "type": "technique", "domains": ["agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Claude Code dashboard — have Claude set up its own status UI", "drop": false, "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}], "tier": "A", "guide_slug": null, "categories": ["skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DVuULwWjApN/", "creator": "@brahada_irl", "collection": "ai2", "date": "March 10, 2026", "media_type": "image", "caption_original": "Day 21/30\nSomeone just open-sourced what feels like a Bloomberg Terminal for geopolitics and tech/finance news.\n\nComment \"world\" and I will send you the website in your DMs.\n\nIt’s a real-time intelligence platform that brings together global data streams—military movement, infrastructure signals, OSINT feeds, and AI-driven analysis—into a single interactive map.\n\nWhat makes it powerful:\n\n• AI continuously scans 100+ global news sources and produces automated intelligence summaries\n• Detects unusual spikes in news activity, often before a story becomes widely reported\n• Links together signals like military flights, protests, outages, and satellite activity to flag emerging patterns\n• Generates a real-time instability score for countries, highlighting geopolitical risk\n• Provides a live global map layering aircraft, ships, conflicts, protests, and infrastructure data\n• Tracks military aircraft and naval vessels, including anomalies such as dark ships\n• Maps critical infrastructure like nuclear facilities, submarine cables, oil pipelines, and AI datacenters\n• Monitors internet shutdowns, sanctions activity, protests, and wildfire detection from satellites\n• Uses prediction market signals as early warning indicators\n• Identifies market movements that occur before news breaks\n• Tracks strategic chokepoints and global logistics routes\n• Built with a modular open-source architecture, allowing custom intelligence feeds\n\nThis is the kind of situational awareness system governments and hedge funds typically spend millions on yet this one runs directly in your browser.\n\nNo subscriptions yet.\n\n#standaretodream26 #standaretopost", "summary": "@brahada_irl teasing a newly open-sourced 'Bloomberg Terminal for geopolitics': real-time global map with military flights/ships, OSINT news scanning across 100+ sources, automated instability scores, dark-ship detection, prediction-market signals. Comment-gated link.", "type": "tool", "domains": ["data", "agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": ["Adjacent to Horus-Eye (ai4#56) — both are AI OSINT dashboards"], "deep_dive_candidate": true, "deep_dive_topic": "open-source-geopolitics-terminal", "card_title": "Open-source geopolitics terminal — OSINT feeds + AI instability scores", "drop": false, "tier": "C", "guide_slug": null, "categories": ["tool"]}, {"post_url": "https://www.instagram.com/p/DVzvsgijOLT/", "creator": "@keshavsuki", "collection": "ai2", "date": "March 12, 2026", "media_type": "image", "caption_original": "Comment “claude” for the full setup... \n\nCLAUDE.md is static. It describes your project as it was when you wrote it, not as it is now.\n\nHere’s the fix.\n\nprimer.md is a second file that Claude Code rewrites completely at the end of every session. Current project, what just got done, exact next step, open blockers. Always current.\n\nOne rule in your CLAUDE.md: at the end of every session, rewrite primer.md completely. After the first session, it handles itself.\n\nmemory.sh injects live git state every time you launch. Last five commits, modified files, current branch. Claude already knows what changed before you say a word.\n\nGit hook logs every commit to a project memory file automatically.\n\nFour layers. Every session Claude Code knows exactly where you are. (max context)\n\nComment “claude” for the full setup", "summary": "@keshavsuki on fixing CLAUDE.md staleness: add a primer.md that Claude rewrites at end of every session (current state, next step, blockers), plus a memory.sh launch hook that injects last 5 commits and modified files, plus a git hook logging commits. Four-layer always-current context.", "type": "technique", "domains": ["agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["primer.md live session state", "end-of-session hook"], "key_takeaways": ["Add primer.md + end-of-session rewrite rule to Victor's Claude Code projects"], "deep_dive_candidate": true, "deep_dive_topic": "primer-md-pattern", "card_title": "primer.md + memory.sh — live-updating CLAUDE.md companion", "drop": false, "links": [{"label": "memory.sh", "url": "https://memory.sh"}, {"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}], "tier": "S", "guide_slug": "primer-md-pattern", "categories": ["guide", "skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DVmBYgnDzp2/", "creator": "@stevearnesonofficial", "collection": "ai2", "date": "March 7, 2026", "media_type": "image", "caption_original": "Comment “NOTEBOOK” for the easy complete setup between @claudeai Code & NotebookLM \nGo make some magic! 🪄✨🤖", "summary": "@stevearnesonofficial teaser: setup guide for wiring Claude Code into NotebookLM. Comment-gated, content itself thin — note only.", "type": "technique", "domains": ["agents", "rag"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "NotebookLM"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": true, "deep_dive_topic": "claude-notebooklm-integration", "card_title": "Claude Code + NotebookLM integration setup", "drop": false, "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "NotebookLM", "url": "https://notebooklm.google.com"}], "tier": "C", "guide_slug": null, "categories": ["skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DVfZdeqDvyl/", "creator": "@techtiff.ai", "collection": "ai2", "date": "March 4, 2026", "media_type": "image", "caption_original": "Most people download Claude and then keep doing everything themselves.\nI set up a shortcut that lets me text Claude a task and my phone handles it automatically", "summary": "@techtiff.ai sets up an iOS Shortcut that lets you text a task to Claude and have the phone execute it. Light on details but a good pointer for mobile -> Claude workflow.", "type": "technique", "domains": ["agents", "mobile"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "iOS Shortcuts", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": true, "deep_dive_topic": "ios-shortcut-claude-bridge", "card_title": "iOS Shortcut -> Claude — text a task, phone runs it automatically", "drop": false, "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}, {"label": "techtiff.ai", "url": "https://techtiff.ai"}], "tier": "A", "guide_slug": null, "categories": ["skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DVbL-pREaBi/", "creator": "@gregisenberg", "collection": "ai2", "date": "March 3, 2026", "media_type": "image", "caption_original": "How to design stunning apps with AI (not ugly vibe coded designs)", "summary": "@gregisenberg teaser on designing polished AI apps rather than the 'vibe-coded slop' default. Caption is thin; content lives in the video.", "type": "tutorial", "domains": ["design", "agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Greg Isenberg — how to design stunning AI apps (not vibe-coded ugly)", "drop": false, "tier": "B", "guide_slug": null, "categories": ["design", "guide", "uiux"]}, {"post_url": "https://www.instagram.com/p/DVRnpZsj21m/", "creator": "@soojintech", "collection": "ai2", "date": "February 27, 2026", "media_type": "image", "caption_original": "CLAUDE.MD Explained (10x your work) \n\n#vibecoding #claudecode #ai", "summary": "@soojintech short explainer on what CLAUDE.md is and why it '10x's work in Claude Code. Intro-level reference.", "type": "tutorial", "domains": ["agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "CLAUDE.md explained — vibe-coding primer", "drop": false, "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}], "tier": "A", "guide_slug": null, "categories": ["guide", "tool"]}, {"post_url": "https://www.instagram.com/p/DVbfcdTkZ7R/", "creator": "@jens.heitmann", "collection": "ai2", "date": "March 3, 2026", "media_type": "image", "caption_original": "You probably haven’t fully unlocked the design power of your Claude Code. Use these 3 systems to up-level the design of your next project. \n\n#claudecode #claude #aitools #vibecoding", "summary": "@jens.heitmann: three Claude Code 'systems' to unlock design quality in CC projects. Teaser for the techniques; useful as a pointer to Jens's CC design content.", "type": "technique", "domains": ["design", "agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Claude Code design uplevel — 3 systems for better UI output", "drop": false, "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}], "tier": "A", "guide_slug": null, "categories": ["design", "skill", "tool", "uiux"]}, {"post_url": "https://www.instagram.com/p/DToMeKHjuQk/", "creator": "@casey.aicreates", "collection": "ai2", "date": "January 17, 2026", "media_type": "image", "caption_original": "Claude code + chrome is a combination that will save you a lot of time… \n#claude #chrome #ai", "summary": "@casey.aicreates flags the combination of Claude Code and Chrome (likely Chrome DevTools MCP or browser automation) as a big time-saver. Caption is thin; the pointer is the combo itself.", "type": "technique", "domains": ["agents", "automation"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Chrome", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Claude Code + Chrome — browser-driven coding combo", "drop": false, "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}], "tier": "A", "guide_slug": null, "categories": ["skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DU5Wjs2DbWS/", "creator": "@evolving.ai", "collection": "ai2", "date": "February 18, 2026", "media_type": "image", "caption_original": "📊🧠 AI can now produce McKinsey level market research in minutes. These are insane Claude Opus 4.6 prompts that replace $5,000 consultant work (Save this for later!)\n\nWith the right inputs, you can generate a structured TAM analysis with clear market sizing and growth assumptions, a competitive landscape with key players and positioning, and a basic unit economics model covering CAC and LTV. You can also combine SWOT and risk analysis into one executive style brief.\n\nWhat used to take weeks and large budgets can now be structured in a single session.\n\nThis does not replace real data or experience. But it gives founders and small teams access to structured thinking that was once limited to top consulting firms.\n\nWhat are your thoughts on this? 🤔💬\n—\n\n➡️ If you want to keep up with all the AI news, useful tips, and important developments, join 90k+ subscribers reading our free newsletter", "summary": "@evolving.ai on using Opus 4.6 as a structured consultant: prompt templates for TAM sizing, competitive landscape, unit economics (CAC/LTV), combined SWOT/risk briefs. Framed as 'replaces $5K consultant work'.", "type": "tutorial", "domains": ["llm", "prompt-eng", "data"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude"], "repos_or_projects_mentioned": [], "models_mentioned": ["Claude Opus 4.6"], "techniques_mentioned": ["market research prompting"], "key_takeaways": [], "deep_dive_candidate": true, "deep_dive_topic": "claude-market-research-prompts", "card_title": "Claude Opus 4.6 — McKinsey-style research prompts (TAM/SWOT/CAC)", "drop": false, "links": [{"label": "Claude", "url": "https://claude.ai"}, {"label": "evolving.ai", "url": "https://evolving.ai"}], "tier": "A", "guide_slug": null, "categories": ["guide", "skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DUzg0n1jRK-/", "creator": "@chase.h.ai", "collection": "ai2", "date": "February 15, 2026", "media_type": "image", "caption_original": "1. Obsidian Skills — github.com/kepano/obsidian-skills 7K+ stars. Built by Obsidian’s CEO. Lets Claude Code create, organize, and manage your vault as an AI-powered second brain.\n\n2. n8n-MCP — github.com/czlonkowski/n8n-mcp Gives Claude Code deep knowledge of all 1,084 n8n nodes so it can build production-ready automation workflows for you instead of guessing at configs.\n\n3. UI/UX Pro Max Skill — github.com/nextlevelbuilder/ui-ux-pro-max-skill 16K+ stars. 50+ UI styles, 97 color palettes, 57 font pairings across 9 tech stacks — auto-generates a design system so your app doesn’t look like AI slop.\n\n4. Claude Mem — github.com/thedotmack/claude-mem 20K+ stars in 2 days. Automatically captures everything Claude does during sessions and injects relevant context back into future sessions. Persistent memory for Claude Code.\n\n5. GSD (Get Shit Done) — github.com/glittercowboy/get-shit-done Spec-driven development framework that interviews you, builds the plan, then executes phase by phase with verification. One command install: npx get-shit-done-cc\n\n6. Awesome Claude Code — github.com/hesreallyhim/awesome-claude-code 20K+ stars. The master directory of every Claude Code skill, plugin, hook, and tool worth knowing about.\n\n7. Superpowers — github.com/obra/superpowers 28K+ stars. Auto-enforces brainstorming, planning, TDD, and code review into every Claude Code session — no configuration needed.\n\nComment “agent” to get access to more Claude Vode guides", "summary": "@chase.h.ai lists 7 Claude Code repos with GitHub links: kepano/obsidian-skills, czlonkowski/n8n-mcp, nextlevelbuilder/ui-ux-pro-max-skill, thedotmack/claude-mem, glittercowboy/get-shit-done, hesreallyhim/awesome-claude-code, obra/superpowers. High-signal resource dump.", "type": "repo", "domains": ["agents", "automation"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Obsidian", "n8n", "Claude", "MCP", "czlonkowski/n8n-mcp", "glittercowboy/get-shit-done", "hesreallyhim/awesome-claude-code", "kepano/obsidian-skills", "nextlevelbuilder/ui-ux-pro-max-skill", "obra/superpowers", "thedotmack/claude-mem"], "repos_or_projects_mentioned": ["kepano/obsidian-skills", "czlonkowski/n8n-mcp", "nextlevelbuilder/ui-ux-pro-max-skill", "thedotmack/claude-mem", "glittercowboy/get-shit-done", "hesreallyhim/awesome-claude-code", "obra/superpowers"], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": ["Install n8n-MCP for Claude-driven n8n workflows", "Install obsidian-skills for vault-as-second-brain"], "deep_dive_candidate": true, "deep_dive_topic": "n8n-mcp-and-obsidian-skills", "card_title": "7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers", "drop": false, "links": [{"label": "github.com", "url": "https://github.com"}, {"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Obsidian", "url": "https://obsidian.md"}, {"label": "n8n", "url": "https://n8n.io"}, {"label": "Claude", "url": "https://claude.ai"}, {"label": "github.com/kepano/obsidian-skills", "url": "https://github.com/kepano/obsidian-skills"}, {"label": "github.com/czlonkowski/n8n-mcp", "url": "https://github.com/czlonkowski/n8n-mcp"}, {"label": "github.com/nextlevelbuilder/ui-ux-pro-max-skill", "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill"}, {"label": "github.com/thedotmack/claude-mem", "url": "https://github.com/thedotmack/claude-mem"}, {"label": "github.com/glittercowboy/get-shit-done", "url": "https://github.com/glittercowboy/get-shit-done"}, {"label": "github.com/hesreallyhim/awesome-claude-code", "url": "https://github.com/hesreallyhim/awesome-claude-code"}, {"label": "github.com/obra/superpowers", "url": "https://github.com/obra/superpowers"}, {"label": "chase.h.ai", "url": "https://chase.h.ai"}], "tier": "S", "guide_slug": "n8n-mcp-and-obsidian-skills", "categories": ["guide", "platform", "repo", "tool", "uiux"]}, {"post_url": "https://www.instagram.com/p/DVMmXlME6mZ/", "creator": "@mindwired.ai", "collection": "ai2", "date": "February 25, 2026", "media_type": "image", "caption_original": "Boris Cherny, the engineer behind Anthropic’s Claude Code, has outlined a high-throughput workflow built around running 10–15 Claude sessions in parallel—split between terminal and web—to ship multiple workstreams at once.\nHe says the real leverage comes from maintaining a CLAUDE.md “rules” file that is continuously updated after mistakes, effectively turning corrections into reusable guardrails for the next run.\nCherny also described using Claude to pull data through the CLI rather than hand-writing queries, and said Claude Code has grown to a meaningful share of public GitHub activity", "summary": "@mindwired.ai summary of Boris Cherny's workflow: 10-15 Claude sessions in parallel across terminal and web, CLAUDE.md continuously updated after mistakes as reusable guardrails, Claude-CLI for data queries. Notes Claude Code's share of public GitHub activity.", "type": "technique", "domains": ["agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Anthropic", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["parallel sessions", "rule-ratchet CLAUDE.md"], "key_takeaways": [], "deep_dive_candidate": true, "deep_dive_topic": "claude-code-parallel-worktrees", "card_title": "Boris Cherny — 10-15 parallel Claude sessions + evolving CLAUDE.md", "drop": false, "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Anthropic", "url": "https://anthropic.com"}, {"label": "Claude", "url": "https://claude.ai"}, {"label": "mindwired.ai", "url": "https://mindwired.ai"}], "tier": "S", "guide_slug": "claude-code-parallel-worktrees", "categories": ["guide", "skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DVzqCC0jfH4/", "creator": "@itsaiandy", "collection": "ai2", "date": "March 12, 2026", "media_type": "image", "caption_original": "Discover how an AI particle simulator turns text prompts into live, exportable science animations", "summary": "@itsaiandy demos an AI particle simulator that turns text prompts into live, exportable physics/science animations. Tool unnamed in caption but concept is concrete.", "type": "demo", "domains": ["creative-coding", "data"], "audience": "intermediate", "medium": "code", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "AI particle simulator — text-to-science-animation", "tier": "B", "guide_slug": null, "categories": ["art"]}, {"post_url": "https://www.instagram.com/p/DV4JihMx_vD/", "creator": "@chase.h.ai", "collection": "ai2", "date": "March 14, 2026", "media_type": "image", "caption_original": "Comment “agent” to get my Claude code guides", "summary": "@chase.h.ai offers his Claude Code guides via comment 'agent'. Subject: building agents/skills with Claude Code.", "type": "inspiration", "domains": ["agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Claude Code agent guides — @chase.h.ai DM-bait", "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}, {"label": "chase.h.ai", "url": "https://chase.h.ai"}], "tier": "C", "guide_slug": null, "categories": ["tool"]}, {"post_url": "https://www.instagram.com/p/DVyek2-kbZg/", "creator": "@angus.sewell", "collection": "ai2", "date": "March 12, 2026", "media_type": "image", "caption_original": "Comment “website” and I’ll send you the prompts \n\n(Obviously ai isn’t conscious that’s just me being clickbate lol)\n\n#vibecoding #ai", "summary": "@angus.sewell offers the prompts behind a vibe-coded website build via comment 'website'. Self-aware about the 'AI is conscious' clickbait framing.", "type": "inspiration", "domains": ["web"], "audience": "intermediate", "medium": "code", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Vibe-coded website prompts — @angus.sewell", "tier": "C", "guide_slug": null, "categories": ["resource"]}, {"post_url": "https://www.instagram.com/p/DV4OGI0D1hS/", "creator": "@kylewhitrow", "collection": "ai2", "date": "March 14, 2026", "media_type": "image", "caption_original": "Claude Code just killed website designers.\n\nComment “design” to get the skill sent to you. \n\n#claudecode #claude #visualstudiocode #anthropic", "summary": "@kylewhitrow claims Claude Code now replaces website designers and offers the underlying Claude Code skill via comment 'design'. Subject: Claude Code skills for web design.", "type": "technique", "domains": ["agents", "design"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Anthropic", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Claude Code design skill — @kylewhitrow", "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Anthropic", "url": "https://anthropic.com"}, {"label": "Claude", "url": "https://claude.ai"}], "tier": "A", "guide_slug": null, "categories": ["design", "skill", "tool", "uiux"]}, {"post_url": "https://www.instagram.com/p/DVryCC1jfi1/", "creator": "@chase.h.ai", "collection": "ai2", "date": "March 9, 2026", "media_type": "image", "caption_original": "Comment “agent” to get my Claude code guides", "summary": "@chase.h.ai DM-bait for his Claude Code agent guides (comment 'agent'). Same series as his other posts.", "type": "inspiration", "domains": ["agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Claude Code agent guides — @chase.h.ai", "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}, {"label": "chase.h.ai", "url": "https://chase.h.ai"}], "tier": "C", "guide_slug": null, "categories": ["tool"]}, {"post_url": "https://www.instagram.com/p/DVrzz3Qj8kK/", "creator": "@practicalyai", "collection": "ai2", "date": "March 9, 2026", "media_type": "image", "caption_original": "Things you didn’t know you can do with Claude (part 8) \n\nComment “practical” for my free course to learn Claude for beginners \n\n#aitools #claude #digitalsamaritan", "summary": "@practicalyai's 'things you didn't know you can do with Claude' series, episode 8. Free beginner Claude course via comment 'practical'.", "type": "inspiration", "domains": ["agents"], "audience": "intermediate", "medium": "code", "tools_mentioned": ["Claude Code", "Claude"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Claude tips part 8 + free beginner course — @practicalyai", "links": [{"label": "Claude Code", "url": "https://github.com/anthropics/claude-code"}, {"label": "Claude", "url": "https://claude.ai"}], "tier": "C", "guide_slug": null, "categories": ["tool"]}, {"post_url": "https://www.instagram.com/p/DVYacGjk9G3/", "creator": "@coding_cosmos", "collection": "ai2", "date": "March 2, 2026", "media_type": "image", "caption_original": "Comment ‘MENTOR’ for the links!", "summary": "@coding_cosmos DM-bait: comment 'MENTOR' for coding mentor/resource links. Thin but coding-education subject.", "type": "inspiration", "domains": [], "audience": "intermediate", "medium": "code", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": [], "key_takeaways": [], "deep_dive_candidate": false, "deep_dive_topic": null, "card_title": "Coding mentor links — @coding_cosmos teaser", "tier": "C", "guide_slug": null, "categories": ["resource"]}];
+const state = { coll: "ai2", cats: new Set(['all']), tiers: new Set(), search: '', sort: 'tier' };
+function $(s,r=document){return r.querySelector(s)}
+function $$(s,r=document){return Array.from(r.querySelectorAll(s))}
+function tr(t){return {S:0,A:1,B:2,C:3}[t]??4}
+function matches(p){
+  if(state.coll && p.collection!==state.coll)return false;
+  if(state.tiers.size && !state.tiers.has(p.tier))return false;
+  if(!state.cats.has('all')){
+    let any=false;
+    for(const c of p.categories){ if(state.cats.has(c)){any=true;break} }
+    if(!any)return false;
+  }
+  if(state.search){
+    const q=state.search.toLowerCase();
+    const h=[p.summary,p.caption_original,p.creator,p.card_title,...(p.tools_mentioned||[]),...(p.repos_or_projects_mentioned||[]),...(p.techniques_mentioned||[])].join(' ').toLowerCase();
+    if(!h.includes(q))return false;
+  }
+  return true;
+}
+function sf(a,b){
+  if(state.sort==='tier')return tr(a.tier)-tr(b.tier)||(b.date||'').localeCompare(a.date||'');
+  if(state.sort==='date')return (b.date||'').localeCompare(a.date||'');
+  if(state.sort==='creator')return (a.creator||'').localeCompare(b.creator||'');
+  return 0;
+}
+function el(tag, attrs={}, kids=[]){
+  const e=document.createElement(tag);
+  for(const k in attrs){
+    if(k==='class')e.className=attrs[k];
+    else if(k==='text')e.textContent=attrs[k];
+    else e.setAttribute(k,attrs[k]);
+  }
+  for(const c of (Array.isArray(kids)?kids:[kids])){
+    if(c==null)continue;
+    e.appendChild(typeof c==='string'?document.createTextNode(c):c);
+  }
+  return e;
+}
+function ighandleUrl(h){ if(!h)return '#'; return 'https://instagram.com/'+h.replace(/^@/,''); }
+function postId(p){ const m=p.post_url.match(/\/(p|reel)\/([^/]+)/); return 'post-'+(m?m[2]:''); }
+function shortcode(p){ const m=p.post_url.match(/\/(p|reel)\/([^/]+)/); return m?m[2]:''; }
+function card(p){
+  const primary = p.categories[0] || 'resource';
+  const c=el('article',{class:'card cat-'+primary,'data-tier':p.tier,'id':postId(p)});
+  c.appendChild(el('h4',{class:'ctitle',text:p.card_title}));
+  const top=el('div',{class:'top'});
+  const meta=el('div',{class:'meta'});
+  const a=el('a',{href:ighandleUrl(p.creator),target:'_blank',rel:'noopener',text:p.creator||'unknown'});
+  meta.appendChild(a);
+  meta.appendChild(document.createTextNode(' · '+(p.collection||'')+(p.date?(' · '+p.date):'')));
+  top.appendChild(meta);
+  top.appendChild(el('span',{class:'tier '+p.tier,text:p.tier}));
+  c.appendChild(top);
+  const sumWrap=el('div',{class:'sum-wrap'});
+  sumWrap.appendChild(el('p',{class:'summary',text:p.summary||p.caption_original||''}));
+  c.appendChild(sumWrap);
+  const act=el('div',{class:'actions'});
+  const isIG=p.post_url && p.post_url.includes('instagram.com');
+  if(isIG){
+    act.appendChild(el('a',{class:'btn',href:p.post_url,target:'_blank',rel:'noopener',text:'Open post ↗'}));
+  } else if(p.post_url){
+    act.appendChild(el('a',{class:'btn browse',href:p.post_url,target:'_blank',rel:'noopener',text:'Browse ↗'}));
+  }
+  if(p.guide_slug)act.appendChild(el('a',{class:'btn primary',href:'guides/'+p.guide_slug+'.html',text:'Deep dive →'}));
+  c.appendChild(act);
+  if(p.links && p.links.length){
+    const lnks=el('div',{class:'links'});
+    for(const l of p.links){
+      lnks.appendChild(el('a',{href:l.url,target:'_blank',rel:'noopener',text:l.label,title:l.url}));
+    }
+    c.appendChild(lnks);
+  }
+  const sc=shortcode(p);
+  if(sc){
+    const thumb=el('a',{class:'thumb',href:p.post_url,target:'_blank',rel:'noopener'});
+    const img=el('img',{loading:'lazy',alt:p.card_title||'',src:'thumb/'+sc+'.jpg'});
+    img.onerror=function(){ thumb.parentNode && thumb.parentNode.removeChild(thumb); };
+    thumb.appendChild(img);
+    c.appendChild(thumb);
+  }
+  return c;
+}
+const SECTION_ORDER = [
+  ['guide','📘 Guides','var(--c-guide)'],
+  ['repo','🧰 Repos','var(--c-repo)'],
+  ['skill','⚡ Skills','var(--c-skill)'],
+  ['tool','🛠 Tools','var(--c-tool)'],
+  ['platform','🌐 Platforms','var(--c-platform)'],
+  ['art','🎨 Art','var(--c-art)'],
+  ['design','✏️ Design','var(--c-design)'],
+  ['uiux','📐 UI / UX','var(--c-uiux)'],
+  ['resource','📚 Resources','var(--c-resource)']
+];
+function render(){
+  const main=$('#main-content'); main.textContent='';
+  const filtered=POSTS.filter(matches).sort(sf);
+  $('#count').textContent=filtered.length+' post'+(filtered.length===1?'':'s');
+  if(!filtered.length){
+    main.appendChild(el('div',{class:'section-sub',text:'No posts match these filters.'}));
+    return;
+  }
+  // Group sections only when no specific category selected (i.e. 'all')
+  const grouped = state.cats.has('all') && state.cats.size===1;
+  if(grouped){
+    const buckets = {};
+    for(const p of filtered){
+      const primary = p.categories[0] || 'resource';
+      (buckets[primary] = buckets[primary] || []).push(p);
+    }
+    for(const [key,label,color] of SECTION_ORDER){
+      const arr = buckets[key];
+      if(!arr || !arr.length) continue;
+      const head = el('div',{class:'section-head'});
+      const h3 = el('h3');
+      const icon = el('span',{class:'icon'}); icon.style.background=color; icon.textContent=label.split(' ')[0];
+      h3.appendChild(icon);
+      h3.appendChild(document.createTextNode(' '+label.split(' ').slice(1).join(' ')));
+      head.appendChild(h3);
+      head.appendChild(el('span',{class:'count',text:arr.length+' items'}));
+      main.appendChild(head);
+      const grid = el('div',{class:'grid'});
+      arr.forEach(p=>grid.appendChild(card(p)));
+      main.appendChild(grid);
+    }
+  } else {
+    const head = el('div',{class:'section-head'});
+    head.appendChild(el('h3',{text:'📇 Filtered posts'}));
+    head.appendChild(el('span',{class:'count',text:filtered.length+' items'}));
+    main.appendChild(head);
+    const grid = el('div',{class:'grid'});
+    filtered.forEach(p=>grid.appendChild(card(p)));
+    main.appendChild(grid);
+  }
+}
+function init(){
+  $('#search').addEventListener('input',e=>{state.search=e.target.value;render()});
+  $('#sort').addEventListener('change',e=>{state.sort=e.target.value;render()});
+  $$('.cat-btn').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.getAttribute('data-cat');
+    if(k==='all'){
+      state.cats.clear(); state.cats.add('all');
+      $$('.cat-btn').forEach(x=>x.classList.toggle('on',x.getAttribute('data-cat')==='all'));
+    } else {
+      state.cats.delete('all');
+      $('.cat-btn[data-cat="all"]').classList.remove('on');
+      if(state.cats.has(k)){state.cats.delete(k);b.classList.remove('on')}
+      else{state.cats.add(k);b.classList.add('on')}
+      if(!state.cats.size){state.cats.add('all');$('.cat-btn[data-cat="all"]').classList.add('on')}
+    }
+    render();
+  }));
+  $$('.tier-pill').forEach(b=>b.addEventListener('click',()=>{
+    const t=b.getAttribute('data-t');
+    if(state.tiers.has(t)){state.tiers.delete(t);b.classList.remove('on')}
+    else{state.tiers.add(t);b.classList.add('on')}
+    render();
+  }));
+  $$('.coll-pill').forEach(b=>b.addEventListener('click',()=>{
+    const c=b.getAttribute('data-coll');
+    if(state.coll===c){state.coll='';b.classList.remove('on')}
+    else{
+      state.coll=c;
+      $$('.coll-pill').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+    }
+    render();
+  }));
+}
+document.addEventListener('DOMContentLoaded',()=>{init();render();
+  // Segment-bar click → reset filters so the target card is visible, then scroll
+  document.body.addEventListener('click',e=>{
+    const seg=e.target.closest('.seg'); if(!seg)return;
+    e.preventDefault();
+    state.cats.clear(); state.cats.add('all'); state.tiers.clear(); state.search='';
+    $$('.cat-btn').forEach(x=>x.classList.toggle('on',x.getAttribute('data-cat')==='all'));
+    $$('.tier-pill').forEach(x=>x.classList.remove('on'));
+    $('#search').value='';
+    render();
+    const id=seg.getAttribute('href').slice(1);
+    setTimeout(()=>{const t=document.getElementById(id);if(t){t.scrollIntoView({behavior:'smooth',block:'center'});t.style.outline='2px solid var(--accent)';setTimeout(()=>t.style.outline='',1800)}},50);
+  });
+});
+</script>
+</body></html>

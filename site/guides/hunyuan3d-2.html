@@ -1,0 +1,406 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg-2:#0f0f1a;--surface:#12121a;
+  --panel:rgba(255,255,255,0.03);--panel-2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text-dim:#a0a0b8;--text-mute:#6a6a80;
+  --accent:#a78bfa;--accent-2:#f472b6;
+  --c-repo:#4cda8c;--c-tool:#f0a050;--c-skill:#e060a0;--c-guide:#a78bfa;
+  --c-platform:#e0d040;--c-resource:#40d0e0;--c-art:#f05060;--c-design:#fb7185;--c-uiux:#60a5fa;
+  --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
+  background-attachment:fixed}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
+.head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tagline{color:var(--text-dim);font-size:13px;font-weight:500;margin-top:2px}
+.brand .tagline a{color:var(--accent-2);font-weight:700}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+
+.skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
+.skill-callout strong{color:#fff}
+.skill-callout code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:12.5px;font-family:'JetBrains Mono',Menlo,monospace;color:var(--accent)}
+.skill-callout details{margin-top:12px}
+.skill-callout summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}
+.skill-callout pre{margin:10px 0 0;padding:14px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;line-height:1.55;font-family:'JetBrains Mono',Menlo,monospace;color:var(--text-dim);white-space:pre-wrap}
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:30px}
+  header.site{position:static}
+  .grid{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 30px}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<header class="site"><div class="wrap head-row">
+  <div class="brand">
+    <h1>DejaViewed</h1>
+    <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
+  </div>
+  <nav class="nav"><a class="actions-nav" href="../dejaviewed.html">DEJAVIEWED</a><a class="active" href="../index.html">ALL</a><span class="src-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="../ai1.html">AI1</a><a class="sub" href="../ai2.html">AI2</a><a class="sub" href="../ai3.html">AI3</a><a class="sub" href="../ai4.html">AI4</a></span></span></nav>
+</div></header>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator
+
+**GitHub:** https://github.com/Tencent-Hunyuan/Hunyuan3D-2
+**Latest:** Hunyuan3D-2.1 (PBR, production-ready materials) — https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1
+**License:** Tencent Hunyuan Community License (open weights, some commercial restrictions for very large companies)
+**Repo status:** Not cloned locally — the code is small (a few hundred MB) but model weights are 50 GB+ and are best pulled on demand from Hugging Face (`tencent/Hunyuan3D-2` and `tencent/Hunyuan3D-2.1`). Clone only when you're ready to run it.
+
+---
+
+## What it is
+
+Hunyuan3D-2 is Tencent's open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR) surface, ready to drop into Blender, Unity, Unreal, or any standard DCC pipeline. It is the largest and most capable openly released image-to-3D model as of this writing, and it's the missing piece Victor already has a companion for: **HY-Motion** (Tencent's text-to-motion model) is cloned at `/home/victor/Desktop/Projects/claude/ai3-resources/repos/HY-Motion-1.0/`. Together they form a near-complete text → 3D character → animation pipeline (more on this below).
+
+The release is actually a family of models, not a single checkpoint. There's a shape generator that hallucinates geometry from the image, a texture generator that paints the bare mesh, "Turbo" and "Fast" distilled variants for speed, a 600M "mini" variant for low-VRAM setups, and a multiview variant that takes 2–4 views of the same object for much better back/side reconstruction. Version 2.1 adds a full PBR texture stack (albedo / metallic-roughness / normal) so the outputs drop straight into a modern render engine without manual material fixup.
+
+It is important to note: **Hunyuan3D-2 is image-to-3D only.** It does not natively read text prompts. The text-to-3D workflow everyone uses is "text → SDXL/Flux image → Hunyuan3D-2 mesh," which is what Tencent's own demos do internally. If you want single-call text-to-3D with open weights, this is not that tool — use Trellis or Tripo's hosted API for that (see `guides/blender-mcp-tripo-pipeline.md`).
+
+---
+
+## How it works under the hood
+
+**Stage 1 — Shape generation (Hunyuan3D-DiT).** A diffusion transformer operating in a latent 3D representation. The input image is encoded by a DINOv2-style vision encoder; the DiT denoises a latent volume conditioned on those features; a VAE decoder reconstructs an SDF (signed distance field) which is marched to a triangle mesh. The model was trained on tens of millions of 3D assets with rendered multiview supervision.
+
+- `Hunyuan3D-DiT-v2-0` — 1.1B params, standard quality
+- `Hunyuan3D-DiT-v2-0-Fast` — 1.1B, guidance-distilled (fewer CFG steps)
+- `Hunyuan3D-DiT-v2-0-Turbo` — 1.1B, step-distilled (6–8 steps vs 50)
+- `Hunyuan3D-DiT-v2-mini` — 0.6B, low-VRAM variant
+- `Hunyuan3D-DiT-v2-mv` — 1.1B multiview — feed 2–4 images of the same object
+- `Hunyuan3D-DiT-v2-1` — 3.0B, v2.1 release with new VAE and PBR-aware geometry
+
+**Stage 2 — Texture generation (Hunyuan3D-Paint).** A multi-view diffusion model that paints the bare mesh. It renders the mesh from 6+ canonical viewpoints, diffuses textures on each view jointly (with cross-view attention for consistency), then bakes them back into a UV atlas. v2.1's Paint model outputs a full PBR set.
+
+- `Hunyuan3D-Paint-v2-0` — 1.3B standard
+- `Hunyuan3D-Paint-v2-0-Turbo` — 1.3B distilled
+- v2.1 Paint — adds albedo / metallic-roughness / normal outputs
+
+Output is always a `trimesh.Trimesh` object, which you can export as **GLB, OBJ, PLY, STL, FBX** — anything trimesh supports. GLB is the recommended default since it embeds textures and PBR materials in one file.
+
+---
+
+## System requirements
+
+Be honest with yourself about VRAM. This is a big model.
+
+**Hunyuan3D-2.0:**
+- Shape only: **6 GB VRAM** (mini) to ~10 GB (DiT-v2-0)
+- Shape + texture: **16 GB VRAM** total
+- Fits on a single 3090, 4080, or 4090 comfortably. A 12 GB 3060 can run shape-only or the mini variant.
+
+**Hunyuan3D-2.1 (PBR):**
+- Shape only: **10 GB VRAM**
+- Texture only: **21 GB VRAM**
+- Shape + texture together: **29 GB VRAM**
+- You want a **4090, A6000, or better** for the full 2.1 pipeline. A single 24 GB card can do 2.1 shape + 2.0 texture as a hybrid.
+
+**Disk:** model weights are ~50 GB across shape + texture for v2.1. Keep them on an NVMe — loading is I/O bound.
+
+**Software:** Python 3.10+, PyTorch 2.1+ with CUDA 11.8 or 12.1, a C++ toolchain for the custom rasterizer/renderer. Linux is the happy path; Windows works via WSL2 or YanWenKun's WinPortable build (https://github.com/YanWenKun/Hunyuan3D-2-WinPortable). macOS works for shape only via MPS — texture gen is effectively CPU-bound and unbearably slow. There's also a GPU-poor fork at https://github.com/deepbeepmeep/Hunyuan3D-2GP that offloads aggressively for 8 GB cards.
+
+---
+
+## Quick start
+
+```bash
+# clone code (small)
+cd /home/victor/Desktop/Projects/claude/ai-catalogs/repos/
+git clone https://github.com/Tencent-Hunyuan/Hunyuan3D-2.git
+cd Hunyuan3D-2
+
+# python env
+python -m venv .venv && source .venv/bin/activate
+pip install torch==2.3.0 torchvision --index-url https://download.pytorch.org/whl/cu121
+pip install -r requirements.txt
+pip install -e .
+
+# build the custom rasterizer + renderer (required for texture gen)
+cd hy3dgen/texgen/custom_rasterizer && python setup.py install && cd ../../..
+cd hy3dgen/texgen/differentiable_renderer && python setup.py install && cd ../../..
+
+# weights auto-download from HF on first run; or preload:
+huggingface-cli download tencent/Hunyuan3D-2 --local-dir ./weights
+```
+
+Minimal image-to-mesh script:
+
+```python
+from hy3dgen.shapegen import Hunyuan3DDiTFlowMatchingPipeline
+from hy3dgen.texgen import Hunyuan3DPaintPipeline
+from PIL import Image
+
+img = Image.open("reference.png")
+
+shape_pipe = Hunyuan3DDiTFlowMatchingPipeline.from_pretrained("tencent/Hunyuan3D-2")
+mesh = shape_pipe(image=img)[0]          # trimesh.Trimesh
+mesh.export("bare.glb")
+
+paint_pipe = Hunyuan3DPaintPipeline.from_pretrained("tencent/Hunyuan3D-2")
+textured = paint_pipe(mesh, image=img)
+textured.export("final.glb")
+```
+
+For the Turbo variants, swap the pretrained name to `tencent/Hunyuan3D-2/hunyuan3d-dit-v2-0-turbo` and drop inference steps to 6. For v2.1 with PBR, use `tencent/Hunyuan3D-2.1`.
+
+There is also a Gradio app (`python app.py`), an API server (`python api_server.py`), and a ComfyUI integration documented at https://docs.comfy.org/tutorials/3d/hunyuan3D-2 — ComfyUI is the path of least resistance if you already use it for SDXL/Flux work.
+
+---
+
+## How image-to-mesh differs from text-to-mesh
+
+Text-to-3D tools (Shap-E, Point-E, early DreamFusion) hallucinate geometry from a text prompt alone. They're fast but vague — "a red sports car" gives you something car-shaped but generic and blurry. Image-to-3D is the dominant paradigm now because it cleanly separates concerns: let a mature 2D generator (SDXL, Flux, Midjourney) handle creative ideation and composition, then let a specialist 3D model do what it's good at — recovering geometry from pixels it can see.
+
+Concretely with Hunyuan3D-2:
+- **Better silhouette lock.** The reference image pins the silhouette exactly, so the mesh matches what you designed.
+- **Style transfers cleanly.** The texture stage paints the mesh using the reference image as conditioning, so a stylized anime ref produces a stylized mesh, not a photoreal one.
+- **Front-bias problem.** Single-view input means the back of the object is a hallucination. Use the **mv (multiview)** variant with 2–4 orthogonal views if you care about the back — it's the single biggest quality unlock.
+- **Workflow cost.** You pay a 2D generation step upfront. Worth it. A Flux image → Hunyuan3D-2 mesh takes ~30 s on a 4090 and beats any pure text-to-3D open model.
+
+---
+
+## Integration with HY-Motion — the full pipeline
+
+Victor already has HY-Motion cloned at `/home/victor/Desktop/Projects/claude/ai3-resources/repos/HY-Motion-1.0/`. HY-Motion generates SMPL-X skeletal motion from text ("a character doing a backflip"). Hunyuan3D-2 generates a static character mesh from an image. Chained, you get:
+
+1. **Text prompt** → Flux/SDXL → character reference image
+2. **Character image** → Hunyuan3D-2 (mv variant for quality) → textured GLB
+3. **Auto-rig** → Mixamo auto-rigger, Blender's Rigify, or Meshy's auto-rig endpoint
+4. **Motion prompt** → HY-Motion → SMPL-X animation
+5. **Retarget** → Blender (use the Rokoko or Auto-Rig Pro retargeter) → final animated character
+6. **Render** → Blender Eevee/Cycles, or export FBX to Unity/Unreal
+
+The weak link in this chain is step 3 (auto-rigging). Hunyuan3D-2 doesn't output rigs. Mixamo works for humanoid bipeds, breaks on anything else. For non-humanoid creatures you'll need manual rigging or a tool like AnythingWorld.
+
+This is a genuinely powerful pipeline for indie game devs, VTuber creators, and previs artists. No existing commercial product bundles it this way.
+
+---
+
+## What we could build with it
+
+- **Character asset factory** — prompt → Flux → Hunyuan3D-2 → Mixamo → Unity prefab, fully scripted
+- **Reference-to-mesh for concept artists** — sketch on iPad, Hunyuan3D mesh on your desk in 60s
+- **Game jam asset pipeline** — generate 20 enemies in an hour for a prototype
+- **Photogrammetry replacement for flat objects** — a single photo of a coin, a leaf, a toy, becomes a usable mesh
+- **Product visualization** — take a product photo, get a spinnable 3D model for an ecommerce site
+- **AR tryable objects** — generate → export GLB → drop into a model-viewer web page with USDZ for iOS Quick Look
+- **Full text-to-animated-character pipeline** — combined with HY-Motion (see above), this is a research-grade creative tool that would be a paid SaaS from anyone else
+- **Blender MCP driver** — Hunyuan3D-2 is exposed as a tool inside the blender-mcp server (see `guides/blender-mcp-tripo-pipeline.md`), so Claude Code can generate a mesh and import it into Blender in one turn
+
+---
+
+## Related resources in the AI3 hub
+
+- **HY-Motion (Tencent text-to-motion):** `/home/victor/Desktop/Projects/claude/ai3-resources/repos/HY-Motion-1.0/` — direct companion
+- **Blender MCP pipeline:** `guides/blender-mcp-tripo-pipeline.md` — how to drive Hunyuan3D-2 from Claude through Blender
+- **TouchDesigner creative coding guide:** `~/Desktop/Projects/claude/ai3-resources/guides/touchdesigner-creative-coding.md` — for real-time visual pipelines once you've generated meshes
+- **Creative coding projection mapping:** `~/Desktop/Projects/claude/ai3-resources/guides/creative-coding-projection-mapping.md` — use generated meshes as projection targets
+
+## Sources
+
+- [Hunyuan3D-2 GitHub](https://github.com/Tencent-Hunyuan/Hunyuan3D-2)
+- [Hunyuan3D-2.1 GitHub](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1)
+- [ComfyUI Hunyuan3D-2 tutorial](https://docs.comfy.org/tutorials/3d/hunyuan3D-2)
+- [Hunyuan3D-2GP (low-VRAM fork)](https://github.com/deepbeepmeep/Hunyuan3D-2GP)
+- [Hunyuan3D-2 Windows Portable](https://github.com/YanWenKun/Hunyuan3D-2-WinPortable)
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

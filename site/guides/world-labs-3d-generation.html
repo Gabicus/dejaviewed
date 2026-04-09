@@ -1,0 +1,380 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>World Labs — Marble and the Era of Generative 3D Worlds · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg-2:#0f0f1a;--surface:#12121a;
+  --panel:rgba(255,255,255,0.03);--panel-2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text-dim:#a0a0b8;--text-mute:#6a6a80;
+  --accent:#a78bfa;--accent-2:#f472b6;
+  --c-repo:#4cda8c;--c-tool:#f0a050;--c-skill:#e060a0;--c-guide:#a78bfa;
+  --c-platform:#e0d040;--c-resource:#40d0e0;--c-art:#f05060;--c-design:#fb7185;--c-uiux:#60a5fa;
+  --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
+  background-attachment:fixed}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
+.head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tagline{color:var(--text-dim);font-size:13px;font-weight:500;margin-top:2px}
+.brand .tagline a{color:var(--accent-2);font-weight:700}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+
+.skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
+.skill-callout strong{color:#fff}
+.skill-callout code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:12.5px;font-family:'JetBrains Mono',Menlo,monospace;color:var(--accent)}
+.skill-callout details{margin-top:12px}
+.skill-callout summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}
+.skill-callout pre{margin:10px 0 0;padding:14px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;line-height:1.55;font-family:'JetBrains Mono',Menlo,monospace;color:var(--text-dim);white-space:pre-wrap}
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:30px}
+  header.site{position:static}
+  .grid{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:110px 1fr 30px}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<header class="site"><div class="wrap head-row">
+  <div class="brand">
+    <h1>DejaViewed</h1>
+    <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
+  </div>
+  <nav class="nav"><a class="actions-nav" href="../dejaviewed.html">DEJAVIEWED</a><a class="active" href="../index.html">ALL</a><span class="src-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="../ai1.html">AI1</a><a class="sub" href="../ai2.html">AI2</a><a class="sub" href="../ai3.html">AI3</a><a class="sub" href="../ai4.html">AI4</a></span></span></nav>
+</div></header>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># World Labs — Marble and the Era of Generative 3D Worlds
+
+**Company:** World Labs (https://www.worldlabs.ai)
+**Founders:** Fei-Fei Li (Stanford, ImageNet, "AI godmother"), Justin Johnson, Ben Mildenhall (co-inventor of NeRF), Christoph Lassner
+**Product:** **Marble** — a commercial 3D world generation model (launched Nov 2025)
+**Status:** Closed-source commercial product. Web app in beta, no open weights, no public API at launch. Access is via waitlist → browser UI.
+**Repo:** None — not open source. Nothing to clone.
+
+---
+
+## What it is
+
+World Labs is Fei-Fei Li's "spatial intelligence" startup. Their thesis, stated plainly by Li, is that the next leap in AI is not bigger language models but systems that understand and generate **3D space** — because physical reality, robotics, AR/VR, creative tools, and scientific simulation all live in 3D, not in flat text or 2D pixels. She calls the category **Large World Models (LWMs)**, positioned as the 3D-native cousin of LLMs.
+
+**Marble**, launched in November 2025, is their first commercial product and the first public instance of an LWM you can actually poke. Feed it a text description, one or more images, a video clip, or a rough blocky 3D layout, and it generates a complete, explorable, **persistent** 3D environment — a room, a landscape, a whole stylized scene. You can then fly a camera through it, edit it with AI-native tools, or export it as Gaussian splats, meshes, or rendered video.
+
+This is fundamentally a different product from Hunyuan3D-2 or Tripo (see `guides/hunyuan3d-2.md` and `guides/blender-mcp-tripo-pipeline.md`). Those tools generate **single objects** — a chair, a character, a prop. Marble generates **environments** — the whole tea room, including the walls, the lighting, the objects, and the geometric relationships between them. It's a generator at the scale of Unreal Engine levels, not individual assets.
+
+---
+
+## How it works (what we can infer)
+
+World Labs has not published full technical papers, but they've been surprisingly open about the high-level architecture in interviews and case studies. The approach is a hybrid that borrows from several active research threads:
+
+**1. 3D Gaussian Splatting for appearance.** Marble represents the visual content of a scene as a dense cloud of 3D Gaussians — each an anisotropic blob with position, scale, orientation, color, and opacity. This is the same technique that replaced NeRFs as the leading photorealistic 3D representation in 2023–2024, pioneered partly by co-founder Ben Mildenhall's lab work. Gaussians are cheap to render (real-time rasterization, not volumetric ray marching) and give extremely high fidelity for static scenes.
+
+**2. "Collider mesh" for geometry.** Alongside the Gaussians, Marble generates a low-poly triangle mesh that defines the physical boundaries of the space. This is the bit that makes the scene usable, not just lookable — the mesh is what a camera collides with, what an avatar walks on, what a physics engine simulates against. It also anchors the Gaussians so they don't drift or blur when edited.
+
+**3. Discrete spatial state, not frame prediction.** This is the key claim that separates Marble from video-model competitors like Sora, Veo, and Runway. Those models predict "what pixel comes next" — you move the camera, they roll the generative dice, and the world changes subtly each time you look away. Marble generates **one** scene up front and keeps it fixed: move the camera away from a chair and back, the chair is in exactly the same place, with exactly the same lighting on exactly the same surface. This is table stakes for a usable creative tool and impossible for a pure video model without explicit memory.
+
+**4. Multi-modal conditioning.** Text prompts, images, videos, and coarse 3D layouts can all condition the generation. The 3D layout path is the interesting one — you sketch a blocky arrangement ("couch here, table here, window there") and Marble fills in the visual details while respecting your structure. World Labs calls this a **hybrid 3D editor**: block out the geometry you care about, let the model hallucinate the rest.
+
+The underlying generative model is almost certainly a diffusion transformer operating on a 3D latent representation (probably a voxel or triplane latent) that decodes to the Gaussian + mesh pair. They haven't confirmed the architecture publicly. Training data is rumored to be a mix of photogrammetric scans, synthetic UE5/Unity scenes, and multiview image collections — standard LWM training fare.
+
+---
+
+## How it compares to the rest of the world-generation landscape
+
+This is a crowded research area as of 2026. Here's where Marble sits:
+
+**vs. Google DeepMind Genie 3 (2025):** Genie 3 is an *interactive* world model — you press keys and it generates the next frame like a video game being dreamt in real time. Impressive, but it suffers from the exact problem Marble avoids: it has limited persistence, the world drifts, and you can't export anything. Genie is a research demo of interactive video; Marble is a product that outputs files.
+
+**vs. NVIDIA GET3D / Magic3D / Scenescape (2023):** Earlier generations of scene generators. Scenescape in particular pioneered "generate a mesh you can fly through from a single image" but at much lower quality and with visible tiling artifacts. Marble is a clean generational leap.
+
+**vs. Luma Dream Machine + Genie-style approaches:** Luma focuses on video and NeRF-from-video capture, not outright world generation. Different problem.
+
+**vs. Hunyuan3D-2 / Tripo (single-object generators):** Completely different scope. Hunyuan3D-2 makes a chair. Marble makes the room the chair is in. You'd use them together — Marble for the environment, Hunyuan3D-2/Tripo for hero assets you want more control over.
+
+**vs. Meta's "world models" work (Yann LeCun's V-JEPA line):** Meta is pursuing world models as **prediction** systems for robotics and planning — not renderable, not creative tools. Different audience entirely.
+
+**vs. Wayve / 1X / Tesla world models:** These are driving / robotics world models, tuned for dynamics prediction, not aesthetic scene generation. Adjacent but separate category.
+
+Marble is, as of early 2026, the **only product** that combines generation quality, persistence, editing, and standard export formats. That's why it matters.
+
+---
+
+## System requirements
+
+None. Marble runs entirely in World Labs' cloud. You use it through a web app in a modern browser. No GPU required, no install, no setup. That's the upside of a closed commercial product.
+
+The downsides:
+- **Waitlist access** at launch; not everyone gets in immediately.
+- **No self-hosting, no private data.** Everything you generate is on their servers.
+- **No open weights.** You can't fine-tune it, you can't distill it, you can't run it offline. If World Labs shuts down or hikes prices, you have no fallback.
+- **Pricing is credit-based**, similar to Midjourney/Runway. Expect to pay for serious use.
+- **Export quality** is good but not infinite — the exported Gaussian splats and meshes carry artifacts typical of both representations.
+
+---
+
+## Quick start
+
+There's nothing to install. The workflow is:
+
+1. Sign up at https://www.worldlabs.ai and join the waitlist (or use an invite)
+2. Log into the Marble web app
+3. Pick an input modality:
+   - **Text:** "a cyberpunk alleyway at night, neon signs, wet pavement, dense fog"
+   - **Image:** upload a reference photo
+   - **Video:** upload a short clip
+   - **3D layout:** block out geometry with their web editor
+4. Wait ~1–3 minutes for generation
+5. Explore the world with their web viewer (WASD + mouse look)
+6. Edit — move objects, change lighting, relight, paint over regions
+7. Export:
+   - **Gaussian splats** (`.ply` with Gaussian attributes, or their own format) — for real-time viewers like Luma, Polycam, or Three.js splat renderers
+   - **Mesh** (GLB) — for Blender, Unity, Unreal, three.js
+   - **Video** — rendered flythrough, for sharing and traditional post
+
+Expect the export quality to be "good enough for previs and production dailies" rather than "final pixel ready for film." You will re-touch in Blender or Unreal.
+
+---
+
+## What we could build with it
+
+The question with Marble isn't "what's possible" — it's "what becomes cheap enough to do casually that it changes the creative workflow." Some ideas:
+
+- **Instant previs / storyboarding.** Describe a scene in text, get a rough 3D previs in two minutes. Replace the mood board phase entirely.
+- **Location scouting for indie film and music video.** "A moody 1970s diner at 3am" generated and explored in VR to plan shots before renting a real location.
+- **AR/VR content pipeline.** Marble → glTF → WebXR or Meta Quest experience in an afternoon.
+- **Game environment blockout.** Generate 20 candidate environments for a level, pick one, then hand-polish it in Unreal. Massive time save on concept.
+- **Interactive art installations.** Pair Marble exports with TouchDesigner (see `~/Desktop/Projects/claude/ai3-resources/guides/touchdesigner-creative-coding.md`) and projection mapping (see `~/Desktop/Projects/claude/ai3-resources/guides/creative-coding-projection-mapping.md`) for room-scale generative environments.
+- **Training data for robotics.** Marble generates thousands of varied indoor environments, use them as simulation training data for home robots and embodied agents. This is explicitly one of World Labs' stated use cases.
+- **Scientific visualization.** Generate plausible 3D environments for papers, museum exhibits, educational content.
+- **Virtual photography and hero renders.** Generate the world, pose the camera, render frames — a one-person studio can produce magazine-quality environment shots.
+- **"World" version of a Midjourney moodboard** for pitches: your deck includes a clickable 3D fly-through instead of a flat render.
+
+---
+
+## Implications for creative tools
+
+Marble (and the LWM category more generally) is where generative AI and 3D tools are heading over the next two years. The relevant trends to watch:
+
+1. **Persistence is the defining feature.** Video models will add memory; world models will add interactivity. They'll meet in the middle. Whoever solves "persistent, editable, exportable" first wins the creative-tools market.
+2. **Gaussian splats are becoming the interchange format** the way GLB became for meshes. Expect Blender, Unreal, Unity, and three.js to all ship first-class splat support by end of 2026 (some already have it via plugins).
+3. **Open-weight competitors are coming.** Tencent (Hunyuan), Alibaba, Meta, and Stability all have research lines aimed at open LWMs. Marble's closed-weight moat is at most 12–18 months wide. Worth tracking Hunyuan especially given Tencent's track record of open-sourcing their research (HY-Motion, Hunyuan3D-2, Hunyuan Video).
+4. **The single-object tools (Tripo, Hunyuan3D-2) and the world tools (Marble) will integrate**. The natural workflow is: generate the room with Marble, generate the hero prop with Hunyuan3D-2 / Tripo, composite in Blender via the MCP pipeline (see `guides/blender-mcp-tripo-pipeline.md`).
+
+For our purposes: Marble is worth watching closely and testing on the web when you get access, but it is not something to build a production pipeline on yet. The open-weight companions (Hunyuan3D-2, Trellis, Tripo's API) are the tools to actually build with today, and Marble shows where the ceiling is heading.
+
+---
+
+## Related resources
+
+- **Hunyuan3D-2 guide:** `guides/hunyuan3d-2.md` — open-weight object generation, complements Marble's scene generation
+- **Blender MCP + Tripo pipeline:** `guides/blender-mcp-tripo-pipeline.md` — the current open / commercial-API workflow for the same problem
+- **HY-Motion (text-to-motion):** `/home/victor/Desktop/Projects/claude/ai3-resources/repos/HY-Motion-1.0/` — character animation for the worlds Marble builds
+- **TouchDesigner creative coding:** `~/Desktop/Projects/claude/ai3-resources/guides/touchdesigner-creative-coding.md` — real-time pipelines for Gaussian splats and NeRFs
+- **Creative coding projection mapping:** `~/Desktop/Projects/claude/ai3-resources/guides/creative-coding-projection-mapping.md` — for room-scale use of generated environments
+
+## Sources
+
+- [World Labs](https://www.worldlabs.ai)
+- [Bringing Marble to Life (World Labs case study)](https://www.worldlabs.ai/case-studies/bringing-marble-to-life)
+- [TechCrunch: World Labs speeds up the world model race with Marble](https://techcrunch.com/2025/11/12/fei-fei-lis-world-labs-speeds-up-the-world-model-race-with-marble-its-first-commercial-product/)
+- [Fast Company: World Labs unveils its world-generating AI model](https://www.fastcompany.com/91437004/fei-fei-li-world-labs-spatial-ai-mapping-3d)
+- [PYMNTS: Spatial Intelligence Becomes the New AI Focus](https://www.pymnts.com/artificial-intelligence-2/2025/world-labs-launches-marble-as-spatial-intelligence-becomes-the-new-ai-battleground/)
+- [AIbase: Marble 3D World Model Beta](https://news.aibase.com/news/22786)
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>
