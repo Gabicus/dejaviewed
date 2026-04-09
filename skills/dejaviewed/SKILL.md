@@ -75,8 +75,8 @@ The user MUST provide or set up before the skill runs:
 ├── guides/
 │   └── <slug>.md                   # deep-dive markdown guides
 ├── site/
-│   ├── index.html                  # main catalog (all sources)
-│   ├── dejaviewed.html              # THE DEJAVIEWED PAGE — summary + actions + install
+│   ├── index.html                  # THE DEJAVIEWED PAGE — summary + actions + install (landing page)
+│   ├── catalog.html                # main catalog (all sources)
 │   ├── <collection>.html           # per-collection pages
 │   ├── guides/<slug>.html          # rendered guide pages
 │   └── thumb/<shortcode>.jpg       # post thumbnails
@@ -426,7 +426,7 @@ Also generates a **Save Profile** — a witty 1-2 sentence assessment of the use
 - `DEJAVIEWED` (gold gradient, first position) → `ALL` → source groups (e.g., "Instagram" label with AI1/AI2/AI3/AI4 sub-links)
 - Source groups are expandable — each platform gets a label with its collection sub-pages nested inline
 
-The DejaViewed page renders as `site/dejaviewed.html` — the primary landing page and first nav tab.
+The DejaViewed page renders as `site/index.html` — the primary landing page and first nav tab. The "ALL" catalog renders as `site/catalog.html`.
 
 ---
 
@@ -486,4 +486,4 @@ Before declaring done, verify:
 - [ ] DejaViewed summary page has hero-grid layout (not centered hero block)
 - [ ] DejaViewed page has install/sources sidebar, section jump pills, action cards
 - [ ] Nav order: DEJAVIEWED (gold) → ALL → source groups with sub-links
-- [ ] File is `dejaviewed.html` (not playbook.html or actions.html)
+- [ ] Landing page is `index.html` (the DejaViewed summary), catalog is `catalog.html`

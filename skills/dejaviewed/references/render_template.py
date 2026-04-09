@@ -349,10 +349,10 @@ def header_html(active, prefix=""):
     nav = []
     # Playbook
     cls = "actions-nav active" if active == "actions" else "actions-nav"
-    nav.append(f'<a class="{cls}" href="{prefix}dejaviewed.html">DEJAVIEWED</a>')
+    nav.append(f'<a class="{cls}" href="{prefix}">DEJAVIEWED</a>')
     # All
     cls = "active" if active == "index" else ""
-    nav.append(f'<a class="{cls.strip()}" href="{prefix}index.html">ALL</a>')
+    nav.append(f'<a class="{cls.strip()}" href="{prefix}catalog.html">ALL</a>')
     # Source groups
     for src_id, src_label, subs in sources:
         # Source label (non-clickable or clicks to first sub)
@@ -789,8 +789,8 @@ for coll in ["ai1","ai2","ai3","ai4"]:
     (OUT / f"{coll}.html").write_text(page_shell(title, coll, ps, coll, show_commands=False))
     print(f"wrote {coll}.html ({len(ps)} posts)")
 
-(OUT / "index.html").write_text(page_shell(f"{TITLE} — AI Edition", "index", posts, "", show_commands=True))
-print(f"wrote index.html ({len(posts)} posts)")
+(OUT / "catalog.html").write_text(page_shell(f"{TITLE} — AI Edition", "index", posts, "", show_commands=True))
+print(f"wrote catalog.html ({len(posts)} posts)")
 
 # ---------- Actions page ----------
 actions_path = DATA / "actions.json"
@@ -821,7 +821,7 @@ if actions_path.exists():
                 links_html = f'<div class="action-links">{pills}</div>'
             source_html = ""
             if item.get("source_cards"):
-                refs = " ".join(f'<a href="index.html#{esc(sc)}">→</a>' for sc in item["source_cards"][:3])
+                refs = " ".join(f'<a href="catalog.html#{esc(sc)}">→</a>' for sc in item["source_cards"][:3])
                 source_html = f'<span class="source-refs">{refs}</span>'
             tier = item.get("tier", "C")
             items_html += f"""<div class="action-item tier-{tier}">
@@ -925,7 +925,7 @@ if actions_path.exists():
   {sections_html}
 </div>
 <footer class="site"><div class="wrap">
-  <a href="index.html">Browse all {len(posts)} saves →</a> ·
+  <a href="catalog.html">Browse all {len(posts)} saves →</a> ·
   Curated by <a href="{IG_URL}">{HANDLE}</a> · Built with <code>{SKILL}</code> ·
   <a href="https://github.com/Gabicus/dejaviewed" target="_blank" rel="noopener">GitHub</a>
 </div></footer>
@@ -937,10 +937,10 @@ document.querySelectorAll('.action-cmd code').forEach(el=>{{
 </script>
 </body></html>"""
 
-    (OUT / "dejaviewed.html").write_text(actions_page)
-    print(f"wrote dejaviewed.html ({sum(len(s.get('items',[])) for s in sections)} action items)")
+    (OUT / "index.html").write_text(actions_page)
+    print(f"wrote index.html ({sum(len(s.get('items',[])) for s in sections)} action items)")
 else:
-    print("skipping dejaviewed.html (no data/actions.json — run build_actions.py first)")
+    print("skipping index.html (no data/actions.json — run build_actions.py first)")
 
 # ---------- Guide pages ----------
 for slug in guide_files:
@@ -959,7 +959,7 @@ for slug in guide_files:
   {badge}
   <div id="guide-body"></div>
 </article>
-<footer class="site"><div class="wrap"><a href="../index.html">← Back to {TITLE}</a> · curated by <a href="{IG_URL}">{HANDLE}</a> · <code>{SKILL}</code></div></footer>
+<footer class="site"><div class="wrap"><a href="../catalog.html">← Back to {TITLE}</a> · curated by <a href="{IG_URL}">{HANDLE}</a> · <code>{SKILL}</code></div></footer>
 <script id="md" type="text/markdown">{md_escaped}</script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
