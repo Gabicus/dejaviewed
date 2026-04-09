@@ -60,7 +60,7 @@ I plan to host this at [URL] via [platform]. Static HTML is fine.
 
 ## What This Prompt Triggers
 
-The skill will execute 8 phases automatically:
+The skill will execute 10 phases automatically:
 
 1. **Setup** — Create project structure, set brand constants
 2. **Scrape** — Cookie-authenticated requests to each IG URL, extract full captions + metadata
@@ -69,7 +69,9 @@ The skill will execute 8 phases automatically:
 5. **Deep-Dive** — Write markdown guides for top-tier candidates
 6. **Thumbnails** — Download og:image for every post to local directory
 7. **Render** — Build static HTML site with all the design spec
-8. **Verify** — Run output checklist (titles, links, layout, security)
+8. **Browser Bookmarks** — Auto-detect Chrome/Firefox/Edge bookmarks, merge with dedup
+9. **DejaViewed Page** — Build the summary/actions page with install sidebar + section jump pills + action cards
+10. **Verify** — Run output checklist (titles, links, layout, security)
 
 ## Tips for Better Results
 

@@ -54,8 +54,8 @@ Or with arguments:
 | **Tier** | S/A/B/C ranking based on how actionable and substantive each item is |
 | **Deep-Dive** | Markdown guides for the top-tier items — the research the creator didn't give you |
 | **Thumbnails** | Downloads images locally (platform CDN URLs expire — never hotlink) |
-| **Action Plan** | Auto-generates "what to DO with all this" — clone commands, install commands, guides to read, techniques to try |
-| **Render** | Static HTML: masonry layout, category filters, creator bar chart, clickable links, search, action plan page |
+| **DejaViewed Page** | Auto-generates "what to DO with all this" — clone commands, install commands, guides to read, techniques to try |
+| **Render** | Static HTML: masonry layout, category filters, creator bar chart, clickable links, search, DejaViewed summary page |
 
 ## What You Get
 
@@ -69,7 +69,9 @@ A static HTML site with:
 - **Thumbnails** — downloaded locally, not hotlinked
 - **Deep-dive guide pages** — full markdown with confidence badges
 - **Per-collection pages** — if you have multiple saved folders
-- **Action Plan page** — the killer feature:
+- **DejaViewed summary page** — the killer feature, first tab:
+  - Hero layout matching catalog pages (title + WHY + BANs left, install/sources sidebar right)
+  - Section jump pills linking to each action category
   - **Clone These Repos** — S/A tier repos with `git clone` commands (click to copy)
   - **Install These Tools** — pip/npm/brew one-liners
   - **Read These Guides** — deep-dives we wrote, with confidence badges
@@ -77,6 +79,7 @@ A static HTML site with:
   - **Bookmark These Platforms** — services worth keeping
   - **Design & Art Resources** — archives, collections, inspiration
   - **Save Profile** — witty personality assessment of your hoarding habits
+- **Grouped navigation** — DEJAVIEWED → ALL → source labels with sub-page pills (e.g., Instagram → AI1/AI2/AI3/AI4)
 
 ## Browser Bookmarks (No Auth Needed)
 

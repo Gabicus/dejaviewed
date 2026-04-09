@@ -134,6 +134,13 @@ header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter
 .nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
 .nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
 .nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
 
 .skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
 .skill-callout strong{color:#fff}
@@ -329,12 +336,36 @@ def handle_to_url(handle):
     return f"https://instagram.com/{h}" if h else None
 
 def header_html(active, prefix=""):
+    # Source groups: label → [(key, sublabel), ...]
+    sources = [
+        ("instagram", "Instagram", [("ai1","AI1"),("ai2","AI2"),("ai3","AI3"),("ai4","AI4")]),
+        # Future sources get added here:
+        # ("chrome", "Chrome", [("chrome","Bookmarks")]),
+        # ("tiktok", "TikTok", []),
+        # ("twitter", "Twitter / X", []),
+        # ("youtube", "YouTube", []),
+    ]
+    # Build nav: Playbook first, then All, then source groups
     nav = []
-    for key, label in [("index","ALL"),("actions","ACTIONS"),("ai1","AI1"),("ai2","AI2"),("ai3","AI3"),("ai4","AI4")]:
-        cls = " active" if active == key else ""
-        href = f"{prefix}index.html" if key == "index" else f"{prefix}{key}.html"
-        if key == "actions": cls += " actions-nav"
-        nav.append(f'<a class="{cls.strip()}" href="{href}">{label}</a>')
+    # Playbook
+    cls = "actions-nav active" if active == "actions" else "actions-nav"
+    nav.append(f'<a class="{cls}" href="{prefix}dejaviewed.html">DEJAVIEWED</a>')
+    # All
+    cls = "active" if active == "index" else ""
+    nav.append(f'<a class="{cls.strip()}" href="{prefix}index.html">ALL</a>')
+    # Source groups
+    for src_id, src_label, subs in sources:
+        # Source label (non-clickable or clicks to first sub)
+        first_href = f"{prefix}{subs[0][0]}.html" if subs else "#"
+        is_active = active in [s[0] for s in subs]
+        group_cls = "src-group"
+        if is_active: group_cls += " active-group"
+        sub_links = []
+        for key, sublabel in subs:
+            scls = "sub active" if active == key else "sub"
+            sub_links.append(f'<a class="{scls}" href="{prefix}{key}.html">{sublabel}</a>')
+        subs_html = f'<span class="sub-links">{"".join(sub_links)}</span>' if sub_links else ""
+        nav.append(f'<span class="{group_cls}"><span class="src-label">{src_label}</span>{subs_html}</span>')
     return f"""<header class="site"><div class="wrap head-row">
   <div class="brand">
     <h1>{TITLE}</h1>
@@ -769,15 +800,12 @@ if actions_path.exists():
     sections = actions.get("sections", [])
 
     # Build stats banner
-    stats_html = f"""<div class="actions-stats">
-      <div class="stat-row">
-        <div class="ban"><div class="v">{stats.get('total_saves',0)}</div><div class="l">saves analyzed</div></div>
-        <div class="ban"><div class="v">{len(sections)}</div><div class="l">action categories</div></div>
-        <div class="ban"><div class="v">{sum(len(s.get('items',[])) for s in sections)}</div><div class="l">action items</div></div>
-        <div class="ban"><div class="v">{stats.get('sources_count', len(stats.get('sources',[])))}</div><div class="l">sources</div></div>
-      </div>
-      <p class="save-profile">{esc(stats.get('save_profile',''))}</p>
-    </div>"""
+    stats_html = f"""<div class="bans">
+        <div class="ban"><div class="v">{stats.get('total_saves',0)}</div><div class="l">Saves</div></div>
+        <div class="ban"><div class="v">{sum(len(s.get('items',[])) for s in sections)}</div><div class="l">Actions</div></div>
+        <div class="ban"><div class="v">{stats.get('sources_count', len(stats.get('sources',[])))}</div><div class="l">Sources</div></div>
+        <div class="ban"><div class="v">{len(sections)}</div><div class="l">Categories</div></div>
+      </div>"""
 
     # Build section HTML
     sections_html = ""
@@ -809,21 +837,27 @@ if actions_path.exists():
         sections_html += f"""<section class="action-section" id="{esc(sec.get('id',''))}">
           <h2>{sec.get('icon','')} {esc(sec.get('title',''))}</h2>
           <p class="section-sub">{esc(sec.get('subtitle',''))}</p>
-          {items_html}
+          <div class="action-grid">{items_html}</div>
         </section>"""
 
     # Actions-specific CSS additions
     actions_css = r"""
-.actions-hero{text-align:center;padding:48px 0 32px}
-.actions-hero h1{font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#fbbf24 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 8px}
-.actions-hero .sub{color:var(--text-dim);font-size:13px;max-width:600px;margin:0 auto;line-height:1.6}
-.actions-stats{margin:0 auto 36px;max-width:900px}
-.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-.save-profile{font-size:13px;color:var(--text-dim);text-align:center;line-height:1.6;font-style:italic;padding:14px 20px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.dv-sidebar{display:flex;flex-direction:column;gap:12px}
+.dv-sidebar .about-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;overflow:hidden}
+.dv-sidebar .about-card h3{margin:0 0 8px;font-size:13px;font-weight:800;color:#fff}
+.dv-sidebar .cmd-row{margin-bottom:6px}
+.dv-sidebar .cmd-row code{display:block;background:rgba(0,0,0,.45);border:1px solid var(--border);padding:5px 10px;border-radius:6px;font-size:10.5px;color:var(--c-repo);white-space:nowrap;overflow-x:auto;cursor:pointer}
+.dv-sidebar .cmd-row code:hover{background:rgba(0,0,0,.6);border-color:var(--c-repo)}
+.dv-sidebar .cmd-row span{font-size:10px;color:var(--text-mute);margin-top:2px;display:block}
+.dv-sidebar .src-list{margin:0 0 4px;font-size:11.5px;color:var(--text-dim);line-height:1.6}
+.dv-sidebar .save-profile{font-size:12px;color:var(--text-dim);line-height:1.6;font-style:italic;padding:12px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm);margin:0}
 .action-section{margin-bottom:36px}
-.action-section h2{font-size:20px;font-weight:900;letter-spacing:-0.02em;margin:0 0 4px;color:#fff}
-.section-sub{font-size:12px;color:var(--text-mute);margin:0 0 16px;line-height:1.5}
-.action-item{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:10px;border-left-width:3px;transition:all .15s}
+.action-section h2{font-size:20px;font-weight:900;letter-spacing:-0.02em;margin:0 0 4px;color:#fff;column-span:all}
+.section-sub{font-size:12px;color:var(--text-mute);margin:0 0 16px;line-height:1.5;column-span:all}
+.action-grid{column-count:3;column-gap:14px}
+@media(max-width:1200px){.action-grid{column-count:2}}
+@media(max-width:700px){.action-grid{column-count:1}}
+.action-item{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:14px;border-left-width:3px;transition:all .15s;break-inside:avoid;display:inline-block;width:100%}
 .action-item:hover{border-color:var(--border-hi);background:var(--panel-2)}
 .action-item.tier-S{border-left-color:var(--s)}.action-item.tier-A{border-left-color:var(--a)}
 .action-item.tier-B{border-left-color:var(--b)}.action-item.tier-C{border-left-color:var(--c)}
@@ -840,27 +874,60 @@ if actions_path.exists():
 .source-refs a{font-size:10px;color:var(--text-mute);background:var(--panel-2);padding:2px 6px;border-radius:4px;border:1px solid var(--border)}
 .source-refs a:hover{color:var(--accent)}
 .actions-nav{background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(244,114,182,.15))!important;border-color:rgba(251,191,36,.3)!important;color:var(--s)!important}
-@media(max-width:700px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+.sec-pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px;justify-content:center}
+.sec-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sec-pill:hover{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.sec-pill .n{font-size:10px;background:rgba(255,255,255,.08);padding:2px 6px;border-radius:999px;color:var(--text-mute)}
+@media(max-width:900px){.dv-sidebar{margin-top:16px}}
 """
+
+    # Build section jump-link pills
+    section_pills = []
+    for sec in sections:
+        sid = sec.get('id', '')
+        icon = sec.get('icon', '')
+        label = sec.get('title', '').replace('These ', '')
+        n = len(sec.get('items', []))
+        section_pills.append(f'<a class="sec-pill" href="#{esc(sid)}">{icon} {esc(label)} <span class="n">{n}</span></a>')
+    pills_html = '<div class="sec-pills">' + ''.join(section_pills) + '</div>'
 
     actions_page = f"""<!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Action Plan · {TITLE}</title>
+<title>{TITLE}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>{CSS}{actions_css}</style></head><body>
 {header_html("actions")}
-<div class="wrap">
-  <div class="actions-hero">
-    <h1>Action Plan</h1>
-    <p class="sub">You saved {stats.get('total_saves',0)} things across {len(stats.get('sources',[]))} sources. Here's what to actually <strong>do</strong> with all of it — sorted by impact, runnable where possible, linked back to the original saves.</p>
+<section class="hero"><div class="wrap">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <h2>{TITLE}</h2>
+      <p class="why">{WHY}</p>
+      {stats_html}
+    </div>
+    <div class="dv-sidebar">
+      <div class="about-card">
+        <h3>📦 Install</h3>
+        <div class="cmd-row"><code>git clone git@github.com:Gabicus/dejaviewed.git ~/.claude/plugins/dejaviewed</code><span>Full plugin</span></div>
+        <div class="cmd-row"><code>/{SKILL}</code><span>Run the pipeline</span></div>
+      </div>
+      <div class="about-card">
+        <h3>🔌 Sources</h3>
+        <p class="src-list"><strong style="color:#fff">Built:</strong> Instagram · Chrome · Firefox · Edge</p>
+        <p class="src-list"><strong style="color:var(--text-mute)">Planned:</strong> TikTok · Twitter/X · Reddit · YouTube</p>
+      </div>
+      <p class="save-profile">{esc(stats.get('save_profile',''))}</p>
+    </div>
   </div>
-  {stats_html}
+</div></section>
+<div class="wrap">
+  {pills_html}
   {sections_html}
 </div>
 <footer class="site"><div class="wrap">
-  <a href="index.html">← Back to catalog</a> ·
-  Curated by <a href="{IG_URL}">{HANDLE}</a> · Built with <code>{SKILL}</code>
+  <a href="index.html">Browse all {len(posts)} saves →</a> ·
+  Curated by <a href="{IG_URL}">{HANDLE}</a> · Built with <code>{SKILL}</code> ·
+  <a href="https://github.com/Gabicus/dejaviewed" target="_blank" rel="noopener">GitHub</a>
 </div></footer>
 <script>
 document.querySelectorAll('.action-cmd code').forEach(el=>{{
@@ -870,10 +937,10 @@ document.querySelectorAll('.action-cmd code').forEach(el=>{{
 </script>
 </body></html>"""
 
-    (OUT / "actions.html").write_text(actions_page)
-    print(f"wrote actions.html ({sum(len(s.get('items',[])) for s in sections)} action items)")
+    (OUT / "dejaviewed.html").write_text(actions_page)
+    print(f"wrote dejaviewed.html ({sum(len(s.get('items',[])) for s in sections)} action items)")
 else:
-    print("skipping actions.html (no data/actions.json — run build_actions.py first)")
+    print("skipping dejaviewed.html (no data/actions.json — run build_actions.py first)")
 
 # ---------- Guide pages ----------
 for slug in guide_files:

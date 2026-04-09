@@ -76,7 +76,7 @@ The user MUST provide or set up before the skill runs:
 │   └── <slug>.md                   # deep-dive markdown guides
 ├── site/
 │   ├── index.html                  # main catalog (all sources)
-│   ├── actions.html                # ACTION PLAN — "what to do with all of it"
+│   ├── dejaviewed.html              # THE DEJAVIEWED PAGE — summary + actions + install
 │   ├── <collection>.html           # per-collection pages
 │   ├── guides/<slug>.html          # rendered guide pages
 │   └── thumb/<shortcode>.jpg       # post thumbnails
@@ -266,6 +266,7 @@ Resume-safe (skip existing). 1.5s pacing. Cookie session required.
 ### Phase 7: Render Static Site (render.py)
 
 render.py is the main output generator. It builds:
+- `site/dejaviewed.html` — summary page: hero + install/sources sidebar + action plan sections
 - `site/index.html` — all posts, all collections
 - `site/<collection>.html` — per-collection views
 - `site/guides/<slug>.html` — deep-dive guide pages
@@ -285,10 +286,11 @@ render.py is the main output generator. It builds:
 - Gradient text headlines: white → violet → pink
 - Radial gradient backdrop on hero
 
-**Hero Block (top of page):**
-- 1/2 + 1/2 horizontal grid
-- Left half: title (gradient text), WHY paragraph, BAN strip (4 stats: posts, creators, guides, S-tier)
-- Right half: Creators panel (scrollable, max-height: 170px)
+**Hero Block (top of every page):**
+- 1/2 + 1/2 horizontal grid (`hero-grid`)
+- Left half (`hero-left`): title (gradient text), WHY paragraph, BAN stats strip
+- Right half: Creators panel (catalog pages) OR install/sources sidebar (dejaviewed page)
+- Responsive: stacks to single column at 900px
 
 **Creators Panel:**
 - Every creator who contributed posts (EXCLUDE the catalog owner/curator from graph)
@@ -333,12 +335,15 @@ B: #60a5fa (blue)    C: #6a6a80 (gray)
 When "All" category filter is active, group cards under section headers:
 Guides → Repos → Skills → Tools → Platforms → Art → Design → UI/UX → Resources
 
-**Skill Callout (header area, index only):**
+**Navigation:**
+- `DEJAVIEWED` tab (gold gradient) → `ALL` → source group labels with sub-page pills
+- Source groups: platform label (e.g., "Instagram") with collection sub-links (AI1/AI2/etc.) nested inline
+- `.src-group` container wraps `.src-label` + `.sub-links` with pill-shaped sub-nav items
+- Active tab/sub-tab gets gradient highlight
+
+**Skill Callout (on catalog pages, below hero):**
 - Show install + invoke commands
 - Collapsible example prompt
-
-**Quick Commands Block:**
-- Show pip install deps, invoke skill command
 
 **Guide Pages:**
 - Render markdown with `marked.js` + `DOMPurify` (security: no raw innerHTML)
@@ -383,9 +388,9 @@ If the user has additional curated content beyond saves/bookmarks (repos, guides
 - These get "Browse ↗" buttons (green) instead of "Open post ↗"
 - Same title/summary/link quality standards apply
 
-### Phase 9: Action Plan (THE KILLER FEATURE)
+### Phase 9: The DejaViewed Page (THE KILLER FEATURE)
 
-The catalog answers "what did I save?" — the Action Plan answers **"what should I actually DO?"**
+The catalog answers "what did I save?" — the DejaViewed page answers **"what should I actually DO?"**
 
 ```bash
 python3 build_actions.py
@@ -411,7 +416,17 @@ Each action item:
 
 Also generates a **Save Profile** — a witty 1-2 sentence assessment of the user's hoarding habits based on the distribution (e.g., "You save mostly repos and tools but only 5% are guides — you hoard more than you study.")
 
-The Action Plan page renders as `site/actions.html` with its own nav tab.
+**Page layout — matches the catalog pages:**
+- Same hero-grid: left column = title + WHY + BAN stats, right column = sidebar with Install card + Sources card + Save Profile
+- Section jump pills below hero (one per action category, with item counts)
+- Action items in 3-column masonry cards with tier-colored left borders
+- Click-to-copy on all command code blocks
+
+**Nav structure:**
+- `DEJAVIEWED` (gold gradient, first position) → `ALL` → source groups (e.g., "Instagram" label with AI1/AI2/AI3/AI4 sub-links)
+- Source groups are expandable — each platform gets a label with its collection sub-pages nested inline
+
+The DejaViewed page renders as `site/dejaviewed.html` — the primary landing page and first nav tab.
 
 ---
 
@@ -441,7 +456,11 @@ The Action Plan page renders as `site/actions.html` with its own nav tab.
 
 12. **Monospace body font reads better** for this kind of technical catalog than sans-serif (Inter). Match ai3-catalog's `SF Mono` stack.
 
-13. **NEVER unconditionally overwrite card_title in render.py.** The enriched title in catalog.jsonl IS the title. Render.py must only set card_title as a FALLBACK when the field is empty/missing. If you write `p["card_title"] = derived_title` without checking first, you'll stomp every enriched title back to garbage like "Claude" on every render. This was the single most repeated bug in the original build — caught and asked to fix THREE times.
+13. **The DejaViewed summary page must match the catalog page layout.** Use the same `hero-grid` with left/right columns — NOT a centered hero block. Left = title + WHY + BANs. Right = install/sources sidebar. Section jump pills below. Keep it compact — don't waste vertical space with big centered text blocks.
+
+14. **Long code commands in narrow grid columns will overlap.** Use `white-space:nowrap;overflow-x:auto` on code blocks in sidebars/cards — they scroll instead of overlapping adjacent elements.
+
+15. **NEVER unconditionally overwrite card_title in render.py.** The enriched title in catalog.jsonl IS the title. Render.py must only set card_title as a FALLBACK when the field is empty/missing. If you write `p["card_title"] = derived_title` without checking first, you'll stomp every enriched title back to garbage like "Claude" on every render. This was the single most repeated bug in the original build — caught and asked to fix THREE times.
 
 ---
 
@@ -464,3 +483,7 @@ Before declaring done, verify:
 - [ ] Cookie values never appear in any output
 - [ ] Drop rate is 10-20%, not 40%+
 - [ ] Masonry layout with 3 columns, responsive breakpoints
+- [ ] DejaViewed summary page has hero-grid layout (not centered hero block)
+- [ ] DejaViewed page has install/sources sidebar, section jump pills, action cards
+- [ ] Nav order: DEJAVIEWED (gold) → ALL → source groups with sub-links
+- [ ] File is `dejaviewed.html` (not playbook.html or actions.html)
