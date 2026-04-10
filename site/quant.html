@@ -1,0 +1,530 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quant — Mathematical Trading Models · DejaViewed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f;--bg-2:#0f0f1a;--surface:#12121a;
+  --panel:rgba(255,255,255,0.03);--panel-2:rgba(255,255,255,0.05);
+  --border:rgba(255,255,255,0.08);--border-hi:rgba(255,255,255,0.15);
+  --text:#e8e8f0;--text-dim:#a0a0b8;--text-mute:#6a6a80;
+  --accent:#a78bfa;--accent-2:#f472b6;
+  --c-repo:#4cda8c;--c-tool:#f0a050;--c-skill:#e060a0;--c-guide:#a78bfa;
+  --c-platform:#e0d040;--c-resource:#40d0e0;--c-art:#f05060;--c-design:#fb7185;--c-uiux:#60a5fa;
+  --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
+  --radius:14px;--radius-sm:8px;
+}
+*{box-sizing:border-box;min-width:0}html,body{margin:0;padding:0;overflow-x:hidden}
+body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
+  background-attachment:fixed}
+a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px;overflow:hidden}
+header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
+.head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .tagline{color:var(--text-dim);font-size:13px;font-weight:500;margin-top:2px}
+.brand .tagline a{color:var(--accent-2);font-weight:700}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+.nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+.src-group{display:inline-flex;align-items:center;gap:2px;padding:3px 4px 3px 0;border-radius:999px;background:var(--panel);border:1px solid var(--border)}
+.src-group.active-group{border-color:rgba(167,139,250,.4)}
+.src-label{padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.sub-links{display:inline-flex;gap:2px}
+.sub-links a.sub{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700;color:var(--text-dim);background:transparent;border:1px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.sub-links a.sub:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
+.sub-links a.sub.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5);color:#fff}
+
+.skill-callout{margin:22px 0 0;padding:20px 22px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(244,114,182,.05));border:1px solid rgba(167,139,250,.25);border-radius:var(--radius);font-size:14px}
+.skill-callout strong{color:#fff}
+.skill-callout code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 8px;border-radius:6px;font-size:12.5px;font-family:'JetBrains Mono',Menlo,monospace;color:var(--accent)}
+.skill-callout details{margin-top:12px}
+.skill-callout summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0}
+.skill-callout pre{margin:10px 0 0;padding:14px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:var(--radius-sm);overflow-x:auto;font-size:12px;line-height:1.55;font-family:'JetBrains Mono',Menlo,monospace;color:var(--text-dim);white-space:pre-wrap}
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px;overflow-wrap:break-word;word-wrap:break-word}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1!important}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0;overflow:hidden}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}
+  .wrap{padding:0 14px}
+  .hero{padding:20px 0 6px}
+  .bans{grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+  .ban{padding:10px 12px}
+  .ban .v{font-size:20px}
+  .creators{padding:14px}
+  .bar-scroll{max-height:140px}
+  .skill-callout{padding:14px 16px;font-size:13px}
+  .section-head h3{font-size:18px}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:26px}
+  header.site{position:static}
+  .head-row{flex-direction:column;gap:10px;align-items:flex-start}
+  .nav{width:100%;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .nav::-webkit-scrollbar{display:none}
+  .nav a{flex-shrink:0}
+  .src-group{flex-shrink:0}
+  .grid{column-count:1!important}
+  .bar-row{grid-template-columns:90px 1fr 24px;font-size:10.5px}
+  .card{padding:14px}
+  .card .ctitle{font-size:12px}
+  .card .summary{font-size:11.5px}
+  .hero p.why{font-size:13px}
+  .bans{grid-template-columns:repeat(3,1fr)}
+  .btn{padding:7px 10px;font-size:11px}
+  .commands{padding:14px}
+  .cmd-row{flex-direction:column;align-items:flex-start;gap:4px}
+  .cmd-row code{white-space:pre-wrap;word-break:break-all;font-size:10.5px}
+  .thumb{margin:12px -14px -14px -14px}
+}
+@media(max-width:400px){
+  .wrap{padding:0 10px}
+  .hero h2{font-size:22px}
+  .bans{grid-template-columns:repeat(2,1fr)}
+  .ban .v{font-size:18px}
+  .nav a{padding:5px 8px;font-size:10px}
+  .card .actions{flex-direction:column;gap:6px}
+  .btn{width:100%}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<header class="site"><div class="wrap head-row">
+  <div class="brand">
+    <h1>DejaViewed</h1>
+    <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
+  </div>
+  <nav class="nav"><a class="actions-nav" href="">DEJAVIEWED</a><a class="" href="catalog.html">ALL</a><span class="src-group active-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="ai1.html">AI1</a><a class="sub" href="ai2.html">AI2</a><a class="sub" href="ai3.html">AI3</a><a class="sub" href="ai4.html">AI4</a><a class="sub active" href="quant.html">Quant</a></span></span></nav>
+</div></header>
+<div class="wrap"><div class="skill-callout">
+  <strong>✨ Built with the <code>dejaviewed</code> skill for Claude Code.</strong> You've saved this before.
+  <div style="margin-top:10px;color:var(--text-dim)">
+    <strong>Install:</strong> <code>/plugin install dejaviewed</code> &nbsp;·&nbsp;
+    <strong>Invoke:</strong> <code>/dejaviewed &lt;instagram-saved-url&gt;</code> &nbsp;·&nbsp;
+    or just ask Claude: <em>"dejaviewed these IG saves"</em>
+  </div>
+  <details><summary>📋 Copy the example prompt that built this catalog</summary>
+<pre>Hi Claude. I have these Instagram saved collections — please run the dejaviewed workflow on them:
+
+https://www.instagram.com/&lt;user&gt;/saved/&lt;collection&gt;/&lt;id&gt;/
+https://www.instagram.com/&lt;user&gt;/saved/&lt;collection-2&gt;/&lt;id2&gt;/
+
+Full pipeline:
+ 1. Scrape every post (cookies+requests primary, MCP Playwright fallback). Cookie-safe.
+ 2. Classify every post (summary, type, domains, tools, repos, audience, deep-dive flag).
+ 3. Write a deep-dive guide for every high-signal topic in guides/&lt;slug&gt;.md and clone the repo.
+ 4. Curate S/A/B/C tiers, thematic buckets, project stacks, and a 'start here' list.
+ 5. Render a mobile-first dark HTML catalog: one page per collection + combined index.
+ 6. Header callout crediting my IG handle and explaining how to install/invoke dejaviewed.
+
+My IG handle is @myhandle.</pre></details>
+  <div style="margin-top:10px;color:var(--text-mute);font-size:12px">Cookie-safe scraping: cookie values are never logged, printed, or written to disk — only existence checks.</div>
+</div></div>
+<section class="hero"><div class="wrap">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <h2>Quant — Mathematical Trading Models</h2>
+      <p class="why">Stochastic processes, chaos theory, signal processing, and statistical mechanics applied to financial markets. Every post from @quant.traderr decoded.</p>
+      <div class="bans">
+  <div class="ban"><div class="v">27</div><div class="l">Posts</div></div>
+  <div class="ban"><div class="v">1</div><div class="l">Creators</div></div>
+  <div class="ban"><div class="v">8</div><div class="l">S-tier</div></div>
+  <div class="ban"><div class="v">11</div><div class="l">A-tier</div></div>
+  <div class="ban"><div class="v">1</div><div class="l">Repos</div></div>
+  <div class="ban"><div class="v">0</div><div class="l">Deep dives</div></div>
+  <div class="ban"><div class="v">14</div><div class="l">Stacks</div></div>
+</div>
+    </div>
+    <div><div class="creators">
+  <h3>👥 1 creators cited</h3>
+  <div class="sub">Each bar = one creator. Each segment = one saved post, colored by tier. Click a segment to jump to its card.</div>
+  <div class="bar-scroll"><div class="bar-list"><div class="bar-row"><a class="handle" href="https://instagram.com/quant.traderr" target="_blank" rel="noopener">@quant.traderr</a><div class="bar-track"><a class="seg tS" style="width:3.704%" href="#post-DTLkCVXE7O6" title="Phase Space Reconstruction — unfolding hidden BTC volatility dynamics — S-tier"></a><a class="seg tS" style="width:3.704%" href="#post-DW6uAQdk1r0" title="Heston Model — stochastic volatility for realistic options pricing — S-tier"></a><a class="seg tS" style="width:3.704%" href="#post-DW1kTMcExSj" title="Hidden Markov Models — detecting market regime shifts automatically — S-tier"></a><a class="seg tS" style="width:3.704%" href="#post-DWzAGZzE9gV" title="Avellaneda-Stoikov — optimal spread calculation for market makers — S-tier"></a><a class="seg tS" style="width:3.704%" href="#post-DVEU6cyjCaq" title="Volatility Surface — regime shifts from smile to smirk — S-tier"></a><a class="seg tS" style="width:3.704%" href="#post-DUx9t_FE0CY" title="Wasserstein Distance — measuring the backtest-to-live reality gap — S-tier"></a><a class="seg tS" style="width:3.704%" href="#post-DTx3Bi3E-hp" title="Avalanche Model — self-organized criticality explains market crashes — S-tier"></a><a class="seg tS" style="width:3.704%" href="#post-DTXv8W_k-0x" title="Random Matrix Theory — cleaning correlation matrices from noise — S-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DTsn_IKE06E" title="Ising Model — modeling herd behavior and market phase transitions — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DW4GU9HE8nd" title="Cox Process — doubly stochastic Poisson for bursty market events — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DVyXe17E2iz" title="Ornstein-Uhlenbeck Process — mean reversion for pairs trading — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DVL5slFE51o" title="3D Yield Curve Surface — visualizing cross-asset macro regimes — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DU8m2RCE1Ea" title="Omori's Law — earthquake aftershock math applied to market crashes — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DUlVcRVE8xv" title="Singular Spectrum Analysis — non-parametric trend extraction from noisy data — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DUTQPorEwuP" title="Lempel-Ziv Complexity — compression algorithms to detect market predictability — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DT3Ig_-E7DW" title="Minimum Spanning Tree — graph theory reveals S&amp;P 500 hidden structure — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DTiLFogE4KT" title="Lyapunov Exponent — measuring chaos in BTC tick-level microstructure — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DTfqcYUE2uV" title="Kalman Filter — adaptive signal extraction for non-stationary markets — A-tier"></a><a class="seg tA" style="width:3.704%" href="#post-DTPrgWIk4Ns" title="Hurst Exponent — 3D surface of BTC memory and mean-reversion zones — A-tier"></a><a class="seg tB" style="width:3.704%" href="#post-DVTjJW9E1nL" title="Wave Function Collapse analogy — modeling pre-event price uncertainty — B-tier"></a><a class="seg tB" style="width:3.704%" href="#post-DUBaBX0kxSA" title="Fast Fourier Transform — decomposing NVDA price into frequency signals — B-tier"></a><a class="seg tB" style="width:3.704%" href="#post-DT8BX8vEzHm" title="Monte Carlo — 25,000 shuffled BTC returns to separate edge from luck — B-tier"></a><a class="seg tB" style="width:3.704%" href="#post-DTnQ72fk2fm" title="Tick Data vs OHLC — you're trading on 0.002% of available data — B-tier"></a><a class="seg tB" style="width:3.704%" href="#post-DTdWruOE1sm" title="Continuous Wavelet Transform — time-frequency analysis of QQQ — B-tier"></a><a class="seg tB" style="width:3.704%" href="#post-DTaoXsmk4g0" title="Fisher Transform — Gaussian normalization for sharper trading signals — B-tier"></a><a class="seg tB" style="width:3.704%" href="#post-DTSn31Ek2DB" title="Stable Distribution — modeling fat-tailed crashes beyond Gaussian — B-tier"></a><a class="seg tC" style="width:3.704%" href="#post-DTAjTaBADAx" title="VectorBT — vectorized backtesting framework explained simply — C-tier"></a></div><div class="n">27</div></div></div></div>
+  <div class="legend"><span><i style="background:var(--s)"></i>S</span><span><i style="background:var(--a)"></i>A</span><span><i style="background:var(--b)"></i>B</span><span><i style="background:var(--c)"></i>C</span><span style="margin-left:auto">click bar → jump to post</span></div>
+</div></div>
+  </div>
+</div></section>
+<div class="wrap">
+  
+  <div class="layout">
+    <aside class="sidebar">
+  <h4>Search</h4>
+  <input id="search" class="search" placeholder="captions, tools, repos…">
+  <h4>Category</h4>
+  <div class="btn-group"><button class="cat-btn on" data-cat="all"><span><span class="dot"></span> All</span><span class="n">27</span></button><button class="cat-btn" data-cat="repo"><span><span class="dot"></span> Repos</span><span class="n">1</span></button><button class="cat-btn" data-cat="guide"><span><span class="dot"></span> Guides</span><span class="n">0</span></button><button class="cat-btn" data-cat="skill"><span><span class="dot"></span> Skills</span><span class="n">27</span></button><button class="cat-btn" data-cat="tool"><span><span class="dot"></span> Tools</span><span class="n">5</span></button><button class="cat-btn" data-cat="platform"><span><span class="dot"></span> Platforms</span><span class="n">0</span></button><button class="cat-btn" data-cat="resource"><span><span class="dot"></span> Resources</span><span class="n">0</span></button><button class="cat-btn" data-cat="art"><span><span class="dot"></span> Art</span><span class="n">0</span></button><button class="cat-btn" data-cat="design"><span><span class="dot"></span> Design</span><span class="n">0</span></button><button class="cat-btn" data-cat="uiux"><span><span class="dot"></span> UI / UX</span><span class="n">0</span></button></div>
+  <h4>Tier</h4>
+  <div class="tier-row">
+    <button class="tier-pill" data-t="S">S</button>
+    <button class="tier-pill" data-t="A">A</button>
+    <button class="tier-pill" data-t="B">B</button>
+    <button class="tier-pill" data-t="C">C</button>
+  </div>
+  
+  <h4>Sort</h4>
+  <select id="sort" class="sort-select">
+    <option value="tier">Tier (S→C)</option>
+    <option value="date">Date (newest)</option>
+    <option value="creator">Creator (A→Z)</option>
+  </select>
+</aside>
+    <main class="main" id="main-content"></main>
+  </div>
+</div>
+<footer class="site"><div class="wrap">
+  Curated by <a href="https://instagram.com/6ab3">@6ab3</a> · Built with the <code>dejaviewed</code> skill for Claude Code<br>
+  <span style="font-size:11px">All content sourced from public Instagram posts. Cookie-safe scraping. <span id="count"></span></span>
+</div></footer>
+<script>const POSTS=[{"post_url": "https://www.instagram.com/p/DTsn_IKE06E/", "creator": "@quant.traderr", "collection": "quant", "date": "January 19, 2026", "media_type": "image", "caption_original": "Modeling herd behavior with the Ising Model. 📊\n\nVisualizing market phase transitions using a 3D lattice.\n🟦 Blue = Sellers\n🟧 Orange = Buyers\n\nComment \"Ising\" for free code repo! 🚨🐍\n\n​At high \"temperatures\" (high volatility/noise), the market is random. But as social pressure increases, clusters form. Eventually, the system undergoes a spontaneous symmetry breaking—representing a massive trend or crash.\n\n​Built this using Python to visualize agent-based modeling concepts. Who else is using physics models for market analysis?\n\n#quantfinance #python #econophysics #algorithmictrading #datascience", "summary": "3D lattice visualization of the Ising model applied to financial markets. Blue=sellers, orange=buyers. At high volatility the market is random; as social pressure increases, clusters form leading to spontaneous symmetry breaking (crashes/trends). Built in Python for agent-based modeling.", "type": "technique", "domains": ["quant", "physics", "trading"], "audience": "advanced", "medium": "instagram", "tools_mentioned": ["Python"], "repos_or_projects_mentioned": [], "models_mentioned": ["Ising Model"], "techniques_mentioned": ["Agent-Based Modeling", "Phase Transitions", "Symmetry Breaking"], "key_takeaways": ["Ising model maps statistical mechanics to market herd behavior", "Phase transitions explain sudden market regime changes", "DM-bait for code repo"], "deep_dive_candidate": true, "deep_dive_topic": "ising-model-markets", "card_title": "Ising Model — modeling herd behavior and market phase transitions", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DTLkCVXE7O6/", "creator": "@quant.traderr", "collection": "quant", "date": "January 6, 2026", "media_type": "image", "caption_original": "Most traders look at a 2D chart of Price vs. Time. We’re looking at the Attractor.\n\n​Phase Space Reconstruction (PSR) allows us to take a single time series—in this case, BTCUSD Volatility—and \"unfold\" it into a multi-dimensional manifold. By using a time delay (\\tau=3 in this plot), we can map the underlying hidden dynamics of the market.\n\n​Why this matters for a Quant:\n​System State: It shows whether the market is in a stable regime or a chaotic transition.\n​Predictability: If the points cluster into a specific shape (a \"Strange Attractor\"), the system has a deterministic structure, meaning it’s not just noise—it's tradeable.\n​Regime Detection: Changes in the \"density\" or \"shape\" of this manifold often precede massive volatility breakout.\n\n#econophysics #quant #quantfinance #chaostheory  #algorithmictrading", "summary": "Uses Phase Space Reconstruction (PSR) with time delay tau=3 to unfold BTCUSD volatility into a multi-dimensional manifold. Reveals whether market is in stable regime or chaotic transition. Key for quantitative regime detection.", "type": "technique", "domains": ["quant", "crypto", "chaos-theory"], "audience": "advanced", "medium": "instagram", "tools_mentioned": ["Python"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Phase Space Reconstruction", "Time Delay Embedding", "Attractor Analysis"], "key_takeaways": ["PSR reveals hidden market dynamics beyond price vs time", "Clustered attractors suggest predictability", "Scattered points indicate chaotic regimes"], "deep_dive_candidate": true, "deep_dive_topic": "phase-space-reconstruction", "card_title": "Phase Space Reconstruction — unfolding hidden BTC volatility dynamics", "drop": false, "tier": "S", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DW6uAQdk1r0/", "creator": "@quant.traderr", "collection": "quant", "date": "April 9, 2026", "media_type": "image", "caption_original": "Black-Scholes assumes volatility is constant. The market knows it isn't. 🛑\n\n​Enter: The Heston Model. 🧠📈\n​Instead of treating volatility as a flat number, the Heston Model introduces stochastic volatility. It recognizes that volatility has a mind of its own, constantly shifting and reverting to a mean over time.\n\nBy modeling volatility as its own random process, we can actually capture the volatility smile and skew that basic models completely miss. This is how you price options closer to reality.\n\n​Drop a \"Heston\" in the comments if you want to see the Python code behind this 3D visualization! 👇\n\n#quantfinance #python #math #algorithmictrading  #trading", "summary": "Explains why Black-Scholes fails (constant vol assumption) and how the Heston Model introduces stochastic volatility. Captures the volatility smile and skew that basic models miss. Essential for options pricing.", "type": "technique", "domains": ["quant", "options", "derivatives"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": ["Heston Model", "Black-Scholes"], "techniques_mentioned": ["Stochastic Volatility", "Mean Reversion", "Volatility Smile"], "key_takeaways": ["Black-Scholes assumes constant vol — unrealistic", "Heston models vol as its own random process", "Captures smile and skew for better options pricing"], "deep_dive_candidate": true, "deep_dive_topic": "heston-model", "card_title": "Heston Model — stochastic volatility for realistic options pricing", "drop": false, "tier": "S", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DW4GU9HE8nd/", "creator": "@quant.traderr", "collection": "quant", "date": "April 8, 2026", "media_type": "image", "caption_original": "Standard Poisson processes assume events happen at a constant rate. But in real financial markets, whether it's trade arrivals in the limit order book, corporate defaults, or volatility spikes—events come in waves. 🌊\n\n​That’s where the Cox Process (Doubly Stochastic Poisson Process) comes in.\n\n​Instead of a fixed arrival rate, the intensity itself is a random process. In this visualization, the intensity follows a Cox-Ingersoll-Ross (CIR) model.\n\n​When the intensity ribbon spikes, notice how the event dots cluster together. This is exactly how we model clustered market micro-structure events in algorithmic trading. 📈\n\n🚨 Comment \"Cox\" for free code repository!", "summary": "Standard Poisson processes assume constant event rates, but markets are bursty. The Cox Process (Doubly Stochastic Poisson) uses a CIR-driven random intensity to model trade arrivals, defaults, and volatility spikes more realistically.", "type": "technique", "domains": ["quant", "stochastic-processes"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": ["Cox Process", "Cox-Ingersoll-Ross Model"], "techniques_mentioned": ["Doubly Stochastic Poisson", "Point Processes", "Intensity Modeling"], "key_takeaways": ["Markets have bursty event arrivals, not constant rates", "Cox Process models random intensity", "Applications: order book, defaults, vol spikes"], "deep_dive_candidate": true, "deep_dive_topic": "cox-process", "card_title": "Cox Process — doubly stochastic Poisson for bursty market events", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DW1kTMcExSj/", "creator": "@quant.traderr", "collection": "quant", "date": "April 7, 2026", "media_type": "image", "caption_original": "Stop treating every market environment exactly the same. 🛑\n\n​Most traders lose money because they apply a trending strategy in a ranging market, or a mean-reversion strategy during a massive breakout.\n\n​Enter: Hidden Markov Models (HMMs). 🧠\n​Instead of relying on lagging indicators, this machine learning model analyzes observable data (like returns and volatility) to mathematically deduce the \"hidden\" state of the market:\n🟢 State 1: Low Volatility Bull Market\n🔴 State 2: High Volatility Bear Market\n🟡 State 3: Sideways / Ranging\n\n​When you know the regime, you know exactly which strategy to deploy. No guessing. Just math.\n\n​Drop \"Markov\"  in the comments if you want a deeper breakdown of the Python code behind this!", "summary": "Uses HMMs to mathematically deduce hidden market states from observable returns and volatility. Identifies low-vol bull, high-vol bear, and recovery regimes. Better than lagging indicators for strategy selection.", "type": "technique", "domains": ["quant", "ml", "trading"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": ["Hidden Markov Model"], "techniques_mentioned": ["Regime Detection", "State Estimation", "Viterbi Algorithm"], "key_takeaways": ["HMMs detect hidden market states from observable data", "Match strategy to regime: trend in bull, mean-revert in range", "Superior to lagging indicator-based regime detection"], "deep_dive_candidate": true, "deep_dive_topic": "hmm-regime-detection", "card_title": "Hidden Markov Models — detecting market regime shifts automatically", "drop": false, "tier": "S", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DWzAGZzE9gV/", "creator": "@quant.traderr", "collection": "quant", "date": "April 6, 2026", "media_type": "image", "caption_original": "​The math behind the market. 🧠 \n\nThe Avellaneda-Stoikov model solves the stochastic control problem for market makers. Instead of predicting price direction, it calculates the optimal spread based on volatility, time, and your current inventory.\n\n🚨 Comment \"Spread\" for free code repository!\n\n#quantfinance #algorithmictrading #math #econophysics #python", "summary": "The Avellaneda-Stoikov model solves the stochastic control problem for market making. Calculates optimal bid-ask spread based on volatility, time horizon, and inventory. Foundation of modern HFT market making. DM-bait for code repo.", "type": "technique", "domains": ["quant", "market-making", "hft"], "audience": "advanced", "medium": "instagram", "tools_mentioned": ["Python"], "repos_or_projects_mentioned": [], "models_mentioned": ["Avellaneda-Stoikov Model"], "techniques_mentioned": ["Stochastic Control", "Optimal Market Making", "Inventory Management"], "key_takeaways": ["Calculates optimal spread, not price direction", "Balances inventory risk vs profit", "Foundation of modern algorithmic market making"], "deep_dive_candidate": true, "deep_dive_topic": "avellaneda-stoikov", "card_title": "Avellaneda-Stoikov — optimal spread calculation for market makers", "drop": false, "tier": "S", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DVyXe17E2iz/", "creator": "@quant.traderr", "collection": "quant", "date": "March 12, 2026", "media_type": "image", "caption_original": "Everything returns to the mean eventually. 📉📈\n​This is the Ornstein-Uhlenbeck (OU) process in action. \nWhile most retail traders chase trends, quants look for the \"elasticity\" of the market.\n\n​In this simulation:\n​Theta: The speed of reversion. How fast the price \"snaps back\" to the mean.\n​Mu: The long-term equilibrium level (the magnet).\n​Sigma: The volatility or \"noise\" around that path.\n\n​In quantitative trading, we use this to model pairs trading, interest rate spreads, and volatility signatures. When the price gets too far from mu, the probability of a reversal increases.\n\nComment \"OU\" to get free code repo to test the convergence on your data. 🚨", "summary": "Simulates the OU process showing mean reversion dynamics with theta (reversion speed), mu (equilibrium), and sigma (noise). Core model for pairs trading, interest rate spreads, and volatility signals in quantitative finance.", "type": "technique", "domains": ["quant", "stochastic-processes", "trading"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": ["Ornstein-Uhlenbeck Process"], "techniques_mentioned": ["Mean Reversion", "Pairs Trading", "Stochastic Differential Equations"], "key_takeaways": ["OU process models mean-reverting behavior", "Key params: theta (speed), mu (mean), sigma (noise)", "Applied to pairs trading and rate spreads"], "deep_dive_candidate": true, "deep_dive_topic": "ornstein-uhlenbeck", "card_title": "Ornstein-Uhlenbeck Process — mean reversion for pairs trading", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DVTjJW9E1nL/", "creator": "@quant.traderr", "collection": "quant", "date": "February 28, 2026", "media_type": "image", "caption_original": "Before the news hits, the market is in a state of superposition. 🌊\n\n​Just like a wave function in quantum mechanics, an asset's price pre-event represents a probability distribution of all possible outcomes. But the moment the data drops, whether it's an earnings report, a macro shift, or a sudden order book imbalance, the wave abruptly collapses into a single reality: Price Discovery. 💥\n\n​This is exactly why modeling uncertainty, probability, and tail risks is everything when developing systematic strategies.\n\n​Are you trading the probability wave, or waiting for the collapse?\n\n​Want to run this Python simulation yourself? Comment \"Wave\" and I'll DM you the free code repo! 🌊💻\n\n#quantfinance #algorithmictrading #econophysics #chaostheory #math", "summary": "Draws analogy between quantum wave function collapse and price discovery after news events. Pre-event price is a probability distribution; the event collapses it to a single reality. Emphasizes modeling uncertainty and tail risks for systematic trading.", "type": "inspiration", "domains": ["quant", "physics", "risk"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Probability Distribution", "Tail Risk Modeling", "Event-Driven Trading"], "key_takeaways": ["Pre-event prices represent probability distributions", "News collapses uncertainty into price discovery", "Model tail risks, don't ignore them"], "deep_dive_candidate": false, "deep_dive_topic": "", "card_title": "Wave Function Collapse analogy — modeling pre-event price uncertainty", "drop": false, "tier": "B", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DVL5slFE51o/", "creator": "@quant.traderr", "collection": "quant", "date": "February 25, 2026", "media_type": "image", "caption_original": "Visualizing the foundation of cross-asset modeling. 🌐📉\n\n​Safe assets like US Treasuries are the baseline for pricing risk across all markets. When macro shocks hit, the yield curve warps, and those ripples dictate cross-asset correlations.\n\n​Watch how the 3D surface reacts to distinct macro regimes:\n​The Volatility Shock (COVID-19): VIX explodes and yields violently compress as capital floods into safety.\n​The Tightening Cycle: The Fed aggressively hikes, warping the surface and severely inverting the curve as the cost of short-term capital skyrockets.\n\n​If your systemic models aren't dynamically adjusting to these structural shifts in the risk-free rate, your cross-asset correlations are likely breaking. You can't model risk assets without first understanding the ground truth of safe assets.\n\n​Want to build this visualization and test how macro shifts impact your models? 👇\n\n​Comment 'Yield' below and I’ll send you the code repo so you can plug in your own data.\n\n#quantfinance #math #algorithmictrading #trading #statistics", "summary": "3D visualization of yield curve dynamics across macro regimes: COVID-19 vol shock (VIX spike, yield compression), Fed tightening cycle (curve inversion). Shows how Treasury yield warping drives cross-asset correlations.", "type": "technique", "domains": ["quant", "macro", "fixed-income"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Yield Curve Modeling", "Cross-Asset Correlation", "Macro Regime Analysis"], "key_takeaways": ["Yield curve shape drives cross-asset pricing", "Vol shocks compress yields as capital flees to safety", "Tightening cycles invert the curve"], "deep_dive_candidate": false, "deep_dive_topic": "", "card_title": "3D Yield Curve Surface — visualizing cross-asset macro regimes", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DVEU6cyjCaq/", "creator": "@quant.traderr", "collection": "quant", "date": "February 22, 2026", "media_type": "image", "caption_original": "Most traders only look at price. Quants look at the Volatility Surface. 📉\n\n​What you are watching is a Volatility Regime Shift.\n​The X-axis is Moneyness (Strike/Spot). The Y-axis is Time to Maturity. The Z-axis is Implied Volatility.\n\n​During normal conditions, the surface forms a gentle 'smile'. But watch what happens right before a massive tail-risk event. The market violently bids up short-term, Out-Of-The-Money (OTM) puts to buy downside protection. The 'smile' warps into a steep 'smirk,' causing a massive spike on the left side of the grid.\n\n​When markets are volatile, the entire volatility surface tends to become elevated and exhibit a more pronounced curve, reflecting higher probabilities of large moves being priced in.\n\n​The math doesn't lie. The panic is always priced into the derivatives market first.\n\n#quantfinance #algorithmictrading #finance #python #math", "summary": "3D visualization of implied volatility surface (moneyness x maturity x IV). Shows how the surface warps from gentle 'smile' to steep 'smirk' before tail-risk events as markets bid up OTM puts for downside protection.", "type": "technique", "domains": ["quant", "options", "volatility"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Implied Volatility Surface", "Volatility Smile/Smirk", "Tail Risk Detection"], "key_takeaways": ["Vol surface shape reveals market fear", "Smile → smirk transition signals tail risk", "OTM put demand warps the surface before crashes"], "deep_dive_candidate": true, "deep_dive_topic": "volatility-surface", "card_title": "Volatility Surface — regime shifts from smile to smirk", "drop": false, "tier": "S", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DU8m2RCE1Ea/", "creator": "@quant.traderr", "collection": "quant", "date": "February 19, 2026", "media_type": "image", "caption_original": "Earthquakes and Market Crashes have one weird mathematical thing in common...\n\n​It’s called Omori’s Law. Originally used by geophysicists to predict the frequency of earthquake aftershocks, we can apply this directly to financial markets.\n\n​👇 Comment \"Omori\" below and I’ll DM you the free code repo to calculate decay rates for yourself.\n\n​When a major crash happens (like the March 2020 bottom shown here), the \"aftershocks\" of market volatility don't just disappear randomly. They decay at a highly predictable power-law rate ​(t⁻ᵖ).\n\n​If you look at the log-log scale at the end of the video, the event rate for different volatility thresholds (|r| > 0.5%, 1.0%, etc.) stabilizes into a clear downward slope.\n\n​The takeaway? Markets have a mathematical memory. Panic dissipates on a schedule", "summary": "Applies geophysics' Omori's Law to financial markets. Post-crash volatility aftershocks decay at a predictable rate following power-law dynamics, not randomly. Shows March 2020 crash decay pattern. DM-bait for code repo.", "type": "technique", "domains": ["quant", "physics", "volatility"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": ["Omori's Law"], "techniques_mentioned": ["Power Law Decay", "Aftershock Modeling", "Volatility Clustering"], "key_takeaways": ["Post-crash vol decays by power law, not randomly", "Same math as earthquake aftershock prediction", "Can time post-crash mean reversion entries"], "deep_dive_candidate": true, "deep_dive_topic": "omori-law-markets", "card_title": "Omori's Law — earthquake aftershock math applied to market crashes", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DUx9t_FE0CY/", "creator": "@quant.traderr", "collection": "quant", "date": "February 15, 2026", "media_type": "image", "caption_original": "The most painful chart in trading. 📉\n\n​Your backtest has a Sharpe of 3.0, but your live account is bleeding? That’s called Distribution Shift, and it kills more strategies than bad fees ever will.\n\n​In this visualization, I’m using Wasserstein Distance and Sinkhorn Divergence to mathematically measure the \"Reality Gap\" between historical simulations (Blue) and live market conditions (Orange). If these distributions drift too far apart, your model is broken.\n\n​Stop guessing if your strategy is overfitting. Measure it.\n\n​👇 Comment \"Wasserstein\" below and I’ll DM you the Python repo to build this yourself.\n\n#quantfinance #algorithmictrading #econophysics #python #math", "summary": "Uses Wasserstein Distance and Sinkhorn Divergence to mathematically measure drift between backtest distributions (blue) and live market conditions (orange). Detects distribution shift that kills more strategies than bad fees.", "type": "technique", "domains": ["quant", "ml", "backtesting"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Wasserstein Distance", "Sinkhorn Divergence", "Distribution Shift Detection", "Optimal Transport"], "key_takeaways": ["High backtest Sharpe doesn't guarantee live performance", "Wasserstein distance quantifies strategy drift", "Monitor distribution shift to kill dead strategies early"], "deep_dive_candidate": true, "deep_dive_topic": "distribution-shift-detection", "card_title": "Wasserstein Distance — measuring the backtest-to-live reality gap", "drop": false, "tier": "S", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DUlVcRVE8xv/", "creator": "@quant.traderr", "collection": "quant", "date": "February 10, 2026", "media_type": "image", "caption_original": "Stop guessing, start decomposing. 📈\n\n​Is your time-series data buried under noise? Singular Spectrum Analysis (SSA) is one of the most robust non-parametric methods for extracting trends and periodicities without a fixed functional form.\n\nComment \"SSA\" and I’ll DM you the full repository for free! 💻\n\n​In this visualization, we break down global mass variations into:\n​Long-term trends (RC 1+7)\n​Annual & Semi-annual cycles (RC 2+3, 4+6+8)\n​High-frequency signals (RC 9)\n​By comparing major data centers like CSR, GFZ, and JPL, we can see the incredible consistency in the reconstructed components.\n\n#quantfinance #econophysics #algorithmictrading #math #python", "summary": "SSA decomposes time-series into trend, cycles, and noise without assuming a fixed functional form. Breaks data into reconstructed components (RC 1+7 trend, RC 2+3 annual, RC 9 high-freq). DM-bait for code repo.", "type": "technique", "domains": ["quant", "signal-processing"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Singular Spectrum Analysis", "Non-Parametric Decomposition", "Trend Extraction"], "key_takeaways": ["SSA extracts trends without assuming functional form", "Separates signal components by eigenvalue decomposition", "Robust alternative to Fourier for non-stationary data"], "deep_dive_candidate": true, "deep_dive_topic": "singular-spectrum-analysis", "card_title": "Singular Spectrum Analysis — non-parametric trend extraction from noisy data", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DUTQPorEwuP/", "creator": "@quant.traderr", "collection": "quant", "date": "February 3, 2026", "media_type": "image", "caption_original": "Your computer uses this to save space. 📂\nWe use it to save our capital. 📉\n\nThe Lempel-Ziv (LZ) algorithm is the math behind your .zip files. It’s designed to find and compress repeating patterns.\n\n​But in Econophysics, we use it to measure Market Entropy.\n\nComment \"Lempel\" and  I will DM you full Python source code for this LZ Complexity filter. ⚡️\n\n​Most traders only look at price magnitude. We look at price structure. When the market’s \"dictionary\" of unique patterns starts growing exponentially, the system is losing its memory.\n​A spike in LZ Complexity isn't just a number—it’s a warning that the trend is decaying and chaos is taking over.\n\n#quantfinance #algorithmictrading #econophysics #statistics #math", "summary": "Applies the LZ compression algorithm (behind .zip files) to financial time series. When LZ complexity is low, patterns repeat and the market is more predictable. When high, it's random noise. Novel cross-domain application.", "type": "technique", "domains": ["quant", "information-theory"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Lempel-Ziv Complexity", "Information Theory", "Pattern Detection"], "key_takeaways": ["Low LZ complexity = repeating patterns = more predictable", "High LZ complexity = random noise = less tradeable", "Cross-domain: compression math applied to markets"], "deep_dive_candidate": true, "deep_dive_topic": "lempel-ziv-markets", "card_title": "Lempel-Ziv Complexity — compression algorithms to detect market predictability", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DUBaBX0kxSA/", "creator": "@quant.traderr", "collection": "quant", "date": "January 27, 2026", "media_type": "image", "caption_original": "Stop trading the noise. Start seeing the signal. 📉📈\n\nFinancial markets are noisy. By applying the Fast Fourier Transform (FFT), we can decompose a stock's price action (like NVDA here) into different frequencies.\n\nGrab the full script repo, comment \"FFT\" to build this for your own portfolio. 💻\n\nThe top chart overlays the smoothed \"Signal\" (low-frequency trend) against the raw, jagged price action. The bottom chart isolates the \"High-Frequency Noise\"—the erratic movements that often trick traders into bad entries.\nMath doesn't lie; it just clarifies", "summary": "Applies FFT to NVDA price action to decompose it into frequency components, separating noise from dominant cycles. Shows how to identify the strongest periodic signals in price data.", "type": "technique", "domains": ["quant", "signal-processing"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Fast Fourier Transform", "Frequency Decomposition", "Spectral Analysis"], "key_takeaways": ["FFT separates noise from dominant market cycles", "Identifies strongest periodic signals in price data", "Foundation for frequency-based trading strategies"], "deep_dive_candidate": false, "deep_dive_topic": "", "card_title": "Fast Fourier Transform — decomposing NVDA price into frequency signals", "drop": false, "tier": "B", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DT8BX8vEzHm/", "creator": "@quant.traderr", "collection": "quant", "date": "January 25, 2026", "media_type": "image", "caption_original": "Most traders look at one backtest and think they have an edge. That’s just luck. 🎲\n\n​Real quants use Monte Carlo simulations. By shuffling the daily returns of a BTC-USD strategy 25,000 times, we don't just see what did happen—we see everything that could have happened.\n\nComment \"Monte\" for code repo to run the monte carlo for your own model. 🚨\n\n​The Red Line? That’s the 95% VaR (Value at Risk). If your strategy can survive that line, you might actually have an edge.\n\n#quantfinance #algorithmictrading #math #statistics #python", "summary": "Runs 25,000 Monte Carlo simulations by shuffling daily BTC-USD returns to test whether a strategy's performance is genuine edge or statistical luck. One backtest isn't enough — real quants demand statistical significance.", "type": "technique", "domains": ["quant", "crypto", "backtesting"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Monte Carlo Simulation", "Permutation Testing", "Statistical Significance"], "key_takeaways": ["One backtest proves nothing — could be luck", "25K permutations reveal true edge distribution", "If random beats your strategy, you have no edge"], "deep_dive_candidate": false, "deep_dive_topic": "", "card_title": "Monte Carlo — 25,000 shuffled BTC returns to separate edge from luck", "drop": false, "tier": "B", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DT3Ig_-E7DW/", "creator": "@quant.traderr", "collection": "quant", "date": "January 23, 2026", "media_type": "image", "caption_original": "The market isn’t random. It’s a network. 🤖\n\nComment \"MST\" and I will DM you the python code to run this simulation yourself. 🚨\n\nWe applied Graph Theory (Minimum Spanning Tree) to the S&P 500 to find the hidden \"Skeleton\" of the market. It strips away the random noise to show you exactly how sectors—like Tech and Energy—cluster together naturally.\n\n#quantfinance #algorithmictrading #econophysics #chaostheory #math", "summary": "Applies graph theory (Minimum Spanning Tree) to the S&P 500 to map the hidden network structure between stocks. Reveals sector clusters and systemic risk connections that traditional correlation matrices obscure. DM-bait for code.", "type": "technique", "domains": ["quant", "graph-theory", "risk"], "audience": "advanced", "medium": "instagram", "tools_mentioned": ["Python"], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Minimum Spanning Tree", "Graph Theory", "Network Analysis", "Correlation Networks"], "key_takeaways": ["MST reveals hidden market network structure", "Sector clusters visible in graph topology", "Systemic risk propagates along graph edges"], "deep_dive_candidate": true, "deep_dive_topic": "mst-market-networks", "card_title": "Minimum Spanning Tree — graph theory reveals S&P 500 hidden structure", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill", "tool"]}, {"post_url": "https://www.instagram.com/p/DTx3Bi3E-hp/", "creator": "@quant.traderr", "collection": "quant", "date": "January 21, 2026", "media_type": "image", "caption_original": "Stop looking for the \"news\" that caused the crash. 📉\n\nTraders look for the \"news\" that caused the drop. Quants know the truth: The market was already broken; the news just tipped it over.\n​This is the Bak–Tang–Wiesenfeld model. The crash is a feature, not a bug.\n\nComment \"Sandpile\" to get the code repo for free!⚠️\n\nIn physics, there’s a concept called Self-Organized Criticality. Imagine dropping grains of sand one by one. For a long time, nothing happens. The pile just grows.\n\n​But eventually, the system reaches a \"Critical State.\" The pile becomes so unstable that a single grain—indistinguishable from the millions before it—triggers a massive avalanche.\n\n#econophysics #algorithmictrading #finance #chaostheory #quantfinance", "summary": "Markets reach self-organized criticality where small perturbations trigger cascading failures. The 'news' doesn't cause the crash — the system was already at a critical state. Applies sandpile/avalanche dynamics from physics to explain market fragility.", "type": "technique", "domains": ["quant", "physics", "risk"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": ["Avalanche Model", "Self-Organized Criticality"], "techniques_mentioned": ["Sandpile Dynamics", "Critical State Analysis", "Cascading Failures"], "key_takeaways": ["Crashes aren't caused by news — system was already critical", "Self-organized criticality: small triggers → large cascades", "Monitor criticality metrics, not news headlines"], "deep_dive_candidate": true, "deep_dive_topic": "self-organized-criticality", "card_title": "Avalanche Model — self-organized criticality explains market crashes", "drop": false, "tier": "S", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DTnQ72fk2fm/", "creator": "@quant.traderr", "collection": "quant", "date": "January 17, 2026", "media_type": "image", "caption_original": "​MATH CHECK: YOU ARE TRADING ON 0.002% DATA. 📉\n\n​Unpopular Opinion: If you are only looking at OHLC candles, you aren't trading. You're gambling.\n​The math is brutal: A single daily candle compresses ~170,000 institutional trades into just 4 numbers.(Open, High, Low, Close).\n\n​That means you are actively ignoring 99.998% of the reality—the liquidity gaps, the hidden iceberg orders, and the real bid-ask pressure—just to draw a support line.\n\n​🚩 The Hard Question:\nIs that price action really \"market noise\"? Or is it just data you haven't learned how to read yet?\n\n#quantfinance #algorithmictrading #python #statistics #trading", "summary": "Daily OHLC candles compress ~86,400 seconds of market data into 4 numbers — throwing away 99.998% of information. Makes the case for tick-level and limit order book analysis over candle-based trading.", "type": "inspiration", "domains": ["quant", "market-microstructure"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Tick Data Analysis", "Market Microstructure", "LOB Analysis"], "key_takeaways": ["OHLC discards 99.998% of market data", "Tick-level analysis reveals hidden microstructure", "Candle-based trading is information-poor"], "deep_dive_candidate": false, "deep_dive_topic": "", "card_title": "Tick Data vs OHLC — you're trading on 0.002% of available data", "drop": false, "tier": "B", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DTiLFogE4KT/", "creator": "@quant.traderr", "collection": "quant", "date": "January 15, 2026", "media_type": "image", "caption_original": "This is what \"Noise\" actually looks like. 🦋📉\n\n​If you think the 5-minute chart is random, you haven’t seen the tick-level reality.\n\n​We visualized the Lyapunov Exponent of BTC-USD microstructure.\n\nHere’s the scary part 🚨:\n1️⃣ The Cyan and Magenta paths start at almost the exact same price.\n2️⃣ Within milliseconds of order flow, they diverge into completely different realities.\n​This is the Butterfly Effect in market microstructure. 🌪️🦋\n\nComment 'CHAOS' and I'll DM you the Python code to🐍\n\n​Most retail strategies fail because they assume a linear path. But in HFT, a single 1-lot buy order can shift the entire trajectory of the next 10 seconds.\n​This simulation is just the 5-minute timeframe.\n\nImagine the chaos happening inside the nanosecond charts where HFT algorithms actually fight. 🤖⚔️\n​Is your edge robust enough to survive the Chaos?\n\nλ>0\n\n#chaostheory #quantfinance #algorithmictrading #math #python", "summary": "Visualizes the Lyapunov Exponent of BTC-USD microstructure data. Positive exponent = chaotic/unpredictable, negative = deterministic. Reveals that what looks random on 5-min charts has measurable chaotic structure at tick level.", "type": "technique", "domains": ["quant", "chaos-theory", "crypto"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Lyapunov Exponent", "Chaos Theory", "Microstructure Analysis"], "key_takeaways": ["Lyapunov exponent quantifies market chaos", "Positive = chaotic divergence, negative = convergence", "Tick-level reveals structure hidden in candle charts"], "deep_dive_candidate": true, "deep_dive_topic": "lyapunov-exponent", "card_title": "Lyapunov Exponent — measuring chaos in BTC tick-level microstructure", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DTfqcYUE2uV/", "creator": "@quant.traderr", "collection": "quant", "date": "January 14, 2026", "media_type": "image", "caption_original": "Signal > Noise. Why standard filters fail. 📉🧠\n\nFinancial time series data is non-linear and non-stationary. This is why standard tools like Moving Averages (which lag) or Fourier Transforms (which assume linearity) often fail to capture the true market structure.\n\nWant the Python script to run this decomposition on your own portfolio?\n👇 Comment \"hilbert\" below and I'll send you the code.\n\nThis video shows the Hilbert-Huang Transform (HHT) applied to SPY.\n​Instead of forcing a fixed frequency on the market, HHT adaptively decomposes the price into:\n1. The Noise (Blue): High-frequency intrinsic mode functions (volatility).\n2. The Signal (Orange): The underlying trend, stripped of the chaotic fluctuations.\n\n​Notice how the bottom signal remains smooth even during the sharp price drops, giving a clearer view of the structural trend without the massive lag of an SMA.\n\n#quantfinance #algorithmictrading #python #finance #trading 0", "summary": "Financial data is non-linear and non-stationary, breaking standard filters. Kalman Filter adapts in real-time, unlike lagging moving averages or FFT (which assumes stationarity). Optimal for real-time signal extraction.", "type": "technique", "domains": ["quant", "signal-processing"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": ["Kalman Filter"], "techniques_mentioned": ["Adaptive Filtering", "State Estimation", "Non-Stationary Signal Processing"], "key_takeaways": ["MAs lag, FFT assumes stationarity — both fail on live data", "Kalman Filter adapts to changing market dynamics", "Optimal for real-time signal extraction"], "deep_dive_candidate": true, "deep_dive_topic": "kalman-filter-trading", "card_title": "Kalman Filter — adaptive signal extraction for non-stationary markets", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DTdWruOE1sm/", "creator": "@quant.traderr", "collection": "quant", "date": "January 13, 2026", "media_type": "image", "caption_original": "Non-stationary signal processing on $QQQ. 🧠\n\nPrice action only tells half the story. To understand the market’s heartbeat, you have to look at the frequency domain.\n\n​This is a Continuous Wavelet Transform (CWT) applied to QQQ. Unlike a standard Fourier Transform, this lets us see when specific market cycles are active over time.\n\nWant the source code to build this?\n👇 Comment \"wavelet\" below and I’ll DM you the repo link.\n\n​The Alpha: Watch the \"Dark Zones.\"\nYou’ll notice a distinct pattern: When QQQ grinds down to its lows, the heatmap turns dark. This represents a drop in spectral energy—a moment of \"silence\" in the frequency spectrum where momentum dissipates. This lack of energy is often a clearer signal of an oversold bottom than price alone.\n\n​Stop looking at just candles. Start looking at the energy behind them.📈\n#quantfinance  #algorithmictrading #math #qqq #python", "summary": "Applies CWT to QQQ to analyze frequency-domain dynamics over time. Unlike FFT (fixed window), wavelets capture how dominant frequencies shift across regimes. Reveals the market's changing 'heartbeat'.", "type": "technique", "domains": ["quant", "signal-processing"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Continuous Wavelet Transform", "Time-Frequency Analysis", "Scalogram"], "key_takeaways": ["CWT captures how frequencies shift over time", "Superior to FFT for non-stationary data", "Reveals regime-dependent dominant cycles"], "deep_dive_candidate": false, "deep_dive_topic": "", "card_title": "Continuous Wavelet Transform — time-frequency analysis of QQQ", "drop": false, "tier": "B", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DTaoXsmk4g0/", "creator": "@quant.traderr", "collection": "quant", "date": "January 12, 2026", "media_type": "image", "caption_original": "Stop using lagging indicators. Do the math instead. 📉🛑\n\nThe Quant Approach:\nThis visualization shows the Fisher Transform. Instead of smoothing, it mathematically transforms price data into a Gaussian normal distribution.\n\n​👨‍💻 Want the Source Code?\nI’ve uploaded the Python logic for this to my GitHub.\n​Comment \"FISHER\" in comment section and I'll DM you the repo link. 👇\n\n​Why is this better?\n​Zero Lag: It attempts to remove the noise without the delay of a Moving Average.\n​Sharper Signals: It highlights price extremes (the sharp peaks in the video). When the Fisher line hits a specific threshold (Red/Blue zones), the probability of a reversal is statistically significant.\n\n​⚡ Use Case:\nI use this to spot \"mean reversion\" trades—catching the exact moment a trend is exhausted, often bars before an EMA would even start to turn.\n\nDo you trust maths or your gut?\n#quantfinance #math #algorithmictrading #quant #statistics", "summary": "The Fisher Transform mathematically transforms price data into a Gaussian distribution, creating sharper turning-point signals than lagging indicators. Shows clear zero-crossings for entry/exit timing.", "type": "technique", "domains": ["quant", "signal-processing", "trading"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Fisher Transform", "Gaussian Normalization", "Signal Processing"], "key_takeaways": ["Fisher Transform creates near-Gaussian signal distribution", "Sharper turning points than moving averages", "Clear zero-crossing signals for entries/exits"], "deep_dive_candidate": false, "deep_dive_topic": "", "card_title": "Fisher Transform — Gaussian normalization for sharper trading signals", "drop": false, "tier": "B", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DTXv8W_k-0x/", "creator": "@quant.traderr", "collection": "quant", "date": "January 11, 2026", "media_type": "image", "caption_original": "The market is 90% noise and 10% signal. 📉\n\n​Standard correlation matrices fail because they treat random market fluctuations as valid connections. By applying Random Matrix Theory (RMT), we can \"clean\" the matrix—suppressing the noise eigenvalues and isolating the dominant market modes.\n\n​This isn't magic. It's linear algebra.\n\nComment \"CODE\" and I'll DM you the repo.\n\nRandom Matrix Theory was used on 27 assets for this test.\n\n#quantfinance #trading #econophysics #algorithmictrading #math", "summary": "Standard correlation matrices treat random noise as valid connections. Random Matrix Theory (RMT) filters eigenvalues to 'clean' the matrix, keeping only statistically significant correlations. The market is 90% noise.", "type": "technique", "domains": ["quant", "linear-algebra", "risk"], "audience": "advanced", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": [], "techniques_mentioned": ["Random Matrix Theory", "Eigenvalue Filtering", "Marcenko-Pastur Distribution"], "key_takeaways": ["Most correlations in raw matrices are noise", "RMT filters eigenvalues against theoretical noise bounds", "Clean matrices improve portfolio optimization"], "deep_dive_candidate": true, "deep_dive_topic": "random-matrix-theory", "card_title": "Random Matrix Theory — cleaning correlation matrices from noise", "drop": false, "tier": "S", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DTSn31Ek2DB/", "creator": "@quant.traderr", "collection": "quant", "date": "January 9, 2026", "media_type": "image", "caption_original": "Markets take the slow road up and the highway down. 📉\n\nMost beginner Quants don't factor such Fat tail events/Black Swan events (crashes).\n\n​We’ve all heard the saying, but here is the mathematical proof. This 3D Monte Carlo simulation uses the Fractional Fokker-Planck Equation to visualize why traditional strategies like Buy & Hold often fail during \"Fat Tail\" events.\n\n​The asymmetry in the probability surface (the first visual) shows that the \"Jump\" to the downside is a statistical reality, not just bad luck.\n​Are you trading a strategy that survives the 1%, or are you just picking up pennies in front of a steamroller?\n\n#quantfinance #trading #econophysics #finance #statistics", "summary": "Markets go up slowly but crash fast. Standard Gaussian models underestimate crash probability. Uses Stable (Levy) distributions to properly model fat tail events and Black Swan risks that beginners ignore.", "type": "technique", "domains": ["quant", "risk", "statistics"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": ["Stable Distribution", "Levy Distribution"], "techniques_mentioned": ["Fat Tail Modeling", "Non-Gaussian Returns", "Extreme Value Theory"], "key_takeaways": ["Gaussian models massively underestimate crash probability", "Stable distributions capture fat tails", "Ignoring tail risk is the #1 beginner quant mistake"], "deep_dive_candidate": false, "deep_dive_topic": "", "card_title": "Stable Distribution — modeling fat-tailed crashes beyond Gaussian", "drop": false, "tier": "B", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DTPrgWIk4Ns/", "creator": "@quant.traderr", "collection": "quant", "date": "January 8, 2026", "media_type": "image", "caption_original": "Most traders set their Stop Loss based on \"vibes\" or static ATR. But what if the market itself has no memory?\n\n​In this timelapse, I’m plotting the Hurst Exponent (H) on BTC-USD. This 3D surface shows how market efficiency changes across time and lookback windows.\n\n​Why your SL is getting hit:\n​When H < 0.5: The market is \"Anti-persistent\" (Mean-reverting). In this zone, \"breakout\" trades are SL-traps. The market is just noise.\n​When H > 0.5: The market is \"Persistent\" (Trending). This is where your trend-following SLs actually work.\n​When H = 0.5: It’s a Random Walk. You might as well flip a coin. 🪙\n\n​The Solution: Use the Hurst Surface to identify regime shifts. If the surface is dipping into the blue/purple (low H), widen your stops or stay out entirely. If it’s spiking into yellow/red, the trend is structural—trail that SL and let it run.\n\n​The Math of Freedom: Moving from \"guessing\" to \"quantifying.\"\n\n#trading #quantfinance #algorithmictrading #econophysics #finance", "summary": "Plots the Hurst Exponent of BTC-USD as a 3D surface. H>0.5 = trending (momentum), H<0.5 = mean-reverting, H=0.5 = random walk. Shows how market 'memory' varies across timeframes. Basis for adaptive strategy selection.", "type": "technique", "domains": ["quant", "crypto", "statistics"], "audience": "intermediate", "medium": "instagram", "tools_mentioned": [], "repos_or_projects_mentioned": [], "models_mentioned": ["Hurst Exponent"], "techniques_mentioned": ["Long-Range Dependence", "Rescaled Range Analysis", "Fractal Analysis"], "key_takeaways": ["Hurst > 0.5 = trending, < 0.5 = mean-reverting", "Market memory varies across timeframes", "Use Hurst to select momentum vs mean-reversion strategy"], "deep_dive_candidate": true, "deep_dive_topic": "hurst-exponent", "card_title": "Hurst Exponent — 3D surface of BTC memory and mean-reversion zones", "drop": false, "tier": "A", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["skill"]}, {"post_url": "https://www.instagram.com/p/DTAjTaBADAx/", "creator": "@quant.traderr", "collection": "quant", "date": "January 2, 2026", "media_type": "image", "caption_original": "VectorBT explained for Retail Bros\n\n#finance #quantfinance #trading #quantrading", "summary": "Brief explainer of VectorBT, a Python backtesting library that uses vectorized operations for fast strategy testing. Aimed at retail traders transitioning to quantitative methods.", "type": "tool", "domains": ["quant", "backtesting", "python"], "audience": "beginner", "medium": "instagram", "tools_mentioned": ["VectorBT", "Python"], "repos_or_projects_mentioned": ["vectorbt"], "models_mentioned": [], "techniques_mentioned": ["Vectorized Backtesting"], "key_takeaways": ["VectorBT enables fast vectorized strategy backtesting", "More accessible entry point for retail → quant transition"], "deep_dive_candidate": false, "deep_dive_topic": "", "card_title": "VectorBT — vectorized backtesting framework explained simply", "drop": false, "tier": "C", "links": [{"label": "@quant.traderr", "url": "https://instagram.com/quant.traderr"}], "guide_slug": null, "categories": ["repo", "skill", "tool"]}];
+const state = { coll: "quant", cats: new Set(['all']), tiers: new Set(), search: '', sort: 'tier' };
+function $(s,r=document){return r.querySelector(s)}
+function $$(s,r=document){return Array.from(r.querySelectorAll(s))}
+function tr(t){return {S:0,A:1,B:2,C:3}[t]??4}
+function matches(p){
+  if(state.coll && p.collection!==state.coll)return false;
+  if(state.tiers.size && !state.tiers.has(p.tier))return false;
+  if(!state.cats.has('all')){
+    let any=false;
+    for(const c of p.categories){ if(state.cats.has(c)){any=true;break} }
+    if(!any)return false;
+  }
+  if(state.search){
+    const q=state.search.toLowerCase();
+    const h=[p.summary,p.caption_original,p.creator,p.card_title,...(p.tools_mentioned||[]),...(p.repos_or_projects_mentioned||[]),...(p.techniques_mentioned||[])].join(' ').toLowerCase();
+    if(!h.includes(q))return false;
+  }
+  return true;
+}
+function sf(a,b){
+  if(state.sort==='tier')return tr(a.tier)-tr(b.tier)||(b.date||'').localeCompare(a.date||'');
+  if(state.sort==='date')return (b.date||'').localeCompare(a.date||'');
+  if(state.sort==='creator')return (a.creator||'').localeCompare(b.creator||'');
+  return 0;
+}
+function el(tag, attrs={}, kids=[]){
+  const e=document.createElement(tag);
+  for(const k in attrs){
+    if(k==='class')e.className=attrs[k];
+    else if(k==='text')e.textContent=attrs[k];
+    else e.setAttribute(k,attrs[k]);
+  }
+  for(const c of (Array.isArray(kids)?kids:[kids])){
+    if(c==null)continue;
+    e.appendChild(typeof c==='string'?document.createTextNode(c):c);
+  }
+  return e;
+}
+function ighandleUrl(h){ if(!h)return '#'; return 'https://instagram.com/'+h.replace(/^@/,''); }
+function postId(p){ const m=p.post_url.match(/\/(p|reel)\/([^/]+)/); return 'post-'+(m?m[2]:''); }
+function shortcode(p){ const m=p.post_url.match(/\/(p|reel)\/([^/]+)/); return m?m[2]:''; }
+function card(p){
+  const primary = p.categories[0] || 'resource';
+  const c=el('article',{class:'card cat-'+primary,'data-tier':p.tier,'id':postId(p)});
+  c.appendChild(el('h4',{class:'ctitle',text:p.card_title}));
+  const top=el('div',{class:'top'});
+  const meta=el('div',{class:'meta'});
+  const a=el('a',{href:ighandleUrl(p.creator),target:'_blank',rel:'noopener',text:p.creator||'unknown'});
+  meta.appendChild(a);
+  meta.appendChild(document.createTextNode(' · '+(p.collection||'')+(p.date?(' · '+p.date):'')));
+  top.appendChild(meta);
+  top.appendChild(el('span',{class:'tier '+p.tier,text:p.tier}));
+  c.appendChild(top);
+  const sumWrap=el('div',{class:'sum-wrap'});
+  sumWrap.appendChild(el('p',{class:'summary',text:p.summary||p.caption_original||''}));
+  c.appendChild(sumWrap);
+  const act=el('div',{class:'actions'});
+  const isIG=p.post_url && p.post_url.includes('instagram.com');
+  if(isIG){
+    act.appendChild(el('a',{class:'btn',href:p.post_url,target:'_blank',rel:'noopener',text:'Open post ↗'}));
+  } else if(p.post_url){
+    act.appendChild(el('a',{class:'btn browse',href:p.post_url,target:'_blank',rel:'noopener',text:'Browse ↗'}));
+  }
+  if(p.guide_slug)act.appendChild(el('a',{class:'btn primary',href:'guides/'+p.guide_slug+'.html',text:'Deep dive →'}));
+  c.appendChild(act);
+  if(p.links && p.links.length){
+    const lnks=el('div',{class:'links'});
+    for(const l of p.links){
+      lnks.appendChild(el('a',{href:l.url,target:'_blank',rel:'noopener',text:l.label,title:l.url}));
+    }
+    c.appendChild(lnks);
+  }
+  const sc=shortcode(p);
+  if(sc){
+    const thumb=el('a',{class:'thumb',href:p.post_url,target:'_blank',rel:'noopener'});
+    const img=el('img',{loading:'lazy',alt:p.card_title||'',src:'thumb/'+sc+'.jpg'});
+    img.onerror=function(){ thumb.parentNode && thumb.parentNode.removeChild(thumb); };
+    thumb.appendChild(img);
+    c.appendChild(thumb);
+  }
+  return c;
+}
+const SECTION_ORDER = [
+  ['guide','📘 Guides','var(--c-guide)'],
+  ['repo','🧰 Repos','var(--c-repo)'],
+  ['skill','⚡ Skills','var(--c-skill)'],
+  ['tool','🛠 Tools','var(--c-tool)'],
+  ['platform','🌐 Platforms','var(--c-platform)'],
+  ['art','🎨 Art','var(--c-art)'],
+  ['design','✏️ Design','var(--c-design)'],
+  ['uiux','📐 UI / UX','var(--c-uiux)'],
+  ['resource','📚 Resources','var(--c-resource)']
+];
+function render(){
+  const main=$('#main-content'); main.textContent='';
+  const filtered=POSTS.filter(matches).sort(sf);
+  $('#count').textContent=filtered.length+' post'+(filtered.length===1?'':'s');
+  if(!filtered.length){
+    main.appendChild(el('div',{class:'section-sub',text:'No posts match these filters.'}));
+    return;
+  }
+  // Group sections only when no specific category selected (i.e. 'all')
+  const grouped = state.cats.has('all') && state.cats.size===1;
+  if(grouped){
+    const buckets = {};
+    for(const p of filtered){
+      const primary = p.categories[0] || 'resource';
+      (buckets[primary] = buckets[primary] || []).push(p);
+    }
+    for(const [key,label,color] of SECTION_ORDER){
+      const arr = buckets[key];
+      if(!arr || !arr.length) continue;
+      const head = el('div',{class:'section-head'});
+      const h3 = el('h3');
+      const icon = el('span',{class:'icon'}); icon.style.background=color; icon.textContent=label.split(' ')[0];
+      h3.appendChild(icon);
+      h3.appendChild(document.createTextNode(' '+label.split(' ').slice(1).join(' ')));
+      head.appendChild(h3);
+      head.appendChild(el('span',{class:'count',text:arr.length+' items'}));
+      main.appendChild(head);
+      const grid = el('div',{class:'grid'});
+      arr.forEach(p=>grid.appendChild(card(p)));
+      main.appendChild(grid);
+    }
+  } else {
+    const head = el('div',{class:'section-head'});
+    head.appendChild(el('h3',{text:'📇 Filtered posts'}));
+    head.appendChild(el('span',{class:'count',text:filtered.length+' items'}));
+    main.appendChild(head);
+    const grid = el('div',{class:'grid'});
+    filtered.forEach(p=>grid.appendChild(card(p)));
+    main.appendChild(grid);
+  }
+}
+function init(){
+  $('#search').addEventListener('input',e=>{state.search=e.target.value;render()});
+  $('#sort').addEventListener('change',e=>{state.sort=e.target.value;render()});
+  $$('.cat-btn').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.getAttribute('data-cat');
+    if(k==='all'){
+      state.cats.clear(); state.cats.add('all');
+      $$('.cat-btn').forEach(x=>x.classList.toggle('on',x.getAttribute('data-cat')==='all'));
+    } else {
+      state.cats.delete('all');
+      $('.cat-btn[data-cat="all"]').classList.remove('on');
+      if(state.cats.has(k)){state.cats.delete(k);b.classList.remove('on')}
+      else{state.cats.add(k);b.classList.add('on')}
+      if(!state.cats.size){state.cats.add('all');$('.cat-btn[data-cat="all"]').classList.add('on')}
+    }
+    render();
+  }));
+  $$('.tier-pill').forEach(b=>b.addEventListener('click',()=>{
+    const t=b.getAttribute('data-t');
+    if(state.tiers.has(t)){state.tiers.delete(t);b.classList.remove('on')}
+    else{state.tiers.add(t);b.classList.add('on')}
+    render();
+  }));
+  $$('.coll-pill').forEach(b=>b.addEventListener('click',()=>{
+    const c=b.getAttribute('data-coll');
+    if(state.coll===c){state.coll='';b.classList.remove('on')}
+    else{
+      state.coll=c;
+      $$('.coll-pill').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+    }
+    render();
+  }));
+}
+document.addEventListener('DOMContentLoaded',()=>{init();render();
+  // Segment-bar click → reset filters so the target card is visible, then scroll
+  document.body.addEventListener('click',e=>{
+    const seg=e.target.closest('.seg'); if(!seg)return;
+    e.preventDefault();
+    state.cats.clear(); state.cats.add('all'); state.tiers.clear(); state.search='';
+    $$('.cat-btn').forEach(x=>x.classList.toggle('on',x.getAttribute('data-cat')==='all'));
+    $$('.tier-pill').forEach(x=>x.classList.remove('on'));
+    $('#search').value='';
+    render();
+    const id=seg.getAttribute('href').slice(1);
+    setTimeout(()=>{const t=document.getElementById(id);if(t){t.scrollIntoView({behavior:'smooth',block:'center'});t.style.outline='2px solid var(--accent)';setTimeout(()=>t.style.outline='',1800)}},50);
+  });
+});
+</script>
+</body></html>

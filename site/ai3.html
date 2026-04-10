@@ -16,12 +16,12 @@
   --s:#fbbf24;--a:#a78bfa;--b:#60a5fa;--c:#6a6a80;
   --radius:14px;--radius-sm:8px;
 }
-*{box-sizing:border-box}html,body{margin:0;padding:0}
+*{box-sizing:border-box;min-width:0}html,body{margin:0;padding:0;overflow-x:hidden}
 body{font-family:'SF Mono','Fira Code','JetBrains Mono',Menlo,monospace;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
   background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(167,139,250,0.18),transparent),radial-gradient(ellipse 60% 40% at 80% 10%,rgba(244,114,182,0.10),transparent),radial-gradient(ellipse 60% 40% at 20% 10%,rgba(96,165,250,0.10),transparent);
   background-attachment:fixed}
 a{color:var(--accent);text-decoration:none}a:hover{color:var(--accent-2)}
-.wrap{max-width:1500px;margin:0 auto;padding:0 22px}
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px;overflow:hidden}
 header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter:blur(20px);background:rgba(10,10,15,0.7);position:sticky;top:0;z-index:100}
 .head-row{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
 .brand h1{margin:0;font-size:32px;font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,#a78bfa 45%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -48,10 +48,10 @@ header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter
 
 .hero{padding:30px 0 8px}
 .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
-.hero-left{display:flex;flex-direction:column}
+.hero-left{display:flex;flex-direction:column;min-width:0;overflow:hidden}
 .hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px}
-@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1}}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px;overflow-wrap:break-word;word-wrap:break-word}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1!important}}
 
 /* BANS strip */
 .bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
@@ -98,7 +98,7 @@ header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter
 .sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
 
 /* Main panel */
-.main{min-width:0}
+.main{min-width:0;overflow:hidden}
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
 .section-head:first-child{margin-top:0}
 .section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
@@ -140,7 +140,6 @@ header.site{border-bottom:1px solid var(--border);padding:22px 0;backdrop-filter
 /* Cards grid */
 .grid{column-count:3;column-gap:15px;margin-bottom:18px}
 @media(max-width:1200px){.grid{column-count:2}}
-@media(max-width:900px){.grid{column-count:1}}
 .grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
 .grid > h3{column-span:all}
 .links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
@@ -197,13 +196,49 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 @media(max-width:900px){
   .layout{grid-template-columns:1fr}
   .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}
+  .wrap{padding:0 14px}
+  .hero{padding:20px 0 6px}
+  .bans{grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+  .ban{padding:10px 12px}
+  .ban .v{font-size:20px}
+  .creators{padding:14px}
+  .bar-scroll{max-height:140px}
+  .skill-callout{padding:14px 16px;font-size:13px}
+  .section-head h3{font-size:18px}
 }
 @media(max-width:640px){
   .brand h1{font-size:24px}
-  .hero h2{font-size:30px}
+  .hero h2{font-size:26px}
   header.site{position:static}
-  .grid{column-count:1}
-  .bar-row{grid-template-columns:110px 1fr 30px}
+  .head-row{flex-direction:column;gap:10px;align-items:flex-start}
+  .nav{width:100%;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .nav::-webkit-scrollbar{display:none}
+  .nav a{flex-shrink:0}
+  .src-group{flex-shrink:0}
+  .grid{column-count:1!important}
+  .bar-row{grid-template-columns:90px 1fr 24px;font-size:10.5px}
+  .card{padding:14px}
+  .card .ctitle{font-size:12px}
+  .card .summary{font-size:11.5px}
+  .hero p.why{font-size:13px}
+  .bans{grid-template-columns:repeat(3,1fr)}
+  .btn{padding:7px 10px;font-size:11px}
+  .commands{padding:14px}
+  .cmd-row{flex-direction:column;align-items:flex-start;gap:4px}
+  .cmd-row code{white-space:pre-wrap;word-break:break-all;font-size:10.5px}
+  .thumb{margin:12px -14px -14px -14px}
+}
+@media(max-width:400px){
+  .wrap{padding:0 10px}
+  .hero h2{font-size:22px}
+  .bans{grid-template-columns:repeat(2,1fr)}
+  .ban .v{font-size:18px}
+  .nav a{padding:5px 8px;font-size:10px}
+  .card .actions{flex-direction:column;gap:6px}
+  .btn{width:100%}
 }
 
 /* Guide page */
@@ -229,12 +264,12 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
     <h1>DejaViewed</h1>
     <div class="tagline">You've saved this before. · Curated by <a href="https://instagram.com/6ab3">@6ab3</a></div>
   </div>
-  <nav class="nav"><a class="actions-nav" href="index.html">DEJAVIEWED</a><a class="" href="catalog.html">ALL</a><span class="src-group active-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="ai1.html">AI1</a><a class="sub" href="ai2.html">AI2</a><a class="sub active" href="ai3.html">AI3</a><a class="sub" href="ai4.html">AI4</a></span></span></nav>
+  <nav class="nav"><a class="actions-nav" href="">DEJAVIEWED</a><a class="" href="catalog.html">ALL</a><span class="src-group active-group"><span class="src-label">Instagram</span><span class="sub-links"><a class="sub" href="ai1.html">AI1</a><a class="sub" href="ai2.html">AI2</a><a class="sub active" href="ai3.html">AI3</a><a class="sub" href="ai4.html">AI4</a><a class="sub" href="quant.html">Quant</a></span></span></nav>
 </div></header>
 <div class="wrap"><div class="skill-callout">
   <strong>✨ Built with the <code>dejaviewed</code> skill for Claude Code.</strong> You've saved this before.
   <div style="margin-top:10px;color:var(--text-dim)">
-    <strong>Install:</strong> <code>git clone git@github.com:Gabicus/dejaviewed.git ~/.claude/plugins/dejaviewed</code> &nbsp;·&nbsp;
+    <strong>Install:</strong> <code>/plugin install dejaviewed</code> &nbsp;·&nbsp;
     <strong>Invoke:</strong> <code>/dejaviewed &lt;instagram-saved-url&gt;</code> &nbsp;·&nbsp;
     or just ask Claude: <em>"dejaviewed these IG saves"</em>
   </div>
