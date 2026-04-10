@@ -642,7 +642,97 @@ Also generates a **Save Profile** — a witty 1-2 sentence assessment of the use
 
 ---
 
-## Phase 10: Deploy (if applicable)
+## Phase 10: Build the Agent Context Layer
+
+```bash
+python3 build_context.py
+```
+
+This transforms your static catalog into a **structured knowledge base that AI agents can query in real time.** Three files are generated:
+
+### `site/catalog.json` — Queryable Structured Index
+
+A complete JSON representation of every catalog entry with pre-built indices for fast lookup:
+
+```json
+{
+  "version": "1.0",
+  "stats": { "total_entries": 209, "tiers": {"S": 8, "A": 33, ...}, ... },
+  "indices": {
+    "by_domain": { "quant": ["shortcode1", "shortcode2", ...], ... },
+    "by_tool": { "python": ["shortcode1", ...], ... },
+    "by_technique": { "stochastic volatility": ["shortcode1", ...], ... },
+    "by_model": { "heston model": ["shortcode1", ...], ... },
+    "by_type": { "technique": [...], "tool": [...], ... },
+    "by_tier": { "S": [...], "A": [...], ... },
+    "by_collection": { "quant": [...], "ai1": [...], ... }
+  },
+  "entries": [
+    {
+      "id": "shortcode",
+      "url": "https://instagram.com/p/...",
+      "title": "Subject — angle",
+      "summary": "...",
+      "tier": "S",
+      "domains": ["quant", "options"],
+      "tools": ["Python"],
+      "techniques": ["Stochastic Volatility"],
+      "takeaways": ["..."],
+      "links": [{"label": "...", "url": "..."}],
+      "has_guide": true
+    }
+  ]
+}
+```
+
+**Agent usage patterns:**
+```python
+import json
+catalog = json.load(open('catalog.json'))
+
+# Find all S-tier entries
+s_ids = catalog['indices']['by_tier']['S']
+s_entries = [e for e in catalog['entries'] if e['id'] in s_ids]
+
+# Find entries about a specific domain
+quant_ids = catalog['indices']['by_domain'].get('quant', [])
+
+# Find entries mentioning a tool
+python_ids = catalog['indices']['by_tool'].get('python', [])
+
+# Full-text search
+matches = [e for e in catalog['entries']
+           if 'volatility' in (e['title'] + ' ' + e['summary']).lower()]
+```
+
+### `site/context.md` — Agent-Readable Knowledge Map
+
+A structured markdown document that agents load at session start. Contains:
+- **Domain map** — every domain with entry counts, tier distribution, and top items
+- **S-tier and A-tier listings** — the highest-signal items with takeaways
+- **Tool directory** — every tool mentioned with frequency, best tier, and domains
+- **Technique directory** — every technique with frequency and tier
+- **Usage patterns** — concrete examples of how agents should surface knowledge
+
+When an agent loads this context, it knows: "The user has 27 quant entries including S-tier coverage of Heston Model, Random Matrix Theory, and Avellaneda-Stoikov. When they work on anything options/vol related, surface these first."
+
+### `site/llms.txt` — LLM-Native Discovery
+
+A lightweight discovery file (like robots.txt for AI) that tells LLMs what the catalog contains and where to find the structured data.
+
+### What This Means for Users
+
+**Without context layer:** You save posts → you get a catalog website → you search manually when you remember.
+
+**With context layer:** You save posts → your AI agent already knows every tool, technique, and repo you've collected → when you're building something, it proactively surfaces relevant saves → "You saved an S-tier guide on this exact technique. Want me to pull it up?"
+
+Your saves become working memory for your AI tools.
+
+*Feature contributed by @Shellononback (Instagram)*
+
+---
+
+## Phase 11: Deploy (if applicable)
 
 If the project has a deployment target:
 
