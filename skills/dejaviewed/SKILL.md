@@ -20,7 +20,7 @@ context:
   intel_scope: none
 ---
 
-# /dejaviewed — Turn Your IG Saves Into a Real Site
+# /dejaviewed — Turn Your Saves Into a Real Site
 
 > **Tagline:** "You've saved this before."
 >
@@ -31,82 +31,239 @@ context:
 
 **YOU MUST EXECUTE THIS WORKFLOW. Do not just describe it.**
 
+---
+
 ## Quick Start
 
 ```bash
-/dejaviewed                                    # interactive — prompts for everything
-/dejaviewed --urls saved_urls.json             # provide URL list, auto-configure
-/dejaviewed --collection mytheme --urls urls.json --title "MyTheme" --handle "@myig"
+/dejaviewed https://www.instagram.com/<user>/saved/<collection>/<id>/
+/dejaviewed https://www.instagram.com/<user>/saved/<coll1>/<id1>/ https://www.instagram.com/<user>/saved/<coll2>/<id2>/
 ```
 
-## Prerequisites
+The user provides one or more saved collection URLs. Claude does everything else:
+1. Extracts all post URLs via Playwright MCP (automated browsing)
+2. Scrapes each post with cookie-based requests
+3. Classifies, enriches, tiers every post
+4. Writes deep-dive guides for high-signal posts
+5. Renders a complete static dark-mode catalog site
 
-The user MUST provide or set up before the skill runs:
-
-1. **A JSON file of Instagram post URLs** — format: `{"collection":"name","count":N,"urls":["https://www.instagram.com/p/XXX/",...]}`
-   - User gets these by: going to IG Saved tab, scrolling to load all, extracting URLs from page source or using a browser extension
-   - Multiple collections are supported (e.g., `ai1_urls.json`, `ai2_urls.json`)
-
-2. **A copied Chrome/Chromium profile** with an active Instagram session cookie
-   - Path: `<project>/.profile-copy/Default/Cookies`
-   - User copies their Chrome profile directory (NOT while Chrome is running)
-   - Required for authenticated scraping (IG blocks anonymous requests)
-   - Needs `browser_cookie3` pip package for cookie decryption
-
-3. **Python 3.10+** with packages: `requests`, `browser_cookie3`
-
-## Architecture Overview
-
-```
-<project>/
-├── adapters/
-│   ├── chrome_bookmarks.py         # Chrome bookmark extractor
-│   ├── edge_bookmarks.py           # Edge bookmark extractor
-│   ├── firefox_bookmarks.py        # Firefox bookmark extractor (SQLite)
-│   └── merge_sources.py            # Cross-source merger + dedup
-├── data/
-│   ├── <collection>_urls.json      # input: IG URLs per collection
-│   ├── <collection>_posts_pathb.jsonl  # raw scrape results (full captions)
-│   ├── chrome_bookmarks.jsonl      # extracted Chrome bookmarks
-│   ├── firefox_bookmarks.jsonl     # extracted Firefox bookmarks
-│   ├── catalog.jsonl               # enriched+classified records (ALL sources merged)
-│   ├── curation.json               # tiers, buckets, stacks, themes
-│   └── actions.json                # auto-generated action plan data
-├── guides/
-│   └── <slug>.md                   # deep-dive markdown guides
-├── site/
-│   ├── index.html                  # THE DEJAVIEWED PAGE — summary + actions + install (landing page)
-│   ├── catalog.html                # main catalog (all sources)
-│   ├── <collection>.html           # per-collection pages
-│   ├── guides/<slug>.html          # rendered guide pages
-│   └── thumb/<shortcode>.jpg       # post thumbnails
-├── path_b.py                       # cookie-based IG scraper
-├── build_actions.py                # action plan generator
-├── render.py                       # static site renderer
-└── fetch_thumbs.py                 # thumbnail downloader
-```
-
-## Supported Sources
-
-| Source | Adapter | Auth Required | Status |
-|--------|---------|---------------|--------|
-| **Instagram** | `path_b.py` | Chrome profile copy | ✅ Built |
-| **Chrome Bookmarks** | `adapters/chrome_bookmarks.py` | None (local JSON) | ✅ Built |
-| **Firefox Bookmarks** | `adapters/firefox_bookmarks.py` | None (local SQLite) | ✅ Built |
-| **Edge Bookmarks** | `adapters/edge_bookmarks.py` | None (local JSON) | ✅ Built |
-| **TikTok** | `adapters/tiktok_adapter.py` | Chrome profile copy | 🔜 Planned |
-| **Twitter/X Bookmarks** | `adapters/twitter_adapter.py` | API bearer token | 🔜 Planned |
-| **Pinterest Boards** | `adapters/pinterest_adapter.py` | Chrome profile copy | 🔜 Planned |
-| **Reddit Saved** | `adapters/reddit_adapter.py` | OAuth token | 🔜 Planned |
-| **YouTube Watch Later** | `adapters/youtube_adapter.py` | Chrome profile copy | 🔜 Planned |
-
-All adapters normalize into the same JSONL schema. Use `adapters/merge_sources.py` to combine with cross-source dedup.
+**The user should NEVER need to:**
+- Open DevTools or run console scripts
+- Manually extract URLs from any page
+- Copy-paste data from their browser
+- Do any step that Claude can automate
 
 ---
 
-## Execution Steps
+## Prerequisites
 
-### Phase 1: Project Setup
+### What the user provides:
+1. **One or more saved collection URLs** — e.g., `https://www.instagram.com/user/saved/quant/12345/`
+2. **A copied Chrome/Chromium profile** (one-time setup, already done for returning users)
+
+### What must exist on disk:
+1. **Chrome profile copy** at `<project>/.profile-copy/Default/Cookies`
+   - User copies their Chrome profile directory while Chrome is CLOSED
+   - Linux default source: `~/.config/google-chrome/Default/`
+   - macOS: `~/Library/Application Support/Google/Chrome/Default/`
+   - Command: `cp -r ~/.config/google-chrome/Default <project>/.profile-copy/Default`
+   - This profile must have an active Instagram session (user logged in via Chrome)
+
+2. **Python 3.10+** with packages:
+   ```bash
+   pip install requests browser-cookie3
+   ```
+
+3. **Playwright MCP server** must be available (standard Claude Code plugin)
+   - Verify: check if `mcp__plugin_playwright_playwright__browser_navigate` tool exists
+   - If not available, fall back to asking user for URLs (last resort only)
+
+### First-time project setup:
+```bash
+mkdir -p <project>/data <project>/guides <project>/site/thumb <project>/site/guides <project>/.playwright-mcp
+```
+
+---
+
+## Phase 0: URL Extraction via Playwright MCP
+
+**THIS IS THE CRITICAL AUTOMATION STEP. NEVER SKIP IT. NEVER ASK THE USER TO DO THIS MANUALLY.**
+
+The user gives you a saved collection URL like:
+```
+https://www.instagram.com/6ab3/saved/quant/17896187445432291/
+```
+
+You must use the Playwright MCP server to:
+1. Load the user's Instagram session cookies
+2. Inject them into the Playwright browser context
+3. Navigate to the saved collection
+4. Scroll to load all posts
+5. Extract every post URL
+6. Save to `data/<collection>_urls.json`
+
+### Step 0.1: Extract cookies from Chrome profile
+
+Run this Python script via Bash to export cookies to a temp JSON file:
+
+```python
+# Run via Bash tool — outputs cookies to a file for Playwright injection
+python3 -c "
+import browser_cookie3, json
+cj = browser_cookie3.chrome(
+    cookie_file='<project>/.profile-copy/Default/Cookies',
+    domain_name='.instagram.com'
+)
+cookies = []
+for c in cj:
+    if 'instagram' in c.domain:
+        cookies.append({
+            'name': c.name,
+            'value': c.value,
+            'domain': c.domain,
+            'path': c.path or '/',
+            'secure': bool(c.secure),
+            'httpOnly': False,
+        })
+with open('/tmp/ig_cookies.json', 'w') as f:
+    json.dump(cookies, f)
+# Security: only print count and session presence, NEVER print cookie values
+has_session = any(c['name'] == 'sessionid' for c in cookies)
+print(f'Exported {len(cookies)} cookies (sessionid present: {has_session})')
+"
+```
+
+**CRITICAL SECURITY:** Cookie VALUES must NEVER be printed, logged, or written to any file other than the temp injection file. Only existence checks are allowed.
+
+**If `browser_cookie3.chrome()` fails**, try `browser_cookie3.chromium()` instead — some Linux systems use the Chromium keyring path.
+
+### Step 0.2: Generate the Playwright injection script
+
+You CANNOT use `require()` or dynamic `import()` inside Playwright's `browser_run_code` sandbox — they will throw `ReferenceError: require is not defined` or `ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING`.
+
+Instead, generate a complete JavaScript file via Python that embeds the cookie data inline, then execute it via `browser_run_code` with the `filename` parameter.
+
+```python
+# Run via Bash tool — generates the Playwright script with embedded cookies
+python3 << 'PYEOF'
+import json
+
+# Read the exported cookies
+with open('/tmp/ig_cookies.json') as f:
+    cookies = json.load(f)
+
+# Set your collection URL and name
+COLLECTION_URL = "https://www.instagram.com/6ab3/saved/quant/17896187445432291/"
+COLLECTION_NAME = "quant"
+
+# Generate the Playwright script
+script = f"""async (page) => {{
+  // Step 1: Inject cookies into browser context
+  const cookies = {json.dumps(cookies)};
+  const context = page.context();
+  await context.addCookies(cookies);
+
+  // Step 2: Navigate to saved collection
+  // IMPORTANT: Use 'domcontentloaded', NOT 'networkidle' — Instagram never stops streaming
+  await page.goto('{COLLECTION_URL}', {{ waitUntil: 'domcontentloaded', timeout: 30000 }});
+
+  // Step 3: Wait for initial content to render
+  await page.waitForTimeout(5000);
+
+  // Step 4: Scroll to load ALL posts (IG lazy-loads on scroll)
+  let previousHeight = 0;
+  let scrollAttempts = 0;
+  const maxAttempts = 50; // Safety cap — most collections finish in <10 scrolls
+
+  while (scrollAttempts < maxAttempts) {{
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(2000);
+
+    const currentHeight = await page.evaluate(() => document.body.scrollHeight);
+    if (currentHeight === previousHeight) {{
+      // Double-check: wait a bit more and try once more
+      await page.waitForTimeout(3000);
+      const finalHeight = await page.evaluate(() => document.body.scrollHeight);
+      if (finalHeight === currentHeight) break;
+    }}
+    previousHeight = currentHeight;
+    scrollAttempts++;
+  }}
+
+  // Step 5: Extract all post URLs
+  const urls = await page.evaluate(() => {{
+    const links = document.querySelectorAll('a[href*="/p/"], a[href*="/reel/"]');
+    const uniqueUrls = [...new Set([...links].map(a => {{
+      const href = a.href;
+      return href.startsWith('http') ? href : 'https://www.instagram.com' + href;
+    }}))];
+    return uniqueUrls;
+  }});
+
+  return JSON.stringify({{ collection: '{COLLECTION_NAME}', count: urls.length, scrollAttempts, urls }});
+}}"""
+
+# IMPORTANT: Write to .playwright-mcp/ directory — Playwright sandbox blocks files outside
+# the project root and .playwright-mcp/ directory
+output_path = '<project>/.playwright-mcp/extract_urls.js'
+with open(output_path, 'w') as f:
+    f.write(script)
+print(f"Script written to {output_path}")
+PYEOF
+```
+
+### Step 0.3: Execute the Playwright script
+
+Use the `browser_run_code` tool with the `filename` parameter (NOT inline `code`):
+
+```
+mcp__plugin_playwright_playwright__browser_run_code(
+  filename=".playwright-mcp/extract_urls.js"
+)
+```
+
+**IMPORTANT FILE PATH RULES:**
+- The `filename` parameter uses paths RELATIVE to the project root
+- Files MUST be inside the project directory or `.playwright-mcp/` subdirectory
+- Files in `/tmp/` or other system paths will be REJECTED with: `"File access denied: /tmp/... is outside allowed roots"`
+- Always write generated scripts to `.playwright-mcp/<name>.js`
+
+### Step 0.4: Handle the result
+
+The script returns a JSON string. Parse it and save to `data/<collection>_urls.json`:
+
+```python
+# The result from browser_run_code is a JSON string — parse and save
+import json
+result = json.loads(RESULT_FROM_PLAYWRIGHT)
+with open('data/<collection>_urls.json', 'w') as f:
+    json.dump(result, f, indent=2)
+print(f"Saved {result['count']} URLs for collection '{result['collection']}'")
+```
+
+### Playwright Troubleshooting
+
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| `ReferenceError: require is not defined` | Used `require()` in browser_run_code | Write script to file, use `filename` parameter |
+| `ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING` | Used dynamic `import()` | Same — write to file |
+| `File access denied: ... outside allowed roots` | Script file not in project dir | Write to `.playwright-mcp/` subdirectory |
+| `TimeoutError: page.goto: Timeout exceeded` | Used `networkidle` wait strategy | Use `domcontentloaded` — IG never stops streaming |
+| Redirected to `/accounts/login/` | Cookies not injected or expired | Re-export cookies, verify `sessionid` exists |
+| Redirected to `facebook.com/login` | Session fully expired | User needs to log into IG in Chrome, then re-copy profile |
+| `0 URLs extracted` | Page didn't fully load | Increase `waitForTimeout` to 8000ms after navigation |
+| Only partial URLs | Didn't scroll enough | Increase `maxAttempts` or add longer delays between scrolls |
+| `context.addCookies is not a function` | Wrong Playwright API | Use `page.context().addCookies(cookies)` — exact syntax |
+
+### Cookie injection — why `context.addCookies()`, not `document.cookie`
+
+Instagram session cookies are `HttpOnly` and `Secure`. Browser-side `document.cookie` cannot set `HttpOnly` cookies — they're invisible to JavaScript. You MUST use the Playwright context API (`page.context().addCookies()`) which operates at the browser engine level and can set any cookie attribute.
+
+If you try `document.cookie = "sessionid=..."` — it will silently fail and IG will redirect to login.
+
+---
+
+## Phase 1: Project Setup
 
 ```bash
 mkdir -p <project>/data <project>/guides <project>/site/thumb <project>/site/guides
@@ -116,7 +273,7 @@ Ask user for:
 - **Project name/title** (e.g., "DejaViewed", "My AI Bookmarks")
 - **Tagline** (one sentence)
 - **Their IG handle** (for credits — goes in footer, NOT in creator graph)
-- **URL JSON files** — one per collection. Validate format.
+- **Collection name** — derived from URL path (e.g., `/saved/quant/` → "quant")
 - **Chrome profile path** — verify `.profile-copy/Default/Cookies` exists
 
 Set brand constants at top of render.py:
@@ -126,7 +283,9 @@ TITLE = "Their Title"
 TAGLINE = "Their tagline."
 ```
 
-### Phase 2: Scrape (path_b.py)
+---
+
+## Phase 2: Scrape (path_b.py)
 
 **CRITICAL SECURITY RULES:**
 - Cookie values are NEVER printed, logged, written to any file, or echoed
@@ -150,6 +309,8 @@ python3 path_b.py --collection <name> --urls-file data/<name>_urls.json --pause 
 4. Resume support: skip already-scraped URLs
 5. Rate limit: 1.5s between requests (configurable)
 
+**IMPORTANT:** The `--collection` argument is a free-form string (no hardcoded choices list). Any collection name works.
+
 **Retry logic:** 429/5xx → exponential backoff (5s × attempt). 404/410 → record as dead. 3 attempts max.
 
 **LESSONS LEARNED (mistakes to avoid):**
@@ -157,9 +318,13 @@ python3 path_b.py --collection <name> --urls-file data/<name>_urls.json --pause 
 - IG signed CDN URLs (`scontent.cdninstagram.com`) expire within hours and have referer protection. NEVER hotlink them — download to local `site/thumb/`.
 - Some posts return 200 but contain a login wall. Check for `"loginRequired"` in the response body.
 
-### Phase 3: Classify + Enrich (catalog building)
+---
+
+## Phase 3: Classify + Enrich (catalog building)
 
 Build `data/catalog.jsonl` — the master record for every post across all collections.
+
+**ALWAYS backup before writing:** `cp data/catalog.jsonl data/catalog.jsonl.bakN`
 
 **For each scraped record**, produce these fields:
 
@@ -176,6 +341,7 @@ Build `data/catalog.jsonl` — the master record for every post across all colle
 | `type` | **LLM** | repo/tool/technique/tutorial/inspiration/resource |
 | `domains` | **LLM** | e.g., ["3d","design","crypto","coding"] |
 | `audience` | **LLM** | beginner/intermediate/advanced |
+| `medium` | fixed | "instagram" for IG posts |
 | `tools_mentioned` | **LLM** | Named tools from caption |
 | `repos_or_projects_mentioned` | **LLM** | Named repos/projects |
 | `models_mentioned` | **LLM** | Named AI models |
@@ -185,30 +351,31 @@ Build `data/catalog.jsonl` — the master record for every post across all colle
 | `deep_dive_topic` | **LLM** | slug for guide filename if candidate |
 | `links` | extraction | Array of `{label, url}` — all outbound links |
 | `drop` | **LLM** | true if post has zero identifiable substance |
-| `tier` | curation | S/A/B/C assigned during curation phase |
+| `tier` | **LLM** | S/A/B/C assigned based on actionability and substance |
 
-**TITLE RULES (critical — user will complain if you get this wrong):**
+### TITLE RULES (critical — user WILL complain if you get this wrong):
 - Format: `Subject — value/angle` (≤70 chars)
 - Subject = the NAMED thing (repo name, tool name, technique, person)
 - Angle = why someone saved it (2-6 words)
 - GOOD: `SentrySearch — local Qwen3-VL dashcam search engine`
 - GOOD: `GeoSpy.ai — geolocate any photo from buildings/shadows`
+- GOOD: `Heston Model — stochastic volatility for realistic options pricing`
 - BAD: `Claude Code` (what about it??)
 - BAD: `AI tool` (which one??)
 - BAD: `@creator: first words of caption...` (lazy, don't do this)
 - Every title must answer: "WHAT is this and WHY did I save it?"
 
-**SUMMARY RULES:**
+### SUMMARY RULES:
 - Concrete. Name the tools/repos/handles.
 - If it's DM-bait ("comment X for the link"), say so honestly: "DM-only — caption claims it's a Hyperliquid bot setup"
 - If the content is thin, say it's thin. Don't invent.
 
-**DROP RULES:**
+### DROP RULES:
 - Drop if: pure emoji/hashtags, empty caption, off-topic meme with zero domain substance, DM-bait that doesn't even name the subject
 - Keep if: names a real tool/repo/technique, teaches a concept even briefly, is a teaser that NAMES the valuable thing behind the DM
 - Be reasonably generous. 10-20% drop rate is normal. 40%+ means you're too aggressive.
 
-**LINK EXTRACTION (every card needs links):**
+### LINK EXTRACTION (every card needs links):
 Extract from the FULL caption text + tools_mentioned + repos fields:
 1. Explicit `https://` URLs (skip IG/FB self-links)
 2. `github.com/owner/repo` mentions (with or without https)
@@ -217,7 +384,9 @@ Extract from the FULL caption text + tools_mentioned + repos fields:
 5. `@handle` mentions → `https://instagram.com/<handle>` (skip the post's own creator)
 6. Cap at 15 links per card, prioritize specificity
 
-### Phase 4: Curate (tiers + structure)
+---
+
+## Phase 4: Curate (tiers + structure)
 
 Build `data/curation.json`:
 
@@ -238,7 +407,11 @@ Build `data/curation.json`:
 
 Aim for: ~10% S, ~25% A, ~40% B, ~25% C
 
-### Phase 5: Deep-Dive Guides (for S/A tier candidates)
+**IMPORTANT:** If you assign tiers during enrichment (Phase 3), you MUST also update `data/curation.json` with the new tiers. The render.py reads tiers from curation.json, NOT from catalog.jsonl's tier field. Both must be in sync.
+
+---
+
+## Phase 5: Deep-Dive Guides (for S/A tier candidates)
 
 For posts flagged `deep_dive_candidate: true` (typically 10-25 posts):
 
@@ -252,7 +425,9 @@ For posts flagged `deep_dive_candidate: true` (typically 10-25 posts):
    - Honest assessment (limitations, gotchas)
 3. Track confidence: `high` (verified from primary sources) vs `medium` (extrapolated)
 
-### Phase 6: Download Thumbnails
+---
+
+## Phase 6: Download Thumbnails
 
 ```bash
 python3 fetch_thumbs.py
@@ -263,15 +438,43 @@ Resume-safe (skip existing). 1.5s pacing. Cookie session required.
 
 **WHY LOCAL:** IG CDN URLs are signed + expire + referer-blocked. Hotlinking will 403 within hours. Always download.
 
-### Phase 7: Render Static Site (render.py)
+---
+
+## Phase 7: Render Static Site (render.py)
 
 render.py is the main output generator. It builds:
-- `site/dejaviewed.html` — summary page: hero + install/sources sidebar + action plan sections
-- `site/index.html` — all posts, all collections
+- `site/index.html` — THE DEJAVIEWED PAGE: summary + actions + install (landing page)
+- `site/catalog.html` — all posts, all collections
 - `site/<collection>.html` — per-collection views
 - `site/guides/<slug>.html` — deep-dive guide pages
 
-**DESIGN SPEC (the user expects ALL of these):**
+### Adding a new collection to render.py
+
+When adding a new collection (e.g., "quant"), you MUST update these 4 locations in render.py:
+
+1. **Navigation sources list** — add to the Instagram sub-links tuple:
+   ```python
+   ("instagram", "Instagram", [("ai1","AI1"),("ai2","AI2"),...,("quant","Quant")]),
+   ```
+
+2. **COLL_META dictionary** — add the collection title and description:
+   ```python
+   "quant": ("Quant — Mathematical Trading Models", "Description here."),
+   ```
+
+3. **Render loop** — add to the collection list:
+   ```python
+   for coll in ["ai1","ai2","ai3","ai4","quant"]:
+   ```
+
+4. **Sidebar collection pills** — add to the pills list:
+   ```python
+   for c in ["ai1","ai2","ai3","ai4","quant"]
+   ```
+
+If you miss any of these, the collection page will either not render, not appear in the nav, crash with a KeyError on COLL_META, or not show in the sidebar filter.
+
+### DESIGN SPEC (the user expects ALL of these):
 
 **Layout:**
 - Two-panel: sticky left sidebar (280px) + right main content
@@ -279,8 +482,17 @@ render.py is the main output generator. It builds:
 - Breaks to 2 columns at 1200px, 1 column at 900px
 - Cards break-inside: avoid for clean masonry flow
 
+**Responsive breakpoints (REQUIRED — site must work on all screen sizes):**
+- `@media(max-width:900px)` — single column layout, sidebar inline (not sticky), hero-grid stacks, nav wraps
+- `@media(max-width:640px)` — smaller fonts, nav horizontal scroll, code blocks wrap, card padding reduced
+- `@media(max-width:400px)` — 2-column stats grid, action buttons stack vertically
+- `overflow-x:hidden` on html/body to prevent horizontal scroll
+- `min-width:0` on all flex/grid children to prevent overflow
+- `overflow-wrap:break-word` on text blocks that could overflow narrow containers
+- `.wrap` container gets `overflow:hidden` to clip any errant content
+
 **Theme:**
-- Dark mode: `--bg: #0a0a12`, `--panel: #12121f`, `--border: #1e1e35`
+- Dark mode: `--bg: #0a0a0f`, `--panel: rgba(255,255,255,0.03)`, `--border: rgba(255,255,255,0.08)`
 - Body font: `'SF Mono', 'Fira Code', 'JetBrains Mono', Menlo, monospace`
 - Line-height: 1.6, good letter spacing for readability
 - Gradient text headlines: white → violet → pink
@@ -290,6 +502,7 @@ render.py is the main output generator. It builds:
 - 1/2 + 1/2 horizontal grid (`hero-grid`)
 - Left half (`hero-left`): title (gradient text), WHY paragraph, BAN stats strip
 - Right half: Creators panel (catalog pages) OR install/sources sidebar (dejaviewed page)
+- `hero-left` needs `min-width:0; overflow:hidden` to prevent text overflow on narrow screens
 - Responsive: stacks to single column at 900px
 
 **Creators Panel:**
@@ -317,6 +530,7 @@ render.py is the main output generator. It builds:
 - **Links row** at bottom: every extracted link as a small pill/chip, clickable, labeled by domain
 - **Thumbnail** at very bottom: aspect-ratio 5:2, lazy-loaded, click opens post, onerror hides element
 - Left border colored by primary category
+- **DO NOT render category chips on cards** — the colored left border + section grouping conveys category
 
 **Category Colors:**
 ```
@@ -337,9 +551,10 @@ Guides → Repos → Skills → Tools → Platforms → Art → Design → UI/UX
 
 **Navigation:**
 - `DEJAVIEWED` tab (gold gradient) → `ALL` → source group labels with sub-page pills
-- Source groups: platform label (e.g., "Instagram") with collection sub-links (AI1/AI2/etc.) nested inline
+- Source groups: platform label (e.g., "Instagram") with collection sub-links nested inline
 - `.src-group` container wraps `.src-label` + `.sub-links` with pill-shaped sub-nav items
 - Active tab/sub-tab gets gradient highlight
+- On mobile (≤640px): nav gets `overflow-x:auto; flex-wrap:nowrap` for horizontal scrolling
 
 **Skill Callout (on catalog pages, below hero):**
 - Show install + invoke commands
@@ -361,7 +576,9 @@ Guides → Repos → Skills → Tools → Platforms → Art → Design → UI/UX
 - Filter state managed via `Set` objects for categories and tiers
 - Segment click: extract post ID from href anchor, reset filters, smooth scroll + brief outline highlight
 
-### Phase 8: Browser Bookmarks + Other Sources
+---
+
+## Phase 8: Browser Bookmarks + Other Sources
 
 **Auto-detect available sources:**
 ```bash
@@ -382,13 +599,9 @@ python3 adapters/merge_sources.py \
 
 Each adapter normalizes bookmarks into the same schema as IG records. Cross-source dedup: if the same URL appears from Chrome AND Instagram, the merger keeps the richer record (IG caption > bookmark title) and adds `sources: ["instagram", "chrome"]`.
 
-If the user has additional curated content beyond saves/bookmarks (repos, guides, archive collections, tools):
-- Merge into catalog.jsonl with `creator: "@userhandle"`, `media_type: "catalog"`
-- Type field: `repo`, `skill`, `tool`, `guide`, `platform`, `resource`
-- These get "Browse ↗" buttons (green) instead of "Open post ↗"
-- Same title/summary/link quality standards apply
+---
 
-### Phase 9: The DejaViewed Page (THE KILLER FEATURE)
+## Phase 9: The DejaViewed Page (THE KILLER FEATURE)
 
 The catalog answers "what did I save?" — the DejaViewed page answers **"what should I actually DO?"**
 
@@ -414,7 +627,7 @@ Each action item:
 - Includes runnable commands where applicable (click-to-copy)
 - Shows tier badge and outbound links
 
-Also generates a **Save Profile** — a witty 1-2 sentence assessment of the user's hoarding habits based on the distribution (e.g., "You save mostly repos and tools but only 5% are guides — you hoard more than you study.")
+Also generates a **Save Profile** — a witty 1-2 sentence assessment of the user's hoarding habits.
 
 **Page layout — matches the catalog pages:**
 - Same hero-grid: left column = title + WHY + BAN stats, right column = sidebar with Install card + Sources card + Save Profile
@@ -423,44 +636,78 @@ Also generates a **Save Profile** — a witty 1-2 sentence assessment of the use
 - Click-to-copy on all command code blocks
 
 **Nav structure:**
-- `DEJAVIEWED` (gold gradient, first position) → `ALL` → source groups (e.g., "Instagram" label with AI1/AI2/AI3/AI4 sub-links)
-- Source groups are expandable — each platform gets a label with its collection sub-pages nested inline
+- `DEJAVIEWED` (gold gradient, first position) → `ALL` → source groups with collection sub-links
+- The DejaViewed page renders as `site/index.html` (landing page)
+- The "ALL" catalog renders as `site/catalog.html`
 
-The DejaViewed page renders as `site/index.html` — the primary landing page and first nav tab. The "ALL" catalog renders as `site/catalog.html`.
+---
+
+## Phase 10: Deploy (if applicable)
+
+If the project has a deployment target:
+
+**Cloudflare Pages (used by dejaviewed.dev):**
+1. `python3 render.py` — rebuild the site
+2. Copy `site/` to the plugin/deploy repo
+3. `git add site/ && git commit && git push`
+4. Cloudflare Pages auto-deploys from GitHub push
+
+**GitHub Pages:**
+1. `python3 render.py`
+2. Push `site/` contents to `gh-pages` branch or `/docs` folder
+
+**Manual / local:**
+1. `python3 render.py`
+2. `cd site && python3 -m http.server 8765`
+3. Open `http://localhost:8765`
 
 ---
 
 ## Mistakes to Avoid (Learned the Hard Way)
 
-1. **Generic titles will get you yelled at.** "Claude Code" as a title is useless. ALWAYS "Subject — why it matters". Every. Single. Card.
+1. **NEVER ask the user to manually extract URLs.** Use Playwright MCP. This has been corrected MULTIPLE times. The whole value prop is "give a link, get everything."
 
-2. **Don't render category chips on cards.** The colored left border + section grouping already conveys category. Chips rendered as tall ugly boxes despite CSS fixes. Just don't.
+2. **Generic titles will get you yelled at.** "Claude Code" as a title is useless. ALWAYS "Subject — why it matters". Every. Single. Card.
 
-3. **Don't over-drop.** First pass dropped 74/170 posts (43%). User wanted them back. 10-20% is the sweet spot. Be generous when a subject is named.
+3. **Don't render category chips on cards.** The colored left border + section grouping already conveys category. Chips rendered as tall ugly boxes despite CSS fixes. Just don't.
 
-4. **Don't put the catalog owner in the creator graph.** They're the curator, not a creator. It inflates the bars and looks wrong.
+4. **Don't over-drop.** First pass dropped 74/170 posts (43%). User wanted them back. 10-20% is the sweet spot. Be generous when a subject is named.
 
-5. **Don't use flex-fill bars.** If every creator's bar fills 100% width, you can't compare. Use proportional width where max-count = 100%.
+5. **Don't put the catalog owner in the creator graph.** They're the curator, not a creator. It inflates the bars and looks wrong.
 
-6. **IG CDN URLs expire.** Download thumbnails locally. Always. No exceptions.
+6. **Don't use flex-fill bars.** If every creator's bar fills 100% width, you can't compare. Use proportional width where max-count = 100%.
 
-7. **og:description is truncated.** The good stuff is in embedded JSON. Extract from `<script type="application/json">` blocks.
+7. **IG CDN URLs expire.** Download thumbnails locally. Always. No exceptions.
 
-8. **innerHTML gets blocked by security hooks.** Use DOM createElement for everything. DOMPurify+marked for guide markdown only.
+8. **og:description is truncated.** The good stuff is in embedded JSON. Extract from `<script type="application/json">` blocks.
 
-9. **Don't forget links.** Every card should have clickable links to repos, tools, websites mentioned. Use known-tool URL dictionary + caption URL extraction + @handle → IG profile links.
+9. **innerHTML gets blocked by security hooks.** Use DOM createElement for everything. DOMPurify+marked for guide markdown only.
 
-10. **Backup before enrichment passes.** Every rewrite of catalog.jsonl should `cp catalog.jsonl catalog.jsonl.bakN` first. You WILL need to diff or rollback.
+10. **Don't forget links.** Every card should have clickable links to repos, tools, websites mentioned. Use known-tool URL dictionary + caption URL extraction + @handle → IG profile links.
 
-11. **Thumbnail goes BELOW title/summary, not above.** Title and description are the hook; thumbnail is supporting visual.
+11. **Backup before enrichment passes.** Every rewrite of catalog.jsonl should `cp catalog.jsonl catalog.jsonl.bakN` first. You WILL need to diff or rollback.
 
-12. **Monospace body font reads better** for this kind of technical catalog than sans-serif (Inter). Match ai3-catalog's `SF Mono` stack.
+12. **Thumbnail goes BELOW title/summary, not above.** Title and description are the hook; thumbnail is supporting visual.
 
-13. **The DejaViewed summary page must match the catalog page layout.** Use the same `hero-grid` with left/right columns — NOT a centered hero block. Left = title + WHY + BANs. Right = install/sources sidebar. Section jump pills below. Keep it compact — don't waste vertical space with big centered text blocks.
+13. **Monospace body font reads better** for this kind of technical catalog than sans-serif (Inter). Match ai3-catalog's `SF Mono` stack.
 
-14. **Long code commands in narrow grid columns will overlap.** Use `white-space:nowrap;overflow-x:auto` on code blocks in sidebars/cards — they scroll instead of overlapping adjacent elements.
+14. **The DejaViewed summary page must match the catalog page layout.** Use the same `hero-grid` with left/right columns — NOT a centered hero block. Left = title + WHY + BANs. Right = install/sources sidebar. Section jump pills below.
 
-15. **NEVER unconditionally overwrite card_title in render.py.** The enriched title in catalog.jsonl IS the title. Render.py must only set card_title as a FALLBACK when the field is empty/missing. If you write `p["card_title"] = derived_title` without checking first, you'll stomp every enriched title back to garbage like "Claude" on every render. This was the single most repeated bug in the original build — caught and asked to fix THREE times.
+15. **Long code commands in narrow grid columns will overlap.** Use `white-space:nowrap;overflow-x:auto` on code blocks in sidebars/cards — they scroll instead of overlapping adjacent elements.
+
+16. **NEVER unconditionally overwrite card_title in render.py.** The enriched title in catalog.jsonl IS the title. Render.py must only set card_title as a FALLBACK when the field is empty/missing. If you write `p["card_title"] = derived_title` without checking first, you'll stomp every enriched title back to garbage. This was the single most repeated bug — caught THREE times.
+
+17. **Keep curation.json and catalog.jsonl tiers in sync.** render.py reads tiers from curation.json. If you add tier fields to catalog.jsonl during enrichment, you MUST also update curation.json or the tiers won't show up on the rendered site.
+
+18. **When adding a new collection, update ALL 4 locations in render.py:** nav sources list, COLL_META dict, render loop, sidebar pills. Missing any one causes a crash or invisible collection.
+
+19. **Playwright `require()` is blocked.** You cannot use `require('fs')` or `require('child_process')` inside `browser_run_code`. Write the full script to a file and use the `filename` parameter instead.
+
+20. **Playwright file paths must be in allowed roots.** Scripts must live in `.playwright-mcp/` or the project directory. `/tmp/` paths will be rejected.
+
+21. **Use `domcontentloaded`, never `networkidle` for IG.** Instagram keeps streaming analytics/tracking requests forever. `networkidle` will always timeout.
+
+22. **Cookies must be injected via `context.addCookies()`.** `document.cookie` cannot set HttpOnly cookies. The session will fail silently and IG will redirect to login.
 
 ---
 
@@ -482,8 +729,12 @@ Before declaring done, verify:
 - [ ] No innerHTML usage except DOMPurify-sanitized markdown
 - [ ] Cookie values never appear in any output
 - [ ] Drop rate is 10-20%, not 40%+
-- [ ] Masonry layout with 3 columns, responsive breakpoints
+- [ ] Masonry layout with 3 columns, responsive breakpoints work at 900/640/400px
+- [ ] No horizontal overflow on any viewport width down to 320px
 - [ ] DejaViewed summary page has hero-grid layout (not centered hero block)
 - [ ] DejaViewed page has install/sources sidebar, section jump pills, action cards
 - [ ] Nav order: DEJAVIEWED (gold) → ALL → source groups with sub-links
 - [ ] Landing page is `index.html` (the DejaViewed summary), catalog is `catalog.html`
+- [ ] New collections added to ALL 4 locations in render.py
+- [ ] curation.json tiers match catalog.jsonl tiers
+- [ ] Site tested at desktop (1440px), tablet (768px), and mobile (375px) widths
