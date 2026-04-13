@@ -38,11 +38,11 @@ Or with arguments:
 | **Chrome Bookmarks** | None (local file) | ✅ Built |
 | **Firefox Bookmarks** | None (local file) | ✅ Built |
 | **Edge Bookmarks** | None (local file) | ✅ Built |
-| **TikTok Saves** | Chrome profile copy | 🔜 Planned |
-| **Twitter/X Bookmarks** | API bearer token | 🔜 Planned |
-| **Pinterest Boards** | Chrome profile / API | 🔜 Planned |
-| **Reddit Saved** | OAuth token | 🔜 Planned |
-| **YouTube Watch Later** | Chrome profile / API | 🔜 Planned |
+| **TikTok Saves** | Chrome profile copy | ✅ Built |
+| **Twitter/X Bookmarks** | Chrome profile copy | ✅ Built |
+| **Pinterest Boards** | Chrome profile copy | ✅ Built |
+| **Reddit Saved** | Chrome profile copy | ✅ Built |
+| **YouTube Watch Later** | Chrome profile copy | ✅ Built |
 
 ## What It Does
 
@@ -98,6 +98,34 @@ python3 adapters/merge_sources.py \
   --out data/catalog_merged.jsonl --dedup-by url
 ```
 
+## Social Platform Saves (Auth Required)
+
+All social adapters use session cookies from a copied Chrome profile:
+
+```bash
+# Reddit saved posts
+python3 adapters/reddit_saved.py --out data/reddit_saved.jsonl
+
+# Twitter/X bookmarks
+python3 adapters/twitter_bookmarks.py --out data/twitter_bookmarks.jsonl
+
+# TikTok favorites
+python3 adapters/tiktok_saved.py --out data/tiktok_saved.jsonl
+
+# YouTube Watch Later + Liked Videos
+python3 adapters/youtube_saved.py --playlists WL,LL --out data/youtube_saved.jsonl
+
+# Pinterest boards (all boards)
+python3 adapters/pinterest_boards.py --all-boards --out data/pinterest_saved.jsonl
+
+# Merge everything
+python3 adapters/merge_sources.py \
+  --sources data/catalog.jsonl data/chrome_bookmarks.jsonl data/reddit_saved.jsonl \
+    data/twitter_bookmarks.jsonl data/tiktok_saved.jsonl data/youtube_saved.jsonl \
+    data/pinterest_saved.jsonl \
+  --out data/catalog_merged.jsonl --dedup-by url
+```
+
 Cross-source dedup: if the same URL appears from Chrome AND Instagram, the merger keeps the richer record and adds `sources: ["instagram", "chrome"]`.
 
 ## Prerequisites
@@ -106,6 +134,10 @@ Cross-source dedup: if the same URL appears from Chrome AND Instagram, the merge
 1. Instagram saved post URLs as JSON: `{"collection":"name","count":N,"urls":[...]}`
 2. Copied Chrome profile with active IG session at `.profile-copy/Default/Cookies`
 3. Python 3.10+ with `requests` and `browser_cookie3`
+
+**For social platform scraping (TikTok, Twitter/X, Reddit, YouTube, Pinterest):**
+1. Copied Chrome profile with active session at `.profile-copy/Default/Cookies`
+2. Python 3.10+ with `requests` and `browser_cookie3`
 
 **For browser bookmarks only:**
 1. Python 3.10+ (no additional packages needed)

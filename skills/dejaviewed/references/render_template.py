@@ -339,11 +339,13 @@ def header_html(active, prefix=""):
     # Source groups: label → [(key, sublabel), ...]
     sources = [
         ("instagram", "Instagram", [("ai1","AI1"),("ai2","AI2"),("ai3","AI3"),("ai4","AI4")]),
-        # Future sources get added here:
+        # Add more source groups as adapters produce data:
         # ("chrome", "Chrome", [("chrome","Bookmarks")]),
-        # ("tiktok", "TikTok", []),
-        # ("twitter", "Twitter / X", []),
-        # ("youtube", "YouTube", []),
+        # ("tiktok", "TikTok", [("tiktok","Favorites")]),
+        # ("twitter", "Twitter / X", [("twitter","Bookmarks")]),
+        # ("reddit", "Reddit", [("reddit","Saved")]),
+        # ("youtube", "YouTube", [("youtube","Saved")]),
+        # ("pinterest", "Pinterest", []),
     ]
     # Build nav: Playbook first, then All, then source groups
     nav = []
@@ -913,8 +915,7 @@ if actions_path.exists():
       </div>
       <div class="about-card">
         <h3>🔌 Sources</h3>
-        <p class="src-list"><strong style="color:#fff">Built:</strong> Instagram · Chrome · Firefox · Edge</p>
-        <p class="src-list"><strong style="color:var(--text-mute)">Planned:</strong> TikTok · Twitter/X · Reddit · YouTube</p>
+        <p class="src-list"><strong style="color:#fff">Built:</strong> Instagram · Chrome · Firefox · Edge · Reddit · Twitter/X · TikTok · YouTube · Pinterest</p>
       </div>
       <p class="save-profile">{esc(stats.get('save_profile',''))}</p>
     </div>

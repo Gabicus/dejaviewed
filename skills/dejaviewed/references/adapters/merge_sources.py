@@ -36,11 +36,17 @@ def richness_score(record):
         score += len(record["key_takeaways"]) * 15
     if record.get("links"):
         score += len(record["links"]) * 3
-    # Instagram records are generally richer than bookmarks
-    if record.get("source") not in ("chrome", "firefox", "edge"):
+    # Social platform records are generally richer than browser bookmarks
+    browser_sources = ("chrome", "firefox", "edge")
+    if record.get("source") not in browser_sources:
         score += 50
     if record.get("media_type") != "bookmark":
         score += 20
+    # Platform-specific bonus for rich metadata
+    if record.get("likes") or record.get("score"):
+        score += 10
+    if record.get("hashtags"):
+        score += len(record["hashtags"]) * 2
     return score
 
 

@@ -578,26 +578,45 @@ Guides → Repos → Skills → Tools → Platforms → Art → Design → UI/UX
 
 ---
 
-## Phase 8: Browser Bookmarks + Other Sources
+## Phase 8: Browser Bookmarks + Social Platforms
 
-**Auto-detect available sources:**
+**Browser bookmarks (no auth needed):**
 ```bash
-# Check for Chrome bookmarks
 python3 adapters/chrome_bookmarks.py --out data/chrome_bookmarks.jsonl
-
-# Check for Firefox bookmarks  
 python3 adapters/firefox_bookmarks.py --out data/firefox_bookmarks.jsonl
-
-# Check for Edge bookmarks
 python3 adapters/edge_bookmarks.py --out data/edge_bookmarks.jsonl
+```
 
-# Merge all sources (dedup by URL, keep richer metadata)
+**Social platform saves (auth via Chrome profile copy):**
+```bash
+# Reddit saved posts — scrapes old.reddit.com HTML, paginated
+python3 adapters/reddit_saved.py --out data/reddit_saved.jsonl
+
+# Twitter/X bookmarks — uses GraphQL API with ct0 CSRF token
+python3 adapters/twitter_bookmarks.py --out data/twitter_bookmarks.jsonl
+
+# TikTok favorites — uses internal API with session cookies
+python3 adapters/tiktok_saved.py --out data/tiktok_saved.jsonl
+
+# YouTube Watch Later + Liked Videos — extracts ytInitialData + browse API
+python3 adapters/youtube_saved.py --playlists WL,LL --out data/youtube_saved.jsonl
+
+# Pinterest boards — uses internal resource API with CSRF
+python3 adapters/pinterest_boards.py --all-boards --out data/pinterest_saved.jsonl
+```
+
+**Merge all sources:**
+```bash
 python3 adapters/merge_sources.py \
   --sources data/catalog.jsonl data/chrome_bookmarks.jsonl data/firefox_bookmarks.jsonl \
+    data/reddit_saved.jsonl data/twitter_bookmarks.jsonl data/tiktok_saved.jsonl \
+    data/youtube_saved.jsonl data/pinterest_saved.jsonl \
   --out data/catalog_merged.jsonl --dedup-by url
 ```
 
-Each adapter normalizes bookmarks into the same schema as IG records. Cross-source dedup: if the same URL appears from Chrome AND Instagram, the merger keeps the richer record (IG caption > bookmark title) and adds `sources: ["instagram", "chrome"]`.
+All adapters share: `--profile` for custom Chrome profile path, `--limit` to cap items, `--pause` for rate limiting. All are resume-safe (skip already-scraped URLs). All output the same JSONL schema.
+
+Each adapter normalizes records into the same schema as IG records. Cross-source dedup: if the same URL appears from Chrome AND Instagram, the merger keeps the richer record (IG caption > bookmark title) and adds `sources: ["instagram", "chrome"]`.
 
 ---
 
