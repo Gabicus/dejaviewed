@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Graph Cosmos — DejaViewed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+/* Cosmos-specific overlays only. Shell styles (header, controls, hint, u-menu, tooltip) live in shared.css. */
+html,body{overflow:hidden;width:100vw;height:100vh}
+#node-canvas { position: absolute; left:0; top:0; }
+
+#label { position: absolute; pointer-events: none; z-index: 200;
+  background: rgba(18,18,26,.94); backdrop-filter: blur(14px); border-radius: 10px;
+  padding: 10px 12px; font-size: 10px; white-space: nowrap; opacity: 0; max-width: 360px;
+  transition: opacity .15s; transform: translateX(-50%) translateY(-100%);
+  border: 1px solid var(--border-hi); box-shadow: var(--shadow-2); }
+#label.vis { opacity: 1; }
+#lname { font-weight: 700; letter-spacing: .3px; color: rgba(220,240,255,.98); margin-bottom: 3px; white-space: normal; }
+#lsub  { font-size: 9px; opacity: .65; white-space: normal; }
+#lextra { font-size: 9px; opacity: .45; margin-top: 4px; white-space: normal; }
+#label::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+  border:5px solid transparent; border-top-color:var(--border-hi); }
+
+#zoom-level { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px; z-index: 100; pointer-events: none; }
+.zlvl { padding: 3px 10px; border-radius: 20px; font-size: 8px; letter-spacing: 1.5px;
+  text-transform: uppercase; opacity: .25; border: 1px solid rgba(255,255,255,.1); transition: all .3s; }
+.zlvl.active { opacity: 1; border-color: rgba(167,139,250,.5);
+  color: #fff; background: linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25)); }
+
+#zoom-flash { position: absolute; inset: 0; pointer-events: none; z-index: 150;
+  background: radial-gradient(ellipse at center, rgba(167,139,250,.08) 0%, transparent 70%);
+  opacity: 0; transition: opacity .4s; }
+
+/* Cosmos loading overlay — simple full-screen until catalog loads */
+#loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim); font-size: 14px; z-index: 500; background: var(--bg);
+  letter-spacing: .2em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading">Loading cosmos…</div>
+
+<script>DV.mountHeader(document.body, 'cosmos');</script>
+
+<aside class="controls" id="controls">
+  <div class="group"><h3>View by</h3><div class="row tax-bar" id="tax-bar"></div></div>
+  <div class="group"><h3>Utilities</h3>
+    <div class="row"><button class="u-btn" id="u-open-btn" onclick="toggleUMenu()">Open U-menu · <kbd>u</kbd></button></div>
+  </div>
+  <div class="group"><h3>Zoom</h3><div class="row" id="zoom-level-row">
+    <span class="pill zlvl" id="zl-cosmos">Cosmos</span>
+    <span class="pill zlvl" id="zl-galaxy">Galaxy</span>
+    <span class="pill zlvl" id="zl-cluster">Cluster</span>
+    <span class="pill zlvl" id="zl-entry">Entry</span>
+  </div></div>
+  <div class="group"><h3>Stats</h3><div class="stats" id="stats">—</div></div>
+</aside>
+
+<script src="catalog.js"></script>
+<canvas id="node-canvas"></canvas>
+
+
+<div id="zoom-flash"></div>
+
+<div class="hint">
+  <b>Scroll</b> zoom · <b>Drag</b> pan · <b>Right-drag</b> rotate · <b>Click</b> entry for details · <kbd>u</kbd> utilities · <kbd>esc</kbd> reset
+</div>
+
+<div class="tooltip" id="tip"><button type="button" class="closer" aria-label="close">×</button></div>
+
+<div id="u-menu">
+  <button id="u-close" onclick="toggleUMenu(false)">×</button>
+  <h3>Utilities (U)</h3>
+
+  <h4>Lines</h4>
+  <div class="u-row"><label>Radial (parent→child)</label>
+    <input type="range" id="u-radial-op" min="0" max="100" value="55"><span class="val" id="u-radial-op-v">55</span></div>
+  <div class="u-row"><label>Radial width</label>
+    <input type="range" id="u-radial-w" min="1" max="40" value="12"><span class="val" id="u-radial-w-v">1.2</span></div>
+  <div class="u-row"><label>Orbit path</label>
+    <input type="range" id="u-orbit-op" min="0" max="100" value="22"><span class="val" id="u-orbit-op-v">22</span></div>
+  <div class="u-row"><label>Inter-galaxy</label>
+    <input type="range" id="u-inter-op" min="0" max="100" value="6"><span class="val" id="u-inter-op-v">6</span></div>
+
+  <h4>Motion</h4>
+  <div class="u-row"><label>Orbit speed</label>
+    <input type="range" id="u-speed" min="0" max="300" value="100"><span class="val" id="u-speed-v">1.0×</span></div>
+  <div class="u-row">
+    <button class="u-btn" id="u-freeze" onclick="toggleFreeze()">Freeze motion</button>
+    <button class="u-btn" id="u-trails"  onclick="toggleTrails()">Trails</button>
+  </div>
+
+  <h4>Expansion</h4>
+  <div class="u-row">
+    <button class="u-btn" id="u-force-clusters" onclick="toggleForceClusters()">Expand all clusters</button>
+  </div>
+  <div class="u-row">
+    <button class="u-btn" id="u-force-entries" onclick="toggleForceEntries()">Expand all entries</button>
+  </div>
+
+  <h4>Nodes</h4>
+  <div class="u-row"><label>Radius ×</label>
+    <input type="range" id="u-node-r" min="30" max="250" value="100"><span class="val" id="u-node-r-v">1.0</span></div>
+  <div class="u-row"><label>Glow ×</label>
+    <input type="range" id="u-glow" min="0" max="200" value="100"><span class="val" id="u-glow-v">1.0</span></div>
+  <div class="u-row"><label>Star density</label>
+    <input type="range" id="u-stars" min="0" max="200" value="0"><span class="val" id="u-stars-v">0.0</span></div>
+
+  <h4>Labels</h4>
+  <div class="u-row">
+    <button class="u-btn" id="u-labels-always" onclick="toggleLabelsAlways()">Labels always on</button>
+  </div>
+  <div class="u-row"><label>Label size</label>
+    <input type="range" id="u-label-size" min="60" max="200" value="100"><span class="val" id="u-label-size-v">1.0</span></div>
+
+  <h4>Filters</h4>
+  <div class="u-btn-row" id="u-tier-row"></div>
+
+  <h4>Cross-connections</h4>
+  <div class="u-row" style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:.04em">
+    Faint links between nodes sharing a dimension. Click ↦ to make it the primary (orbit) taxonomy instead.
+  </div>
+  <div id="u-cross-rows"></div>
+  <div class="u-row"><label>Cross opacity ×</label>
+    <input type="range" id="u-cross-op" min="0" max="200" value="100"><span class="val" id="u-cross-op-v">1.0</span></div>
+  <div class="u-row">
+    <button class="u-btn" id="u-cross-hover" onclick="toggleCrossHover()">Hover-only mode</button>
+  </div>
+  <div class="u-row">
+    <button class="u-btn" id="u-cross-curve" onclick="toggleCrossCurve()">Curved lines</button>
+  </div>
+
+  <h4>Presets</h4>
+  <div class="u-btn-row">
+    <button class="u-btn" onclick="applyPreset('minimal')">Minimal</button>
+    <button class="u-btn" onclick="applyPreset('dense')">Dense</button>
+    <button class="u-btn" onclick="applyPreset('xray')">X-ray</button>
+  </div>
+</div>
+
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+//  DejaViewed Cosmos — adapted from cosmos-live-v13 (wv-art.com prototype)
+//  - Dynamic taxonomies built from catalog.json
+//  - Stronger parent→child radial lines
+//  - Hidden "u" utility menu with live edit controls
+// ══════════════════════════════════════════════════════════════════════
+
+const nodeCvs = document.getElementById('node-canvas');
+const ctx     = nodeCvs.getContext('2d');
+
+// ── U-menu state (live-adjustable) ───────────────────────────────────
+const U = {
+  radialOpacity: 0.55,
+  radialWidth:   1.2,
+  orbitOpacity:  0.13,
+  interOpacity:  0.06,
+  speedScale:    1.0,
+  nodeRScale:    1.0,
+  glowScale:     1.0,
+  labelSize:     1.0,
+  starDensity:   0.0,
+  freeze:        false,
+  trails:        false,
+  forceClusters: true,   // default-on per Capture.PNG: expanded clusters
+  forceEntries:  true,   // default-on per Capture.PNG: expanded entries
+  labelsAlways:  false,
+  tiers:         new Set(['S','A','B','C']),
+  // Cross-connection overlays — faint lines between entries sharing a taxonomy value
+  crossEnabled:  new Set(['creator','tool','technique','domain']),  // Capture.PNG defaults
+  crossOpacity:  1.0,               // global × multiplier on cross lines
+  crossHoverOnly: false,            // only show cross-lines for hovered node
+  crossCurve:    true,              // bezier vs straight
+};
+
+// ── Global settings ──────────────────────────────────────────────────
+let speedMult      = 1;  // timeline Rev/Fwd slider removed in shared-shell migration
+// 3D tilt removed — labels didn't stay coplanar with node positions, felt broken.
+// Kept flat projection only; middle-drag now just rotates cosmosAngle.
+let cosmosAngle    = 0;
+let t              = 0;
+let mouse          = { x: -9999, y: -9999 };
+
+let midDragStart      = null;
+let midDragInitCosmos = 0;
+// Node drag — left-click-hold on a node pins it to the cursor in world space.
+// Physics keeps running for everything else, so connected nodes flex around
+// the held one (children orbit a pinned parent; a pinned entry stretches
+// against its spring to the orbiting parent).
+let draggingNode   = null;
+let dragWorldOff   = { x: 0, y: 0 };
+let justDraggedNode = false;
+let nodeDragMoved   = false;   // true only if mouse moved while dragging a node
+
+// speed-slider removed; speedMult is driven by U.speedScale + autoAdjustSpeed() band logic.
+
+// ── Camera ───────────────────────────────────────────────────────────
+const MIN_SCALE = 0.12, MAX_SCALE = 30;
+let camera = { x: 0, y: 0, scale: 1, targetX: 0, targetY: 0, targetScale: 1 };
+
+function initCamera() {
+  const cx = nodeCvs.width / 2, cy = nodeCvs.height / 2;
+  camera.x = cx; camera.targetX = cx;
+  camera.y = cy; camera.targetY = cy;
+  camera.scale = 1; camera.targetScale = 1;
+}
+function screenToWorld(sx, sy) {
+  const W = nodeCvs.width, H = nodeCvs.height;
+  return { x: (sx - W/2) / camera.scale + camera.x,
+           y: (sy - H/2) / camera.scale + camera.y };
+}
+function worldToScreen(wx, wy) {
+  const W = nodeCvs.width, H = nodeCvs.height;
+  return { x: (wx - camera.x) * camera.scale + W/2,
+           y: (wy - camera.y) * camera.scale + H/2 };
+}
+
+// Shell geometry — header above, left sidebar on desktop (shared.css layout).
+// Fall back to 0 if either element is missing so the canvas still renders.
+function topH() {
+  const h = document.querySelector('header.site');
+  return h ? h.offsetHeight : 0;
+}
+function leftW() {
+  // On desktop, .controls is the left filter sidebar (position:fixed in shared.css).
+  // On mobile it becomes a bottom sheet and shouldn't eat horizontal space.
+  const c = document.querySelector('aside.controls');
+  if (!c) return 0;
+  const r = c.getBoundingClientRect();
+  return (r.left < 10 && r.width < window.innerWidth * 0.6) ? r.width : 0;
+}
+function resize() {
+  const w = Math.max(100, window.innerWidth  - leftW());
+  const h = Math.max(100, window.innerHeight - topH());
+  nodeCvs.width  = w; nodeCvs.height = h;
+  nodeCvs.style.top  = topH() + 'px';
+  nodeCvs.style.left = leftW() + 'px';
+  nodeCvs.style.width  = w + 'px';
+  nodeCvs.style.height = h + 'px';
+}
+resize();
+window.addEventListener('resize', () => { resize(); buildAll(); });
+
+// (Nebula removed 2026-04-20 — all atmospheric background rendering stripped for perf.
+//  body already has a radial-gradient backdrop via CSS on html/body in earlier styles.)
+
+// ══════════════════════════════════════════════════════════════════════
+//  TAXONOMY BUILDERS — generate TAX from catalog.json dynamically
+// ══════════════════════════════════════════════════════════════════════
+
+// Color palettes for galaxy assignment
+const COLLECTION_COLORS = {
+  ai1:   [167, 139, 250],   // purple (accent)
+  ai2:   [96, 165, 250],    // blue
+  ai3:   [244, 114, 182],   // pink
+  ai4:   [251, 191, 36],    // amber
+  quant: [76, 218, 140],    // green
+  ai5:   [240, 160, 80],    // orange (reserved)
+};
+const TIER_COLORS = {
+  S: [251, 191, 36],
+  A: [167, 139, 250],
+  B: [96, 165, 250],
+  C: [140, 140, 160],
+};
+const FALLBACK_COLORS = [
+  [170, 70, 255], [60, 170, 255], [0, 210, 130], [220, 150, 40],
+  [90, 120, 255], [200, 100, 255], [10, 40, 55], [180, 140, 50],
+];
+
+let catalog = null;
+let TAX_DATA = {};          // { taxName: {galaxies:[], clusters:[], entriesByCluster:{}} }
+let currentTax = 'tier';  // Capture.PNG default
+let allNodes = [];
+let allStars = [];
+
+function buildTaxonomies(cat) {
+  const entries = cat.entries.filter(e => e.id);
+
+  // ── Taxonomy 1: By Collection ────────────────────────────────────
+  // Galaxies = collections; Clusters = tiers within each collection; Entries = posts
+  const tax1 = { galaxies: [], clusters: [], entriesByCluster: {} };
+  const collCounts = cat.stats.collections;
+  const collOrder = Object.keys(collCounts).sort((a,b) => collCounts[b] - collCounts[a]);
+  const collPositions = circleLayout(collOrder.length, 0.28);
+  collOrder.forEach((c, i) => {
+    const count = collCounts[c];
+    tax1.galaxies.push({
+      id: 'gal-' + c, label: c.toUpperCase(), sub: `${count} posts`,
+      color: COLLECTION_COLORS[c] || FALLBACK_COLORS[i%FALLBACK_COLORS.length],
+      fx: collPositions[i].fx, fy: collPositions[i].fy,
+      r: 22 + Math.log2(count) * 4, orbitSpeed: .00006 + i*.00001,
+    });
+    ['S','A','B','C'].forEach((tier, ti) => {
+      const tierEntries = entries.filter(e => e.collection === c && (e.tier || 'C').toUpperCase() === tier);
+      if (tierEntries.length === 0) return;
+      const cid = `cl-${c}-${tier}`;
+      tax1.clusters.push({
+        id: cid, label: `${tier}-tier`, sub: `${tierEntries.length} posts`,
+        gal: 'gal-' + c, tier: tier,
+        color: TIER_COLORS[tier],
+        orbitR: .10 + ti * .035, orbitSpeed: .0006 - ti * .0001,
+        inc: .3 + ti * .15, phase: ti * 1.5,
+        r: 8 + Math.log2(tierEntries.length + 1) * 2.2,
+      });
+      tax1.entriesByCluster[cid] = tierEntries;
+    });
+  });
+
+  // ── Taxonomy 2: By Tier ──────────────────────────────────────────
+  // Galaxies = S/A/B/C; Clusters = collections within tier; Entries = posts
+  const tax2 = { galaxies: [], clusters: [], entriesByCluster: {} };
+  const tierOrder = ['S','A','B','C'];
+  const tierPositions = circleLayout(tierOrder.length, 0.30);
+  tierOrder.forEach((tier, i) => {
+    const tierEntries = entries.filter(e => (e.tier || 'C').toUpperCase() === tier);
+    tax2.galaxies.push({
+      id: 'gal-' + tier, label: tier + '-TIER', sub: `${tierEntries.length} posts`,
+      color: TIER_COLORS[tier],
+      fx: tierPositions[i].fx, fy: tierPositions[i].fy,
+      r: 22 + Math.log2(tierEntries.length + 1) * 3.5, orbitSpeed: .00005 + i*.00001,
+    });
+    collOrder.forEach((c, ci) => {
+      const ces = tierEntries.filter(e => e.collection === c);
+      if (ces.length === 0) return;
+      const cid = `cl-${tier}-${c}`;
+      tax2.clusters.push({
+        id: cid, label: c.toUpperCase(), sub: `${ces.length} posts`,
+        gal: 'gal-' + tier, collection: c,
+        color: COLLECTION_COLORS[c] || FALLBACK_COLORS[ci%FALLBACK_COLORS.length],
+        orbitR: .10 + ci * .033, orbitSpeed: .0006 - ci * .00008,
+        inc: .3 + ci * .1, phase: ci * 1.2,
+        r: 8 + Math.log2(ces.length + 1) * 2.2,
+      });
+      tax2.entriesByCluster[cid] = ces;
+    });
+  });
+
+  // ── Taxonomy 3: By Creator (top N) ───────────────────────────────
+  const creatorCounts = {};
+  entries.forEach(e => { if (e.creator) creatorCounts[e.creator] = (creatorCounts[e.creator]||0) + 1; });
+  const topCreators = Object.entries(creatorCounts)
+    .filter(([,n]) => n >= 2).sort((a,b) => b[1] - a[1]).slice(0, 6);
+  const tax3 = { galaxies: [], clusters: [], entriesByCluster: {} };
+  const creatorPositions = circleLayout(topCreators.length, 0.30);
+  topCreators.forEach(([creator, n], i) => {
+    const ces = entries.filter(e => e.creator === creator);
+    tax3.galaxies.push({
+      id: 'gal-' + creator, label: creator, sub: `${n} posts`,
+      color: FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+      fx: creatorPositions[i].fx, fy: creatorPositions[i].fy,
+      r: 18 + Math.log2(n + 1) * 4, orbitSpeed: .00007 + i*.00001,
+    });
+    const byColl = {};
+    ces.forEach(e => { (byColl[e.collection] = byColl[e.collection] || []).push(e); });
+    Object.entries(byColl).forEach(([c, items], ci) => {
+      const cid = `cl-${creator}-${c}`;
+      tax3.clusters.push({
+        id: cid, label: c.toUpperCase(), sub: `${items.length} posts`,
+        gal: 'gal-' + creator, collection: c,
+        color: COLLECTION_COLORS[c] || FALLBACK_COLORS[ci%FALLBACK_COLORS.length],
+        orbitR: .11 + ci * .035, orbitSpeed: .0006,
+        inc: .3 + ci * .2, phase: ci * 1.3,
+        r: 7 + Math.log2(items.length + 1) * 2.2,
+      });
+      tax3.entriesByCluster[cid] = items;
+    });
+  });
+
+  // Also include all other creators' entries under a "Long tail" galaxy so nothing is lost
+  const longtail = entries.filter(e => !topCreators.some(([c]) => c === e.creator));
+  if (longtail.length > 0 && topCreators.length < 7) {
+    const extraPos = circleLayout(topCreators.length + 1, 0.30)[topCreators.length];
+    tax3.galaxies.push({
+      id: 'gal-longtail', label: 'Long tail', sub: `${longtail.length} posts from 1-post creators`,
+      color: [140, 140, 160],
+      fx: extraPos.fx, fy: extraPos.fy,
+      r: 18 + Math.log2(longtail.length + 1) * 3, orbitSpeed: .00004,
+    });
+    const byColl = {};
+    longtail.forEach(e => { (byColl[e.collection] = byColl[e.collection] || []).push(e); });
+    Object.entries(byColl).forEach(([c, items], ci) => {
+      const cid = `cl-longtail-${c}`;
+      tax3.clusters.push({
+        id: cid, label: c.toUpperCase(), sub: `${items.length} posts`,
+        gal: 'gal-longtail', collection: c,
+        color: COLLECTION_COLORS[c] || FALLBACK_COLORS[ci%FALLBACK_COLORS.length],
+        orbitR: .11 + ci * .034, orbitSpeed: .00055,
+        inc: .3 + ci * .15, phase: ci * 1.4,
+        r: 7 + Math.log2(items.length + 1) * 2.0,
+      });
+      tax3.entriesByCluster[cid] = items;
+    });
+  }
+
+  // ── Taxonomy 4: By Domain (top N) ────────────────────────────────
+  const domainCounts = {};
+  entries.forEach(e => (e.domains || []).forEach(d => domainCounts[d] = (domainCounts[d]||0)+1));
+  const topDomains = Object.entries(domainCounts).sort((a,b) => b[1] - a[1]).slice(0, 6);
+  const tax4 = { galaxies: [], clusters: [], entriesByCluster: {} };
+  const domainPositions = circleLayout(topDomains.length, 0.30);
+  topDomains.forEach(([dom, n], i) => {
+    const ces = entries.filter(e => (e.domains || []).includes(dom));
+    tax4.galaxies.push({
+      id: 'gal-' + dom, label: dom.toUpperCase(), sub: `${n} posts`,
+      color: FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+      fx: domainPositions[i].fx, fy: domainPositions[i].fy,
+      r: 20 + Math.log2(n + 1) * 3.5, orbitSpeed: .00006 + i*.00001,
+    });
+    const byColl = {};
+    ces.forEach(e => { (byColl[e.collection] = byColl[e.collection] || []).push(e); });
+    Object.entries(byColl).forEach(([c, items], ci) => {
+      const cid = `cl-${dom}-${c}`;
+      tax4.clusters.push({
+        id: cid, label: c.toUpperCase(), sub: `${items.length} posts`,
+        gal: 'gal-' + dom, collection: c,
+        color: COLLECTION_COLORS[c] || FALLBACK_COLORS[ci%FALLBACK_COLORS.length],
+        orbitR: .11 + ci * .032, orbitSpeed: .00055,
+        inc: .3 + ci * .15, phase: ci * 1.3,
+        r: 7 + Math.log2(items.length + 1) * 2.1,
+      });
+      tax4.entriesByCluster[cid] = items;
+    });
+  });
+
+  return { collection: tax1, tier: tax2, creator: tax3, domain: tax4 };
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  CROSS-CONNECTION INDEX — for each dimension, which entries share a value
+// ══════════════════════════════════════════════════════════════════════
+// Shape: { dimension: { value: [entryId, entryId, ...] } }
+// Dimensions we support: creator, tool, technique, domain, tier, type, collection
+// Consumer draws one line per pair (i<j) where both entries are currently rendered.
+
+const CROSS_DIMS = [
+  { id: 'creator',   label: 'Creator',   color: [224, 96, 160], field: 'creator',   multi: false },
+  { id: 'tool',      label: 'Tool',      color: [240, 160, 80], field: 'tools',     multi: true  },
+  { id: 'technique', label: 'Technique', color: [96, 165, 250], field: 'techniques',multi: true  },
+  { id: 'domain',    label: 'Domain',    color: [167, 139, 250], field: 'domains',  multi: true  },
+  { id: 'tier',      label: 'Tier',      color: [251, 191, 36], field: 'tier',      multi: false },
+  { id: 'type',      label: 'Type',      color: [76, 218, 140], field: 'type',      multi: false },
+  { id: 'collection',label: 'Collection',color: [140, 180, 220], field: 'collection',multi: false },
+];
+
+let CROSS_INDEX = {};  // { dim: { val: Set(entryId) } }
+let CROSS_PAIRS = {};  // { dim: [ {a:entryId, b:entryId, val, weight} ... ] } — precomputed pair list
+
+// Upper bound on pairs per dimension value — prevents O(N^2) blowups on popular tags
+const MAX_PAIRS_PER_VALUE = 80;
+
+function buildCrossIndex(cat) {
+  CROSS_INDEX = {}; CROSS_PAIRS = {};
+  for (const dim of CROSS_DIMS) {
+    CROSS_INDEX[dim.id] = {};
+    const idx = CROSS_INDEX[dim.id];
+    for (const e of cat.entries) {
+      if (!e.id) continue;
+      const raw = e[dim.field];
+      if (!raw) continue;
+      const vals = dim.multi ? (Array.isArray(raw) ? raw : []) : [raw];
+      for (const v of vals) {
+        if (v === null || v === undefined || v === '') continue;
+        const key = String(v).trim();
+        if (!key) continue;
+        (idx[key] = idx[key] || new Set()).add(e.id);
+      }
+    }
+    // Build pair list for this dimension
+    const pairs = [];
+    for (const [val, set] of Object.entries(idx)) {
+      const ids = [...set];
+      if (ids.length < 2) continue;
+      // Skip mega-hubs in multi-valued dims (e.g. llm domain linking ~80 posts → 3160 pairs)
+      if (dim.multi && ids.length > 20) {
+        // Sample a subset of pairs to keep it readable
+        const sample = Math.min(MAX_PAIRS_PER_VALUE, Math.floor(ids.length * 1.5));
+        for (let k = 0; k < sample; k++) {
+          const i = Math.floor(Math.random() * ids.length);
+          let j = Math.floor(Math.random() * ids.length);
+          if (i === j) j = (j + 1) % ids.length;
+          pairs.push({ a: ids[i], b: ids[j], val, weight: 1 / Math.log2(ids.length + 2) });
+        }
+      } else {
+        for (let i = 0; i < ids.length; i++)
+          for (let j = i + 1; j < ids.length; j++)
+            pairs.push({ a: ids[i], b: ids[j], val, weight: 1 / Math.log2(ids.length + 2) });
+      }
+    }
+    CROSS_PAIRS[dim.id] = pairs;
+  }
+}
+
+// Entry-node lookup by raw entry id (the 'e-' prefix handled in node build)
+// O(1) entry lookup — rebuilt inside buildAll()
+let entryNodeMap = new Map();
+function rebuildEntryNodeMap() {
+  entryNodeMap = new Map();
+  for (const n of allNodes) if (n.type === 'entry') entryNodeMap.set(n.id.slice(2), n);
+}
+function entryNodeById(eid) { return entryNodeMap.get(eid); }
+
+function drawCrossLinks() {
+  if (!U.crossEnabled.size) return;
+  const globalOp = U.crossOpacity;
+
+  // When hover-only mode is on, restrict to pairs touching the hovered entry
+  let hoverId = null;
+  if (U.crossHoverOnly && hovered && hovered.type === 'entry') {
+    hoverId = hovered.id.slice(2); // strip 'e-'
+  }
+
+  // Viewport cull rect in world space (skip pairs fully outside + margin)
+  const W = nodeCvs.width, H = nodeCvs.height;
+  const margin = 80 / camera.scale;
+  const vx0 = camera.x - (W / 2) / camera.scale - margin;
+  const vy0 = camera.y - (H / 2) / camera.scale - margin;
+  const vx1 = camera.x + (W / 2) / camera.scale + margin;
+  const vy1 = camera.y + (H / 2) / camera.scale + margin;
+
+  for (const dim of CROSS_DIMS) {
+    if (!U.crossEnabled.has(dim.id)) continue;
+    const pairs = CROSS_PAIRS[dim.id] || [];
+    const c = dim.color;
+    for (const p of pairs) {
+      if (U.crossHoverOnly && hoverId && p.a !== hoverId && p.b !== hoverId) continue;
+      const a = entryNodeById(p.a); const b = entryNodeById(p.b);
+      if (!a || !b) continue;
+      const aAlpha = nodeAlpha(a), bAlpha = nodeAlpha(b);
+      // Cross-links stay visible at all zoom levels (minimum opacity floor)
+      const effectiveAAlpha = Math.max(aAlpha, 0.15);
+      const effectiveBAlpha = Math.max(bAlpha, 0.15);
+
+      const ax = a.renderWx ?? a.wx, ay = a.renderWy ?? a.wy;
+      const bx = b.renderWx ?? b.wx, by = b.renderWy ?? b.wy;
+
+      // Viewport culling: if segment's bounding box is outside viewport, skip
+      const bx0 = Math.min(ax, bx), by0 = Math.min(ay, by);
+      const bx1 = Math.max(ax, bx), by1 = Math.max(ay, by);
+      if (bx1 < vx0 || bx0 > vx1 || by1 < vy0 || by0 > vy1) continue;
+
+      const baseOp = Math.min(effectiveAAlpha, effectiveBAlpha) * (p.weight || 1) * globalOp;
+      const op = Math.max(0.03, Math.min(0.55, baseOp * 0.35));
+      if (op < 0.01) continue;
+
+      ctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${op})`;
+      ctx.lineWidth = 0.6 / camera.scale;
+      ctx.beginPath();
+      if (U.crossCurve) {
+        const mx = (ax + bx) / 2, my = (ay + by) / 2;
+        const dx = bx - ax, dy = by - ay;
+        const d = Math.hypot(dx, dy);
+        const k = Math.min(d * 0.25, 80 / camera.scale);
+        const nx = -dy / (d || 1), ny = dx / (d || 1);
+        ctx.moveTo(ax, ay);
+        ctx.quadraticCurveTo(mx + nx * k, my + ny * k, bx, by);
+      } else {
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(bx, by);
+      }
+      ctx.stroke();
+    }
+  }
+}
+
+function circleLayout(n, radiusFrac) {
+  if (n === 1) return [{ fx: 0.5, fy: 0.5 }];
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+    out.push({ fx: 0.5 + Math.cos(a) * radiusFrac, fy: 0.5 + Math.sin(a) * radiusFrac });
+  }
+  return out;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  NODE BUILDING
+// ══════════════════════════════════════════════════════════════════════
+
+function makeAllNodes() {
+  const W = nodeCvs.width, H = nodeCvs.height, cx = W/2, cy = H/2;
+  const cfg = TAX_DATA[currentTax];
+  if (!cfg) return [];
+  const nodes = [];
+
+  cfg.galaxies.forEach(g => {
+    const bx = g.fx * W, by = g.fy * H;
+    nodes.push({ ...g, type:'galaxy',
+      wx:bx, wy:by, wz:0, vx:0, vy:0, ox:bx, oy:by,
+      cosR: Math.sqrt((bx-cx)**2 + (by-cy)**2),
+      orbitAngle: Math.atan2(by-cy, bx-cx),
+      phase: Math.random() * Math.PI * 2,
+    });
+  });
+
+  cfg.clusters.forEach(c => {
+    const gal = nodes.find(n => n.id === c.gal); if (!gal) return;
+    const orbitPx = c.orbitR * Math.min(W, H);
+    const inc = c.inc ?? 0;
+    // Seed cluster at its orbit target instead of at the galaxy center —
+    // otherwise the spring yanks it outward on frame 1 and the whole graph bounces.
+    const ox0 = gal.wx + Math.cos(c.phase) * orbitPx;
+    const oy0 = gal.wy + Math.sin(c.phase) * orbitPx * Math.abs(Math.cos(inc));
+    nodes.push({ ...c, type:'cluster',
+      galNode: gal, orbitAngle: c.phase, orbitPx,
+      wx: ox0, wy: oy0, wz:0, vx:0, vy:0, ox: ox0, oy: oy0,
+    });
+  });
+
+  // Entries: orbit their cluster; color by tier
+  cfg.clusters.forEach(c => {
+    const items = cfg.entriesByCluster[c.id] || [];
+    const clusterNode = nodes.find(n => n.id === c.id && n.type === 'cluster');
+    if (!clusterNode) return;
+    items.forEach((e, i) => {
+      const tier = (e.tier || 'C').toUpperCase();
+      // Orbit radius grows with index but stays proportional to cluster size
+      const orbitPx = clusterNode.orbitPx * (0.22 + i * 0.018);
+      nodes.push({
+        id: 'e-' + e.id, label: e.title || e.id, sub: (e.creator || '') + (e.tier ? ' · ' + e.tier + '-tier' : ''),
+        extra: (e.summary || '').slice(0, 180) + ((e.summary && e.summary.length > 180) ? '…' : ''),
+        url: e.url, tier, collection: e.collection, creator: e.creator,
+        type: 'entry', parentNode: clusterNode,
+        color: TIER_COLORS[tier] || TIER_COLORS.C,
+        orbitAngle: (i * 0.618) * Math.PI * 2,  // golden-ratio scatter
+        orbitPx, orbitSpeed: .0008 + (i % 4) * .00015,
+        inc: .25 + (i % 5) * .12,
+        // Seed at orbit target to avoid initial spring-yank bounce.
+        wx: clusterNode.wx + Math.cos((i * 0.618) * Math.PI * 2) * orbitPx,
+        wy: clusterNode.wy + Math.sin((i * 0.618) * Math.PI * 2) * orbitPx * Math.abs(Math.cos(.25 + (i % 5) * .12)),
+        wz: 0, vx: 0, vy: 0,
+        r: tier === 'S' ? 5.5 : tier === 'A' ? 4.5 : tier === 'B' ? 3.8 : 3.2,
+        phase: Math.random() * Math.PI * 2,
+      });
+    });
+  });
+
+  return nodes;
+}
+
+function buildAll() {
+  allNodes = makeAllNodes();
+  allStars = makeWorldStars();
+  rebuildEntryNodeMap();
+}
+
+function makeWorldStars() {
+  const W = nodeCvs.width, H = nodeCvs.height, cx = W/2, cy = H/2;
+  const stars = [];
+  const maxR = Math.sqrt(W*W + H*H) * 0.72;
+  const density = U.starDensity;
+  for (let i = 0; i < 500 * density; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const d = Math.sqrt(Math.random()) * maxR;
+    stars.push({ wx: cx + Math.cos(a)*d, wy: cy + Math.sin(a)*d,
+      wz: -500 + Math.random()*700,
+      size: .4 + Math.random()*1.7, alpha: .08 + Math.random()*.50,
+      scaleMin: 0, scaleMax: 5,
+      twinkleFreq: .3 + Math.random()*1.0, twinklePhase: Math.random()*Math.PI*2 });
+  }
+  for (let i = 0; i < 350 * density; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const d = Math.sqrt(Math.random()) * 280;
+    stars.push({ wx: cx + Math.cos(a)*d, wy: cy + Math.sin(a)*d,
+      wz: -200 + Math.random()*400,
+      size: .3 + Math.random()*1.2, alpha: .15 + Math.random()*.55,
+      scaleMin: 2, scaleMax: 22,
+      twinkleFreq: .4 + Math.random()*1.2, twinklePhase: Math.random()*Math.PI*2 });
+  }
+  for (let i = 0; i < 45 * density; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const d = Math.sqrt(Math.random()) * maxR * 0.8;
+    stars.push({ wx: cx + Math.cos(a)*d, wy: cy + Math.sin(a)*d,
+      wz: 150 + Math.random()*250,
+      size: 1.8 + Math.random()*2.2,
+      alpha: .35 + Math.random()*.50,
+      scaleMin: 0, scaleMax: 22,
+      twinkleFreq: .2 + Math.random()*.6, twinklePhase: Math.random()*Math.PI*2 });
+  }
+  return stars;
+}
+
+// ── Expansion logic ──────────────────────────────────────────────────
+
+function clusterExpansion(n) {
+  if (U.forceClusters) return 1;
+  const parentApparentR = n.galNode.r * camera.scale;
+  const THRESHOLD = 55, FADE = 45;
+  return Math.max(0, Math.min(1, (parentApparentR - THRESHOLD) / FADE));
+}
+function entryExpansion(n) {
+  if (U.forceEntries) return 1;
+  const clusterExp = n.parentNode.expansionVal ?? 0;
+  if (clusterExp < 0.3 && !U.forceClusters) return 0;
+  const parentApparentR = n.parentNode.r * camera.scale;
+  const THRESHOLD = 45, FADE = 35;
+  return Math.max(0, Math.min(1, (parentApparentR - THRESHOLD) / FADE));
+}
+function getGalaxyRenderR(galNode) {
+  const clusters = allNodes.filter(c => c.type === 'cluster' && c.galNode === galNode);
+  if (!clusters.length) return galNode.r;
+  const avgExp = clusters.reduce((s, c) => s + (c.expansionVal || 0), 0) / clusters.length;
+  return galNode.r * (1 + 0.28 * (1 - avgExp));
+}
+function nodeAlpha(n) {
+  // Tier filter for entries
+  if (n.type === 'entry' && !U.tiers.has(n.tier)) return 0;
+  if (n.type === 'cluster') return Math.max(0, Math.min(1, (n.expansionVal || 0) * 1.6));
+  if (n.type === 'entry')   return Math.max(0, Math.min(1, (n.expansionVal || 0) * 1.6));
+  const apparentR = n.r * camera.scale;
+  const fadeIn = Math.max(0, Math.min(1, (apparentR - 3.5) / 6.0));
+  if (n.type === 'galaxy') {
+    const fadeOut = Math.max(0, Math.min(1, (nodeCvs.width * 0.32 - apparentR) / 40));
+    return fadeIn * fadeOut;
+  }
+  return fadeIn;
+}
+
+function project(wx, wy, _wz) {
+  // Flat projection. wz is retained on nodes for cross-draw code that still
+  // expects the field, but it no longer contributes to on-screen position.
+  return { sx: wx, sy: wy, depth: 0 };
+}
+
+// ── Physics ──────────────────────────────────────────────────────────
+function updatePhysics() {
+  const W = nodeCvs.width, H = nodeCvs.height, cx = W/2, cy = H/2;
+  // SPRING: restoring force toward orbit target. DAMP: velocity retention per frame.
+  // Was .04 / .86 — felt too jiggly (14% velocity loss per frame). Softer spring +
+  // stronger damping settles nodes faster without losing orbital motion.
+  // Stiffer suspension (was SPRING .028/DAMP .92) — user wanted less jiggle.
+  // ATTR_F = 0 disables cursor magnetism entirely (was source of wobble).
+  const SPRING = .045, DAMP = .82, ATTR_R = 0, ATTR_F = 0;
+  const ATTR_DEAD = 12;
+
+  const effSpeed = U.freeze ? 0 : (speedMult * U.speedScale);
+  cosmosAngle += .000060 * effSpeed;
+  const mw = screenToWorld(mouse.x, mouse.y);
+
+  allNodes.forEach(n => {
+    // Dragged node: position is pinned by the mouse handler. Skip physics
+    // for it this frame so it doesn't drift between mousemove events.
+    // Children compute ox from parent.wx — since that stays pinned, they
+    // orbit the held position; entries dragged stretch against their spring.
+    if (n === draggingNode) { n.vx = 0; n.vy = 0; return; }
+    if (n.type === 'galaxy') {
+      n.orbitAngle += n.orbitSpeed * effSpeed;
+      n.wx = cx + Math.cos(n.orbitAngle + cosmosAngle) * n.cosR;
+      n.wy = cy + Math.sin(n.orbitAngle + cosmosAngle) * n.cosR * .55;
+      n.wz = Math.sin(n.orbitAngle + cosmosAngle) * n.cosR * .4;
+      n.ox = n.wx; n.oy = n.wy;
+    } else if (n.type === 'cluster') {
+      n.orbitAngle += n.orbitSpeed * effSpeed;
+      const gx = n.galNode.wx, gy = n.galNode.wy;
+      n.ox = gx + Math.cos(n.orbitAngle) * n.orbitPx;
+      n.oy = gy + Math.sin(n.orbitAngle) * n.orbitPx * Math.abs(Math.cos(n.inc));
+      n.wz = Math.sin(n.orbitAngle) * n.orbitPx * Math.sin(n.inc);
+    } else if (n.type === 'entry') {
+      n.orbitAngle += n.orbitSpeed * effSpeed;
+      const px = n.parentNode.wx, py = n.parentNode.wy;
+      n.ox = px + Math.cos(n.orbitAngle) * n.orbitPx;
+      n.oy = py + Math.sin(n.orbitAngle) * n.orbitPx * Math.abs(Math.cos(n.inc));
+      n.wz = Math.sin(n.orbitAngle) * n.orbitPx * Math.sin(n.inc);
+    }
+
+    n.vx += (n.ox - n.wx) * SPRING;
+    n.vy += (n.oy - n.wy) * SPRING;
+
+    const rwx = n.renderWx ?? n.wx, rwy = n.renderWy ?? n.wy;
+    // Only galaxies/clusters get cursor-magnetism — entries are too numerous
+    // and small, applying force to each created visible jiggle at dense view.
+    if (n.type !== 'entry' && nodeAlpha(n) > 0.15) {
+      const dx = mw.x - rwx, dy = mw.y - rwy;
+      const d = Math.hypot(dx, dy);
+      const attrRw = ATTR_R / camera.scale;
+      const deadW  = ATTR_DEAD / camera.scale;
+      if (d < attrRw && d > deadW) {
+        const outerFall = ((attrRw - d) / attrRw) ** 1.5;
+        const innerFall = Math.min(1, (d - deadW) / (20 / camera.scale));
+        const f = outerFall * innerFall * ATTR_F;
+        n.vx += (dx/d) * f; n.vy += (dy/d) * f;
+      }
+    }
+
+    // When frozen (X-ray), snap to orbit target instead of oscillating around it.
+    // Zoom-damped oscillations can take hundreds of frames to settle otherwise.
+    if (U.freeze) { n.wx = n.ox; n.wy = n.oy; n.vx = 0; n.vy = 0; return; }
+    n.vx *= DAMP; n.vy *= DAMP;
+    n.wx += n.vx; n.wy += n.vy;
+  });
+
+  allNodes.filter(n => n.type === 'galaxy').forEach(n => {
+    n.expansionVal = 1; n.renderWx = n.wx; n.renderWy = n.wy;
+  });
+  allNodes.filter(n => n.type === 'cluster').forEach(n => {
+    const e = clusterExpansion(n);
+    n.expansionVal = e;
+    n.renderWx = n.galNode.renderWx + (n.wx - n.galNode.renderWx) * e;
+    n.renderWy = n.galNode.renderWy + (n.wy - n.galNode.renderWy) * e;
+  });
+  allNodes.filter(n => n.type === 'entry').forEach(n => {
+    const e = entryExpansion(n);
+    n.expansionVal = e;
+    n.renderWx = n.parentNode.renderWx + (n.wx - n.parentNode.renderWx) * e;
+    n.renderWy = n.parentNode.renderWy + (n.wy - n.parentNode.renderWy) * e;
+  });
+
+  allNodes.forEach(n => {
+    const p = project(n.renderWx, n.renderWy, n.wz || 0);
+    n.sx = p.sx; n.sy = p.sy; n.depth = p.depth;
+  });
+}
+
+// ── Draw helpers ─────────────────────────────────────────────────────
+function rgba(c, a) { return `rgba(${c[0]},${c[1]},${c[2]},${a})`; }
+
+function drawGlow(wx, wy, r, c, intensity) {
+  const I = intensity * U.glowScale;
+  const g = ctx.createRadialGradient(wx, wy, 0, wx, wy, r*2.8);
+  g.addColorStop(0, rgba(c, I*.65));
+  g.addColorStop(.4, rgba(c, I*.2));
+  g.addColorStop(1, rgba(c, 0));
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(wx, wy, r*2.8, 0, Math.PI*2); ctx.fill();
+}
+
+function drawSphere(wx, wy, r, c, phase, tt, alpha) {
+  ctx.globalAlpha = alpha ?? 1;
+  drawGlow(wx, wy, r, c, .6);
+  const bg = ctx.createRadialGradient(wx-r*.3, wy-r*.3, r*.05, wx, wy, r);
+  bg.addColorStop(0, rgba(c,.78)); bg.addColorStop(.6, rgba(c,.42)); bg.addColorStop(1, rgba(c,.1));
+  ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(wx, wy, r, 0, Math.PI*2); ctx.fill();
+  ctx.save(); ctx.translate(wx, wy); ctx.rotate(tt*.55 + phase);
+  const fl = ctx.createRadialGradient(-r*.3,-r*.3,0,0,0,r);
+  fl.addColorStop(0, rgba([255,255,255],.16));
+  fl.addColorStop(.5, rgba(c,.06));
+  fl.addColorStop(1, rgba(c,0));
+  ctx.fillStyle = fl; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle = rgba(c,.5); ctx.lineWidth = .8 / camera.scale;
+  ctx.beginPath(); ctx.arc(wx, wy, r, 0, Math.PI*2); ctx.stroke();
+  ctx.globalAlpha = 1;
+}
+
+function drawOrbitPath(wx, wy, orbitPx, inc, alpha, orbitAngle) {
+  if (U.orbitOpacity < 0.01) return;
+  const cosI = Math.abs(Math.cos(inc));
+  ctx.save(); ctx.translate(wx, wy); ctx.scale(1, cosI > .07 ? cosI : .07);
+  ctx.strokeStyle = `rgba(255,255,255,${U.orbitOpacity * alpha})`;
+  ctx.lineWidth = 1.0 / camera.scale;
+  ctx.setLineDash([5 / camera.scale, 6 / camera.scale]);
+  const circ = Math.PI * 2 * orbitPx;
+  ctx.lineDashOffset = -((orbitAngle || 0) * orbitPx) % circ;
+  ctx.beginPath(); ctx.arc(0, 0, orbitPx, 0, Math.PI*2);
+  ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+}
+
+function drawRadial(wx1, wy1, wx2, wy2, c, a) {
+  const op = U.radialOpacity * a;
+  if (op < 0.005) return;
+  const grad = ctx.createLinearGradient(wx1, wy1, wx2, wy2);
+  grad.addColorStop(0, rgba(c, op * 0.9));
+  grad.addColorStop(0.5, rgba(c, op));
+  grad.addColorStop(1, rgba(c, op * 0.4));
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = U.radialWidth / camera.scale;
+  ctx.beginPath(); ctx.moveTo(wx1, wy1); ctx.lineTo(wx2, wy2); ctx.stroke();
+}
+
+function drawInterGalaxy(wx1, wy1, wx2, wy2, c, a) {
+  if (U.interOpacity < 0.005) return;
+  ctx.strokeStyle = rgba(c, U.interOpacity * a);
+  ctx.lineWidth = .65 / camera.scale;
+  ctx.beginPath(); ctx.moveTo(wx1, wy1); ctx.lineTo(wx2, wy2); ctx.stroke();
+}
+
+function starAlpha(star) {
+  const FADE = 0.8;
+  return Math.max(0, Math.min(1, Math.min(
+    (camera.scale - star.scaleMin) / FADE,
+    (star.scaleMax - camera.scale) / FADE
+  )));
+}
+function drawStars(stars) {
+  stars.forEach(star => {
+    const sa = starAlpha(star);
+    if (sa < 0.01) return;
+    const proj = project(star.wx, star.wy, star.wz || 0);
+    const twinkle = 0.85 + 0.15 * Math.sin(t * star.twinkleFreq + star.twinklePhase);
+    const a = Math.min(1, star.alpha * twinkle * sa);
+    if (a < 0.01) return;
+    ctx.fillStyle = `rgba(210,225,255,${a})`;
+    ctx.beginPath();
+    ctx.arc(proj.sx, proj.sy, star.size / camera.scale, 0, Math.PI * 2);
+    ctx.fill();
+    if (star.size > 1.4) {
+      ctx.fillStyle = `rgba(180,210,255,${a * 0.12})`;
+      ctx.beginPath();
+      ctx.arc(proj.sx, proj.sy, star.size * 3.2 / camera.scale, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+}
+
+// ── Scene drawing ────────────────────────────────────────────────────
+function drawScene(nodes) {
+  const sorted = [...nodes].sort((a, b) => (b.depth||0) - (a.depth||0));
+
+  // Radial (parent→child) + orbit paths for clusters and entries
+  sorted.forEach(n => {
+    const a = nodeAlpha(n);
+    if (a < 0.01) return;
+    const exp = n.expansionVal || 0;
+    if (n.type === 'cluster') {
+      if (exp > 0.15) {
+        const cosI = Math.abs(Math.cos((n.inc||.3)));
+        const safeI = cosI > 0.07 ? cosI : 0.07;
+        const dx = n.renderWx - n.galNode.renderWx;
+        const dy = n.renderWy - n.galNode.renderWy;
+        const liveR = Math.hypot(dx, dy / safeI);
+        drawOrbitPath(n.galNode.renderWx, n.galNode.renderWy,
+          liveR, n.inc||.3, a * Math.min(1, (exp - 0.15) / 0.3), n.orbitAngle||0);
+        drawRadial(n.galNode.renderWx, n.galNode.renderWy,
+          n.renderWx, n.renderWy, n.color, a);
+      }
+    } else if (n.type === 'entry') {
+      if (exp > 0.15) {
+        const cosI = Math.abs(Math.cos((n.inc||.3)));
+        const safeI = cosI > 0.07 ? cosI : 0.07;
+        const dx = n.renderWx - n.parentNode.renderWx;
+        const dy = n.renderWy - n.parentNode.renderWy;
+        const liveR = Math.hypot(dx, dy / safeI);
+        drawOrbitPath(n.parentNode.renderWx, n.parentNode.renderWy,
+          liveR, n.inc||.3, a * Math.min(1, (exp - 0.15) / 0.3) * 0.7, n.orbitAngle||0);
+        drawRadial(n.parentNode.renderWx, n.parentNode.renderWy,
+          n.renderWx, n.renderWy, n.color, a * 0.75);
+      }
+    }
+  });
+
+  // Cross-taxonomy connections (faint ghost links between entries sharing a dimension)
+  drawCrossLinks();
+
+  // Inter-galaxy connectors
+  const gals = nodes.filter(n => n.type === 'galaxy');
+  const galA = gals.length ? nodeAlpha(gals[0]) : 0;
+  if (gals.length > 1 && galA > 0.08) {
+    for (let i = 0; i < gals.length-1; i++)
+      for (let j = i+1; j < gals.length; j++)
+        drawInterGalaxy(gals[i].renderWx, gals[i].renderWy,
+          gals[j].renderWx, gals[j].renderWy, [255,255,255], galA);
+  }
+
+  // Nodes
+  sorted.forEach(n => {
+    const a = nodeAlpha(n);
+    if (a < 0.01) return;
+    const df = 1; // 3D depth fade removed — flat projection only
+    const baseR = n.type === 'galaxy' ? getGalaxyRenderR(n) : n.r;
+    const r = baseR * df * U.nodeRScale;
+    drawSphere(n.renderWx, n.renderWy, r, n.color,
+      (n.phase||0) + ((n.id||'').charCodeAt(0) * .3), t, a);
+  });
+}
+
+// ── Labels / hover / tooltip ─────────────────────────────────────────
+let hovered = null;
+
+function drawLabels(nodes) {
+  hovered = null;
+  nodes.forEach(n => {
+    const a = nodeAlpha(n);
+    if (a < 0.12) return;
+    const apparentR = n.r * camera.scale * U.nodeRScale;
+
+    const scr = worldToScreen(n.sx, n.sy);
+    const sx = scr.x, sy = scr.y;
+
+    if (Math.hypot(mouse.x - sx, mouse.y - sy) < apparentR + 16) hovered = n;
+
+    const minApparent = U.labelsAlways ? 4 : 16;
+    if (apparentR < 10 && !U.labelsAlways) return;
+    if (a < 0.35 && !U.labelsAlways) return;
+    if (apparentR < minApparent && !U.labelsAlways) return;
+
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.textAlign = 'center';
+
+    const displayR = n.type === 'galaxy'
+      ? getGalaxyRenderR(n) * camera.scale * U.nodeRScale
+      : apparentR;
+    const labelY = sy - displayR - 8;
+    const nameSize = (n.type === 'galaxy' ? 12 : n.type === 'cluster' ? 10 : 9) * U.labelSize;
+    const labelTxt = n.label.length > 32 ? n.label.slice(0, 30) + '…' : n.label;
+
+    ctx.font = `700 ${nameSize}px 'JetBrains Mono',Menlo,monospace`;
+    ctx.fillStyle = rgba(n.color, 0.95);
+    const suffix = (n.type === 'cluster') ? ' ↗' : '';
+    ctx.fillText(labelTxt + suffix, sx, labelY);
+
+    if (n.sub && n.type !== 'entry') {
+      ctx.font = `${(nameSize - 1)}px 'JetBrains Mono',Menlo,monospace`;
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.fillText(n.sub, sx, labelY + nameSize + 2);
+    }
+    ctx.restore();
+  });
+
+  nodeCvs.style.cursor = hovered ? 'pointer' : 'default';
+}
+
+// ── Camera controls ──────────────────────────────────────────────────
+nodeCvs.addEventListener('wheel', e => {
+  e.preventDefault();
+  const factor   = e.deltaY > 0 ? 0.88 : 1.14;
+  const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, camera.targetScale * factor));
+  const mx = e.clientX - leftW(), my = e.clientY - topH();
+  const W = nodeCvs.width, H = nodeCvs.height;
+  const wx = (mx - W/2) / camera.targetScale + camera.targetX;
+  const wy = (my - H/2) / camera.targetScale + camera.targetY;
+  camera.targetX = wx - (mx - W/2) / newScale;
+  camera.targetY = wy - (my - H/2) / newScale;
+  camera.targetScale = newScale;
+}, { passive: false });
+
+let dragStart = null, dragCamStart = null, totalDrag = 0;
+nodeCvs.addEventListener('mousedown', e => {
+  if (e.button === 1 || e.button === 2) {
+    e.preventDefault();
+    midDragStart      = { x: e.clientX, y: e.clientY };
+    midDragInitCosmos = cosmosAngle;
+    return;
+  }
+  if (e.button !== 0) return;
+  // Left-click: first test for node hit. If on a node, start node-drag
+  // instead of pan-drag so the user can re-position nodes while physics flexes.
+  const screenY = e.clientY - topH();
+  const screenX = e.clientX - leftW();
+  const hit = hitTestNode(screenX, screenY);
+  if (hit) {
+    draggingNode = hit;
+    nodeDragMoved = false;
+    const w = screenToWorld(screenX, screenY);
+    dragWorldOff = { x: hit.wx - w.x, y: hit.wy - w.y };
+    nodeCvs.style.cursor = 'grabbing';
+    return;
+  }
+  dragStart    = { x: e.clientX, y: e.clientY };
+  dragCamStart = { x: camera.targetX, y: camera.targetY };
+  totalDrag    = 0;
+});
+
+function hitTestNode(screenX, screenY) {
+  // Hit-test in SCREEN space so the grab radius stays constant regardless of zoom.
+  // Previously we used world-space with `n.r + 10/camera.scale`, which exploded at
+  // low zoom (scale=0.2 → +50 world-units of slop) and caught multiple nodes at once.
+  const SCREEN_SLOP = 4; // pixels of extra grab margin beyond the node's drawn radius
+  let best = null, bestD = Infinity;
+  allNodes.forEach(n => {
+    if (nodeAlpha(n) < 0.12) return;
+    const dxPx = (n.sx - screenToWorld(screenX, screenY).x) * camera.scale;
+    const dyPx = (n.sy - screenToWorld(screenX, screenY).y) * camera.scale;
+    const dPx = Math.hypot(dxPx, dyPx);
+    const hitPx = n.r * camera.scale + SCREEN_SLOP;
+    if (dPx < hitPx && dPx < bestD) { bestD = dPx; best = n; }
+  });
+  return best;
+}
+nodeCvs.addEventListener('mousemove', e => {
+  mouse.x = e.clientX - leftW();
+  mouse.y = e.clientY - topH();
+  if (draggingNode) {
+    nodeDragMoved = true;
+    const w = screenToWorld(e.clientX - leftW(), e.clientY - topH());
+    draggingNode.wx = w.x + dragWorldOff.x;
+    draggingNode.wy = w.y + dragWorldOff.y;
+    draggingNode.vx = 0; draggingNode.vy = 0;
+    nodeCvs.style.cursor = 'grabbing';
+    return;
+  }
+  if (midDragStart) {
+    const dx = e.clientX - midDragStart.x;
+    cosmosAngle = midDragInitCosmos + dx * 0.003;
+    nodeCvs.style.cursor = 'crosshair';
+    return;
+  }
+  // Hover affordance + unpinned tooltip. Pinned entry takes priority — don't touch it on hover.
+  const hover = hitTestNode(e.clientX - leftW(), e.clientY - topH());
+  if (hover && !dragStart) nodeCvs.style.cursor = hover.type === 'entry' ? 'pointer' : 'grab';
+  else if (!dragStart) nodeCvs.style.cursor = '';
+  hovered = hover;
+  if (!pinnedEntry) {
+    if (hover && hover.type === 'entry') {
+      showEntryTip(hover, e.clientX, e.clientY, false);
+    } else if (tipEl.style.display === 'block') {
+      hideTip();
+    }
+  }
+  if (!dragStart) return;
+  const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
+  totalDrag = Math.hypot(dx, dy);
+  if (totalDrag > 4) {
+    camera.targetX = dragCamStart.x - dx / camera.scale;
+    camera.targetY = dragCamStart.y - dy / camera.scale;
+    nodeCvs.style.cursor = 'grabbing';
+  }
+});
+nodeCvs.addEventListener('mouseup', e => {
+  if (e.button === 1 || e.button === 2) { midDragStart = null; nodeCvs.style.cursor = 'default'; return; }
+  if (draggingNode) {
+    draggingNode = null;
+    justDraggedNode = nodeDragMoved;  // only suppress click if mouse actually moved
+    nodeCvs.style.cursor = '';
+    return;
+  }
+  dragStart = null;
+});
+nodeCvs.addEventListener('mouseleave', () => {
+  dragStart = null; midDragStart = null; draggingNode = null;
+  mouse.x = -9999; mouse.y = -9999;
+  // Only hide if it's an unpinned hover tooltip; pinned stays until click-away.
+  if (!pinnedEntry && tipEl.style.display === 'block') hideTip();
+});
+nodeCvs.addEventListener('contextmenu', e => e.preventDefault());
+
+nodeCvs.addEventListener('click', e => {
+  if (justDraggedNode) { justDraggedNode = false; return; }
+  if (totalDrag > 4) return;
+  // Match the drag hit-test — screen-space, constant pixel slop.
+  const best2 = hitTestNode(e.clientX - leftW(), e.clientY - topH());
+  let best = best2, bestD = best2 ? 0 : Infinity;
+  if (best) {
+    // Click entry → pin a menu tooltip (parallels graph.html behavior).
+    // Click cluster/galaxy → fly-to zoom as before.
+    if (best.type === 'entry') {
+      showEntryTip(best, e.clientX, e.clientY);
+      e.stopPropagation();
+      return;
+    }
+    hideTip();
+    camera.targetX = best.renderWx ?? best.sx;
+    camera.targetY = best.renderWy ?? best.sy;
+    const targetScales = { galaxy: 3.8, cluster: 9.5, entry: 18 };
+    const ts = targetScales[best.type] || 3.8;
+    camera.targetScale = Math.max(camera.targetScale * 1.5, ts);
+    const fl = document.getElementById('zoom-flash');
+    fl.style.opacity = '1';
+    setTimeout(() => { fl.style.opacity = '0'; }, 350);
+  } else {
+    hideTip();
+  }
+});
+
+// ── Pinned entry tooltip ────────────────────────────────────────────
+const tipEl = document.getElementById('tip');
+const tipCloser = tipEl.querySelector('.closer');
+let pinnedEntry = null;
+function showEntryTip(n, screenX, screenY, pin = true) {
+  if (pin) pinnedEntry = n;
+  // Rebuild the tooltip body but preserve the close button.
+  while (tipEl.lastChild !== tipCloser && tipEl.lastChild) tipEl.removeChild(tipEl.lastChild);
+  const tier = (n.tier || 'C').toUpperCase();
+  const mk = (tag, cls, txt) => { const el = document.createElement(tag); if (cls) el.className = cls; if (txt != null) el.textContent = txt; return el; };
+  tipEl.appendChild(mk('span', `tier-pill tier-${tier}`, `${tier}-TIER`));
+  tipEl.appendChild(mk('h4', null, n.label || n.title || n.id));
+  const metaBits = [n.creator, n.collection ? n.collection.toUpperCase() : null].filter(Boolean);
+  if (metaBits.length) tipEl.appendChild(mk('div', 'meta', metaBits.join(' · ')));
+  if (n.summary) tipEl.appendChild(mk('p', 'sum', n.summary.length > 260 ? n.summary.slice(0, 257) + '…' : n.summary));
+  const acts = mk('div', 'acts');
+  // Internal link to per-entry summary page (generated by scripts/render_entries.py)
+  const rawId = (n.id || '').replace(/^e-/, '');
+  const safeSlug = rawId.replace(/[^A-Za-z0-9_-]/g, '_');
+  if (rawId) {
+    const summaryBtn = mk('a', 'primary', 'View in catalog ↗');
+    summaryBtn.href = 'index.html#post-' + safeSlug;
+    summaryBtn.target = '_blank'; summaryBtn.rel = 'noopener';
+    acts.appendChild(summaryBtn);
+  }
+  if (n.url) {
+    const openBtn = mk('a', null, 'Open post ↗');
+    openBtn.href = n.url; openBtn.target = '_blank'; openBtn.rel = 'noopener';
+    acts.appendChild(openBtn);
+  }
+  const zoomBtn = mk('button', null, 'Fly to');
+  zoomBtn.addEventListener('click', () => {
+    camera.targetX = n.renderWx ?? n.sx;
+    camera.targetY = n.renderWy ?? n.sy;
+    camera.targetScale = Math.max(camera.targetScale * 1.5, 18);
+  });
+  acts.appendChild(zoomBtn);
+  tipEl.appendChild(acts);
+
+  const pad = 14;
+  const W = window.innerWidth, H = window.innerHeight;
+  tipEl.style.display = 'block';
+  tipEl.classList.toggle('pinned', pin);
+  const rect = tipEl.getBoundingClientRect();
+  tipEl.style.left = Math.min(W - rect.width - 8, screenX + pad) + 'px';
+  tipEl.style.top  = Math.min(H - rect.height - 8, screenY + pad) + 'px';
+}
+function hideTip() {
+  pinnedEntry = null;
+  tipEl.style.display = 'none';
+  tipEl.classList.remove('pinned');
+}
+tipCloser.addEventListener('click', hideTip);
+
+// Click-away to hide: only close if the click is outside the tooltip AND
+// outside any entry node on the canvas (canvas-node clicks are handled above).
+document.addEventListener('click', e => {
+  if (!pinnedEntry) return;
+  if (tipEl.contains(e.target)) return; // clicking inside tooltip (links, buttons) — let it through
+  if (e.target === nodeCvs) {
+    // Canvas click outside any node re-hides; on-node clicks already re-pinned and called stopPropagation.
+    const hit = hitTestNode(e.clientX - leftW(), e.clientY - topH());
+    if (!hit || hit.type !== 'entry') hideTip();
+    return;
+  }
+  hideTip();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (pinnedEntry) { hideTip(); return; }
+    initCamera(); toggleUMenu(false);
+  }
+  else if (e.key === 'u' || e.key === 'U') { toggleUMenu(); }
+});
+
+// ── Zoom UI ──────────────────────────────────────────────────────────
+function updateZoomUI() {
+  const s = camera.scale;
+  const lvl = s < 1.2 ? 'cosmos' : s < 4 ? 'galaxy' : s < 11 ? 'cluster' : 'entry';
+  ['cosmos','galaxy','cluster','entry'].forEach(id =>
+    document.getElementById('zl-' + id).classList.toggle('active', id === lvl));
+}
+
+// ── Auto-speed ───────────────────────────────────────────────────────
+const SPEED_BANDS = [
+  { maxScale:  2, value: 200 },
+  { maxScale:  5, value:  90 },
+  { maxScale: 11, value:  40 },
+  { maxScale: Infinity, value: 15 },
+];
+let _lastSpeedBand = -1;
+function autoAdjustSpeed() {
+  const band = SPEED_BANDS.findIndex(b => camera.scale <= b.maxScale);
+  if (band === _lastSpeedBand) return;
+  _lastSpeedBand = band;
+  const v = SPEED_BANDS[band].value;
+  speedMult = v / 40;
+  // speed-slider DOM removed — value lives only in speedMult now.
+}
+
+// ── Taxonomy + view controls ─────────────────────────────────────────
+function setTax(tax) {
+  const oldPos = {};
+  allNodes.forEach(n => { oldPos[n.id + '|' + n.type] = { wx: n.wx, wy: n.wy }; });
+  currentTax = tax;
+  document.querySelectorAll('.tax-btn').forEach(b => b.classList.toggle('active', b.dataset.tax === tax));
+  buildAll();
+  const cx = nodeCvs.width / 2, cy = nodeCvs.height / 2;
+  allNodes.forEach(n => {
+    const key = n.id + '|' + n.type;
+    if (oldPos[key]) { n.wx = oldPos[key].wx; n.wy = oldPos[key].wy; }
+    else if (n.type === 'cluster' && n.galNode) {
+      const galKey = n.galNode.id + '|galaxy';
+      n.wx = oldPos[galKey] ? oldPos[galKey].wx : cx;
+      n.wy = oldPos[galKey] ? oldPos[galKey].wy : cy;
+    } else if (n.type === 'entry' && n.parentNode) {
+      n.wx = n.parentNode.wx; n.wy = n.parentNode.wy;
+    } else if (n.type === 'galaxy') { n.wx = cx; n.wy = cy; }
+    n.vx = 0; n.vy = 0;
+  });
+}
+// setView() removed with the 3D tilt feature.
+
+// ══════════════════════════════════════════════════════════════════════
+//  U-MENU WIRING
+// ══════════════════════════════════════════════════════════════════════
+function toggleUMenu(force) {
+  const m = document.getElementById('u-menu');
+  const willShow = (typeof force === 'boolean') ? force : !m.classList.contains('vis');
+  m.classList.toggle('vis', willShow);
+}
+
+function bindSlider(id, onchange, fmt) {
+  const el = document.getElementById(id);
+  const vl = document.getElementById(id + '-v');
+  const apply = () => {
+    const v = Number(el.value);
+    onchange(v);
+    if (vl) vl.textContent = fmt ? fmt(v) : v;
+  };
+  el.addEventListener('input', apply);
+  apply();
+}
+
+bindSlider('u-radial-op', v => U.radialOpacity = v/100, v => v);
+bindSlider('u-radial-w',  v => U.radialWidth = v/10, v => (v/10).toFixed(1));
+bindSlider('u-orbit-op',  v => U.orbitOpacity = v/100, v => v);
+bindSlider('u-inter-op',  v => U.interOpacity = v/100, v => v);
+bindSlider('u-speed',     v => U.speedScale = v/100, v => (v/100).toFixed(1) + '×');
+bindSlider('u-node-r',    v => U.nodeRScale = v/100, v => (v/100).toFixed(1));
+bindSlider('u-glow',      v => U.glowScale = v/100, v => (v/100).toFixed(1));
+bindSlider('u-stars',     v => { const was = U.starDensity; U.starDensity = v/100; if (Math.abs(was - U.starDensity) > 0.05) allStars = makeWorldStars(); }, v => (v/100).toFixed(1));
+bindSlider('u-label-size',v => U.labelSize = v/100, v => (v/100).toFixed(1));
+bindSlider('u-cross-op',  v => U.crossOpacity = v/100, v => (v/100).toFixed(1));
+
+function toggleFreeze()         { U.freeze = !U.freeze; document.getElementById('u-freeze').classList.toggle('on', U.freeze); }
+function toggleTrails()         { U.trails = !U.trails; document.getElementById('u-trails').classList.toggle('on', U.trails); }
+function toggleForceClusters()  { U.forceClusters = !U.forceClusters; document.getElementById('u-force-clusters').classList.toggle('on', U.forceClusters); }
+function toggleForceEntries()   { U.forceEntries = !U.forceEntries; document.getElementById('u-force-entries').classList.toggle('on', U.forceEntries); }
+function toggleLabelsAlways()   { U.labelsAlways = !U.labelsAlways; document.getElementById('u-labels-always').classList.toggle('on', U.labelsAlways); }
+function toggleCrossHover()     { U.crossHoverOnly = !U.crossHoverOnly; document.getElementById('u-cross-hover').classList.toggle('on', U.crossHoverOnly); }
+function toggleCrossCurve()     { U.crossCurve = !U.crossCurve; document.getElementById('u-cross-curve').classList.toggle('on', U.crossCurve); }
+
+function toggleCrossDim(dimId) {
+  if (U.crossEnabled.has(dimId)) U.crossEnabled.delete(dimId);
+  else U.crossEnabled.add(dimId);
+  const btn = document.querySelector(`#u-cross-rows button.cross-btn[data-dim="${dimId}"]`);
+  if (btn) btn.classList.toggle('on', U.crossEnabled.has(dimId));
+}
+
+function makePrimary(dimId) {
+  // Only these 4 dimensions have full taxonomy layouts built
+  if (!['collection','tier','creator','domain'].includes(dimId)) return;
+  setTax(dimId);
+}
+
+function buildCrossRows() {
+  const box = document.getElementById('u-cross-rows');
+  box.replaceChildren();
+  for (const dim of CROSS_DIMS) {
+    const row = document.createElement('div');
+    row.className = 'u-row';
+    row.style.alignItems = 'center';
+    row.style.gap = '6px';
+
+    const sw = document.createElement('span');
+    sw.style.cssText = `display:inline-block;width:9px;height:9px;border-radius:50%;background:rgb(${dim.color[0]},${dim.color[1]},${dim.color[2]});flex-shrink:0`;
+
+    const btn = document.createElement('button');
+    btn.className = 'u-btn cross-btn';
+    btn.dataset.dim = dim.id;
+    btn.textContent = dim.label;
+    btn.style.flex = '1';
+    btn.onclick = () => toggleCrossDim(dim.id);
+
+    const prim = document.createElement('button');
+    prim.className = 'u-btn';
+    prim.textContent = '↦';
+    prim.title = 'Make primary (drive orbits)';
+    prim.style.flex = '0 0 auto';
+    prim.style.padding = '4px 8px';
+    prim.style.opacity = ['collection','tier','creator','domain'].includes(dim.id) ? '1' : '0.35';
+    prim.onclick = () => makePrimary(dim.id);
+
+    row.appendChild(sw);
+    row.appendChild(btn);
+    row.appendChild(prim);
+    box.appendChild(row);
+  }
+}
+
+function toggleTier(tier) {
+  if (U.tiers.has(tier)) U.tiers.delete(tier);
+  else U.tiers.add(tier);
+  document.querySelector(`#u-tier-row button[data-tier="${tier}"]`)?.classList.toggle('on', U.tiers.has(tier));
+}
+
+function buildTierButtons() {
+  const row = document.getElementById('u-tier-row');
+  row.replaceChildren();
+  ['S','A','B','C'].forEach(tier => {
+    const b = document.createElement('button');
+    b.className = 'u-btn on';
+    b.dataset.tier = tier;
+    b.textContent = tier + '-tier';
+    b.onclick = () => toggleTier(tier);
+    row.appendChild(b);
+  });
+}
+
+function applyPreset(name) {
+  const presets = {
+    minimal: { forceClusters:false, forceEntries:false, orbitOpacity:0.13 },
+    dense:   { forceClusters:true,  forceEntries:false, orbitOpacity:0.13 },
+    xray:    { forceClusters:true,  forceEntries:true,  orbitOpacity:0.13 },
+  };
+  const p = presets[name]; if (!p) return;
+  Object.assign(U, p);
+  document.getElementById('u-force-clusters').classList.toggle('on', U.forceClusters);
+  document.getElementById('u-force-entries').classList.toggle('on', U.forceEntries);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════════════════════
+
+function buildTaxBar() {
+  const bar = document.getElementById('tax-bar');
+  bar.replaceChildren();
+  const taxes = [
+    { id: 'collection', label: 'By Collection' },
+    { id: 'tier',       label: 'By Tier' },
+    { id: 'creator',    label: 'By Creator' },
+    { id: 'domain',     label: 'By Domain' },
+  ];
+  taxes.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'tax-btn' + (t.id === currentTax ? ' active' : '');
+    b.dataset.tax = t.id;
+    b.textContent = t.label;
+    b.onclick = () => setTax(t.id);
+    bar.appendChild(b);
+  });
+}
+
+async function boot() {
+  // Prefer window.__CATALOG (works on file://), fall back to fetch for served sites.
+  if (typeof window !== 'undefined' && window.__CATALOG) {
+    catalog = window.__CATALOG;
+  } else {
+    try {
+      catalog = await fetch('catalog.json').then(r => r.json());
+    } catch (err) {
+      const el = document.getElementById('loading');
+      el.textContent = '';
+      const line1 = document.createElement('div'); line1.textContent = 'Failed to load catalog.';
+      const line2 = document.createElement('div');
+      line2.style.cssText = 'opacity:.6;font-size:10px;margin-top:6px';
+      line2.textContent = 'Ensure catalog.js is alongside this file, or serve via http (python -m http.server 8000).';
+      el.appendChild(line1); el.appendChild(line2);
+      return;
+    }
+  }
+  TAX_DATA = buildTaxonomies(catalog);
+  buildCrossIndex(catalog);
+  buildTaxBar();
+  buildTierButtons();
+  buildCrossRows();
+  // Sync U-menu button states to defaults (capture.png)
+  document.getElementById('u-cross-curve').classList.toggle('on', U.crossCurve);
+  document.getElementById('u-force-clusters').classList.toggle('on', U.forceClusters);
+  document.getElementById('u-force-entries').classList.toggle('on', U.forceEntries);
+  // Cross-dim row buttons reflect which dims start enabled
+  for (const dim of U.crossEnabled) {
+    const btn = document.querySelector(`#u-cross-rows button.cross-btn[data-dim="${dim}"]`);
+    if (btn) btn.classList.add('on');
+  }
+  buildAll();
+  applyPreset('dense');
+  initCamera();
+  document.getElementById('loading').style.display = 'none';
+  toggleUMenu(true);  // open U-menu on first load (Capture.PNG default)
+  requestAnimationFrame(frame);
+}
+
+// ── Main render loop ─────────────────────────────────────────────────
+function frame(ts) {
+  t = ts * .001;
+  const LERP = 0.07;
+  camera.scale += (camera.targetScale - camera.scale) * LERP;
+  camera.x     += (camera.targetX     - camera.x    ) * LERP;
+  camera.y     += (camera.targetY     - camera.y    ) * LERP;
+  autoAdjustSpeed();
+  updatePhysics();
+
+  const W = nodeCvs.width, H = nodeCvs.height;
+  if (U.trails) {
+    ctx.fillStyle = 'rgba(1,6,9,0.12)';
+    ctx.fillRect(0, 0, W, H);
+  } else {
+    ctx.clearRect(0, 0, W, H);
+  }
+
+  ctx.save();
+  ctx.setTransform(
+    camera.scale, 0, 0, camera.scale,
+    W/2 - camera.x * camera.scale,
+    H/2 - camera.y * camera.scale
+  );
+  drawStars(allStars);
+  drawScene(allNodes);
+  ctx.restore();
+
+  drawLabels(allNodes);
+  updateZoomUI();
+
+  if (document.visibilityState === 'visible') requestAnimationFrame(frame);
+}
+
+document.addEventListener('visibilitychange', () => {
+  // Resume the loop when tab becomes visible again
+  if (document.visibilityState === 'visible') requestAnimationFrame(frame);
+});
+
+boot();
+</script>
+</body>
+</html>

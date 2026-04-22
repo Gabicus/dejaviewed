@@ -1,0 +1,235 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Polymarket Weather Trading — Ensemble Forecasts as Edge · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html#post-DWzz7T9Ddex">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Polymarket Weather Trading — Ensemble Forecasts as Edge
+
+One of the most-repeated Polymarket folk stories of 2025 is "a student built a six-figure portfolio trading weather contracts from his dorm with a DIY sensor rig." The sensor-rig version of the story is mostly myth — the actual edge is more boring, more reproducible, and more interesting: **multi-model ensemble forecasting against a retail-priced order book**. The weather station is optional flavor. The ensemble is the alpha.
+
+This guide covers the strategy, the real infrastructure the top traders use, why *weather* was the perfect market to build this on, and what's replicable.
+
+---
+
+## 1. What it is
+
+Polymarket runs hundreds of daily/weekly weather contracts: "High temperature in NYC on March 15 between 42°F and 45°F," "Will it rain tomorrow in London," "Max temp in Buenos Aires above X." Each bucketed range is a separate binary contract. Dozens of top wallets have made $20k–$2M+ trading these markets, and several of the top 10 Polymarket wallets by PnL are weather-only.
+
+Named traders:
+
+- **gopfan2** — $2M+ net, almost entirely from weather. Known for simple price rules (buy YES under $0.15, buy NO over $0.45, ~$1 max risk per position) and extreme volume.
+- **neobrother** — $20k+ from "temperature laddering" — buying low-cost bets across many temperature buckets to cover a wider range than the market implied.
+- **Hans323** — $1.11M on a single $92k bet on London's weather (~8% implied probability).
+
+The edge isn't knowing the weather better than NOAA. The edge is **knowing it better than the order book**, which is a much lower bar.
+
+---
+
+## 2. How it works — the actual strategy
+
+### Core thesis
+
+Weather forecasts from professional models (GFS, ECMWF, UKMO, NWS, ICON, GEM, HRRR) are *extremely* good 12-72 hours out. Trained 4-model ensembles hit ~70-75% accuracy on daily-high temperature buckets and daily precipitation. Polymarket contracts on those same events trade on retail sentiment, copy trading, and stale prices — often for hours after a new model run has materially shifted the forecast.
+
+That gap is the edge. You're arbitraging retail prediction market prices against publicly available, free, scientifically rigorous physical models.
+
+### The ensemble
+
+No single model is reliable. The top bot (WeatherBot) uses a 4-model ensemble weighted as:
+
+| Model | Weight |
+|-------|--------|
+| ECMWF (European) | 35% |
+| GFS (US global) | 25% |
+| UKMO (UK Met Office) | 20% |
+| NWS (US, bias-corrected MOS) | 20% |
+
+With outlier penalization — if one model disagrees sharply, its weight gets cut. Degen Doppler runs a much larger 13-model ensemble (Tomorrow.io, Pirate, Visual Crossing, etc.) and dynamically reweights by recent accuracy per region and time-of-day.
+
+For each Polymarket bucket `[T_lo, T_hi]` on day D, you compute:
+
+```
+P_ensemble(T_lo ≤ T_actual ≤ T_hi) = Σ_m w_m · P_m(T_lo ≤ T ≤ T_hi)
+```
+
+where `P_m` is derived from the ensemble-member spread (or from raw ensemble members in the case of GFS's 31-member GEFS).
+
+### The trade
+
+- If `P_ensemble > ask_price + edge_threshold` → buy YES.
+- If `P_ensemble < bid_price − edge_threshold` → buy NO (equivalent to selling YES).
+- Size with Kelly or fractional Kelly on `P_ensemble` vs market price.
+- Exit either at resolution or when price converges to fair value (rolling the capital to the next mispricing).
+
+### Why this works
+
+1. **Polymarket weather markets are liquid but not efficient.** There's enough volume to trade, but retail traders drive prices with gut feel, not NWS MOS output.
+2. **Model runs update every 6 hours.** When GFS 12z drops and shows NYC 5°F warmer than the 06z run, the probability stack for the daily high buckets shifts instantly. Polymarket lags this by 30-90 minutes. That lag is a free option.
+3. **Bucketed contracts enable laddering.** Instead of one bet, you buy a probability-weighted basket across 3-5 adjacent buckets around the ensemble mode, which dramatically reduces variance.
+4. **Weather is a mean-reverting, well-understood physical process.** Unlike political or sports markets, there are no hidden catalysts, no insider info, no interpretation risk.
+
+---
+
+## 3. Key mechanics
+
+**Data sources (all free):**
+- NOAA NOMADS — GFS grib2 files, refreshed 4x/day
+- ECMWF Open Data — since Jan 2022, free up to 10 days out
+- UKMO & ICON via open APIs
+- NWS API for MOS station forecasts (this is the one closest to Polymarket's resolution source)
+- Visual Crossing, Open-Meteo — aggregated APIs if you don't want to parse grib2
+
+**Resolution source matters.** Polymarket weather markets resolve against specific weather station reports (usually the "official" NWS observation for the city). Your model needs to predict *that station*, not the city average. This is where NWS MOS (station-specific bias-corrected output) dominates raw GFS.
+
+**Position lifecycle:**
+1. Pull new model runs every 6 hours (00z, 06z, 12z, 18z UTC).
+2. Recompute ensemble PDF for each open market's resolution variable.
+3. Diff against current Polymarket CLOB best-bid/best-ask.
+4. Size positions with Kelly or fixed fraction. Most successful bots cap per-position risk at $1-$100.
+5. Post limit orders (not market orders — slippage kills the edge on thin markets).
+6. On the next model run, recompute and either scale up, reverse, or hold.
+
+**Fee structure quirk:** Polymarket fees scale by `min(price, 1−price)`, so extreme-price contracts (near $0.01 or $0.99) have the lowest effective fees. This is also what enables the 99c limit arbitrage strategy (see `polymarket-99c-limit-arbitrage.md`).
+
+---
+
+## 4. The infrastructure — what's actually running
+
+Three public references exist:
+
+### `suislanchez/polymarket-kalshi-weather-bot`
+Full-stack reference implementation. Trades both Kalshi (KXHIGH series) and Polymarket. Uses **GFS 31-member ensemble** (GEFS) forecasts plus — notably — BTC 5-minute microstructure as an auxiliary signal. Kelly sizing, signal calibration, React dashboard. Claimed max profit ~$1.8k. Best starting point for a working codebase.
+
+### `hcharper/polyBot-Weather`
+Simpler single-model bot. Educational.
+
+### WeatherBot (weatherbot.finance) & Degen Doppler
+Commercial tools. Closed source. WeatherBot publishes its 4-model weighting scheme as marketing; Degen Doppler publishes its 13-model list. You can replicate both from public APIs.
+
+### The "dorm / weather station" angle
+The viral story about a student using a rooftop weather station for edge doesn't hold up: a single-point sensor can't beat a continental-scale numerical weather model for even 12-hour forecasts, because the model already ingests tens of thousands of station observations. Where a *local* sensor helps is **arbitraging the last-hour resolution print** — detecting whether the NWS station has already recorded the high for the day, which Polymarket prices don't always reflect until it's official. That's a nowcasting edge, not a forecasting edge, and it requires co-location near (or API access to) the specific resolution station. Short range, narrow edge, real but overstated.
+
+---
+
+## 5. How to replicate
+
+**Minimal viable weather trader (1 weekend):**
+
+```bash
+pip install polymarket-py open-meteo-requests requests numpy
+```
+
+1. Use Open-Meteo's free ensemble API (GFS + ECMWF + ICON + GEM) — skip grib2 parsing entirely. Returns raw ensemble members.
+2. Pull current Polymarket weather markets via the CLOB REST API.
+3. For each market, compute `P_ensemble(bucket)` as the fraction of ensemble members falling in the bucket.
+4. Buy any bucket where `P_ensemble − ask > 0.10` with $1-10 per position.
+5. Hold to resolution.
+
+This is enough to learn the edge. Scaling to $10k+ requires real-time order management, slippage control, and a watchdog that can cut positions on model disagreement.
+
+**Data path to productionize:**
+- Open-Meteo → GFS/ECMWF/ICON ensemble members
+- NWS API → station MOS forecasts
+- NOAA NOMADS → raw GEFS 31-member if you want more resolution
+- ECMWF Open Data → raw IFS ensemble (2 runs/day free, 4 runs paid)
+- Ensemble reweighting by recent hit-rate per city/season
+
+---
+
+## 6. How this plugs into Victor's trading-agent-team
+
+The trading-agent-team is built around crypto perps. Polymarket weather is an **uncorrelated PnL source** — not a single tick of correlation with BTC, HYPE, or anything in the existing portfolio. That alone is worth a subproject, especially for Unicron which is meant to be a multi-strategy platform.
+
+**Concrete integration ideas:**
+
+1. **New "environmental" arena in Unicron.** Add a Polymarket connector alongside the Hyperliquid one. Run a weather ensemble bot as a sub-strategy. Its PnL curve will be orthogonal to the crypto strategies, which smooths the aggregate Sharpe.
+
+2. **Pure-rules execution, AI-only for ensemble weighting.** Per Victor's rule (feedback_rules_vs_agents.md: pure rules for trade execution, AI only for the research/optimization layer), the weather bot is an ideal fit. Rules: "if `P_ensemble > ask + 10pp`, buy." AI layer: nightly reweighting of ensemble members by recent accuracy per city — that's a small regression problem an LLM or classical ML can own without touching live orders.
+
+3. **Challenge-game parameter sweep.** Parameters: ensemble weights, edge threshold, Kelly fraction, per-market cap, laddering width. Fitness: out-of-sample Sharpe on a replay of historical Polymarket weather data (available via their Subgraph). Exactly the shape `/challenge-game` was built for.
+
+4. **Beads-tracked subproject.** Create a `polymarket-weather` bead and scaffold under `/unicron/strategies/weather/`. Data pull, backtest harness, paper-trading mode, promotion criteria to live.
+
+5. **Kalshi parallel.** Kalshi has the same market category (KXHIGH, KXPRECIP), often with tighter spreads and US-regulated. The same codebase services both — double the venues, same edge. `suislanchez/polymarket-kalshi-weather-bot` already shows the multi-venue shape.
+
+**Why this is a good Victor project specifically:** low capital requirement (can validate live with $100), low correlation to existing strategies, uses the Unicron watchdog pattern naturally (model disagreement = pause), and the research layer (ensemble weighting) is genuine alpha you can keep improving for years.
+
+---
+
+## 7. Risk and gotchas
+
+- **Resolution ambiguity.** Weather markets occasionally resolve differently than traders expect because of station choice (JFK vs LGA vs Central Park for NYC). Read the resolution source carefully before every market.
+- **Tail risk on black-swan weather.** Fronts, heat domes, and polar vortex events blow up ensembles. Fractional Kelly, always.
+- **Slippage on thin buckets.** Most weather buckets trade <$5k/day volume. Size must respect depth.
+- **Polymarket fees and gas.** Each order is an on-chain transaction (Polygon). At $1 position sizes, gas becomes a real cost — batch orders or use the gasless CLOB endpoint.
+- **Model lag.** The edge exists because retail is slow to react to new model runs. If the edge closes (e.g., everyone builds bots), it decays. As of early 2026 it is still live.
+
+---
+
+## Sources
+
+- [People Are Making Millions on Polymarket Betting on the Weather (Ezekiel Njuguna)](https://medium.com/mountain-movers/people-are-making-millions-on-polymarket-betting-on-the-weather-and-i-will-teach-you-how-24c9977b277c)
+- [Found The Weather Trading Bots Quietly Making $24,000 On Polymarket (devgenius)](https://blog.devgenius.io/found-the-weather-trading-bots-quietly-making-24-000-on-polymarket-and-built-one-myself-for-free-120bd34d6f09)
+- [WeatherBot](https://www.weatherbot.finance/)
+- [Degen Doppler](https://degendoppler.com/)
+- [suislanchez/polymarket-kalshi-weather-bot](https://github.com/suislanchez/polymarket-kalshi-weather-bot)
+- [hcharper/polyBot-Weather](https://github.com/hcharper/polyBot-Weather)
+- [Polymarket Traders Profit from Weather Predictions (Phemex)](https://phemex.com/news/article/polymarket-traders-profit-from-weather-predictions-58213)
+- [Polymarket Weather Markets — DEV Community](https://dev.to/cryptodeploy/how-polymarket-weather-markets-actually-work-50nb)
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

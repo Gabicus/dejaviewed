@@ -1,0 +1,367 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Hooks System — Deep Dive · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html#post-DV8rkpGEbBJ">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Claude Code Hooks System — Deep Dive
+
+**Category:** Claude Code automation / lifecycle
+**Confidence:** High — officially documented by Anthropic, with a mature community ecosystem.
+**Primary sources:**
+- Official reference: https://code.claude.com/docs/en/hooks
+- Hooks guide: https://code.claude.com/docs/en/hooks-guide
+- Agent SDK hooks: https://platform.claude.com/docs/en/agent-sdk/hooks
+- `disler/claude-code-hooks-mastery` (reference examples): https://github.com/disler/claude-code-hooks-mastery
+- ClaudeLog: https://claudelog.com/mechanics/hooks/
+- Victor already has the `hookify` plugin installed (provides `/hookify`, `/hookify:configure`, `/hookify:list`).
+
+---
+
+## What it is
+
+Claude Code hooks are **shell commands that run automatically at specific points in the Claude Code lifecycle** — before a tool executes, after it executes, when a session starts, when the model finishes its response, when context compaction happens, and so on. They are Anthropic's answer to "how do I make Claude Code behave deterministically?"
+
+The critical insight: **Claude itself cannot reliably enforce rules on itself.** If you put "never run `rm -rf`" in CLAUDE.md, Claude *usually* follows it, but prompt injection or a confused turn can bypass it. Hooks are executed by the harness — the outer runtime — not by the model. A hook that exits with code 2 on `PreToolUse` will **block** the tool call no matter what the model decided. This is why Victor's global CLAUDE.md says: *"Automated behaviors require hooks configured in settings.json — the harness executes these, not Claude."*
+
+Hooks are configured in JSON settings files, take tool I/O as JSON on stdin, and signal via exit codes or structured JSON output. They can run shell commands, call HTTP endpoints, or invoke LLMs for dynamic decisions.
+
+---
+
+## How it works — the lifecycle events
+
+Claude Code fires hooks at ~12 lifecycle events. The stable, documented ones (as of early 2026):
+
+| Event | When it fires | Can block? | Typical use |
+|---|---|---|---|
+| **SessionStart** | New session or resume | No (advisory) | Inject git context, load env vars, greet |
+| **UserPromptSubmit** | User submits a prompt, before Claude sees it | Yes | Rewrite prompt, inject context, block unsafe prompts |
+| **PreToolUse** | Claude decides to run a tool, before execution | Yes (exit 2) | Validate args, block dangerous commands, rewrite args |
+| **PostToolUse** | Tool finished executing | No (advisory) | Format code, run tests, log command, trigger downstream |
+| **Notification** | Claude waits for permission, or idles | No | Desktop notify, Slack ping, sound |
+| **Stop** | Claude finishes its overall response | Yes (force continue) | Final checks, generate report, block "done" if tests fail |
+| **SubagentStop** | A Task-tool sub-agent finishes | Yes | Validate sub-agent output, gate merging |
+| **PreCompact** | Before context compaction (manual or auto) | No | Back up full transcript, snapshot state |
+| **SessionEnd** | Session terminates | No | Persist logs, push metrics, retro capture |
+
+The Agent SDK and recent Claude Code versions have added more (`ConfigChange`, `CwdChanged`, `FileChanged`, `PermissionDenied`, `WorktreeCreate`, `WorktreeRemove`, etc.) but they are less widely documented and churn more between versions. Start with the nine above.
+
+### Where hooks are configured
+
+Three settings files, merged in order (later wins for same key):
+
+1. `~/.claude/settings.json` — user-global hooks, apply to every project
+2. `.claude/settings.json` — project-shared hooks, checked into git
+3. `.claude/settings.local.json` — per-machine overrides, gitignored
+
+Structure:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-rm-rf.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "prettier --write" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Top level is `hooks`. Each event is an array of **matcher groups**. Each group has:
+- `matcher` — a regex tested against the tool name (for tool-scoped events). For `PreToolUse`/`PostToolUse`: the tool name (`Bash`, `Edit`, `Write`, `mcp__github__.*`). For other events: often empty string or omitted.
+- `hooks` — an array of hook entries. Each entry has:
+  - `type` — `"command"` (shell), or in Agent SDK contexts `"http"` / `"prompt"`.
+  - `command` — the shell command to run.
+  - `async` — optional boolean. If `true`, hook runs in background and doesn't block Claude.
+  - `timeout` — optional seconds before kill.
+
+To disable all hooks temporarily: `"disableAllHooks": true` at settings root.
+
+### How hooks communicate with Claude
+
+**Input:** Hooks receive JSON on **stdin** describing the event. For a `PreToolUse` on Bash:
+
+```json
+{
+  "session_id": "abc123",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "rm -rf /",
+    "description": "delete everything"
+  },
+  "cwd": "/home/victor/project"
+}
+```
+
+`UserPromptSubmit` gets `{ session_id, hook_event_name, prompt }`. `SessionStart` gets the minimal set. Each event has its own schema — the canonical reference is the gist at https://gist.github.com/FrancisBourre/50dca37124ecc43eaf08328cdcccdb34 and the Anthropic docs.
+
+**Output / control:**
+- **Exit code 0** — success, allow the operation, stdout is shown as informational.
+- **Exit code 2** — **block** the operation. stderr is surfaced to Claude as an error, and Claude gets a chance to react (e.g. try a different approach).
+- **Any other non-zero** — error, shown to user but does not block.
+- **Structured JSON on stdout** — advanced: you can return `{ "decision": "block", "reason": "..." }` or `{ "decision": "approve" }` or `{ "modified_tool_input": {...} }` to rewrite arguments. This is the powerful path — a hook can *rewrite* Claude's tool call mid-flight.
+
+`async: true` hooks are fire-and-forget and cannot block or modify.
+
+---
+
+## Quick start — five hooks worth installing today
+
+### 1. Block destructive Bash commands
+
+`~/.claude/hooks/block-destructive.sh`:
+
+```bash
+#!/usr/bin/env bash
+cmd=$(jq -r '.tool_input.command // empty')
+if [[ "$cmd" =~ (rm[[:space:]]+-rf[[:space:]]+/|mkfs|:\(\)\{|dd[[:space:]]+if=) ]]; then
+  echo "Blocked destructive command: $cmd" >&2
+  exit 2
+fi
+exit 0
+```
+
+In `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "~/.claude/hooks/block-destructive.sh" }]
+      }
+    ]
+  }
+}
+```
+
+`chmod +x` the script. Now any `rm -rf /`, fork bomb, or `dd` to a device gets blocked before Claude can run it — and Claude is told why, so it can try something saner.
+
+### 2. Auto-format on edit
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{
+          "type": "command",
+          "command": "path=$(jq -r '.tool_input.file_path'); case \"$path\" in *.ts|*.tsx|*.js|*.jsx) prettier --write \"$path\" ;; *.py) ruff format \"$path\" ;; *.rs) rustfmt \"$path\" ;; esac"
+        }]
+      }
+    ]
+  }
+}
+```
+
+Every file Claude edits gets formatted automatically. No more "please run prettier" prompts.
+
+### 3. Inject git context at session start
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "echo '## Git state'; git branch --show-current 2>/dev/null; git status --short 2>/dev/null | head -10; echo '## Recent commits'; git log --oneline -5 2>/dev/null"
+        }]
+      }
+    ]
+  }
+}
+```
+
+stdout from SessionStart hooks gets injected into Claude's first system message, so every session begins knowing the current branch, dirty files, and recent history. No more "what branch am I on?"
+
+### 4. Log every Bash command for audit
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{
+          "type": "command",
+          "command": "jq -r '[.session_id, .tool_input.command] | @tsv' >> ~/.claude/bash-log.tsv"
+        }]
+      }
+    ]
+  }
+}
+```
+
+Append every command Claude runs, with session id, to a TSV file. Trivial to grep later for "what did Claude do on Tuesday."
+
+### 5. Back up the transcript before compaction
+
+```json
+{
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "python ~/.claude/hooks/backup-transcript.py",
+          "async": true
+        }]
+      }
+    ]
+  }
+}
+```
+
+`async: true` because you don't want backups blocking Claude. Every time context compacts, the full transcript gets snapshotted — essential for post-mortems and the `/forge` knowledge workflow.
+
+---
+
+## Real-world patterns
+
+**Block PR merges until tests pass (Stop hook).** On `Stop`, check if the git index is dirty or if `pytest` fails. Exit 2 to force Claude to continue working instead of claiming "done."
+
+**Prompt rewriting (UserPromptSubmit hook).** Intercept the user's prompt, prepend project-specific context from a file, return the rewritten prompt via structured JSON. This is how you implement "every prompt gets the current GOALS.yaml attached."
+
+**Permission gating (PreToolUse on mcp__github__.*).** Block any GitHub MCP tool that tries to merge a PR on `main` without a human-approved signal.
+
+**Session metric export (SessionEnd).** Ship session duration, tool counts, and token spend to a local SQLite DB for weekly retros.
+
+**Auto-commit scratch work (PostToolUse on Edit).** After every edit, auto-commit to a `scratch` branch so nothing is ever lost even if Claude undoes itself.
+
+**Sub-agent quality gate (SubagentStop).** When a Task sub-agent finishes, run the output through a linter or a small validation LLM. If it fails, exit 2 to tell the parent agent "try again."
+
+**Notification routing (Notification).** When Claude is waiting on a permission prompt, desktop-notify or send a Discord webhook so you can unblock it from your phone.
+
+---
+
+## What Victor already has
+
+Victor's global setup includes the **`hookify` plugin** (see `reference_installed_plugins.md`). It provides:
+
+- `/hookify` — interactive hook creation. Given a behavior you want to prevent, it generates the shell script and the settings.json entry.
+- `/hookify:configure` — enable/disable existing hookify rules interactively.
+- `/hookify:list` — list all installed hookify rules.
+- `hookify:writing-rules` skill — for hand-writing custom hook rules.
+
+Victor's memory also references the **`update-config` skill**, which explicitly says: *"Automated behaviors ('from now on when X', 'each time X', 'whenever X', 'before/after X') require hooks configured in settings.json — the harness executes these, not Claude."* Any time you catch yourself writing a "from now on always X" rule in CLAUDE.md, the correct move is a hook instead.
+
+Quick check for existing hooks:
+
+```bash
+cat ~/.claude/settings.json | jq '.hooks // {}'
+cat .claude/settings.json 2>/dev/null | jq '.hooks // {}'
+```
+
+---
+
+## What we could build with it
+
+- **A `/forge` auto-runner.** `SessionEnd` hook that pipes the transcript into the `forge` skill to automatically mine learnings into MEMORY.md without Victor remembering to run it.
+- **Bash command classifier.** `PreToolUse` hook that routes Bash commands through a local classifier (regex or small LLM) and auto-allows safe ones, prompts on medium, hard-blocks destructive.
+- **Per-project CLAUDE.md injector.** `SessionStart` hook that checks the cwd, looks for matching project memory in `~/.claude/projects/.../MEMORY.md`, and injects the relevant entries.
+- **Trading bot guardrails.** `PreToolUse` hook on any Bash running `python trade.py` that blocks if market is closed, if balance is below threshold, or if a kill-switch file exists. This is a hard rule the model cannot override.
+- **Secret leak prevention.** `PreToolUse` on Edit/Write that greps the proposed `new_string` for anything matching private-key / API-key patterns and exit 2 if found. This enforces Victor's global "never expose secrets" rule deterministically.
+- **Auto-test runner.** `PostToolUse` on Edit to source files → run the matching test file → append output to Claude's visible context. TDD without asking.
+- **Compaction-triggered retros.** `PreCompact` hook that snapshots the transcript *and* writes a one-line summary of what was accomplished this window, building a running project log.
+- **Desktop notification on idle.** `Notification` hook that `notify-send`s on Linux so you know Claude is waiting on input even if you alt-tabbed.
+
+---
+
+## Gotchas and limits
+
+- **Hooks are executed with your shell privileges.** A malicious hook can `rm -rf` your home directory. Never install hooks from untrusted sources without reading the script first.
+- **Hooks run synchronously by default.** A slow hook blocks Claude. Use `async: true` for anything that doesn't need to gate behavior (logging, notifications, backups).
+- **Per-project `.claude/settings.json` is checked into git.** Never commit secrets inside hook scripts. Use `.claude/settings.local.json` for anything sensitive.
+- **Exit-code 2 vs structured JSON** — these are different control channels. Exit 2 is the simple "block and tell Claude why" path. Structured JSON lets you *rewrite* tool inputs; use it sparingly because it's harder to debug.
+- **Matcher regex is tool-name-scoped.** It does *not* match against tool *arguments*. To block by args, match the tool name and do the arg check inside your script.
+- **MCP tool names are prefixed** (`mcp__github__create_pull_request`, `mcp__playwright__browser_click`, etc.). Match them with regex: `"mcp__github__.*"`.
+- **PostToolUse hooks cannot undo the tool.** The tool already ran. You can react, but you can't reverse — if you need to prevent, it must be a PreToolUse.
+- **Latency is real.** Every hook adds tens to hundreds of milliseconds per tool call. Five synchronous hooks on every Bash call becomes noticeable. There is a known community issue (ruflo #1530) reporting ~20s hook latency in misconfigured setups. Profile your hooks.
+- **stdin JSON can be large.** A `PostToolUse` hook on a big Read can receive megabytes of content. If you just need the file path, parse with `jq` and ignore the rest.
+- **Hook stderr is surfaced to the user and to Claude.** Keep it clean. Use stdout for "injected context," stderr for "error message when blocking."
+- **Version drift.** Events like `SessionEnd`, `PreCompact`, and the `matcher`-on-non-tool-events behavior have all been added or renamed across versions. Check `claude --version` against the docs if something behaves unexpectedly.
+- **Settings merge order can surprise you.** Local overrides user overrides project in some arrangements. If a hook doesn't fire, dump the merged config to see what Claude actually sees.
+- **Hooks are harness-enforced, not model-enforced.** This is the whole point — a hook is the only way to make Claude's behavior actually deterministic. Put security-critical rules here, not in CLAUDE.md.
+
+---
+
+## Bottom line
+
+Hooks are the layer where Claude Code stops being "a smart assistant that mostly follows rules" and becomes "a runtime with hard constraints you can trust." The nine standard events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd) cover 95% of real use cases. Start with three hooks — block destructive Bash, auto-format on edit, inject git context on session start — and add more as you notice yourself saying "Claude should always X" for the nth time. That sentence is always a hook.
+
+For Victor: `hookify` is already installed. Use `/hookify` for interactive creation, and treat every `from now on` / `whenever X` rule in CLAUDE.md as a candidate to migrate into `settings.json` where it becomes enforceable instead of advisory.
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

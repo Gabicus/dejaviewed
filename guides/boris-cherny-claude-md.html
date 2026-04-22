@@ -1,0 +1,278 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boris Cherny's CLAUDE.md — The Canonical Template · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html#post-DV6QY8QjoRW">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Boris Cherny's CLAUDE.md — The Canonical Template
+
+**Author of the pattern:** Boris Cherny — Anthropic staff engineer, creator of Claude Code (originally built as a side project in his first month at Anthropic; by the time Claude Code launched publicly in May 2025, over 80% of Anthropic's engineers were using it daily).
+
+**Why it matters:** Boris's own CLAUDE.md and the workflow rules he published on X became the de facto template that the wider community now cargo-cults. If you've seen a CLAUDE.md with sections like "Workflow Orchestration," "Self-Improvement Loop," and "Verification Before Done," you're looking at a descendant of Boris's file. His team at Anthropic keeps a CLAUDE.md in git at roughly 2.5k tokens — the reference weight class.
+
+This guide reconstructs the template, explains *why* each section exists, and compares it to what Victor already runs in `/home/victor/.claude/CLAUDE.md`.
+
+---
+
+## What it is
+
+CLAUDE.md is the single highest-leverage file in the Claude Code harness. Claude Code injects it into the context window at the **start of every session**, before the user's first message. It's the only persistent memory primitive that survives compaction, resumes, and cross-session restarts. Nothing else — not chat history, not subagent output, not tool results — is guaranteed to stick.
+
+Boris's core insight: *CLAUDE.md is a compounding asset*. Every correction you give Claude should be distilled into a rule in CLAUDE.md, so future sessions never make the same mistake twice. The file is not documentation for humans — it is a behavioral contract for the model.
+
+## How it works under the hood
+
+- Claude Code auto-discovers `./CLAUDE.md` (project), `~/.claude/CLAUDE.md` (global), and `.claude/CLAUDE.md` in parent dirs (walks up the tree).
+- All discovered files are **concatenated and prepended** to the system prompt.
+- `/init` scaffolds a starter CLAUDE.md by scanning the project (language, framework, build/test commands, style).
+- `#` prefix in a normal Claude message auto-appends that line to CLAUDE.md — Boris's favorite shortcut for the self-improvement loop.
+- Target weight: **under 200 lines / under 2-3k tokens**. Larger files measurably reduce instruction adherence — Claude starts "forgetting" rules buried mid-file.
+
+## Key mechanics (Boris's rules, annotated)
+
+Boris's publicly posted rules crystallize into these sections. The exact wording varies by gist (there are at least four circulating community copies), but the structure is consistent:
+
+### 1. Workflow Orchestration — "Plan first, execute second"
+
+```markdown
+## Workflow
+- For any non-trivial task (3+ steps or architectural decisions), enter plan mode first.
+- Write the plan to disk before executing. Get explicit approval before you start editing files.
+- Break work into phases. Each phase ends with a verification step.
+- Never start coding without a written goal and a verification strategy.
+```
+
+*Why:* Claude's default behavior is to dive in. Forcing a written plan makes the model's reasoning visible, lets the human catch bad assumptions cheaply, and creates a contract it can check itself against later. This is the pattern the Superpowers `writing-plans` + `executing-plans` chain formalizes.
+
+### 2. Subagents — "Keep the main context clean"
+
+```markdown
+## Subagents
+- Use subagents liberally. The main conversation is a precious resource.
+- Dispatch anything exploratory (searching, reading unknown files, running tests) to a subagent.
+- Subagents return summaries, not transcripts. You don't burn tokens on the tool noise.
+- Parallelize independent tasks — spawn 3-5 subagents at once rather than serially.
+```
+
+*Why:* The main context window is where the actual planning and decision-making happens. Every file you read, every failed test output, every grep result eats tokens that could be used for reasoning. Subagents are a context-compression mechanism.
+
+### 3. Verification Before Done — "Never claim completion without proof"
+
+```markdown
+## Verification
+- Before claiming any task is complete: run the tests, run the linter, run the type checker.
+- If the user's request implies "it should work" — prove it works end-to-end, don't just compile.
+- If you wrote a function, write a test. If you wrote a test, run it. If it fails, fix it.
+- Never say "done" if you haven't verified. Say "I believe this is done pending X."
+```
+
+*Why:* The single most common failure mode of LLMs is confident false completion. Boris's rule: the model must produce evidence, not assertion.
+
+### 4. Self-Improvement Loop — "Every correction becomes a rule"
+
+```markdown
+## Self-Improvement
+- When I correct you, end your response with:
+  "Updating CLAUDE.md so I don't make this mistake again."
+- Then actually update CLAUDE.md with a new rule that would have prevented the mistake.
+- Ruthlessly edit CLAUDE.md over time. Delete rules that no longer apply. Merge duplicates.
+```
+
+*Why:* This is the compounding mechanism. Boris's own quote: *"Invest in your CLAUDE.md. After every correction, end with 'Update your CLAUDE.md so you don't make that mistake again.' Claude is effective at writing rules for itself."* Over weeks, Claude's mistake rate on your codebase measurably drops.
+
+### 5. Autonomous Bug Fixing — "Reproduce, then fix"
+
+```markdown
+## Bugs
+- Before fixing: reproduce the bug with a failing test.
+- The test must fail for the right reason (the bug), not a different reason (typo, missing import).
+- Only then write the fix. Re-run the test. Confirm it passes. Run the full suite.
+- If the bug is ambiguous, ask for clarification before coding.
+```
+
+*Why:* Mirrors TDD discipline and cuts the "fixed something unrelated" failure mode.
+
+### 6. Project context (the boilerplate head of the file)
+
+```markdown
+# Project Name
+Language: Python 3.12
+Framework: FastAPI + SQLAlchemy
+Package manager: uv
+Tests: pytest (run with `uv run pytest`)
+Lint: ruff (run with `uv run ruff check`)
+Typecheck: mypy (strict mode)
+
+## Conventions
+- Prefer dataclasses over dicts for structured data.
+- All public functions get type hints.
+- Never use `print` — use the `logging` module.
+- Tests live in `tests/` mirroring `src/` layout.
+```
+
+*Why:* This is the cheap, obvious part everyone gets right. It's the behavioral rules above that distinguish Boris's template from a README.
+
+## Quick start
+
+```bash
+# In any project, scaffold a starter file
+cd my-project
+claude
+> /init
+
+# Then iterate — every time Claude makes a mistake, tell it:
+> "That was wrong. Update CLAUDE.md so you don't do it again."
+
+# Or use the # shortcut to append a rule inline
+> # Always run `uv run pytest` not `pytest`
+
+# Keep it lean — check length regularly
+wc -l CLAUDE.md   # target: under 200 lines
+```
+
+**Copy-paste starter** (drop into any project root):
+
+```markdown
+# [Project Name]
+[One-line description.]
+
+Stack: [language, framework, package manager]
+Build: `[command]`
+Test: `[command]`
+Lint: `[command]`
+
+## Workflow
+- For any task with 3+ steps, enter plan mode. Write the plan before editing.
+- Use subagents for exploration, searching, and reading unknown files.
+- Never claim "done" without running tests + lint + typecheck.
+
+## Conventions
+- [Style rule 1]
+- [Style rule 2]
+
+## Verification
+- Before shipping: `[test command]` && `[lint command]` && `[typecheck command]`
+- All must pass. No exceptions.
+
+## Bugs
+- Reproduce with a failing test before fixing.
+- Test must fail for the right reason.
+
+## Self-improvement
+- When corrected, update this file with a rule that would have prevented the mistake.
+- Every rule in this file earned its place by catching a real bug.
+```
+
+## Contrast with Victor's global CLAUDE.md
+
+Victor's `/home/victor/.claude/CLAUDE.md` is a **fundamentally different genre** of CLAUDE.md than Boris's. Key differences worth understanding:
+
+| Dimension | Boris's template | Victor's global |
+|---|---|---|
+| **Scope** | Per-project behavioral contract | Global meta-orchestrator across ALL projects |
+| **Length** | ~200 lines, ~2.5k tokens | ~250 lines but dense with tables |
+| **Focus** | Workflow discipline (plan → execute → verify) | Skill routing + knowledge base pointers |
+| **Self-improvement loop** | Yes — "every correction becomes a rule" | Implicit via the forge/retro/flywheel skills |
+| **Trigger mapping** | Not present | Extensive — keyword → skill table |
+| **Domain knowledge** | Project-specific conventions | AI3 resource catalog, installed plugins/MCPs |
+| **Security rules** | Not present | Top-level CRITICAL block on secret protection |
+
+**What Victor's file does that Boris's doesn't:**
+- Maps user trigger words to specific skill invocations (Boris has no skills system at his abstraction level).
+- Treats the knowledge flywheel (`/flywheel`, `/forge`, `/inject`) as default-on.
+- Enumerates the installed plugin/MCP inventory so Claude knows what tools exist.
+- Points to an external resource catalog (`ai3-resources/`) that the agent can cross-reference.
+
+**What Boris's file does that Victor's doesn't (at the global level):**
+- Explicit plan-mode gating for non-trivial tasks.
+- Explicit verification-before-done discipline (Victor delegates this to the `verification-before-completion` superpower).
+- The self-improvement loop as a first-class mechanic ("every correction becomes a rule").
+- Lean, project-specific behavioral rules with teeth.
+
+**The gap to close:** Victor's global CLAUDE.md is excellent at orchestration but light on direct behavioral discipline — it relies on the skill layer to enforce plan mode, TDD, and verification. Boris's pattern pushes that discipline directly into the file so it's enforced even in lightweight sessions where no skill was explicitly invoked. A hybrid per-project CLAUDE.md that inherits Victor's global triggers and adds a Boris-style Workflow/Verification/Self-improvement block would capture both.
+
+## Gotchas
+
+1. **Length creep kills adherence.** Past ~300 lines, Claude starts ignoring rules in the middle of the file. Ruthlessly prune.
+2. **CLAUDE.md is not documentation.** Don't write prose, write rules. "The foo module does X" is dead weight; "Always use the foo module's `safe_parse`, never `parse`" is a rule with teeth.
+3. **Rules without teeth are ignored.** "Prefer X" is weaker than "Never Y." Boris's negative-constraint framing ("NEVER commit with --no-verify") works because it names the exact failure mode.
+4. **The self-improvement loop only works if you actually run it.** The discipline is: every time you correct Claude, ask it to update CLAUDE.md. If you skip that step once, the loop is broken.
+5. **Global + project files concatenate.** Don't repeat global rules in every project file — Claude reads both.
+6. **Community gists are not canonical.** There are at least four different "Boris's CLAUDE.md" gists circulating. They agree on structure but differ on wording. Treat them all as reference, not gospel.
+
+## What we could build with it
+
+- **A per-project CLAUDE.md generator** that fuses Victor's global orchestration rules with Boris's behavioral discipline blocks, auto-populated from project introspection (stack detection, test/lint commands).
+- **A CLAUDE.md linter** that flags length creep, rule duplication, weak positive framing, and un-earned rules (rules without git blame showing a corresponding correction).
+- **A self-improvement loop hook** — a PostToolUse hook that detects user corrections in the transcript and prompts Claude to propose a CLAUDE.md diff.
+- **A rule-provenance tracker** — every rule in CLAUDE.md links back to the commit/conversation that introduced it, so stale rules can be pruned with evidence.
+
+## Sources
+
+- [How Boris Uses Claude Code (compiled site)](https://howborisusesclaudecode.com/)
+- [Boris Cherny's CLAUDE.md gist (hqman mirror)](https://gist.github.com/hqman/e29cb6386c539d795767e8c3fd2c959b)
+- [boris-team-tips.md gist (joyrexus mirror)](https://gist.github.com/joyrexus/e20ead11b3df4de46ab32b4a7269abe0)
+- [Boris Cherny's Workflow Orchestration agent.md (gavinwright-engr)](https://gist.github.com/gavinwright-engr/499e96574d7a10d939b34388a3774924)
+- [Claude Code setup from Boris Cherny (Artur-at-work)](https://gist.github.com/Artur-at-work/6d3ee182bc32052dfd283a831350f282)
+- [Inside the Development Workflow of Claude Code's Creator — InfoQ](https://www.infoq.com/news/2026/01/claude-code-creator-workflow/)
+- [How the Creator of Claude Code Actually Uses Claude Code — Push to Prod](https://getpushtoprod.substack.com/p/how-the-creator-of-claude-code-actually)
+- [Writing a good CLAUDE.md — HumanLayer blog](https://www.humanlayer.dev/blog/writing-a-good-claude-md)
+- [XDA: I set up Claude Code the way its creator does](https://www.xda-developers.com/set-up-claude-code-like-boris-cherny/)
+- [Boris Cherny on Threads — "Invest in your CLAUDE.md"](https://www.threads.com/@boris_cherny/post/DUMZuyJkpSJ/invest-in-your-claude-md-after-every-correction-end-with-update-your-claude-md)
+- [Claude Code memory docs](https://code.claude.com/docs/en/memory)
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

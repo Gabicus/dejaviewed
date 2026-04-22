@@ -1,0 +1,189 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OpenScreen — Free Open-Source Screen Studio Alternative · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html#post-DWl3Bo6jqX1">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># OpenScreen — Free Open-Source Screen Studio Alternative
+
+**GitHub:** https://github.com/siddharthvaddem/openscreen
+**License:** MIT
+**Stack:** Electron + React + TypeScript + Vite + PixiJS + Tailwind
+**Platforms:** macOS 13+, Windows, Linux (PipeWire)
+**Repo path:** `repos/openscreen/` (clone pending — sandbox blocked git clone in this session; run `git clone https://github.com/siddharthvaddem/openscreen.git repos/openscreen` manually)
+
+---
+
+## What it is
+
+OpenScreen is a free, open-source desktop screen recorder built as a deliberate clone of [Screen Studio](https://screen.studio) — the $229 macOS app that single-handedly defined the "polished product demo with smooth auto-zoom and animated cursor" aesthetic that's now everywhere on X and YouTube. The creator's pitch is refreshingly honest: "a much simpler take, just the basics for folks who want control and don't want to pay."
+
+That framing is accurate. OpenScreen is not trying to match Screen Studio feature-for-feature. It nails the core that makes Screen Studio recordings instantly recognizable — **automatic cursor-aware zooms**, cinematic backgrounds, motion blur, clean exports — while skipping fancier pro features. In exchange you get: free, MIT-licensed, cross-platform (Mac / Windows / Linux), and source available.
+
+The closest analogs:
+- **Screen Studio** — $229, macOS only, polished, the gold standard; OpenScreen clones its core loop
+- **[Cap](https://cap.so/)** — open-source, Rust + Tauri, more feature-rich, focused on async video messaging (Loom-style)
+- **Tella** — cloud-hosted SaaS, polished but subscription and not local
+- **OBS Studio** — free, pro-grade, zero polish (no auto-zoom, no cursor animation)
+- **QuickTime / Windows Snipping Tool** — free but bare-metal, no editing
+
+OpenScreen sits in the "free and polished enough for 90% of demos" slot that nothing else really filled before — Cap is close but much heavier.
+
+## How it works
+
+OpenScreen is an Electron desktop app. The recording and editing pipeline is:
+
+1. **Capture** — Electron's `desktopCapturer` API pulls a MediaStream for the selected screen/window. On macOS 14.2+ it requests the audio capture entitlement; on Linux it relies on PipeWire's screen capture portal. Windows has first-class system audio support.
+2. **Cursor tracking** — alongside the video stream, OpenScreen records high-resolution cursor position events. This is the secret sauce: because cursor data is captured as discrete events rather than baked into the video, the editor can later generate smooth animated cursors and compute zoom targets that actually track where attention is.
+3. **Editor / compositor** — a **PixiJS** scene composites the raw screen recording, a generated synthetic cursor (styled and animated), a background layer (wallpapers, colors, gradients), and effects like motion blur. PixiJS gives it hardware-accelerated 2D rendering which is why the preview is smooth.
+4. **Timeline** — built on `dnd-timeline` for draggable segments, trims, and speed ramps.
+5. **Auto-zoom engine** — analyzes cursor velocity and click events to place zoom keyframes automatically; you can also drop manual zooms with configurable depth and duration.
+6. **Export** — renders the composed timeline out to MP4/WebM at configurable aspect ratios and resolutions.
+
+## Core features (what actually works)
+
+- Record a specific window or the full screen
+- **Automatic zooms** driven by cursor/click events, with adjustable depth and duration
+- **Manual zoom keyframes** on the timeline
+- **Animated synthetic cursor** — larger, smoothed, styled separately from the OS cursor
+- Microphone + system audio capture (system audio on Windows and macOS 14.2+; Linux via PipeWire)
+- Background customization — wallpapers, solid colors, gradients
+- Motion blur effect for smooth zoom transitions
+- Annotations — text, arrows, images
+- Segment trim, split, speed adjust
+- Multiple aspect ratios (16:9, 9:16, 1:1, etc.) and export resolutions
+- Local-first, no cloud, no account
+
+## System requirements
+
+- **macOS:** 13 Ventura or later; macOS 14.2+ recommended for system audio capture
+- **Windows:** 10/11, works with system audio out of the box
+- **Linux:** Must have PipeWire (most modern distros — Fedora, recent Ubuntu, Arch — do); X11-only systems won't work
+- **RAM:** 8 GB minimum, 16 GB recommended for 4K/long recordings (Electron + PixiJS + raw frame buffers add up)
+- **GPU:** Any modern integrated GPU; PixiJS uses WebGL
+- **Disk:** Enough free space for raw recordings — plan ~1 GB per 5 minutes at 1440p
+
+## Quick start
+
+**Install from releases (recommended):**
+Download from the GitHub Releases page.
+
+macOS:
+```bash
+# After downloading the .dmg and dragging to Applications
+xattr -rd com.apple.quarantine /Applications/Openscreen.app
+open /Applications/Openscreen.app
+```
+(The `xattr` step is required because the app isn't notarized — Gatekeeper will otherwise refuse to launch it.)
+
+Linux (AppImage):
+```bash
+chmod +x Openscreen-Linux-*.AppImage
+./Openscreen-Linux-*.AppImage
+```
+
+Windows: run the installer `.exe`.
+
+**Build from source** (for hacking or if no release matches your platform):
+```bash
+git clone https://github.com/siddharthvaddem/openscreen.git
+cd openscreen
+npm install
+npm run dev        # launches Electron in dev mode with hot reload
+npm run build      # produces a platform installer in dist/
+```
+
+## Gotchas
+
+- **No notarization on macOS** — every release needs the `xattr` dequarantine step or Gatekeeper blocks it. If you share a recording workflow with non-technical people, point them at a notarized alternative instead.
+- **Linux system audio is hit-or-miss.** PipeWire portal support varies by distro and desktop environment. If system audio doesn't work, fall back to capturing mic + running the app's audio through a virtual sink.
+- **Electron overhead.** Startup is 1-2 seconds slower than native apps, and RAM usage sits around 400-700 MB while idle. Not ideal for older laptops.
+- **Feature gap vs Screen Studio:** no multi-camera picture-in-picture, no advanced speed ramps, no per-clip color grading, no teleprompter. If those matter, stay on Screen Studio.
+- **Project is young.** Expect rough edges, occasional crashes, active development. Check the issue tracker before committing to it for mission-critical recordings.
+
+## How it compares
+
+| Feature | OpenScreen | Screen Studio | Cap | OBS | QuickTime |
+|---|---|---|---|---|---|
+| Price | Free | $229 | Free / paid cloud | Free | Free |
+| OSS | Yes (MIT) | No | Yes | Yes | No |
+| Auto zoom | Yes | Yes (best) | Yes | No | No |
+| Animated cursor | Yes | Yes (best) | Yes | No | No |
+| Backgrounds/wallpapers | Yes | Yes | Yes | Manual | No |
+| Motion blur | Yes | Yes | Yes | No | No |
+| Annotations | Yes | Yes | Limited | Plugin | No |
+| Cross-platform | Mac/Win/Linux | Mac only | Mac/Win/Linux | All | Mac only |
+| Polish | Good, young | Best in class | Very good | Pro but ugly | Basic |
+| Cloud sharing | No | Optional | Built-in | No | No |
+
+The honest call: if you're already paying for Screen Studio, keep using it — it's still the benchmark. If you're on Windows or Linux, or you want open-source, OpenScreen is the most direct clone of the Screen Studio aesthetic available for free. Cap is a strong alternative, especially if you want cloud sharing, but it's optimized more for async messaging than cinematic demo recording.
+
+## What we could build with it / use it for
+
+- **Record Unicron and trading-agent-team demos** with the same cinematic feel as Screen Studio, without the $229 tag, for X/YouTube/blog posts
+- **Tutorial content** for Claude Code workflows, skill chains, AgentOps usage — the auto-zoom is exactly the style that's visually dominant on CodeTok
+- **Bug repros** for open-source PRs — the animated cursor makes it obvious what you clicked; much clearer than QuickTime
+- **Design review recordings** — record a web app, annotate, export in mobile aspect ratio for responsive-test showcases
+- **Hack the editor** — because it's MIT + PixiJS, you can add custom effects, export presets, or AI-driven auto-zoom by forking the cursor-analysis module
+- **Self-host it behind a shared drop folder** as a team's standard recording tool so everyone produces consistently styled demos
+- **Feed recordings into SentrySearch** for a searchable internal demo library
+
+## Bottom line
+
+OpenScreen is a legitimately useful free alternative to Screen Studio for the exact style of product demo everyone is making in 2026. The feature set is narrower than Cap but more focused on the cinematic-demo aesthetic, and it works on Windows and Linux where Screen Studio does not. Worth cloning, worth having installed, worth using for any public-facing recording that doesn't justify a Screen Studio license.
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

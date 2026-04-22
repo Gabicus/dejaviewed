@@ -1,0 +1,367 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>llms.txt — The Website Manifest for LLM Agents · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html#post-DWxmSwTDFk2">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># llms.txt — The Website Manifest for LLM Agents
+
+**Spec site:** https://llmstxt.org
+**Proposal (Sep 2024):** Jeremy Howard, Answer.AI — https://www.answer.ai/posts/2024-09-03-llmstxt.html
+**Reference repo:** https://github.com/AnswerDotAI/llms-txt
+**Adoption (Oct 2025, BuiltWith):** ~844,000 sites
+**Canonical location:** `/llms.txt` at the domain root (alongside `robots.txt`)
+
+> **One-line framing.** `llms.txt` is the file you put at the root of your website so that LLM agents — Claude, ChatGPT, Perplexity, Cursor, Gemini, whatever — can figure out what your site *is* and *what matters on it* without having to crawl, render, and guess from the HTML. It's the "manifest" layer for AI-era web discovery, sitting next to `robots.txt` and `sitemap.xml` but aimed at a different reader.
+
+---
+
+## What it is
+
+`llms.txt` is a proposed standard, introduced by Jeremy Howard (fast.ai / Answer.AI) in September 2024, for a single Markdown file hosted at the root of a website that gives large language models a compact, structured, high-signal overview of the site. The format is unusual in one important way: it uses **Markdown**, not XML or JSON, specifically because the consumer is a language model that already parses Markdown natively and benefits from prose context around link lists.
+
+There are two companion artifacts:
+
+1. **`/llms.txt`** — the short, curated index. Think of it as "here is what this site is, and here are pointers to the dozen or so pages that actually matter." This file is meant to fit comfortably in a model's context window.
+2. **`/llms-full.txt`** — an optional, much longer file (co-developed by Mintlify and Anthropic) that inlines the *full Markdown* of every important page in one document. Useful when you want an agent to have the entire docs corpus in a single fetch without walking links.
+
+Both live at predictable, fixed paths at the domain root. There is no registration, no API, no keys. It is a web standard in the Robots Exclusion Protocol tradition: just drop a file, and the agents that care will find it.
+
+### How it differs from existing web metadata files
+
+| File | Primary reader | Purpose | Format |
+|---|---|---|---|
+| `robots.txt` | Crawlers | Tell bots where they may and may not go | Line-based directives |
+| `sitemap.xml` | Search engines | List every URL for exhaustive indexing | XML |
+| `humans.txt` | Humans | Credit the team behind a site | Free-form text |
+| **`llms.txt`** | **LLM agents** | **Explain what the site is and which pages carry the meaning** | **Markdown** |
+| `llms-full.txt` | LLM agents | Inline full content of key pages in one doc | Markdown |
+
+The critical distinction is *curation vs. exhaustiveness*. A sitemap is a phonebook: every URL, flat, no commentary. `llms.txt` is an index card on the front of the site that says "here is what we do, and here are the ten links an agent should read first." Search engines can afford to crawl 50,000 URLs; an LLM agent answering a user question has a 200k-token budget and 3 seconds. The whole point is to make the agent's first fetch the one that actually matters.
+
+`robots.txt` governs *access*. `llms.txt` governs *attention*. They are complementary, not competing.
+
+---
+
+## How it works
+
+### The spec, condensed
+
+The format is deliberately minimal. The only hard requirement is a single H1 at the top. Everything else is recommended but optional.
+
+```markdown
+# Project or Site Name
+
+> Optional one-paragraph description as a Markdown blockquote. This is the
+> "elevator pitch" the model will read first. Keep it tight — one or two
+> sentences that a model can use as a summary when someone asks "what is
+> this site?"
+
+Optional free-form Markdown prose giving extra context: who runs the site,
+what it's for, any important caveats, how the content is organized. You
+can link freely; links here are treated as inline references.
+
+## Docs
+
+- [Getting Started](https://example.com/docs/getting-started): One-line description of what this page covers.
+- [API Reference](https://example.com/docs/api): The full REST API.
+- [CLI Guide](https://example.com/docs/cli): Command-line usage.
+
+## Examples
+
+- [Tutorial: Hello World](https://example.com/examples/hello): Minimal walkthrough.
+- [Cookbook](https://example.com/examples/cookbook): Common recipes.
+
+## Optional
+
+- [Changelog](https://example.com/changelog): Release history.
+- [Blog](https://example.com/blog): Long-form writing.
+```
+
+**Rules of the road:**
+
+- **H1 is required.** It's the name of the site/project. Exactly one.
+- **Blockquote is the summary.** If present, it goes immediately after the H1, and it's the single most important piece of metadata.
+- **H2 sections group links.** Common section names in the wild: `Docs`, `Examples`, `API`, `Guides`, `Blog`, `Policies`, `Optional`.
+- **Each link is a bullet of the form `[Title](URL): one-line description`.** The description is what the model uses to decide whether to fetch the link.
+- **An `## Optional` section is treated as lower priority.** Models that are context-constrained may skip it entirely. Use it for "nice to have but not load-bearing" links.
+- **All URLs should be absolute** (full `https://...`), not relative, because agents may fetch this file from cache or a mirror.
+
+That's the whole spec. No versioning headers, no front-matter, no required metadata fields. Plain Markdown a human can hand-write in five minutes.
+
+### The `llms-full.txt` variant
+
+`llms-full.txt` takes every page in your "Docs" section (or whatever you consider canonical) and concatenates the raw Markdown of each page into one file, with `## Page Title` headers separating them. The goal is "single fetch, full context." This was co-developed by Mintlify and Anthropic and is now part of the broader proposal. Anthropic, Stripe, Vercel, Cursor, Cloudflare, Pinecone, and Windsurf all publish one.
+
+Rule of thumb:
+- **`llms.txt`** → index of pointers, always ship this.
+- **`llms-full.txt`** → inlined body, ship this if your docs are < ~500k tokens and you want agents to have one-shot access.
+
+### Companion: `.md` versions of every page
+
+The third leg of the proposal is that every HTML page should also be served as a plain Markdown version at the same URL with a `.md` suffix (e.g., `example.com/docs/api` → `example.com/docs/api.md`). This is what `nbdev`, Mintlify, Fern, and a growing number of docs platforms now do automatically. It lets an agent fetch a clean, parser-friendly version of any page linked from `llms.txt` without having to scrape HTML. Fern goes a step further and detects LLM bot user-agents and serves the Markdown version directly at the original URL, claiming a 90%+ token reduction versus rendered HTML.
+
+---
+
+## Key mechanics
+
+### Who's adopted it
+
+As of late 2025, real `llms.txt` files in production include:
+
+- **Anthropic** (docs.anthropic.com/llms.txt) — the flagship reference implementation, co-developed with Mintlify.
+- **Stripe**, **Cloudflare**, **Vercel**, **Supabase** — canonical dev-tool adopters.
+- **Cursor**, **Windsurf** — AI-native IDEs that both publish and consume.
+- **Pinecone**, **Coinbase**, **Mintlify**, **Perplexity** — AI infra and docs-heavy companies.
+- Every site hosted by **Mintlify**, **Fern**, **Docusaurus (via plugin)**, **GitBook**, and several other docs platforms — these auto-generate `llms.txt` and `llms-full.txt` on build, which is how adoption jumped from "a handful of early movers" to ~844k sites in under 12 months.
+
+Notable *non*-adopters: most CMS-based marketing sites, most WordPress blogs, and most e-commerce storefronts. The long tail is still wide open.
+
+### Who reads it
+
+Consumption is less well-documented than publication, but in practice:
+
+- **Cursor, Windsurf, Claude Code, Continue, Aider** — when pointed at a library, many will check `/llms.txt` before crawling the docs site.
+- **Perplexity and ChatGPT's browsing/search modes** — will opportunistically read `llms.txt` when building a retrieval plan.
+- **Agent frameworks** (LangChain, LlamaIndex, Mastra, CrewAI) — have helpers/loaders for fetching `llms-full.txt` as a one-shot document source.
+- **Claude's WebFetch tool** — does not yet auto-prefer `llms.txt`, but will honor it if you instruct the agent to check.
+
+The honest state of the world: publication is ahead of consumption. Shipping `llms.txt` today is primarily a bet on the near-future agent web, plus a free SEO/GEO (Generative Engine Optimization) signal that costs 30 minutes to put in place.
+
+### Tools that generate it
+
+- **Mintlify** — auto-generates `/llms.txt`, `/llms-full.txt`, and `.md` versions of every page for all hosted docs. Zero config.
+- **Fern** — same, plus the bot-detection serve-Markdown-at-original-URL trick.
+- **`llmstxt` npm / Python packages** — scrape a sitemap and produce a draft `llms.txt` you can hand-edit.
+- **llmstxtgenerator.org, seomator.com, Mintlify's free generator** — web-based form-fill tools for non-technical site owners.
+- **Docusaurus plugin `@signalwire/docusaurus-plugin-llms-txt`**, **Nextra**, **Astro Starlight** — framework-level plugins that generate the file at build time from your existing docs tree.
+- **Hand-written** — for a portfolio site, just write it. It's a 30-line Markdown file.
+
+---
+
+## Quick start
+
+### 1. Publish the simplest possible version (5 minutes)
+
+Write this file, save it as `llms.txt`, put it at the root of your site so it's served at `https://yourdomain.com/llms.txt`, and deploy:
+
+```markdown
+# Your Site Name
+
+> One-sentence description of what this site is and who runs it.
+
+## Main pages
+
+- [About](https://yourdomain.com/about): Who I am and what I do.
+- [Work](https://yourdomain.com/work): Portfolio of projects.
+- [Contact](https://yourdomain.com/contact): How to reach me.
+```
+
+That's it. You now have a valid `llms.txt`.
+
+### 2. Verify it's reachable
+
+```bash
+curl -I https://yourdomain.com/llms.txt     # expect 200 OK, text/plain or text/markdown
+curl    https://yourdomain.com/llms.txt     # sanity check the body
+```
+
+Make sure `robots.txt` does **not** disallow `/llms.txt` for the bots you want to read it. Most agent user-agents ignore `robots.txt` entirely, but the file should be allowed for completeness.
+
+### 3. Add `llms-full.txt` if your site has real written content
+
+If you have a blog, essays, or docs totaling under ~500k tokens, generate a concatenated `llms-full.txt` and ship it too.
+
+### 4. Add `.md` twins for key pages
+
+If you control the rendering layer, serve a `.md` version of each canonical page at the same URL + `.md` suffix. In Next.js, this is a middleware rewrite plus a Markdown serializer. In a static site, it's a build step.
+
+---
+
+## Sample: a working `llms.txt` for `1gabe.com`
+
+Here is a complete, ready-to-ship sample for Victor's portfolio site. Drop it at `https://1gabe.com/llms.txt`, edit the link list to match the actual page structure, and you're done.
+
+```markdown
+# 1gabe — Victor Gabriel
+
+> Portfolio, experiments, and field notes from Victor Gabriel: creative
+> technologist working at the intersection of AI, design engineering, and
+> algorithmic trading. Based in the US.
+
+This site is a living portfolio. It collects production work (web and
+product), independent research (mostly AI and quantitative trading),
+writing, and selected visual / generative experiments. Everything is
+hand-built; there is no CMS. If you are an agent trying to understand
+what Victor does and what to link to when someone asks about him, start
+with the About page and the Work index.
+
+## About
+
+- [About](https://1gabe.com/about): Bio, background, current focus, and contact details.
+- [Now](https://1gabe.com/now): What Victor is actively working on this month.
+- [Uses](https://1gabe.com/uses): Hardware, software, and tooling stack.
+
+## Work
+
+- [Work Index](https://1gabe.com/work): Chronological portfolio of shipped projects.
+- [Unicron](https://1gabe.com/work/unicron): Personal AI trading and research platform (Legion Command, Arena, Oversight).
+- [Trading Agent Team](https://1gabe.com/work/trading-agent-team): Multi-agent crypto research system with graduated take-profit and ensemble strategies.
+- [AI Catalogs](https://1gabe.com/work/ai-catalogs): Curated deep-dive guides on AI tools, repos, and techniques.
+- [wv-art.com](https://1gabe.com/work/wv-art): Sister site — visual and generative art archive.
+
+## Writing
+
+- [Writing Index](https://1gabe.com/writing): All essays and field notes.
+- [Field Notes](https://1gabe.com/writing/field-notes): Short-form observations from ongoing projects.
+- [Post-Mortems](https://1gabe.com/writing/post-mortems): Retrospectives on shipped work.
+
+## Experiments
+
+- [Experiments Index](https://1gabe.com/experiments): Generative, creative-coding, and interactive prototypes.
+- [Visual Lab](https://1gabe.com/experiments/visual): Browser-based visual experiments (Canvas, WebGL, shaders).
+- [Agent Lab](https://1gabe.com/experiments/agents): LLM agent prototypes and tool demos.
+
+## Contact
+
+- [Contact](https://1gabe.com/contact): Email, social, and inquiries.
+
+## Optional
+
+- [Archive](https://1gabe.com/archive): Older work kept for reference.
+- [Colophon](https://1gabe.com/colophon): How this site is built.
+- [RSS](https://1gabe.com/feed.xml): Writing feed.
+```
+
+**Notes on this sample:**
+
+- The blockquote is the single highest-leverage piece of text in the whole file. It should read like a one-sentence answer to "who is Victor?" — because that is literally how a model will use it.
+- The short prose paragraph after the blockquote is optional but valuable for a portfolio. It tells the agent *how to think about the site* before it starts fetching links. Models that respect this guidance produce dramatically better answers when someone asks "what does Victor do?"
+- Each link description is a single phrase. Resist the urge to write full sentences — the model will read the destination page for detail.
+- `Work`, `Writing`, `Experiments`, `Contact` are in the main body. `Archive`, `Colophon`, and `RSS` are under `## Optional` so context-constrained agents know they can skip them.
+- If `1gabe.com` ever hits a point where the written content is substantial, add a companion `llms-full.txt` that inlines the body of `About`, `Now`, and every entry under `Writing`.
+
+### A parallel sample for `wv-art.com`
+
+For a visual-art archive, the structure changes slightly — the agent needs to understand that most of the value is in images, not text, so the blockquote should set that expectation:
+
+```markdown
+# wv-art — Visual & Generative Art Archive
+
+> Visual and generative art archive by Victor Gabriel. Mostly image-based
+> work: algorithmic drawings, generative series, photography, and
+> selected commissions. For a written bio or non-visual work, see
+> https://1gabe.com.
+
+## Series
+
+- [Series Index](https://wv-art.com/series): All ongoing and completed series.
+- [Featured Series](https://wv-art.com/series/featured): Curated highlights.
+
+## Process
+
+- [Process](https://wv-art.com/process): How the work is made — tools, techniques, code.
+- [Studio](https://wv-art.com/studio): Physical and digital studio setup.
+
+## Shop & Contact
+
+- [Prints](https://wv-art.com/prints): Available prints and editions.
+- [Commissions](https://wv-art.com/commissions): Commission inquiries.
+- [Contact](https://wv-art.com/contact): Direct contact.
+
+## Optional
+
+- [Archive](https://wv-art.com/archive): Older and one-off work.
+- [About](https://wv-art.com/about): Artist statement.
+```
+
+---
+
+## What we could build with it
+
+- **Auto-generator for Victor's sites.** A small Node or Python script that walks `1gabe.com` and `wv-art.com`, reads the existing site map and page titles, and produces a draft `llms.txt` the first time, then keeps it in sync on every deploy. Wire it into the build step.
+- **Claude Code / Cursor skill: "add llms.txt to this project."** A skill that detects the framework (Next, Astro, Docusaurus, Mintlify, Hugo, raw static), picks the right generation path, and drops a ready-to-edit draft at the right location.
+- **Portfolio-specific template library.** Victor could publish a small set of opinionated `llms.txt` templates for portfolio sites, art sites, and small-studio sites — the format is still dominated by dev-tool docs, and the creative / portfolio corner of the spec is underserved.
+- **Audit tool.** A CLI that fetches a site's `llms.txt`, validates it against the (loose) spec, checks that every link resolves, measures total token count, and flags missing `.md` twins. Good companion to existing SEO auditors.
+- **`llms-full.txt` inliner with smart truncation.** For sites that are too big to inline everything, a tool that uses embedding similarity to pick the N most semantically "central" pages and inlines only those, within a configurable token budget.
+- **GEO reporting dashboard.** Track which agents actually fetch your `/llms.txt` by user-agent and log it. Useful signal for whether the investment is paying off.
+- **Integration with the AI catalog itself.** Ship an `llms.txt` for this `ai-catalogs` repo so that other agents discovering it can get an indexed view of every guide. A natural fit — each guide here already follows a consistent pattern.
+
+---
+
+## Cross-references
+
+- **Jeremy Howard's original proposal** — https://www.answer.ai/posts/2024-09-03-llmstxt.html
+- **The spec site** — https://llmstxt.org
+- **AnswerDotAI/llms-txt reference repo** — https://github.com/AnswerDotAI/llms-txt
+- **Mintlify's guide and generator** — https://www.mintlify.com/blog/what-is-llms-txt, https://www.mintlify.com/library/free-llms-txt
+- **Real-world examples roundup** — https://www.mintlify.com/blog/real-llms-txt-examples
+- **Search Engine Land coverage** — https://searchengineland.com/llms-txt-proposed-standard-453676
+- **Ahrefs explainer** — https://ahrefs.com/blog/what-is-llms-txt/
+- **BuiltWith adoption tracker** — https://trends.builtwith.com/ (search "llms.txt")
+
+Related in this catalog:
+- Any future guide on **Generative Engine Optimization (GEO)** — `llms.txt` is the concrete artifact side of that broader topic.
+- Any future guide on **Fern / Mintlify / Docusaurus** — the docs platforms most responsible for adoption so far.
+
+---
+
+## Should Victor ship this?
+
+Yes, on both `1gabe.com` and `wv-art.com`, today. It is a 30-minute job, zero maintenance cost once wired into a build step, zero downside, and a non-trivial upside as more agents start honoring it. The sample above is deliberately complete enough to paste in, swap the real link URLs for whichever section slugs the sites actually use, and ship. Add an `llms-full.txt` companion for `1gabe.com` once the writing section has enough content to justify it. For `wv-art.com`, the short version is sufficient — the art is the point, and the role of the file is just to tell the agent that.
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Graph — DejaViewed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<link rel="stylesheet" href="shared.css">
+<script src="catalog.js"></script>
+<script src="shared.js"></script>
+<style>
+html,body{height:100%;overflow:hidden}
+.controls{position:fixed;left:16px;top:72px;bottom:16px;width:260px;z-index:50;padding:18px;background:rgba(18,18,26,0.85);border:1px solid var(--border);border-radius:14px;backdrop-filter:blur(14px);overflow-y:auto}
+.controls h3{margin:0 0 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text-mute)}
+.controls .group{margin-bottom:18px}
+.controls .row{display:flex;flex-wrap:wrap;gap:6px}
+.controls label{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;background:var(--panel);border:1px solid var(--border);cursor:pointer;user-select:none;text-transform:uppercase;letter-spacing:.04em;color:var(--text-dim)}
+.controls label.on{background:var(--panel-2);border-color:var(--border-hi);color:var(--text)}
+.controls label input{display:none}
+.controls .swatch{width:10px;height:10px;border-radius:50%;display:inline-block}
+.controls input[type=search]{width:100%;padding:9px 11px;border-radius:8px;background:rgba(0,0,0,.55);border:1px solid var(--border);color:var(--text);font:400 13px/1.4 'JetBrains Mono',monospace}
+.controls .stats{font-size:11px;color:var(--text-dim);line-height:1.6}
+.controls .stats strong{color:var(--text)}
+#graph{position:fixed;inset:0;padding-top:56px}
+#graph svg{width:100%;height:100%;display:block}
+.node{cursor:pointer}
+.node.dim{opacity:0.08}
+.link{stroke-opacity:0.4;pointer-events:none}
+.link.dim{stroke-opacity:0.02}
+.link.hi{stroke-opacity:0.9}
+.label{font-size:9px;fill:var(--text-dim);pointer-events:none;font-family:'JetBrains Mono',Menlo,monospace;text-anchor:middle}
+.label.hi{fill:var(--text);font-weight:700}
+.tooltip{position:fixed;pointer-events:none;padding:10px 12px;background:rgba(18,18,26,0.94);border:1px solid var(--border-hi);border-radius:10px;font-size:11px;line-height:1.5;max-width:320px;z-index:200;backdrop-filter:blur(14px);box-shadow:var(--shadow-2);display:none}
+.tooltip.pinned{pointer-events:auto;border-color:rgba(167,139,250,.55);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.tooltip .title{color:#fff;display:block;margin-bottom:4px;font-size:12px;font-weight:700}
+.tooltip .meta{color:var(--text-dim);margin-top:4px}
+.tooltip .sub{color:var(--text-mute);margin-top:6px;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.tooltip .tier-pill{display:inline-block;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:800;margin-right:4px;margin-bottom:4px}
+.tooltip .actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.tooltip .actions a{flex:1;min-width:120px;text-align:center;padding:7px 10px;border-radius:8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;border:1px solid var(--border-hi)}
+.tooltip .actions a.primary{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3));color:#fff;border-color:rgba(167,139,250,.55)}
+.tooltip .actions a.secondary{background:var(--panel);color:var(--text)}
+.tooltip .actions a:hover{filter:brightness(1.2)}
+.tooltip .closer{position:absolute;top:6px;right:10px;background:none;border:none;color:var(--text-mute);cursor:pointer;font-size:16px;line-height:1;padding:0;display:none}
+.tooltip.pinned .closer{display:block}
+.tooltip.pinned .closer:hover{color:var(--text)}
+.tier-s{background:rgba(251,191,36,.2);color:var(--c-entry-s);border:1px solid rgba(251,191,36,.4)}
+.tier-a{background:rgba(167,139,250,.2);color:var(--c-entry-a);border:1px solid rgba(167,139,250,.4)}
+.tier-b{background:rgba(96,165,250,.2);color:var(--c-entry-b);border:1px solid rgba(96,165,250,.4)}
+.tier-c{background:rgba(106,106,128,.2);color:var(--c-entry-c);border:1px solid rgba(106,106,128,.4)}
+.loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:14px;z-index:300;background:var(--bg)}
+.hint{position:fixed;bottom:16px;right:16px;padding:10px 14px;background:rgba(18,18,26,0.85);border:1px solid var(--border);border-radius:10px;font-size:11px;color:var(--text-dim);backdrop-filter:blur(14px);max-width:280px;line-height:1.5}
+.hint b{color:var(--text)}
+.hint kbd{padding:1px 5px;border-radius:3px;background:rgba(167,139,250,.18);border:1px solid rgba(167,139,250,.35);color:var(--text);font-size:10px;font-family:inherit}
+.cross-path{fill:none;pointer-events:none}
+#u-menu{position:fixed;top:50%;right:16px;transform:translateY(-50%) translateX(12px);width:300px;max-height:84vh;overflow-y:auto;background:rgba(12,12,20,.94);backdrop-filter:blur(18px);border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:18px;z-index:300;opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;font-family:'JetBrains Mono',Menlo,monospace}
+#u-menu.vis{opacity:1;pointer-events:all;transform:translateY(-50%) translateX(0)}
+#u-menu h3{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#cbb7ff;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(167,139,250,.22)}
+#u-menu h4{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);margin:14px 0 6px}
+.u-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:10px;color:var(--text-dim)}
+.u-row label{flex:1;text-transform:uppercase;letter-spacing:.04em;font-size:9px;color:var(--text-dim)}
+.u-row input[type=range]{width:120px}
+.u-row .val{color:#cbb7ff;min-width:32px;text-align:right;font-size:9px}
+.u-btn{padding:4px 10px;font-size:9px;border-radius:6px;border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.06);color:#e8e8f0;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;font-family:inherit;font-weight:700}
+.u-btn:hover{background:rgba(167,139,250,.16)}
+.u-btn.on{background:rgba(167,139,250,.22);border-color:rgba(167,139,250,.6);color:#fff}
+.u-btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+#u-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text-mute);font-size:20px;cursor:pointer;padding:0;line-height:1}
+#u-close:hover{color:var(--text)}
+.u-cross-sw{display:inline-block;width:9px;height:9px;border-radius:50%;flex-shrink:0}
+@media(max-width:900px){
+  .controls{position:fixed;left:0;right:0;top:auto;bottom:0;width:100%;height:auto;max-height:45%;border-radius:14px 14px 0 0}
+  .hint{display:none}
+  #u-menu{left:8px;right:8px;top:auto;bottom:8px;transform:none;width:auto;max-height:60vh}
+  #u-menu.vis{transform:none}
+}
+</style>
+</head>
+<body>
+<div class="loading" id="loading">Loading graph...</div>
+
+<script>DV.mountHeader(document.body, 'graph');</script>
+
+<aside class="controls" id="controls">
+  <div class="group"><h3>View by</h3><div class="row tax-bar" id="tax-toggles"></div></div>
+  <div class="group">
+    <h3>Search</h3>
+    <input type="search" id="q" placeholder="filter by label">
+  </div>
+  <div class="group"><h3>Node types</h3><div class="row" id="type-toggles"></div></div>
+  <div class="group"><h3>Entry tiers</h3><div class="row" id="tier-toggles"></div></div>
+  <div class="group"><h3>Collections</h3><div class="row" id="coll-toggles"></div></div>
+  <div class="group"><h3>Stats</h3><div class="stats" id="stats"></div></div>
+</aside>
+
+<div id="graph"><svg></svg></div>
+<div class="tooltip" id="tip"></div>
+<div class="hint"><b>Hover</b> neighbors · <b>Click</b> entry to open · <b>Drag</b> to move · <kbd>u</kbd> utilities</div>
+
+<div id="u-menu" aria-hidden="true">
+  <button id="u-close" type="button" aria-label="close utilities">×</button>
+  <h3>Utilities (U)</h3>
+
+  <h4>Forces</h4>
+  <div class="u-row"><label>Link distance ×</label>
+    <input type="range" id="u-link-dist" min="40" max="250" value="100"><span class="val" id="u-link-dist-v">1.0</span></div>
+  <div class="u-row"><label>Repel strength ×</label>
+    <input type="range" id="u-charge" min="30" max="250" value="100"><span class="val" id="u-charge-v">1.0</span></div>
+  <div class="u-row"><label>Sim energy</label>
+    <input type="range" id="u-speed" min="0" max="200" value="100"><span class="val" id="u-speed-v">1.0×</span></div>
+  <div class="u-row">
+    <button class="u-btn" id="u-freeze" type="button">Freeze layout</button>
+    <button class="u-btn" id="u-cluster-boost" type="button">Boost collection hubs</button>
+  </div>
+
+  <h4>Lines</h4>
+  <div class="u-row"><label>Primary link opacity</label>
+    <input type="range" id="u-link-op" min="0" max="100" value="40"><span class="val" id="u-link-op-v">0.4</span></div>
+  <div class="u-row"><label>Primary link width ×</label>
+    <input type="range" id="u-link-w" min="30" max="300" value="100"><span class="val" id="u-link-w-v">1.0</span></div>
+
+  <h4>Nodes</h4>
+  <div class="u-row"><label>Radius ×</label>
+    <input type="range" id="u-node-r" min="40" max="250" value="100"><span class="val" id="u-node-r-v">1.0</span></div>
+  <div class="u-row"><label>Label size ×</label>
+    <input type="range" id="u-label-size" min="60" max="220" value="100"><span class="val" id="u-label-size-v">1.0</span></div>
+  <div class="u-row">
+    <button class="u-btn" id="u-labels-always" type="button">Labels always on</button>
+  </div>
+
+  <h4>Filters</h4>
+  <div class="u-btn-row" id="u-tier-row"></div>
+
+  <h4>Cross-connections</h4>
+  <div class="u-row" style="font-size:9px;color:var(--text-mute);letter-spacing:.04em;line-height:1.4">
+    Faint links between entries sharing a dimension. These are ghosts overlayed on the primary graph.
+  </div>
+  <div id="u-cross-rows"></div>
+  <div class="u-row"><label>Cross opacity ×</label>
+    <input type="range" id="u-cross-op" min="0" max="200" value="100"><span class="val" id="u-cross-op-v">1.0</span></div>
+  <div class="u-row">
+    <button class="u-btn" id="u-cross-hover" type="button">Hover-only mode</button>
+  </div>
+  <div class="u-row">
+    <button class="u-btn" id="u-cross-curve" type="button">Curved lines</button>
+  </div>
+
+  <h4>Presets</h4>
+  <div class="u-btn-row">
+    <button class="u-btn" type="button" data-preset="default">Default</button>
+    <button class="u-btn" type="button" data-preset="minimal">Minimal</button>
+    <button class="u-btn" type="button" data-preset="dense">Dense</button>
+    <button class="u-btn" type="button" data-preset="xray">X-ray</button>
+  </div>
+</div>
+
+<script>
+(async function(){
+  let catalog = (typeof window !== 'undefined' && window.__CATALOG) ? window.__CATALOG : null;
+  if (!catalog) catalog = await fetch('catalog.json').then(r=>r.json()).catch(()=>null);
+  const loading = document.getElementById('loading');
+  if(!catalog){ loading.textContent='Failed to load catalog. Ensure catalog.js sits alongside, or serve via http.'; return; }
+
+  const nodes = [], links = [], byId = {};
+  const push = n => { byId[n.id] = n; nodes.push(n); return n; };
+
+  for(const [coll,count] of Object.entries(catalog.stats.collections)){
+    push({id:'coll:'+coll, type:'collection', label:coll.toUpperCase(), weight:count, r:14});
+  }
+  for(const e of catalog.entries){
+    if(!e.id) continue;
+    push({id:'entry:'+e.id, type:'entry', label:e.title||e.id, tier:(e.tier||'C').toUpperCase(), collection:e.collection, creator:e.creator, url:e.url, summary:e.summary, r:5});
+    if(e.collection && byId['coll:'+e.collection])
+      links.push({source:'entry:'+e.id, target:'coll:'+e.collection, kind:'in', weight:3});
+  }
+  const toolIdx = (catalog.indices && catalog.indices.by_tool) || {};
+  for(const [t,ids] of Object.entries(toolIdx)){
+    if(ids.length < 2) continue;
+    push({id:'tool:'+t, type:'tool', label:t, weight:ids.length, r: 4 + Math.log2(ids.length)*1.6});
+    for(const eid of ids){ if(byId['entry:'+eid]) links.push({source:'entry:'+eid, target:'tool:'+t, kind:'uses', weight:1}); }
+  }
+  const techIdx = (catalog.indices && catalog.indices.by_technique) || {};
+  for(const [t,ids] of Object.entries(techIdx)){
+    if(ids.length < 2) continue;
+    push({id:'tech:'+t, type:'technique', label:t, weight:ids.length, r: 4 + Math.log2(ids.length)*1.2});
+    for(const eid of ids){ if(byId['entry:'+eid]) links.push({source:'entry:'+eid, target:'tech:'+t, kind:'demos', weight:1}); }
+  }
+  const creatorCount = {};
+  for(const e of catalog.entries) if(e.creator){ creatorCount[e.creator]=(creatorCount[e.creator]||0)+1; }
+  for(const [c,n] of Object.entries(creatorCount)){
+    if(n < 2) continue;
+    push({id:'creator:'+c, type:'creator', label:c, weight:n, r: 4 + Math.log2(n)*1.4});
+    for(const e of catalog.entries){
+      if(e.creator===c && byId['entry:'+e.id]) links.push({source:'entry:'+e.id, target:'creator:'+c, kind:'by', weight:2});
+    }
+  }
+
+  // Control builders — pure DOM, no innerHTML
+  const typeMeta = {
+    entry:     {label:'Entries',    color:'var(--c-entry-a)'},
+    tool:      {label:'Tools',      color:'var(--c-tool)'},
+    technique: {label:'Techniques', color:'var(--c-technique)'},
+    creator:   {label:'Creators',   color:'var(--c-creator)'},
+    collection:{label:'Collections',color:'var(--c-coll)'},
+  };
+  const state = {
+    types: new Set(Object.keys(typeMeta)),
+    tiers: new Set(['S','A','B','C']),
+    colls: new Set(Object.keys(catalog.stats.collections)),
+    q: '',
+  };
+  function mkToggle(container, key, labelText, swatchColor, groupSet){
+    const label = document.createElement('label');
+    label.className='on';
+    if(swatchColor){
+      const sw = document.createElement('span'); sw.className='swatch'; sw.style.background=swatchColor;
+      label.appendChild(sw);
+    }
+    const cb = document.createElement('input'); cb.type='checkbox'; cb.checked=true;
+    cb.dataset.key = key;
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(' '+labelText));
+    cb.addEventListener('change', ()=>{
+      if(cb.checked){ groupSet.add(key); label.classList.add('on'); }
+      else          { groupSet.delete(key); label.classList.remove('on'); }
+      applyFilters();
+      sim.alpha(0.5).restart();
+    });
+    container.appendChild(label);
+  }
+  const typeBox = document.getElementById('type-toggles');
+  for(const t of Object.keys(typeMeta)) mkToggle(typeBox, t, typeMeta[t].label, typeMeta[t].color, state.types);
+  const tierBox = document.getElementById('tier-toggles');
+  const tierColor = {S:'var(--c-entry-s)',A:'var(--c-entry-a)',B:'var(--c-entry-b)',C:'var(--c-entry-c)'};
+  for(const t of ['S','A','B','C']) mkToggle(tierBox, t, t+'-tier', tierColor[t], state.tiers);
+  const collBox = document.getElementById('coll-toggles');
+  for(const c of Object.keys(catalog.stats.collections)) mkToggle(collBox, c, c.toUpperCase(), 'var(--c-coll)', state.colls);
+  document.getElementById('q').addEventListener('input', e=>{ state.q = e.target.value.toLowerCase(); applyFilters(); });
+
+  // Taxonomy swap — changes which hub types are visible, re-clustering entries via d3-force.
+  // 'all'         : show everything (default)
+  // 'creator'     : entries + creator hubs
+  // 'tool'        : entries + tool hubs
+  // 'technique'   : entries + technique hubs
+  // 'collection'  : entries + collection hubs
+  const TAX_MODES = [
+    ['all',        'By Tier'],
+    ['collection', 'By Collection'],
+    ['creator',    'By Creator'],
+    ['tool',       'By Tool'],
+    ['technique',  'By Technique'],
+  ];
+  let currentTax = 'all';
+  const taxBox = document.getElementById('tax-toggles');
+  function setTax(mode){
+    currentTax = mode;
+    const keep = mode === 'all'
+      ? new Set(Object.keys(typeMeta))
+      : new Set(['entry', mode]);
+    state.types = keep;
+    // Sync the Node types sidebar checkboxes to match.
+    typeBox.querySelectorAll('label').forEach(lbl => {
+      const cb = lbl.querySelector('input[type=checkbox]');
+      if (!cb) return;
+      const key = cb.dataset.key;
+      if (!key) return;
+      const want = keep.has(key);
+      cb.checked = want;
+      lbl.classList.toggle('on', want);
+    });
+    taxBox.querySelectorAll('button').forEach(b =>
+      b.classList.toggle('on', b.dataset.tax === mode));
+    applyFilters();
+    sim.alpha(0.8).restart();
+  }
+  for (const [key, label] of TAX_MODES) {
+    const b = document.createElement('button');
+    b.className = 'u-btn' + (key === currentTax ? ' on' : '');
+    b.dataset.tax = key;
+    b.textContent = label;
+    b.addEventListener('click', () => setTax(key));
+    taxBox.appendChild(b);
+  }
+
+  // Stats — textContent only
+  const stats = document.getElementById('stats');
+  stats.textContent = `${nodes.length} nodes · ${links.length} edges. ${catalog.entries.length} entries across ${Object.keys(catalog.stats.collections).length} collections. Tools / techniques / creators shown when mention count ≥ 2.`;
+
+  // ── Cross-connection index (faint ghost lines between entries sharing a dim) ──
+  const CROSS_DIMS = [
+    { id:'creator',   label:'Creator',   color:'224,96,160',  field:'creator',   multi:false },
+    { id:'tool',      label:'Tool',      color:'240,160,80',  field:'tools',     multi:true  },
+    { id:'technique', label:'Technique', color:'96,165,250',  field:'techniques',multi:true  },
+    { id:'domain',    label:'Domain',    color:'167,139,250', field:'domains',   multi:true  },
+    { id:'tier',      label:'Tier',      color:'251,191,36',  field:'tier',      multi:false },
+    { id:'type',      label:'Type',      color:'76,218,140',  field:'type',      multi:false },
+    { id:'collection',label:'Collection',color:'140,180,220', field:'collection',multi:false },
+  ];
+  const MAX_PAIRS_PER_VALUE = 80;
+  let CROSS_PAIRS = {};
+  (function buildCrossIndex(){
+    for(const dim of CROSS_DIMS){
+      const idx = {};
+      for(const e of catalog.entries){
+        if(!e.id) continue;
+        const raw = e[dim.field]; if(raw===null||raw===undefined||raw==='') continue;
+        const vals = dim.multi ? (Array.isArray(raw)?raw:[]) : [raw];
+        for(const v of vals){
+          if(v===null||v===undefined||v==='') continue;
+          const key = String(v).trim(); if(!key) continue;
+          (idx[key] = idx[key] || new Set()).add(e.id);
+        }
+      }
+      const pairs = [];
+      for(const [val,set] of Object.entries(idx)){
+        const ids = [...set]; if(ids.length<2) continue;
+        if(dim.multi && ids.length>20){
+          const sample = Math.min(MAX_PAIRS_PER_VALUE, Math.floor(ids.length*1.5));
+          for(let k=0;k<sample;k++){
+            const i = Math.floor(Math.random()*ids.length);
+            let j = Math.floor(Math.random()*ids.length);
+            if(i===j) j = (j+1)%ids.length;
+            pairs.push({a:ids[i],b:ids[j],val,weight:1/Math.log2(ids.length+2)});
+          }
+        } else {
+          for(let i=0;i<ids.length;i++) for(let j=i+1;j<ids.length;j++)
+            pairs.push({a:ids[i],b:ids[j],val,weight:1/Math.log2(ids.length+2)});
+        }
+      }
+      CROSS_PAIRS[dim.id] = pairs;
+    }
+  })();
+
+  // ── U-menu live state (defaults from Victor's preferred capture.png) ──
+  const U = {
+    linkDist:    1.0,
+    chargeMult:  1.0,
+    speedScale:  1.0,
+    linkOpacity: 0.4,
+    linkWidth:   1.0,
+    nodeRScale:  1.0,
+    labelSize:   1.0,
+    labelsAlways:false,
+    freeze:      false,
+    forceClusters:true,    // preferred default
+    forceEntries: true,    // preferred default
+    crossEnabled: new Set(['creator','tool','domain']),  // preferred defaults
+    crossOpacity: 1.0,
+    crossHoverOnly:false,
+    crossCurve:   true,
+  };
+  let hoveredNode = null;
+
+  const svg = d3.select('#graph svg');
+  const W = window.innerWidth, H = window.innerHeight;
+  const g = svg.append('g');
+  svg.call(d3.zoom().scaleExtent([0.2,4]).on('zoom', e=>g.attr('transform', e.transform)));
+
+  // Cross-layer drawn BELOW primary links so primary graph stays readable
+  const crossLayer = g.append('g').attr('class','cross-layer');
+
+  const colorOf = n => {
+    if(n.type==='entry'){ return {S:'var(--c-entry-s)',A:'var(--c-entry-a)',B:'var(--c-entry-b)',C:'var(--c-entry-c)'}[n.tier]||'#888'; }
+    if(n.type==='tool') return 'var(--c-tool)';
+    if(n.type==='technique') return 'var(--c-technique)';
+    if(n.type==='creator') return 'var(--c-creator)';
+    if(n.type==='collection') return 'var(--c-coll)';
+  };
+  const strokeOf = n => n.type==='creator' ? 'var(--c-creator)' : 'rgba(255,255,255,0.15)';
+
+  const link = g.append('g').attr('stroke','#6a6a80').selectAll('line').data(links).join('line')
+    .attr('class','link').attr('stroke-width', d=>d.kind==='in'?1.4:0.7);
+
+  const node = g.append('g').selectAll('g').data(nodes).join('g').attr('class','node')
+    .call(d3.drag()
+      .on('start', (e,d)=>{ if(!e.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag',  (e,d)=>{ d.fx=e.x; d.fy=e.y; })
+      .on('end',   (e,d)=>{ if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }));
+
+  node.each(function(d){
+    const s = d3.select(this);
+    const c = colorOf(d), stroke = strokeOf(d), r = d.r;
+    if(d.type==='tool')
+      s.append('rect').attr('x',-r).attr('y',-r).attr('width',r*2).attr('height',r*2).attr('fill',c).attr('stroke',stroke).attr('stroke-width',0.5);
+    else if(d.type==='technique'){
+      const pts=`0,-${r} ${r},0 0,${r} -${r},0`;
+      s.append('polygon').attr('points',pts).attr('fill',c).attr('stroke',stroke).attr('stroke-width',0.5);
+    }
+    else if(d.type==='collection'){
+      const pts = Array.from({length:6},(_,i)=>{const a=Math.PI/3*i-Math.PI/2;return `${Math.cos(a)*r},${Math.sin(a)*r}`;}).join(' ');
+      s.append('polygon').attr('points',pts).attr('fill',c).attr('stroke','rgba(255,255,255,0.3)').attr('stroke-width',1.5);
+    }
+    else if(d.type==='creator')
+      s.append('circle').attr('r',r).attr('fill','none').attr('stroke',c).attr('stroke-width',1.5);
+    else
+      s.append('circle').attr('r',r).attr('fill',c).attr('stroke',stroke).attr('stroke-width',0.5);
+  });
+
+  node.append('title').text(d=>d.label);
+  const labelLayer = g.append('g').selectAll('text').data(nodes.filter(n=>n.type==='collection'||n.weight>=8)).join('text')
+    .attr('class','label').attr('dy',-10).text(d=>d.label.length>20?d.label.slice(0,18)+'…':d.label);
+
+  // Tooltip / lightbox — built with DOM, no innerHTML
+  const tip = document.getElementById('tip');
+  const tipCloser= document.createElement('button'); tipCloser.type='button'; tipCloser.className='closer'; tipCloser.textContent='×'; tipCloser.setAttribute('aria-label','close');
+  const tipTier  = document.createElement('span'); tipTier.className='tier-pill';
+  const tipTitle = document.createElement('div');  tipTitle.className='title';
+  const tipMeta  = document.createElement('div');  tipMeta.className='meta';
+  const tipSum   = document.createElement('div');  tipSum.className='meta';
+  const tipType  = document.createElement('div');  tipType.className='sub';
+  const tipActs  = document.createElement('div');  tipActs.className='actions';
+  // Internal DejaViewed links disabled until per-entry pages exist (Phase 3 renderer).
+  const tipInternal = document.createElement('a'); tipInternal.className='primary';   tipInternal.textContent='View in catalog ↗';
+  const tipSource   = document.createElement('a'); tipSource.className='secondary';   tipSource.textContent='Open post ↗';
+  tipInternal.target='_blank'; tipInternal.rel='noopener';
+  tipSource.target='_blank'; tipSource.rel='noopener';
+  tipActs.appendChild(tipInternal);
+  tipActs.appendChild(tipSource);
+  tip.appendChild(tipCloser); tip.appendChild(tipTier); tip.appendChild(tipTitle); tip.appendChild(tipMeta); tip.appendChild(tipSum); tip.appendChild(tipType); tip.appendChild(tipActs);
+
+  let pinnedNode = null;
+  function showTipForNode(d, ev){
+    if(d.tier){ tipTier.textContent = d.tier; tipTier.className = 'tier-pill tier-'+d.tier.toLowerCase(); tipTier.style.display='inline-block'; }
+    else { tipTier.style.display='none'; }
+    tipTitle.textContent = d.label;
+    const meta = [];
+    if(d.collection) meta.push('in '+d.collection);
+    if(d.creator) meta.push('by '+d.creator);
+    if(d.weight) meta.push(d.weight+'×');
+    tipMeta.textContent = meta.join(' · ');
+    tipSum.textContent = d.summary ? (d.summary.length>200?d.summary.slice(0,200)+'…':d.summary) : '';
+    tipType.textContent = d.type;
+    // Only entries have meaningful dual links
+    if(d.type==='entry'){
+      tipActs.style.display='flex';
+      const rawId = d.id.slice(6); // strip 'entry:'
+      tipInternal.href = 'index.html#post-' + encodeURIComponent(rawId);
+      if(d.url){ tipSource.href = d.url; tipSource.style.display=''; } else { tipSource.style.display='none'; }
+    } else {
+      tipActs.style.display='none';
+    }
+    tip.style.display='block';
+    if(ev){
+      tip.style.left = Math.min(window.innerWidth-340, ev.clientX+14)+'px';
+      tip.style.top  = Math.min(window.innerHeight-220, ev.clientY+14)+'px';
+    }
+  }
+  function hideTip(){ tip.style.display='none'; tip.classList.remove('pinned'); }
+  function setHighlight(d){
+    const nbrs = d ? (neighbors[d.id] || new Set()) : null;
+    if(d){
+      node.classed('dim', n => n!==d && !nbrs.has(n.id));
+      link.classed('hi',  l => (l.source===d||l.source.id===d.id||l.target===d||l.target.id===d.id));
+      link.classed('dim', l => !(l.source===d||l.source.id===d.id||l.target===d||l.target.id===d.id));
+    } else {
+      node.classed('dim', false);
+      link.classed('hi', false).classed('dim', false);
+    }
+  }
+  function pinNode(d, ev){
+    pinnedNode = d;
+    setHighlight(d);
+    showTipForNode(d, ev);
+    tip.classList.add('pinned');
+  }
+  function unpin(){
+    pinnedNode = null;
+    setHighlight(null);
+    hideTip();
+  }
+  tipCloser.addEventListener('click', unpin);
+  svg.on('click.unpin', (ev)=>{ if(ev.target.tagName==='svg') unpin(); });
+  window.addEventListener('keydown', ev=>{
+    if(ev.key==='Escape' && pinnedNode) unpin();
+  });
+
+  const neighbors = {};
+  for(const l of links){
+    const s = typeof l.source==='object'?l.source.id:l.source, t = typeof l.target==='object'?l.target.id:l.target;
+    (neighbors[s]=neighbors[s]||new Set()).add(t);
+    (neighbors[t]=neighbors[t]||new Set()).add(s);
+  }
+  node.on('mouseenter', (ev,d)=>{
+    if(pinnedNode) return; // pinned state takes priority
+    setHighlight(d);
+    showTipForNode(d, ev);
+  }).on('mousemove', ev=>{
+    if(pinnedNode) return;
+    tip.style.left = Math.min(window.innerWidth-340, ev.clientX+14)+'px';
+    tip.style.top  = Math.min(window.innerHeight-220, ev.clientY+14)+'px';
+  }).on('mouseleave', ()=>{
+    if(pinnedNode) return;
+    setHighlight(null);
+    hideTip();
+  }).on('click', (ev,d)=>{
+    ev.stopPropagation();
+    // Toggle: clicking the pinned node again unpins; clicking elsewhere re-pins
+    if(pinnedNode === d) unpin();
+    else pinNode(d, ev);
+  });
+
+  function applyFilters(){
+    const q = state.q;
+    const hide = n => {
+      if(!state.types.has(n.type)) return true;
+      if(n.type==='entry' && !state.tiers.has(n.tier)) return true;
+      if(n.type==='entry' && n.collection && !state.colls.has(n.collection)) return true;
+      if(n.type==='collection' && !state.colls.has(n.label.toLowerCase())) return true;
+      if(q && !n.label.toLowerCase().includes(q)) return true;
+      return false;
+    };
+    node.style('display', n => hide(n) ? 'none' : null);
+    const hidden = new Set(nodes.filter(hide).map(n=>n.id));
+    link.style('display', l=>{
+      const s = typeof l.source==='object'?l.source.id:l.source;
+      const t = typeof l.target==='object'?l.target.id:l.target;
+      return (hidden.has(s)||hidden.has(t)) ? 'none' : null;
+    });
+  }
+
+  const sim = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d=>d.id).distance(l=>{
+      if(l.kind==='in') return 80;
+      if(l.kind==='by') return 55;
+      return 40;
+    }).strength(l=>l.kind==='in'?0.6:0.3))
+    .force('charge', d3.forceManyBody().strength(d=>{
+      if(d.type==='collection') return -420;
+      if(d.type==='entry') return -40;
+      if(d.type==='creator') return -60;
+      return -30;
+    }))
+    .force('center', d3.forceCenter(W/2, H/2))
+    .force('collide', d3.forceCollide().radius(d=>d.r+2))
+    .alphaDecay(0.03);
+
+  // ── Cross-line rendering (re-drawn on every tick) ──
+  const entryNodeById = {};
+  for(const n of nodes) if(n.type==='entry') entryNodeById[n.id.slice(6)] = n; // strip 'entry:'
+
+  function drawCrossLinks(){
+    const enabled = U.crossEnabled;
+    if(!enabled.size){ crossLayer.selectAll('path').remove(); return; }
+    const hoverId = (U.crossHoverOnly && hoveredNode && hoveredNode.type==='entry') ? hoveredNode.id.slice(6) : null;
+    const paths = [];
+    for(const dim of CROSS_DIMS){
+      if(!enabled.has(dim.id)) continue;
+      const pairs = CROSS_PAIRS[dim.id] || [];
+      for(const p of pairs){
+        if(hoverId && p.a!==hoverId && p.b!==hoverId) continue;
+        const a = entryNodeById[p.a], b = entryNodeById[p.b];
+        if(!a||!b) continue;
+        const op = Math.min(0.55, (p.weight||1) * U.crossOpacity * 0.55);
+        if(op<0.02) continue;
+        paths.push({x1:a.x,y1:a.y,x2:b.x,y2:b.y,c:dim.color,op,dim:dim.id});
+      }
+    }
+    const sel = crossLayer.selectAll('path').data(paths, (d,i)=>i);
+    sel.exit().remove();
+    const ent = sel.enter().append('path').attr('class','cross-path').attr('stroke-width', 0.6);
+    const all = ent.merge(sel);
+    all.attr('stroke', d=>`rgba(${d.c},${d.op})`)
+       .attr('d', d=>{
+         if(U.crossCurve){
+           const mx=(d.x1+d.x2)/2, my=(d.y1+d.y2)/2;
+           const dx=d.x2-d.x1, dy=d.y2-d.y1, dd=Math.hypot(dx,dy)||1;
+           const k=Math.min(dd*0.25, 80);
+           const nx=-dy/dd, ny=dx/dd;
+           return `M${d.x1},${d.y1} Q${mx+nx*k},${my+ny*k} ${d.x2},${d.y2}`;
+         }
+         return `M${d.x1},${d.y1} L${d.x2},${d.y2}`;
+       });
+  }
+
+  sim.on('tick', ()=>{
+    link.attr('x1',l=>l.source.x).attr('y1',l=>l.source.y).attr('x2',l=>l.target.x).attr('y2',l=>l.target.y);
+    node.attr('transform', d=>`translate(${d.x},${d.y})`);
+    labelLayer.attr('x', d=>d.x).attr('y', d=>d.y);
+    drawCrossLinks();
+  });
+  setTimeout(()=>sim.alphaTarget(0).alpha(0.01), 6000);
+
+  // ── Track hover for cross-hover-only mode + store on state ──
+  node.on('mouseenter.cross', (ev,d)=>{ hoveredNode = pinnedNode || d; if(U.crossHoverOnly) drawCrossLinks(); })
+      .on('mouseleave.cross', ()=>{ hoveredNode = pinnedNode || null; if(U.crossHoverOnly) drawCrossLinks(); });
+
+  // ── U-menu wiring ──
+  const uMenu = document.getElementById('u-menu');
+  function toggleUMenu(force){
+    const nowVis = (force === undefined) ? !uMenu.classList.contains('vis') : !!force;
+    uMenu.classList.toggle('vis', nowVis);
+    uMenu.setAttribute('aria-hidden', nowVis ? 'false' : 'true');
+  }
+  document.getElementById('u-close').addEventListener('click', ()=>toggleUMenu(false));
+  window.addEventListener('keydown', e=>{
+    if(e.target && (e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA')) return;
+    if(e.key==='u' || e.key==='U') toggleUMenu();
+    else if(e.key==='Escape') toggleUMenu(false);
+  });
+
+  function bindSlider(id, onChange, format){
+    const el = document.getElementById(id);
+    const v  = document.getElementById(id+'-v');
+    el.addEventListener('input', ()=>{
+      const val = +el.value;
+      onChange(val);
+      if(v) v.textContent = format ? format(val) : String(val);
+      onUChange();
+    });
+  }
+  function bindToggle(id, get, set){
+    const el = document.getElementById(id);
+    el.classList.toggle('on', get());
+    el.addEventListener('click', ()=>{ set(!get()); el.classList.toggle('on', get()); onUChange(); });
+  }
+  function onUChange(){
+    // push changes into forces where relevant
+    const ld = sim.force('link');
+    ld.distance(l => (l.kind==='in'?80:l.kind==='by'?55:40) * U.linkDist);
+    sim.force('charge').strength(d=>{
+      const base = d.type==='collection'?-420 : d.type==='entry'?-40 : d.type==='creator'?-60 : -30;
+      return base * U.chargeMult * (U.forceClusters && d.type==='collection' ? 1.6 : 1);
+    });
+    sim.alphaTarget(U.freeze?0:0.05).alpha(U.freeze?0:0.1).restart();
+    link.attr('stroke-opacity', U.linkOpacity)
+        .attr('stroke-width', l => (l.kind==='in'?1.4:0.7) * U.linkWidth);
+    node.selectAll('circle,rect,polygon').attr('transform', `scale(${U.nodeRScale})`);
+    labelLayer.style('font-size', (9*U.labelSize)+'px')
+              .style('fill', U.labelsAlways ? 'var(--text)' : null);
+    if(U.labelsAlways){
+      // swap: show all entry labels too
+      labelLayer.data(nodes).join('text').attr('class','label');
+    }
+    drawCrossLinks();
+  }
+
+  bindSlider('u-link-dist', v => U.linkDist    = v/100, v => (v/100).toFixed(2));
+  bindSlider('u-charge',    v => U.chargeMult  = v/100, v => (v/100).toFixed(2));
+  bindSlider('u-speed',     v => { U.speedScale = v/100; sim.alphaDecay(Math.max(0.005, 0.03/(v/100||.01))); }, v => (v/100).toFixed(2)+'×');
+  bindSlider('u-link-op',   v => U.linkOpacity = v/100, v => (v/100).toFixed(2));
+  bindSlider('u-link-w',    v => U.linkWidth   = v/100, v => (v/100).toFixed(2));
+  bindSlider('u-node-r',    v => U.nodeRScale  = v/100, v => (v/100).toFixed(2));
+  bindSlider('u-label-size',v => U.labelSize   = v/100, v => (v/100).toFixed(2));
+  bindSlider('u-cross-op',  v => U.crossOpacity= v/100, v => (v/100).toFixed(2));
+  // Fire once so anything that depends on initial values is synced
+  ['u-link-dist','u-charge','u-speed','u-link-op','u-link-w','u-node-r','u-label-size','u-cross-op']
+    .forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
+
+  bindToggle('u-freeze',        ()=>U.freeze,        v => { U.freeze = v; if(v){ sim.alphaTarget(0); nodes.forEach(n=>{n.fx=n.x; n.fy=n.y;}); } else { nodes.forEach(n=>{n.fx=null; n.fy=null;}); sim.alphaTarget(0.1).restart(); } });
+  bindToggle('u-labels-always', ()=>U.labelsAlways, v=> U.labelsAlways = v);
+  bindToggle('u-cluster-boost', ()=>U.forceClusters, v=> U.forceClusters = v);
+  bindToggle('u-cross-hover',   ()=>U.crossHoverOnly, v=> U.crossHoverOnly = v);
+  bindToggle('u-cross-curve',   ()=>U.crossCurve, v=> U.crossCurve = v);
+
+  // Cross-connection rows (with color swatch + toggle)
+  const crossRowsBox = document.getElementById('u-cross-rows');
+  for(const dim of CROSS_DIMS){
+    const row = document.createElement('div'); row.className='u-row'; row.style.gap='8px';
+    const sw = document.createElement('span'); sw.className='u-cross-sw'; sw.style.background=`rgb(${dim.color})`;
+    const btn = document.createElement('button'); btn.type='button'; btn.className='u-btn cross-btn';
+    btn.style.flex='1'; btn.textContent=dim.label;
+    btn.classList.toggle('on', U.crossEnabled.has(dim.id));
+    btn.addEventListener('click', ()=>{
+      if(U.crossEnabled.has(dim.id)) U.crossEnabled.delete(dim.id);
+      else U.crossEnabled.add(dim.id);
+      btn.classList.toggle('on', U.crossEnabled.has(dim.id));
+      drawCrossLinks();
+    });
+    row.appendChild(sw); row.appendChild(btn);
+    crossRowsBox.appendChild(row);
+  }
+
+  // Tier quick-filter in U-menu (mirrors sidebar state)
+  const tierRow = document.getElementById('u-tier-row');
+  for(const t of ['S','A','B','C']){
+    const b = document.createElement('button'); b.type='button';
+    b.className='u-btn ' + (state.tiers.has(t)?'on':'');
+    b.textContent = t+'-tier';
+    b.addEventListener('click', ()=>{
+      if(state.tiers.has(t)) state.tiers.delete(t); else state.tiers.add(t);
+      b.classList.toggle('on', state.tiers.has(t));
+      const sidebarCb = [...tierBox.querySelectorAll('input')].find((cb,i)=>['S','A','B','C'][i]===t);
+      if(sidebarCb){ sidebarCb.checked = state.tiers.has(t); sidebarCb.dispatchEvent(new Event('change')); }
+      applyFilters();
+    });
+    tierRow.appendChild(b);
+  }
+
+  // Presets
+  const presets = {
+    default:{linkDist:1.0,chargeMult:1.0,linkOpacity:0.4,linkWidth:1.0,nodeRScale:1.0,labelSize:1.0,labelsAlways:false,forceClusters:true,forceEntries:true,crossEnabled:['creator','tool','domain'],crossOpacity:1.0,crossCurve:true,crossHoverOnly:false,freeze:false},
+    minimal:{linkDist:0.8,chargeMult:0.9,linkOpacity:0.22,linkWidth:0.7,nodeRScale:0.85,labelSize:0.9,labelsAlways:false,forceClusters:false,forceEntries:false,crossEnabled:[],crossOpacity:0.7,crossCurve:false,crossHoverOnly:true,freeze:false},
+    dense:  {linkDist:1.1,chargeMult:1.2,linkOpacity:0.55,linkWidth:1.4,nodeRScale:1.1,labelSize:1.1,labelsAlways:true,forceClusters:true,forceEntries:true,crossEnabled:['creator','tool','technique','domain','type'],crossOpacity:1.2,crossCurve:true,crossHoverOnly:false,freeze:false},
+    xray:   {linkDist:1.5,chargeMult:1.6,linkOpacity:0.85,linkWidth:1.8,nodeRScale:1.0,labelSize:1.2,labelsAlways:true,forceClusters:true,forceEntries:true,crossEnabled:['creator','tool','technique','domain','tier','type','collection'],crossOpacity:1.5,crossCurve:true,crossHoverOnly:false,freeze:true},
+  };
+  function applyPreset(name){
+    const p = presets[name]; if(!p) return;
+    for(const k of Object.keys(p)){
+      if(k==='crossEnabled'){ U.crossEnabled = new Set(p[k]); continue; }
+      U[k] = p[k];
+    }
+    // Sync sliders
+    const slMap = {'u-link-dist':'linkDist','u-charge':'chargeMult','u-link-op':'linkOpacity','u-link-w':'linkWidth','u-node-r':'nodeRScale','u-label-size':'labelSize','u-cross-op':'crossOpacity'};
+    for(const [id,key] of Object.entries(slMap)){
+      const el = document.getElementById(id);
+      el.value = Math.round(U[key]*100);
+      el.dispatchEvent(new Event('input'));
+    }
+    // Sync toggles
+    document.getElementById('u-labels-always').classList.toggle('on', U.labelsAlways);
+    document.getElementById('u-cluster-boost').classList.toggle('on', U.forceClusters);
+    document.getElementById('u-cross-curve').classList.toggle('on', U.crossCurve);
+    document.getElementById('u-cross-hover').classList.toggle('on', U.crossHoverOnly);
+    document.getElementById('u-freeze').classList.toggle('on', U.freeze);
+    // Cross dim buttons
+    crossRowsBox.querySelectorAll('button.cross-btn').forEach(b=>{
+      const dim = b.textContent.toLowerCase();
+      b.classList.toggle('on', U.crossEnabled.has(dim));
+    });
+    onUChange();
+  }
+  document.querySelectorAll('#u-menu .u-btn[data-preset]').forEach(b=>{
+    b.addEventListener('click', ()=>applyPreset(b.dataset.preset));
+  });
+
+  // Open U-menu on first visit so Victor's preferred defaults are visible immediately
+  toggleUMenu(true);
+  // Apply forceClusters effect to sim
+  onUChange();
+
+  loading.style.display='none';
+})();
+</script>
+</body>
+</html>

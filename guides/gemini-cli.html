@@ -1,0 +1,215 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gemini CLI — Google's Free Terminal Coding Agent · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html#post-DLuiACnKWP9">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Gemini CLI — Google's Free Terminal Coding Agent
+
+**GitHub:** https://github.com/google-gemini/gemini-cli
+**Stars:** ~101,000 (forks: ~13,000)
+**License:** Apache 2.0
+**Language:** TypeScript (Node.js)
+**Repo path:** `repos/gemini-cli/` (clone pending — sandbox blocked git clone in this session; run `git clone https://github.com/google-gemini/gemini-cli.git repos/gemini-cli` manually)
+
+---
+
+## What it is
+
+Gemini CLI is Google's official open-source terminal-first AI coding agent. It's the direct Claude Code / Codex CLI competitor from Google, built on the Gemini 2.5 family of models. Unlike most "AI in the terminal" projects, it has a genuinely usable free tier: sign in with a personal Google account and you get **60 requests per minute and 1,000 requests per day** against Gemini 2.5 Pro at no cost. That alone makes it one of the highest-value free developer tools shipped in the last year.
+
+It's an interactive REPL agent with tool use — it can read files, run shell commands, edit code, fetch URLs, search Google, and call MCP servers. Same basic loop as Claude Code: you type a request, it plans, it runs tools, it edits, you review, rinse, repeat.
+
+Where Claude Code is polished and opinionated (tightly integrated with Anthropic's sandbox model), Gemini CLI is more raw and Google-flavored. It's a real, working agent — not a toy — but it leans on Google's strengths (huge context windows, cheap Flash tier, web grounding) rather than Anthropic's (tool discipline, long-horizon coherence).
+
+## How it works
+
+At runtime Gemini CLI is a Node.js TUI that:
+
+1. Loads context from a `GEMINI.md` file in the current directory (same idea as `CLAUDE.md`)
+2. Builds a system prompt with tool schemas for built-in tools (read, write, shell, glob, grep, web fetch, google search, memory)
+3. Streams tokens from Gemini 2.5 Pro (default) or Flash (`-m gemini-2.5-flash`) via the chosen auth backend
+4. Parses tool calls, prompts you for approval on destructive actions, runs them, feeds results back
+5. Checkpoints conversations so you can resume
+
+Built-in capabilities worth calling out:
+- **Google Search grounding** — free live web search baked into the agent (Claude Code has to hit WebFetch/WebSearch separately)
+- **MCP support** — add servers in `~/.gemini/settings.json`, same protocol as Claude Code, so your existing MCP catalog (Figma, GitHub, Playwright, Context7) works
+- **`--include-directories`** — explicit multi-root context (`gemini --include-directories ../lib,../docs`)
+- **Non-interactive mode** — `gemini -p "prompt" --output-format json` for scripting and CI, with `stream-json` for piping
+- **GitHub Action** — official action for running Gemini CLI in CI
+
+## System requirements
+
+- Node.js 20+ (Node 22 LTS recommended)
+- A Google account (free tier) OR a Gemini API key OR Vertex AI credentials
+- Any OS with a terminal; works identically on macOS, Linux, WSL2, Windows
+- Zero GPU/local model requirements — everything runs in Google's cloud
+
+## Quick start
+
+Install via npm (simplest on a dev machine that already has Node):
+
+```bash
+npm install -g @google/gemini-cli
+gemini
+```
+
+Or run with zero install:
+
+```bash
+npx @google/gemini-cli
+```
+
+macOS/Linux alternates:
+
+```bash
+brew install gemini-cli           # Homebrew
+sudo port install gemini-cli      # MacPorts
+```
+
+On first run it prompts you to authenticate. Pick **"Sign in with Google"** for the 1K/day free tier — a browser tab opens, you sign in, token is stored in `~/.gemini/`. Done.
+
+Switch models mid-session or at launch:
+
+```bash
+gemini -m gemini-2.5-flash        # much cheaper/faster, still strong
+gemini -m gemini-2.5-pro          # default, best reasoning
+```
+
+Add MCP servers by editing `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "playwright": { "command": "npx", "args": ["-y", "@playwright/mcp"] },
+    "context7":   { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] }
+  }
+}
+```
+
+Drop a `GEMINI.md` in any repo to pin project context (coding standards, architecture notes, gotchas) — it's loaded automatically, same pattern as `CLAUDE.md`.
+
+Non-interactive one-shot (great for scripts and hooks):
+
+```bash
+gemini -p "summarize the changes in the last 5 commits" --output-format json
+```
+
+## Gemini CLI vs Claude Code — honest comparison
+
+| Dimension | Gemini CLI | Claude Code |
+|---|---|---|
+| Cost | **Free**: 60 req/min, 1K/day on personal Google | Paid: Pro/Max subscription or API credits |
+| Model | Gemini 2.5 Pro / Flash | Claude Opus / Sonnet |
+| Context window | ~1M tokens (Gemini 2.5 Pro) | ~200K tokens |
+| Reasoning on hard multi-step code tasks | Good, sometimes loses the plot on long horizons | Best-in-class; more disciplined tool use |
+| Tool approval UX | Functional, less polished | Tight, granular permissions |
+| Web search | Built-in Google grounding (free) | WebSearch tool, requires API |
+| MCP support | Yes | Yes |
+| Sandboxing | Opt-in, less mature | Mature sandbox modes |
+| Ecosystem (skills, plugins, hooks) | Smaller, growing | Large — AgentOps, superpowers, custom skills |
+| Non-interactive / CI | Yes (`-p`, `--output-format json`, GitHub Action) | Yes (Claude Code SDK) |
+| Offline | No | No |
+
+**What Gemini CLI is better at:**
+- Massive context tasks (read entire repos, summarize huge log files, refactor across dozens of files) — the 1M token window matters
+- Free grunt work you don't want to burn Claude credits on (docs, boilerplate, commit messages, codegen from a spec)
+- Scripted/batch automation where cost would add up
+- Research tasks that need live web grounding without extra plumbing
+
+**What Claude Code is better at:**
+- Long multi-turn agentic work (the RPI/crank flywheel, subagent-driven dev, complex debugging)
+- Tool-heavy workflows where tight permission control matters
+- Anything where you've already invested in skills, hooks, and the AgentOps stack
+
+## Known limitations
+
+- Free tier is personal Google only — Workspace accounts often can't use it (admin policy blocks sign-in)
+- 1K/day sounds like a lot but a single long agent session can chew through 100+ requests; heavy days hit the cap
+- Tool discipline is weaker than Claude Code — it will sometimes run commands you didn't approve flow for, or stop and ask where Claude would have continued
+- Less mature ecosystem: no native equivalent to the superpowers/AgentOps skill layer
+- Model knowledge cutoff and training data bias differs — good Gemini answers on Google Cloud/Android/Flutter, relatively weaker on niche TS ecosystems where Claude shines
+
+## How Victor could use both together
+
+The trick isn't "which one wins" — it's **routing**. Claude Code stays as the primary agent for high-value multi-step work (trading system refactors, Unicron platform work, anything RPI-shaped). Gemini CLI becomes the free workhorse for:
+
+1. **Commit/PR drudgery** — wire `gemini -p` into a git hook or the commit-commands skill to auto-draft commit bodies, PR descriptions, changelogs. Zero Claude credit burn.
+2. **Large-context reads** — whenever a task needs to ingest an entire repo or huge log, hand it to Gemini first for a summary, then feed the summary to Claude. The 1M window is free leverage.
+3. **Research + grounded web search** — `/research`-style tasks, documentation lookups, "what's the latest on X library" — Gemini's Google grounding is free and built-in.
+4. **Codegen for throwaway scripts** — one-shot shell scripts, data munging, format converters. `gemini -p "write a bash script that..."` → done.
+5. **CI jobs** — the official GitHub Action runs Gemini CLI on PRs for lint-style review, doc checks, test generation, without burning Anthropic quota.
+6. **Second opinion / council member** — in `/council`-style multi-model workflows, Gemini is a free extra vote alongside Claude and Codex.
+7. **Fallback during Anthropic rate limits or outages** — same terminal muscle memory, keeps you unblocked.
+
+Practical setup: install it globally, sign in with Google, add the same MCP servers you use in Claude Code so context transfers cleanly, and keep a second terminal open for Gemini-handled tasks. Treat it like the free tier of a second brain.
+
+## What we could build with it
+
+- A **free commit/PR writer hook** that runs `gemini -p` on every commit and populates the body automatically
+- A **large-repo summarizer** that indexes a codebase into `GEMINI.md` chunks so downstream Claude sessions start with perfect context
+- A **research skill** that uses Gemini's grounded search for fact-gathering, then hands structured results to Claude for synthesis
+- A **CI reviewer** using the official GitHub Action to do first-pass review on every PR for free before human/Claude review
+- A **dual-agent council** where Claude and Gemini both critique a plan before implementation (poor-man's `/council`)
+- A **terminal chatbot for docs/support** that only needs to answer questions and can run fully on the free tier
+
+## Bottom line
+
+Gemini CLI is the most valuable "free developer tool that's actually good" released recently. It doesn't replace Claude Code for real engineering work — but it makes 30-40% of what Victor currently spends Claude credits on essentially free. The right move is to install it alongside Claude Code and route drudgery to it by default.
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Admin — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+  main.admin { max-width: 1400px; margin: 16px auto 80px; padding: 0 20px;
+               display: grid; grid-template-columns: 360px 1fr; gap: 16px; }
+  .list { border: 1px solid var(--border); border-radius: 14px; background: rgba(18,18,26,0.85);
+          backdrop-filter: blur(14px); max-height: calc(100vh - 140px); overflow: auto; }
+  .list .row { padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 13px; }
+  .list .row:hover { background: var(--panel-2); }
+  .list .row.sel { background: rgba(167,139,250,.12); border-left: 3px solid var(--accent); }
+  .list .row .t { color: var(--text); font-weight: 500; }
+  .list .row .m { color: var(--text-mute); font-size: 11px; margin-top: 2px; }
+  .editor { border: 1px solid var(--border); border-radius: 14px; background: rgba(18,18,26,0.85); backdrop-filter: blur(14px); padding: 18px; }
+  .editor .group { margin-bottom: 12px; }
+  .editor label { display: block; color: var(--text-mute); font-size: 11px; text-transform: uppercase;
+                  letter-spacing: .08em; margin-bottom: 4px; }
+  .editor input[type=text], .editor textarea, .editor select {
+    width: 100%; padding: 9px 11px; background: rgba(0,0,0,.55); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font: 400 13px/1.4 'JetBrains Mono', monospace; }
+  .editor input[type=text]:focus, .editor textarea:focus, .editor select:focus {
+    border-color: rgba(167,139,250,.5); outline: none; }
+  .editor textarea { min-height: 80px; resize: vertical; }
+  .editor .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .editor .row3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .bar { display: flex; gap: 8px; margin-bottom: 12px; }
+  .bar input[type=search] { flex: 1; padding: 9px 11px; background: rgba(0,0,0,.55);
+                            border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+                            font: 400 13px/1.4 'JetBrains Mono', monospace; }
+  .bar input[type=search]:focus { border-color: rgba(167,139,250,.5); outline: none; }
+  .btn { padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border-hi);
+         background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer;
+         font: 800 11px/1 Inter, system-ui; letter-spacing: .08em; text-transform: uppercase; }
+  .btn:hover { background: rgba(255,255,255,0.08); }
+  .btn.primary { background: linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3)); color: #fff; border-color: rgba(167,139,250,.55); }
+  .btn.warn { border-color: #ef4444; color: #ef4444; }
+  .status { color: var(--text-mute); font-size: 12px; margin-left: auto; align-self: center; }
+  .patch-area { white-space: pre-wrap; font-family: 'JetBrains Mono', monospace; font-size: 11px;
+                background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+                padding: 10px; max-height: 160px; overflow: auto; }
+  .hint { color: var(--text-mute); font-size: 11px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; max-height: 70px; overflow: auto; }
+  .chips .chip { padding: 2px 7px; border-radius: 999px; background: var(--panel-2);
+                 border: 1px solid var(--border); color: var(--text-mute); font-size: 10px;
+                 cursor: pointer; font-family: 'JetBrains Mono', monospace; }
+  .chips .chip:hover { color: var(--accent); border-color: var(--accent); }
+  .chips .chip.active { color: var(--accent); border-color: var(--accent); }
+  .chips-toggle { font-size: 10px; color: var(--text-mute); cursor: pointer; margin-left: 6px;
+                  text-decoration: underline; }
+
+  @media(max-width:900px){
+    main.admin { grid-template-columns: 1fr; }
+    .list { max-height: 40vh; }
+  }
+  @media(max-width:640px){
+    main.admin { padding: 0 12px; }
+    .editor { padding: 14px; }
+    .btn { padding: 8px 10px; font-size: 10px; }
+  }
+</style>
+</head><body>
+<script>DV.mountHeader(document.body, 'admin');</script>
+
+<main class="admin">
+  <aside class="list" id="list"></aside>
+
+  <section>
+    <div class="bar">
+      <input type="search" id="q" placeholder="Search title/creator/url…">
+      <button class="btn" id="new-btn">+ New</button>
+      <button class="btn primary" id="save-btn">Stage edit</button>
+      <button class="btn warn" id="delete-btn">Delete</button>
+      <span class="status" id="status">0 pending</span>
+    </div>
+
+    <div class="editor" id="editor">
+      <div class="group"><label>Title</label><input type="text" id="f-title"></div>
+      <div class="row2">
+        <div class="group"><label>URL</label><input type="text" id="f-url"></div>
+        <div class="group"><label>Creator</label><input type="text" id="f-creator"></div>
+      </div>
+      <div class="row3">
+        <div class="group"><label>Tier</label>
+          <select id="f-tier"><option>S</option><option>A</option><option>B</option><option>C</option></select>
+        </div>
+        <div class="group"><label>Type</label><input type="text" id="f-type" placeholder="tool, repo, guide…"></div>
+        <div class="group"><label>Collections (comma) <span class="chips-toggle" data-for="f-collections">known ▾</span></label><input type="text" id="f-collections"><div class="chips" id="c-collections" style="display:none"></div></div>
+      </div>
+      <div class="group"><label>Summary</label><textarea id="f-summary"></textarea></div>
+      <div class="row2">
+        <div class="group"><label>Tools (comma) <span class="chips-toggle" data-for="f-tools">known ▾</span></label><input type="text" id="f-tools"><div class="chips" id="c-tools" style="display:none"></div></div>
+        <div class="group"><label>Techniques (comma) <span class="chips-toggle" data-for="f-techniques">known ▾</span></label><input type="text" id="f-techniques"><div class="chips" id="c-techniques" style="display:none"></div></div>
+      </div>
+      <div class="row2">
+        <div class="group"><label>Domains (comma) <span class="chips-toggle" data-for="f-domains">known ▾</span></label><input type="text" id="f-domains"><div class="chips" id="c-domains" style="display:none"></div></div>
+        <div class="group"><label>Models (comma) <span class="chips-toggle" data-for="f-models">known ▾</span></label><input type="text" id="f-models"><div class="chips" id="c-models" style="display:none"></div></div>
+      </div>
+      <div class="group"><label>User notes (private)</label><textarea id="f-user-notes"></textarea></div>
+      <div class="group"><label><input type="checkbox" id="f-favorited"> Favorited</label></div>
+      <div class="group"><label><input type="checkbox" id="f-has-guide"> Deep dive candidate</label></div>
+      <div class="group"><label>Deep dive slug</label><input type="text" id="f-deep-dive-slug" placeholder="e.g. my-guide-topic"></div>
+    </div>
+
+    <div style="margin-top:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <strong style="font-size:13px;color:var(--text-mute)">Pending patch</strong>
+        <button class="btn" id="download-btn">Download patch.json</button>
+        <button class="btn warn" id="clear-btn">Clear pending</button>
+      </div>
+      <div class="patch-area" id="patch-preview">(no edits yet)</div>
+      <p class="hint" style="margin-top:8px">
+        After download, run <code>python scripts/cms.py apply-patch &lt;path&gt;</code> then
+        <code>python scripts/cms.py rebuild</code> to materialize.
+      </p>
+    </div>
+  </section>
+</main>
+
+<script src="catalog.js"></script>
+<script>
+const PATCH_KEY = 'dejaviewed-admin-patch-v1';
+let entries = (window.__CATALOG && window.__CATALOG.entries) || [];
+let patch = JSON.parse(localStorage.getItem(PATCH_KEY) || '{"edits":{}, "adds":[], "deletes":[]}');
+let selectedId = null;
+
+const $ = id => document.getElementById(id);
+const FIELDS = ['title','url','creator','tier','type','summary'];
+const LIST_FIELDS = ['collections','tools','techniques','domains','models'];
+
+function applyPatchToView(e) {
+  const p = patch.edits[e.id];
+  return p ? Object.assign({}, e, p) : e;
+}
+
+function renderList() {
+  const q = $('q').value.toLowerCase();
+  const all = entries.map(applyPatchToView).concat(patch.adds)
+    .filter(e => !patch.deletes.includes(e.id))
+    .filter(e => !q || (e.title||'').toLowerCase().includes(q)
+                    || (e.creator||'').toLowerCase().includes(q)
+                    || (e.url||'').toLowerCase().includes(q))
+    .sort((a,b) => (a.title||'').localeCompare(b.title||''));
+  $('list').replaceChildren();
+  for (const e of all) {
+    const row = document.createElement('div');
+    row.className = 'row' + (e.id === selectedId ? ' sel' : '');
+    row.onclick = () => { selectedId = e.id; loadIntoEditor(e); renderList(); };
+    const t = document.createElement('div'); t.className = 't'; t.textContent = e.title || '(untitled)';
+    const m = document.createElement('div'); m.className = 'm';
+    m.textContent = (e.tier || 'C') + '-tier · ' + (e.creator || '') + ' · ' + ((e.collections||[]).join(', '));
+    row.appendChild(t); row.appendChild(m);
+    $('list').appendChild(row);
+  }
+  $('status').textContent =
+    Object.keys(patch.edits).length + ' edits · ' + patch.adds.length + ' adds · ' + patch.deletes.length + ' deletes';
+}
+
+function emptyListMsg(msg) {
+  $('list').replaceChildren();
+  const d = document.createElement('div');
+  d.style.cssText = 'padding:16px;color:var(--text-mute);font-size:12px';
+  d.textContent = msg;
+  $('list').appendChild(d);
+}
+
+function loadIntoEditor(e) {
+  for (const f of FIELDS) $('f-'+f).value = e[f] || '';
+  $('f-user-notes').value = e.user_notes || '';
+  $('f-collections').value = (e.collections || []).join(', ');
+  for (const lf of ['tools','techniques','domains','models'])
+    $('f-'+lf).value = (e[lf] || []).join(', ');
+  $('f-favorited').checked = !!e.favorited;
+  $('f-has-guide').checked = !!e.has_guide;
+  $('f-deep-dive-slug').value = e.deep_dive_slug || '';
+}
+
+function readEditor(existingId) {
+  const out = {id: existingId || ('new-' + Date.now().toString(36))};
+  for (const f of FIELDS) out[f] = $('f-'+f).value.trim();
+  out.user_notes = $('f-user-notes').value.trim();
+  out.favorited = $('f-favorited').checked;
+  out.last_edited_at = new Date().toISOString();
+  out.has_guide = $('f-has-guide').checked;
+  out.deep_dive_slug = $('f-deep-dive-slug').value.trim() || null;
+  for (const lf of LIST_FIELDS) {
+    out[lf] = $('f-'+lf).value.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return out;
+}
+
+// ── Known-value chips ─────────────────────────────────────────────
+const CHIP_FIELDS = ['collections','tools','techniques','domains','models'];
+function collectKnown() {
+  const sets = Object.fromEntries(CHIP_FIELDS.map(f => [f, new Set()]));
+  for (const e of entries) {
+    for (const f of CHIP_FIELDS) for (const v of (e[f] || [])) if (v) sets[f].add(v);
+  }
+  for (const a of patch.adds) {
+    for (const f of CHIP_FIELDS) for (const v of (a[f] || [])) if (v) sets[f].add(v);
+  }
+  for (const p of Object.values(patch.edits)) {
+    for (const f of CHIP_FIELDS) for (const v of (p[f] || [])) if (v) sets[f].add(v);
+  }
+  return Object.fromEntries(CHIP_FIELDS.map(f => [f, [...sets[f]].sort((a,b)=>a.localeCompare(b))]));
+}
+
+function renderChips() {
+  const known = collectKnown();
+  for (const f of CHIP_FIELDS) {
+    const box = document.getElementById('c-'+f);
+    if (!box) continue;
+    const cur = new Set($('f-'+f).value.split(',').map(s=>s.trim()).filter(Boolean));
+    box.replaceChildren();
+    for (const v of known[f]) {
+      const chip = document.createElement('span');
+      chip.className = 'chip' + (cur.has(v) ? ' active' : '');
+      chip.textContent = v;
+      chip.onclick = () => {
+        const tokens = $('f-'+f).value.split(',').map(s=>s.trim()).filter(Boolean);
+        const idx = tokens.indexOf(v);
+        if (idx >= 0) tokens.splice(idx, 1); else tokens.push(v);
+        $('f-'+f).value = tokens.join(', ');
+        renderChips();
+      };
+      box.appendChild(chip);
+    }
+  }
+}
+
+for (const span of document.querySelectorAll('.chips-toggle')) {
+  span.onclick = () => {
+    const f = span.dataset.for;
+    const box = document.getElementById('c-' + f.slice(2));
+    const showing = box.style.display !== 'none';
+    box.style.display = showing ? 'none' : 'flex';
+    span.textContent = (showing ? 'known ▾' : 'known ▴');
+    if (!showing) renderChips();
+  };
+}
+
+for (const f of CHIP_FIELDS) {
+  $('f-'+f).addEventListener('input', () => {
+    const box = document.getElementById('c-'+f);
+    if (box && box.style.display !== 'none') renderChips();
+  });
+}
+
+$('q').oninput = renderList;
+
+$('new-btn').onclick = () => {
+  selectedId = null;
+  for (const f of FIELDS) $('f-'+f).value = '';
+  $('f-user-notes').value = '';
+  for (const lf of LIST_FIELDS) $('f-'+lf).value = '';
+  $('f-tier').value = 'C';
+  $('f-favorited').checked = false;
+  $('f-has-guide').checked = false;
+  $('f-deep-dive-slug').value = '';
+};
+
+$('save-btn').onclick = () => {
+  const row = readEditor(selectedId);
+  const isExisting = entries.some(e => e.id === row.id);
+  if (isExisting) {
+    patch.edits[row.id] = row;
+  } else if (selectedId && patch.adds.some(a => a.id === selectedId)) {
+    patch.adds = patch.adds.map(a => a.id === selectedId ? row : a);
+  } else {
+    patch.adds.push(row);
+    selectedId = row.id;
+  }
+  localStorage.setItem(PATCH_KEY, JSON.stringify(patch));
+  renderList(); updatePatchPreview();
+};
+
+$('delete-btn').onclick = () => {
+  if (!selectedId) return;
+  if (!confirm('Mark this entry for deletion?')) return;
+  if (!patch.deletes.includes(selectedId)) patch.deletes.push(selectedId);
+  localStorage.setItem(PATCH_KEY, JSON.stringify(patch));
+  renderList(); updatePatchPreview();
+};
+
+$('download-btn').onclick = () => {
+  const blob = new Blob([JSON.stringify(patch, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'dejaviewed-patch-' + Date.now() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+$('clear-btn').onclick = () => {
+  if (!confirm('Discard all pending edits?')) return;
+  patch = {edits:{}, adds:[], deletes:[]};
+  localStorage.removeItem(PATCH_KEY);
+  renderList(); updatePatchPreview();
+};
+
+function updatePatchPreview() {
+  const preview = JSON.stringify(patch, null, 2);
+  const empty = Object.keys(patch.edits).length === 0 && patch.adds.length === 0 && patch.deletes.length === 0;
+  $('patch-preview').textContent = empty ? '(no edits yet)' : preview;
+}
+
+if (!entries.length) {
+  emptyListMsg('No catalog loaded. Ensure catalog.js is present.');
+} else {
+  renderList(); updatePatchPreview();
+}
+</script>
+</body></html>

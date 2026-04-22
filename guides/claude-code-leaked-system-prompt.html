@@ -1,0 +1,250 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Leaked System Prompt — Deep Dive · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html#post-DWmQYXikbqq">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Claude Code Leaked System Prompt — Deep Dive
+
+**Category:** Claude Code internals / prompt engineering
+**Confidence:** Medium — multiple independent leaks corroborate core directives, but exact wording drifts between versions and no single canonical source exists.
+**Primary sources (as of April 2026):**
+- `asgeirtj/system_prompts_leaks` — https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-code.md
+- `Piebald-AI/claude-code-system-prompts` — https://github.com/Piebald-AI/claude-code-system-prompts (updated per Claude Code version; includes the 24 built-in tool descriptions and sub-agent prompts)
+- `saimbuilds/Claude-System-Prompts` — secondary mirror
+- dbreunig.com: "How Claude Code Builds a System Prompt" (2026-04-04) — the best structural analysis
+- The Register, 2026-04-01: "Claude Code's source reveals extent of system access"
+
+---
+
+## What it is
+
+Claude Code's system prompt is the hidden set of instructions Anthropic ships inside every `claude` CLI session — the rules that shape how the agent formats answers, picks tools, refuses work, and communicates with the user. It is not one monolithic block; it is **assembled at runtime** from ~10 fragments (base persona, environment info, tool descriptions, CLAUDE.md content, sub-agent definitions, git context, etc.) and totals roughly 10K–15K tokens before the user even types anything.
+
+It has been exposed publicly at least three times:
+
+1. **Feb 24, 2025** — launch day. An 18M-character inline source map was shipped inside the npm package. Anthropic pulled it within ~2 hours.
+2. **March 2026** — a manual deploy step re-exposed the source map 13 months later.
+3. **March 31, 2026** — Claude Code v2.1.88 shipped a 59.8 MB source map containing a 512K-line TypeScript codebase. Public for several hours, DMCA'd afterward. This version (around v2.0.70 – v2.1.88) is what the popular "leaked system prompt" repos pull from.
+
+Mirror repos (`asgeirtj`, `Piebald-AI`, `saimbuilds`) continue to track updates per Claude Code version.
+
+---
+
+## How it works — the architecture
+
+Claude Code does **not** send a single static system prompt. Per the dbreunig analysis and the leaked source, it builds the prompt dynamically each turn:
+
+```
+[Base persona + identity]
+  + [Environment block: cwd, platform, git branch, date, model]
+  + [Tool descriptions — 24 built-in tools, each with its own sub-prompt]
+  + [User/project CLAUDE.md content, merged from ~/.claude + .claude/]
+  + [Active sub-agent definitions]
+  + [Skill metadata for installed skills]
+  + [Recent git status / branch context if in a repo]
+  + [Scratchpad directory instructions]
+  → final system message
+```
+
+The biggest single section is tool descriptions. Each built-in tool (Bash, Edit, Write, Read, Grep, Glob, WebFetch, WebSearch, Task, TodoWrite, NotebookEdit, etc.) carries its own mini-prompt with usage rules, forbidden patterns, and examples. Edit alone is ~400 lines.
+
+There are also separate "utility" prompts — small system prompts Claude Code uses internally for sub-tasks: CLAUDE.md auto-generation, `/compact`, statusline rendering, security review, agent creation, and WebFetch post-processing. These are documented in `Piebald-AI/claude-code-system-prompts`.
+
+---
+
+## The "brevity mandate" — what it actually says
+
+The most quoted section of the leak is a cluster of directives around output length and tone. Paraphrased from the leaked `claude-code.md`:
+
+- **"You MUST answer concisely with fewer than 4 lines (not including tool use or code generation), unless the user asks for detail."**
+- **"IMPORTANT: You should minimize output tokens as much as possible while maintaining helpfulness, quality, and accuracy."**
+- **"Only address the specific query or task at hand, avoiding tangential information."**
+- **"IMPORTANT: You should NOT answer with unnecessary preamble or postamble (such as explaining your code or summarizing your action)."**
+- **"Avoid introductions, conclusions, and explanations. No 'Here is...', 'Based on...', 'I will now...'."**
+- **"One word answers are best."**
+- Intermediate progress text between tool calls: **≤ 25 words.** Final responses: **≤ 100 words** unless the task requires more detail.
+- Lists are discouraged: "Do not use bullet points or numbered lists unless the user explicitly asks for one."
+- Tone: **"Do not add unnecessary affirmations, apologies, or praise. No 'Great question!', 'Certainly!', 'Absolutely!'. Be direct. Provide objective technical info."**
+- Emoji: **"Only use emojis if the user explicitly requests it."**
+- Refusals: "When refusing, do so in 1-2 sentences and offer alternatives if possible."
+
+There is also a telling directive about **not volunteering information**: Claude Code is instructed to answer what was asked and stop — no proactive suggestions unless safety-critical. This is deliberate: it reduces token cost, lowers the "AI rambled" failure mode, and keeps the CLI feeling like a shell instead of a chatbot.
+
+### Why it matters
+
+The brevity mandate is why Claude Code *feels* different from claude.ai chat. Same model, radically different voice. That voice comes from maybe 500 tokens of well-placed "IMPORTANT:" and "MUST" clauses — proof that short, forceful prompts dominate long polite ones.
+
+It also reveals tradeoffs Anthropic actively chose:
+- **Brevity suppresses nuance.** The CFA Institute blog flagged this: a terse agent tends to affirm user assertions and skip caveats. Investment and legal use-cases need to override it.
+- **Affirmation avoidance** can read as cold. Users who want a friendly tone must explicitly ask.
+- **Comprehensive answers are explicitly discouraged** unless asked — this is why "explain the whole codebase" often gets a 3-sentence reply.
+
+---
+
+## Other interesting directives in the leak
+
+Beyond brevity, recurring themes from the leaked prompt:
+
+**Tool-use discipline.**
+- "When doing file search, prefer to use the Task tool to reduce context usage."
+- "NEVER use `find`, `grep`, `cat`, `head`, `tail`, `sed`, `awk`, `echo` via Bash — use the dedicated tools (Glob, Grep, Read, Edit, Write)." This one shows up verbatim in the Bash tool description.
+- "Always quote file paths that contain spaces."
+- "VERY IMPORTANT: You MUST avoid using search commands like `find` and `grep`. Instead use Grep, Glob, or Task."
+
+**Safety rail redundancy.**
+- "IMPORTANT: Refuse to write code or explain code that may be used maliciously."
+- "IMPORTANT: Before you begin work, think about what the code you're editing is supposed to do based on the filenames and directory structure."
+- "You MUST NEVER generate or guess URLs."
+- Git rules: "NEVER update the git config. NEVER run destructive git commands unless the user explicitly asks. NEVER commit changes unless the user explicitly asks."
+
+**Proactiveness calibration.**
+- "You should be proactive only when the user asks you to do something. Strike a balance between doing the right thing and not surprising the user."
+- "Do not add additional code explanation summary unless requested."
+
+**Convention following.**
+- "When making changes to files, first understand the file's code conventions. Mimic code style, use existing libraries, and follow existing patterns."
+- "NEVER assume a library is available, even if well known. Check the codebase first (package.json, cargo.toml, requirements.txt)."
+
+**Scratchpad rule.** There is an "IMPORTANT" directive that all temporary files go in a session-specific scratchpad directory, not `/tmp` or the system temp. This is how Claude Code keeps sessions isolated.
+
+**Task management.** TodoWrite has its own mini-prompt instructing aggressive use for any task with 3+ steps, marking items complete *immediately* after finishing them (not batched), and never leaving more than one task in `in_progress`.
+
+---
+
+## What Victor could adapt into his own CLAUDE.md / agent prompts
+
+The leak is a gift: it shows which prompting patterns Anthropic found load-bearing enough to ship to millions of users. Patterns worth stealing:
+
+1. **Front-load forceful clauses.** "IMPORTANT:", "MUST", "NEVER", "VERY IMPORTANT:" in ALL CAPS. Claude Code uses these liberally. They work.
+2. **Specify exact line/word budgets.** "≤ 4 lines", "≤ 25 words between tool calls", "≤ 100 words for final response". Numbers beat adjectives.
+3. **Explicitly forbid preamble and postamble.** The single biggest win for CLI-feel agents.
+4. **Ban emoji by default**, allow by explicit request only.
+5. **Tool allow/deny lists with exact wording.** "NEVER use `grep` — use the Grep tool." Name the bad tool and the replacement in the same sentence.
+6. **Proactive vs reactive posture.** State it: "Do not volunteer information unless asked. Answer what was asked and stop."
+7. **Refusal format spec.** Budget refusals: "1–2 sentences, offer an alternative."
+8. **Convention-first editing.** "Read neighboring files before editing. Mimic existing style. Do not introduce new libraries without checking package manifests."
+9. **No-commit-without-permission rule.** This is in the Claude Code prompt verbatim and it is why Victor already has it in his global CLAUDE.md — worth keeping as a first-class rule.
+10. **Session scratchpad convention.** If Victor's agents do any temp-file work, copy the scratchpad rule.
+
+A minimal "Claude-Code-style" rule block to drop into any custom agent:
+
+```md
+## Output rules
+- Answer in ≤ 4 lines unless the user asks for detail.
+- No preamble, no postamble, no "Here is", no "I will now".
+- No emoji unless explicitly requested.
+- No bullet lists unless explicitly requested.
+- Refusals: 1–2 sentences, offer an alternative.
+
+## Tool discipline
+- Never use find, grep, cat, head, tail, sed, awk — use dedicated tools.
+- Never assume a library exists — check package manifests first.
+- Match existing code style before introducing new patterns.
+
+## Proactiveness
+- Do what was asked, nothing more, nothing less.
+- Never create files unless necessary. Prefer editing.
+- Never create docs (*.md, README) unless explicitly requested.
+- Never commit unless explicitly asked.
+```
+
+That block is roughly what Claude Code ships, distilled.
+
+---
+
+## Gotchas and limits
+
+- **Version drift.** The leak is a snapshot. Anthropic changes the prompt between minor versions; exact wording today may differ from v2.1.88. Treat the text as *patterns*, not scripture.
+- **No canonical source.** Anthropic has DMCA'd most raw dumps. Mirror repos get taken down and re-uploaded. Use multiple sources to cross-check.
+- **CLAUDE.md is appended, not prepended.** Per dbreunig, user CLAUDE.md content is injected into a dedicated slot — it cannot override base directives, only layer on top. If you want to neutralize a base rule, you must explicitly contradict it with equal force ("IMPORTANT: Override base guidance — use lists freely in this project").
+- **Context bloat is real.** The full system prompt + CLAUDE.md + tool descriptions + skill metadata can eat 15–25K tokens before the first user turn. This is why "Claude Code feels dumber on long sessions" — the compaction step summarizes aggressively and loses nuance.
+- **Some directives conflict.** "Be concise" vs "Always use TodoWrite for 3+ step tasks" vs "Minimize output tokens". In practice the model picks the one that best fits the turn. If you care which wins, state it explicitly in CLAUDE.md.
+- **Not all leaks are real.** Several "leaked prompt" repos contain fabricated sections or summaries presented as verbatim. `Piebald-AI` and `asgeirtj` are the most trustworthy; random gists are not.
+
+---
+
+## What we could build with it
+
+- **A CLAUDE.md template generator** that lets Victor select which base directives to keep, override, or amplify, then emits a merged file.
+- **A "prompt diff" tool** that tracks changes in the leaked prompts across Claude Code versions — useful for spotting when Anthropic tightens or loosens a rule (e.g. when they added the scratchpad directive, when they relaxed the list ban).
+- **A lint rule for custom agent prompts** that checks for anti-patterns the Claude Code prompt avoids: hedging language, "Certainly!", emoji, long preambles.
+- **A reference card** (print-worthy) of the 20 highest-leverage "IMPORTANT:" clauses from the leak, for use when writing any new agent prompt.
+- **A challenge-game sweep** over variations of the brevity mandate to measure which exact wording produces the tersest Claude output without losing accuracy — this is a one-afternoon experiment with measurable results.
+
+---
+
+## Files worth grabbing
+
+If you want a local reference copy (the mirrors do get taken down):
+
+```bash
+mkdir -p ~/Desktop/Projects/claude/ai-catalogs/references/claude-code-prompts
+cd ~/Desktop/Projects/claude/ai-catalogs/references/claude-code-prompts
+git clone https://github.com/asgeirtj/system_prompts_leaks.git
+git clone https://github.com/Piebald-AI/claude-code-system-prompts.git
+```
+
+`Piebald-AI` is the better long-term reference — it splits by version and covers the utility prompts (compact, statusline, WebFetch post-processing, security review, agent creation). `asgeirtj` is broader coverage across vendors (also has GPT-5.x, Gemini 3.1, Grok 4.x leaks) for comparison.
+
+---
+
+## Bottom line
+
+The leaked Claude Code system prompt is a masterclass in terse, forceful, tool-aware prompting. The brevity mandate specifically — ≤4 lines, no preamble, no emoji, no affirmations, one-word answers preferred — is the single biggest reason Claude Code feels like a Unix tool instead of a chatbot. Copy those patterns into your own CLAUDE.md and custom agents verbatim; they were battle-tested on millions of sessions before you saw them.
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>
