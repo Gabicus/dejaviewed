@@ -412,12 +412,8 @@ html,body{height:100%;overflow:hidden}
   const tipSum   = document.createElement('div');  tipSum.className='meta';
   const tipType  = document.createElement('div');  tipType.className='sub';
   const tipActs  = document.createElement('div');  tipActs.className='actions';
-  // Internal DejaViewed links disabled until per-entry pages exist (Phase 3 renderer).
-  const tipInternal = document.createElement('a'); tipInternal.className='primary';   tipInternal.textContent='View in catalog ↗';
-  const tipSource   = document.createElement('a'); tipSource.className='secondary';   tipSource.textContent='Open post ↗';
-  tipInternal.target='_blank'; tipInternal.rel='noopener';
+  const tipSource   = document.createElement('a'); tipSource.className='primary';   tipSource.textContent='Open post ↗';
   tipSource.target='_blank'; tipSource.rel='noopener';
-  tipActs.appendChild(tipInternal);
   tipActs.appendChild(tipSource);
   tip.appendChild(tipCloser); tip.appendChild(tipTier); tip.appendChild(tipTitle); tip.appendChild(tipMeta); tip.appendChild(tipSum); tip.appendChild(tipType); tip.appendChild(tipActs);
 
@@ -433,12 +429,9 @@ html,body{height:100%;overflow:hidden}
     tipMeta.textContent = meta.join(' · ');
     tipSum.textContent = d.summary ? (d.summary.length>200?d.summary.slice(0,200)+'…':d.summary) : '';
     tipType.textContent = d.type;
-    // Only entries have meaningful dual links
-    if(d.type==='entry'){
+    if(d.type==='entry' && d.url){
       tipActs.style.display='flex';
-      const rawId = d.id.slice(6); // strip 'entry:'
-      tipInternal.href = 'index.html#post-' + encodeURIComponent(rawId);
-      if(d.url){ tipSource.href = d.url; tipSource.style.display=''; } else { tipSource.style.display='none'; }
+      tipSource.href = d.url;
     } else {
       tipActs.style.display='none';
     }

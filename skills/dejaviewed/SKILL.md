@@ -140,8 +140,7 @@ scripts/cms.py — the CMS engine (688 lines)
 
 ```
 site/
-  index.html           Landing: bar chart + deep dive cards
-  ai1.html             Per-collection catalog page
+  index.html           Unified catalog: all collections, filters, deep dive cards, bar chart
   graph.html           D3 force-directed graph (powered by graph-node)
   graph-cosmos.html    Canvas orbital graph (powered by graph-cosmos)
   board.html           Drag-to-connect thought board
@@ -151,10 +150,11 @@ site/
   catalog.json         Full catalog export
   summaries.json       Digest cluster summaries
   recommendations.json Digest ranked recommendations
-  sitemap.xml          All URLs
+  sitemap.xml          Active pages only (dejaviewed.dev domain)
   llms.txt             LLM discovery file
   llms-full.txt        Full LLM context
   robots.txt           Crawler rules
+  CNAME                Custom domain (dejaviewed.dev)
   thumb/               Downloaded thumbnails (338+)
   api/                 Machine-readable JSON exports
     catalog.json
@@ -162,9 +162,9 @@ site/
     tools.json
     collections.json
     deep_dives.json
-  guides/              Deep dive guide pages
-  deeper/              Deeper dive narrative pages
-  legacy/              Archived pages (ai2-4, catalog, dejaviewed, etc.)
+  guides/              Deep dive guide pages (clickable from catalog cards)
+  deeper/              Deeper dive narrative pages (clickable entries link to posts)
+  legacy/              Archived pages (ai1-4, quant, catalog, dejaviewed, etc.)
 ```
 
 ### Graph Repos (External Dependencies)
@@ -593,15 +593,7 @@ python scripts/build_api.py
 python scripts/render_template.py
 ```
 
-Re-renders per-collection static pages. Each page has a `<script>const POSTS=[...];</script>` block refreshed from parquet.
-
-#### Adding a new collection
-
-Update 4 locations in render_template.py:
-1. `NAV_SOURCES` list
-2. `COLL_META` dict (display name, description, icon)
-3. Render loop
-4. Sidebar pills
+Re-renders the unified index.html catalog page. The `<script>const POSTS=[...];</script>` block is refreshed from parquet. All collections are shown in one page with filter pills — no per-collection pages.
 
 ### JS Wrappers (scripts/catalog_js.py)
 
@@ -773,12 +765,16 @@ Cross-source dedup: same URL from Chrome AND Instagram — merger keeps the rich
 
 ## Phase 15: Deploy
 
-**GitHub Pages (dejaviewed.dev):**
-1. Run `scripts/rebuild.sh`
-2. Run `scripts/deploy-gh-pages.sh` to push site/ to gh-pages branch
-3. GitHub Pages auto-deploys
+**Cloudflare Pages (dejaviewed.dev) — auto-deploy:**
+1. Push to `main` → Cloudflare Pages auto-deploys from `site/` directory
+2. Custom domain: dejaviewed.dev (managed via Cloudflare)
 
-**Local:**
+**Manual deploy (fallback):**
+```bash
+scripts/deploy.sh          # wrangler pages deploy site/
+```
+
+**Local preview:**
 ```bash
 cd site && python3 -m http.server 8765
 ```

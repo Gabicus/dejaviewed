@@ -209,6 +209,8 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 .dd-detail .dd-section{margin-bottom:14px}
 .dd-detail .dd-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:6px}
 .dd-detail .dd-thesis{font-size:14px;line-height:1.6;color:var(--text);font-style:italic;margin-bottom:14px}
+.dd-detail a.dd-connection{text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s}
+.dd-detail a.dd-connection:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}
 .dd-detail .dd-connection{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
 .dd-detail .dd-connection .dd-conn-title{font-size:13px;font-weight:700;color:#fff}
 .dd-detail .dd-connection .dd-conn-role{font-size:12px;color:var(--text-dim);margin-top:2px}
@@ -713,7 +715,8 @@ document.addEventListener('DOMContentLoaded',()=>{updateCounts();init();render()
         for(const [eid, role] of Object.entries(d.connection_map)){
           const post = POSTS.find(p=>p.id===eid);
           const title = post ? (post.card_title||post.title||eid) : eid;
-          const conn = el('div',{class:'dd-connection'});
+          const postUrl = post ? post.post_url : '';
+          const conn = postUrl ? el('a',{class:'dd-connection',href:postUrl,target:'_blank',rel:'noopener'}) : el('div',{class:'dd-connection'});
           const img = document.createElement('img');
           img.className='dd-conn-thumb'; img.src='thumb/'+eid.replace(/\//g,'_')+'.jpg'; img.alt='';
           img.onerror=function(){this.style.display='none'};
@@ -732,7 +735,8 @@ document.addEventListener('DOMContentLoaded',()=>{updateCounts();init();render()
           const post = POSTS.find(p=>p.id===eid);
           if(!post) continue;
           const title = post.card_title||post.title||eid;
-          const conn = el('div',{class:'dd-connection'});
+          const connUrl = post.post_url || '';
+          const conn = connUrl ? el('a',{class:'dd-connection',href:connUrl,target:'_blank',rel:'noopener'}) : el('div',{class:'dd-connection'});
           const img = document.createElement('img');
           img.className='dd-conn-thumb'; img.src='thumb/'+eid.replace(/\//g,'_')+'.jpg'; img.alt='';
           img.onerror=function(){this.style.display='none'};

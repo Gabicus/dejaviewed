@@ -108,10 +108,13 @@ def render_html(deeper: dict) -> str:
     for e in entries:
         tier_cls = f"t{e.get('tier', 'C')}"
         safe_id = e["id"].replace("/", "_")
+        post_url = e.get("url", "")
+        thumb_html = f'<a href="{_esc(post_url)}" target="_blank" rel="noopener"><img src="../thumb/{safe_id}.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display=\'none\'"></a>' if post_url else f'<img src="../thumb/{safe_id}.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display=\'none\'">'
+        title_html = f'<a href="{_esc(post_url)}" target="_blank" rel="noopener" class="dd-entry-title">{_esc(e.get("title", e["id"]))}</a>' if post_url else f'<div class="dd-entry-title">{_esc(e.get("title", e["id"]))}</div>'
         entries_html += f'''<div class="dd-entry">
-  <img src="../thumb/{safe_id}.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'">
+  {thumb_html}
   <div class="dd-entry-info">
-    <div class="dd-entry-title">{_esc(e.get("title", e["id"]))}</div>
+    {title_html}
     <div class="dd-entry-meta"><span class="tier-badge {tier_cls}">{e.get("tier","C")}</span> {_esc(e.get("type",""))} · @{_esc(e.get("creator",""))}</div>
     <div class="dd-entry-summary">{_esc(e.get("summary", ""))}</div>
     {f'<a href="../guides/{e["deep_dive_slug"]}.html" class="dd-entry-guide">Read Guide →</a>' if e.get("has_guide") and e.get("deep_dive_slug") else ""}
@@ -144,6 +147,8 @@ body{{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira 
 .dd-entries h2{{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}}
 .dd-entry{{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}}
 .dd-entry-thumb{{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}}
+a.dd-entry-title{{font-size:13px;font-weight:700;color:#fff;text-decoration:none}}
+a.dd-entry-title:hover{{text-decoration:underline;color:var(--accent)}}
 .dd-entry-title{{font-size:13px;font-weight:700;color:var(--text)}}
 .dd-entry-meta{{font-size:11px;color:var(--text-mute);margin:3px 0}}
 .dd-entry-summary{{font-size:12px;color:var(--text-dim);line-height:1.5}}
