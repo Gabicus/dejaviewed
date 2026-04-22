@@ -1,0 +1,465 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI3 — Research &amp; Resources · DejaViewed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+.wrap{max-width:1500px;margin:0 auto;padding:0 22px;overflow:hidden}
+
+
+.hero{padding:30px 0 8px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.hero-left{display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.hero h2{font-size:clamp(30px,4.5vw,48px);margin:0 0 12px;font-weight:900;letter-spacing:-0.035em;line-height:1.05;background:linear-gradient(135deg,#fff 0%,#fff 50%,#a78bfa 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.why{font-size:15px;color:var(--text-dim);margin:0 0 18px;overflow-wrap:break-word;word-wrap:break-word}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.grid{column-count:1!important}}
+
+/* BANS strip */
+.bans{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin:auto 0 0}
+.ban{padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.ban .v{font-size:24px;font-weight:900;color:#fff;line-height:1}
+.ban .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text-mute);margin-top:6px;font-weight:700}
+
+/* Two-panel layout */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:28px;margin-top:30px;align-items:flex-start}
+.sidebar{position:sticky;top:96px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin:0 0 10px;font-weight:800}
+.sidebar h4:not(:first-child){margin-top:18px}
+.search{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:13.5px;font-family:inherit;transition:all .15s}
+.search:focus{outline:none;border-color:var(--accent)}
+.btn-group{display:flex;flex-direction:column;gap:5px}
+.cat-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;font-size:12.5px;font-weight:700;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;text-align:left;font-family:inherit;transition:all .12s}
+.cat-btn .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-btn .n{color:var(--text-mute);font-size:11px;font-weight:600}
+.cat-btn:hover{background:var(--panel-2);color:var(--text)}
+.cat-btn.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+.cat-btn.on .n{color:var(--text)}
+.cat-btn[data-cat="all"].on{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));border-color:rgba(167,139,250,.5)}
+.cat-btn[data-cat="repo"] .dot{background:var(--c-repo)} .cat-btn[data-cat="repo"].on{border-color:var(--c-repo);box-shadow:inset 3px 0 0 var(--c-repo)}
+.cat-btn[data-cat="tool"] .dot{background:var(--c-tool)} .cat-btn[data-cat="tool"].on{border-color:var(--c-tool);box-shadow:inset 3px 0 0 var(--c-tool)}
+.cat-btn[data-cat="skill"] .dot{background:var(--c-skill)} .cat-btn[data-cat="skill"].on{border-color:var(--c-skill);box-shadow:inset 3px 0 0 var(--c-skill)}
+.cat-btn[data-cat="guide"] .dot{background:var(--c-guide)} .cat-btn[data-cat="guide"].on{border-color:var(--c-guide);box-shadow:inset 3px 0 0 var(--c-guide)}
+.cat-btn[data-cat="platform"] .dot{background:var(--c-platform)} .cat-btn[data-cat="platform"].on{border-color:var(--c-platform);box-shadow:inset 3px 0 0 var(--c-platform)}
+.cat-btn[data-cat="resource"] .dot{background:var(--c-resource)} .cat-btn[data-cat="resource"].on{border-color:var(--c-resource);box-shadow:inset 3px 0 0 var(--c-resource)}
+.cat-btn[data-cat="art"] .dot{background:var(--c-art)} .cat-btn[data-cat="art"].on{border-color:var(--c-art);box-shadow:inset 3px 0 0 var(--c-art)}
+.cat-btn[data-cat="design"] .dot{background:var(--c-design)} .cat-btn[data-cat="design"].on{border-color:var(--c-design);box-shadow:inset 3px 0 0 var(--c-design)}
+.cat-btn[data-cat="uiux"] .dot{background:var(--c-uiux)} .cat-btn[data-cat="uiux"].on{border-color:var(--c-uiux);box-shadow:inset 3px 0 0 var(--c-uiux)}
+
+.tier-row{display:flex;gap:5px;flex-wrap:wrap}
+.tier-pill{padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;letter-spacing:.05em}
+.tier-pill[data-t="S"].on{background:rgba(251,191,36,.15);color:var(--s);border-color:var(--s)}
+.tier-pill[data-t="A"].on{background:rgba(167,139,250,.15);color:var(--a);border-color:var(--a)}
+.tier-pill[data-t="B"].on{background:rgba(96,165,250,.15);color:var(--b);border-color:var(--b)}
+.tier-pill[data-t="C"].on{background:rgba(106,106,128,.15);color:var(--c);border-color:#888}
+
+.coll-row{display:flex;gap:4px;flex-wrap:wrap}
+.coll-pill{padding:5px 10px;border-radius:6px;font-size:10.5px;font-weight:800;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.06em}
+.coll-pill.on{background:var(--panel-2);color:#fff;border-color:var(--border-hi)}
+
+.sort-select{width:100%;background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:12.5px;font-family:inherit;cursor:pointer}
+
+/* Main panel */
+.main{min-width:0;overflow:hidden}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:32px 0 14px}
+.section-head:first-child{margin-top:0}
+.section-head h3{margin:0;font-size:22px;font-weight:900;letter-spacing:-0.015em;display:flex;align-items:center;gap:10px}
+.section-head h3 .icon{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#0a0a0f}
+.section-head .count{color:var(--text-mute);font-size:13px;font-weight:600}
+.section-sub{color:var(--text-dim);font-size:13.5px;margin:-8px 0 14px}
+
+/* Creators panel */
+.creators{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;display:flex;flex-direction:column;min-height:0}
+.creators h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:-0.01em;display:flex;align-items:center;gap:8px}
+.creators .sub{color:var(--text-dim);font-size:11.5px;margin-bottom:12px;line-height:1.45}
+.bar-scroll{flex:1;overflow-y:auto;padding-right:6px;max-height:170px}
+.bar-scroll::-webkit-scrollbar{width:6px}
+.bar-scroll::-webkit-scrollbar-track{background:transparent}
+.bar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.bar-list{display:flex;flex-direction:column;gap:5px}
+.bar-row{display:grid;grid-template-columns:100px 1fr 24px;gap:8px;align-items:center;font-size:11.5px}
+.bar-row a.handle{font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bar-row a.handle:hover{color:var(--accent)}
+.bar-track{display:flex;height:7px;background:rgba(255,255,255,.04);border-radius:3px;border:1px solid var(--border);gap:1px;padding:0;overflow:hidden}
+.seg{flex:0 0 auto;height:100%;cursor:pointer;transition:transform .1s,filter .1s}
+.seg:hover{transform:scaleY(1.15);filter:brightness(1.4)}
+.seg.tS{background:var(--s)}
+.seg.tA{background:var(--a)}
+.seg.tB{background:var(--b)}
+.seg.tC{background:var(--c)}
+.bar-row .n{color:var(--text-mute);font-weight:700;text-align:right;font-size:11px}
+.creators .legend{display:flex;gap:10px;font-size:10px;color:var(--text-mute);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.creators .legend span{display:flex;align-items:center;gap:4px}
+.creators .legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
+
+/* Quick commands */
+.commands{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.commands h3{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:0 0 12px;font-weight:800}
+.cmd-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px}
+.cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
+.cmd-row span{color:var(--text-dim)}
+
+/* Cards grid */
+.grid{column-count:3;column-gap:15px;margin-bottom:18px}
+@media(max-width:1200px){.grid{column-count:2}}
+.grid > .card{break-inside:avoid;display:inline-block;width:100%;margin-bottom:15px}
+.grid > h3{column-span:all}
+.links{margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:flex;flex-wrap:wrap;gap:6px}
+.links a{font-size:11px;padding:3px 8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all .15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.links a:hover{background:rgba(167,139,250,.12);border-color:var(--c-skill);color:#fff}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;transition:all .18s;position:relative;overflow:hidden;border-left-width:3px}
+.thumb{display:block;margin:14px -18px -18px -18px;aspect-ratio:5/2;overflow:hidden;background:#0a0a12;border-top:1px solid var(--border)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.card:hover .thumb img{transform:scale(1.04)}
+.card.cat-repo{border-left-color:var(--c-repo)}
+.card.cat-tool{border-left-color:var(--c-tool)}
+.card.cat-skill{border-left-color:var(--c-skill)}
+.card.cat-guide{border-left-color:var(--c-guide)}
+.card.cat-platform{border-left-color:var(--c-platform)}
+.card.cat-resource{border-left-color:var(--c-resource)}
+.card.cat-art{border-left-color:var(--c-art)}
+.card.cat-design{border-left-color:var(--c-design)}
+.card.cat-uiux{border-left-color:var(--c-uiux)}
+.card:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px)}
+.card .ctitle{font-size:13px;font-weight:800;color:#fff;margin:0 0 6px;letter-spacing:0;line-height:1.35}
+.card .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card .meta{font-size:11px;color:var(--text-mute)}
+.card .meta a{color:var(--accent);font-weight:600}
+.tier{font-size:9.5px;font-weight:900;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.08em;border:1px solid;flex-shrink:0}
+.tier.S{color:var(--s);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.tier.A{color:var(--a);border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
+.tier.B{color:var(--b);border-color:rgba(96,165,250,.4);background:rgba(96,165,250,.08)}
+.tier.C{color:var(--c);border-color:rgba(106,106,128,.4);background:rgba(106,106,128,.08)}
+.card .sum-wrap{flex:1;display:flex;flex-direction:column}
+.card .summary{font-size:12px;color:var(--text-dim);line-height:1.6;margin:0;letter-spacing:0.01em}
+.cat-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.chip{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-mute);text-transform:uppercase;letter-spacing:.04em;line-height:1.4}
+.chip.repo{color:var(--c-repo);border-color:rgba(76,218,140,.28)}
+.chip.tool{color:var(--c-tool);border-color:rgba(240,160,80,.28)}
+.chip.skill{color:var(--c-skill);border-color:rgba(224,96,160,.28)}
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.chip.art{color:var(--c-art);border-color:rgba(240,80,96,.28)}
+.chip.design{color:var(--c-design);border-color:rgba(251,113,133,.28)}
+.chip.uiux{color:var(--c-uiux);border-color:rgba(96,165,250,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+.btn.browse{background:rgba(76,218,140,.15);border-color:rgba(76,218,140,.4);color:var(--c-repo)}
+.btn.browse:hover{background:rgba(76,218,140,.25)}
+
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}
+  .src-group{flex-wrap:wrap}
+  .wrap{padding:0 14px}
+  .hero{padding:20px 0 6px}
+  .bans{grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+  .ban{padding:10px 12px}
+  .ban .v{font-size:20px}
+  .creators{padding:14px}
+  .bar-scroll{max-height:140px}
+  .section-head h3{font-size:18px}
+}
+@media(max-width:640px){
+  .brand h1{font-size:24px}
+  .hero h2{font-size:26px}
+  header.site{position:static}
+  .head-row{flex-direction:column;gap:10px;align-items:flex-start}
+  .nav{width:100%;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+  .nav::-webkit-scrollbar{display:none}
+  .nav a{flex-shrink:0}
+  .src-group{flex-shrink:0;flex-wrap:nowrap}
+  .sub-links{flex-wrap:nowrap}
+  .sub-links a.sub{flex-shrink:0}
+  .grid{column-count:1!important}
+  .bar-row{grid-template-columns:90px 1fr 24px;font-size:10.5px}
+  .card{padding:14px}
+  .card .ctitle{font-size:12px}
+  .card .summary{font-size:11.5px}
+  .hero p.why{font-size:13px}
+  .bans{grid-template-columns:repeat(3,1fr)}
+  .btn{padding:7px 10px;font-size:11px}
+  .commands{padding:14px}
+  .cmd-row{flex-direction:column;align-items:flex-start;gap:4px}
+  .cmd-row code{white-space:pre-wrap;word-break:break-all;font-size:10.5px}
+  .thumb{margin:12px -14px -14px -14px}
+}
+@media(max-width:400px){
+  .wrap{padding:0 10px}
+  .hero h2{font-size:22px}
+  .bans{grid-template-columns:repeat(2,1fr)}
+  .ban .v{font-size:18px}
+  .nav a{padding:5px 8px;font-size:10px}
+  .card .actions{flex-direction:column;gap:6px}
+  .btn{width:100%}
+}
+
+/* Guide page */
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{color:#fff;letter-spacing:-0.01em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;background:linear-gradient(135deg,#fff 0%,#a78bfa 60%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+</style></head><body>
+<script>DV.mountHeader(document.body, "catalog");</script>
+<section class="hero"><div class="wrap">
+  <div class="hero-grid">
+    <div class="hero-left">
+      <h2>AI3 — Research & Resources</h2>
+      <p class="why">The original hand-curated catalog: trading agents, creative coding, worldbuilding, design systems.</p>
+      <div class="bans">
+  <div class="ban"><div class="v">45</div><div class="l">Posts</div></div>
+  <div class="ban"><div class="v">2</div><div class="l">Creators</div></div>
+  <div class="ban"><div class="v">0</div><div class="l">S-tier</div></div>
+  <div class="ban"><div class="v">1</div><div class="l">A-tier</div></div>
+  <div class="ban"><div class="v">7</div><div class="l">Repos</div></div>
+  <div class="ban"><div class="v">0</div><div class="l">Deep dives</div></div>
+  <div class="ban"><div class="v">14</div><div class="l">Stacks</div></div>
+</div>
+    </div>
+    <div><div class="creators">
+  <h3>👥 1 creators cited</h3>
+  <div class="sub">Each bar = one creator. Each segment = one saved post, colored by tier. Click a segment to jump to its card.</div>
+  <div class="bar-scroll"><div class="bar-list"><div class="bar-row"><a class="handle" href="https://instagram.com/rndyrbrts" target="_blank" rel="noopener">@rndyrbrts</a><div class="bar-track"><a class="seg tA" style="width:100.000%" href="#post-DWTTnvAgik_" title="Randy Roberts — generative-art code garden (@rndyrbrts) — A-tier"></a></div><div class="n">1</div></div></div></div>
+  <div class="legend"><span><i style="background:var(--s)"></i>S</span><span><i style="background:var(--a)"></i>A</span><span><i style="background:var(--b)"></i>B</span><span><i style="background:var(--c)"></i>C</span><span style="margin-left:auto">click bar → jump to post</span></div>
+</div></div>
+  </div>
+</div></section>
+<div class="wrap">
+  
+  <div class="layout">
+    <aside class="sidebar">
+  <h4>Search</h4>
+  <input id="search" class="search" placeholder="captions, tools, repos…">
+  <h4>Category</h4>
+  <div class="btn-group"><button class="cat-btn on" data-cat="all"><span><span class="dot"></span> All</span><span class="n">45</span></button><button class="cat-btn" data-cat="repo"><span><span class="dot"></span> Repos</span><span class="n">7</span></button><button class="cat-btn" data-cat="guide"><span><span class="dot"></span> Guides</span><span class="n">0</span></button><button class="cat-btn" data-cat="skill"><span><span class="dot"></span> Skills</span><span class="n">1</span></button><button class="cat-btn" data-cat="tool"><span><span class="dot"></span> Tools</span><span class="n">2</span></button><button class="cat-btn" data-cat="platform"><span><span class="dot"></span> Platforms</span><span class="n">0</span></button><button class="cat-btn" data-cat="resource"><span><span class="dot"></span> Resources</span><span class="n">35</span></button><button class="cat-btn" data-cat="art"><span><span class="dot"></span> Art</span><span class="n">1</span></button><button class="cat-btn" data-cat="design"><span><span class="dot"></span> Design</span><span class="n">0</span></button><button class="cat-btn" data-cat="uiux"><span><span class="dot"></span> UI / UX</span><span class="n">0</span></button></div>
+  <h4>Tier</h4>
+  <div class="tier-row">
+    <button class="tier-pill" data-t="S">S</button>
+    <button class="tier-pill" data-t="A">A</button>
+    <button class="tier-pill" data-t="B">B</button>
+    <button class="tier-pill" data-t="C">C</button>
+  </div>
+  
+  <h4>Sort</h4>
+  <select id="sort" class="sort-select">
+    <option value="tier">Tier (S→C)</option>
+    <option value="date">Date (newest)</option>
+    <option value="creator">Creator (A→Z)</option>
+  </select>
+</aside>
+    <main class="main" id="main-content"></main>
+  </div>
+</div>
+<footer class="site"><div class="wrap">
+  Curated by <a href="https://instagram.com/6ab3">@6ab3</a> · Built with the <code>dejaviewed</code> skill for Claude Code<br>
+  <span style="font-size:11px">All content sourced from public Instagram posts. Cookie-safe scraping. <span id="count"></span></span>
+</div></footer>
+<script>const POSTS=[{"post_url":"https://www.instagram.com/p/DWTTnvAgik_/","creator":"@rndyrbrts","collection":"ai3","date":null,"media_type":"image","caption_original":"","summary":"@rndyrbrts ongoing generative-art / algorithmic 'code garden' reel. No caption; the signal is remembering Randy Roberts as a generative-art reference follow.","type":"inspiration","domains":["creative-coding","generative-art"],"audience":"advanced","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":["cellular automata","Markov chains","knowledge graphs"],"key_takeaways":["Ambient generative art + knowledge graph as long-running creative practice"],"deep_dive_candidate":false,"deep_dive_topic":"generative-art-code-garden","card_title":"Randy Roberts — generative-art code garden (@rndyrbrts)","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["inspiration"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Scaffolds new projects using the open-multi-agent framework. Provides complete API reference, 6 code patterns (single agent, auto-orchestrated team, task pipeline, custom tools, streaming, multi-model), and step-by-step project setup. | Auto-triggers when you say: create a multi-agent app scaffold agent project build multi-agent system set up agent teams agent pipeline add custom tool | Location: ~/Desktop/Projects/claude/open-multi-agent/.claude/skills/scaffold/","type":"skill","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"open-multi-agent:scaffold — scaffolds new multi-agent projects","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["skill"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Quick-access index to the entire AI3 knowledge base. Maps topics to repos, guides, and tools. When you mention any technology from the collection, this skill surfaces the relevant resource path. | Auto-triggers when you say: AI tools design tools creative coding archive collections video search text rendering projection mapping n8n TouchDesigner | Location: ~/Desktop/Projects/claude/ai3-resources/.claude/skills/ai3-knowledge/","type":"skill","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"ai3-knowledge — quick-access index to the full AI3 knowledge base","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["skill"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"A global memory entry installed in Claude's project memory. When you're in ANY project folder and mention a topic that matches (video search, design tools, n8n, Docker optimization, etc.), Claude will proactively surface the relevant resource from ai3-resources without you asking. You never have to remember — Claude remembers for you. | Works everywhere. Examples: \"I need a component library\" → points to 21st.dev + shadcn \"optimize this Dockerfile\" → surfaces Docker guide \"search my video files\" → suggests SentrySearch \"set up automation\" → points to n8n guide | Location: ~/.claude/projects/.../memory/reference_ai3_resources.md","type":"skill","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Cross-Project Auto-Recall — global Claude memory across all projects","drop":false,"links":[{"label":"21st.dev","url":"https://21st.dev"}],"tier":"A","guide_slug":"","categories":["skill"]},{"post_url":"https://github.com/ssrajadh/sentrysearch","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"by ssrajadh — featured by @marc.kaz | 100% local video search engine. Type natural language queries and it finds exact timestamps in your video files. Uses Qwen3-VL embeddings. Perfect for dashcams, security footage, home videos. Zero data leaves your machine. | Python 3.11+ ChromaDB Gemini or Local Tesla dashcam support","type":"repo","domains":[],"audience":"intermediate","medium":"code","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"SentrySearch — 100% local Qwen3-VL video search engine","drop":false,"links":[{"label":"github.com","url":"https://github.com/ssrajadh/sentrysearch"}],"tier":"A","guide_slug":"","categories":["repo","tool"]},{"post_url":"https://github.com/chenglou/pretext","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"by Cheng Lou (ReasonML, Midjourney frontend) — featured by @marc.kaz | Pure TypeScript library for text measurement and layout. 300-600x faster than DOM-based text rendering. No DOM dependency — works in Web Workers, Node.js, and server-side. Renders to DOM, Canvas, SVG. Foundational UI infrastructure. | TypeScript 14K+ stars in 48hrs No DOM needed","type":"repo","domains":[],"audience":"intermediate","medium":"code","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Pretext — 500x faster canvas text rendering, no DOM needed","drop":false,"links":[{"label":"github.com","url":"https://github.com/chenglou/pretext"}],"tier":"A","guide_slug":"","categories":["repo","tool"]},{"post_url":"https://21st.dev","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"by serafimcloud — featured by @woojinstartup | \"NPM for design engineers\" — largest marketplace of shadcn/ui-based React + Tailwind components. Describe what you want, get production code. Works as MCP server for Claude Code. Community-driven, open source. | React + Tailwind MCP Server shadcn-compatible","type":"repo","domains":[],"audience":"intermediate","medium":"code","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"21st.dev — largest React component marketplace for design engineers","drop":false,"links":[{"label":"21st.dev","url":"https://21st.dev"}],"tier":"A","guide_slug":"","categories":["repo","tool"]},{"post_url":"https://github.com/MoonshotAI/kimi-cli","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"by Moonshot AI — featured by @speedy_devv | Terminal-first AI coding agent. Free Claude Code/Gemini CLI alternative. No subscriptions, no locked features. Understands repos, executes end-to-end tasks. Apache 2.0 license — fully open source and modifiable. | Python Apache 2.0 Free forever","type":"repo","domains":[],"audience":"intermediate","medium":"code","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Kimi Code CLI — free Claude Code alternative, terminal-first agent","drop":false,"links":[{"label":"github.com","url":"https://github.com/MoonshotAI/kimi-cli"}],"tier":"A","guide_slug":"","categories":["repo","tool"]},{"post_url":"https://github.com/MoonshotAI/Kimi-K2.5","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"by Moonshot AI | Open-source native multimodal agentic model. Strong coding and reasoning benchmarks. Modified MIT License. Available on HuggingFace for self-hosting as an alternative LLM backend. | Modified MIT HuggingFace Self-hostable","type":"repo","domains":[],"audience":"intermediate","medium":"code","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Kimi K2.5 — Moonshot's open multimodal agentic model","drop":false,"links":[{"label":"github.com","url":"https://github.com/MoonshotAI/Kimi-K2.5"}],"tier":"A","guide_slug":"","categories":["repo","tool"]},{"post_url":"https://github.com/MiniMax-AI/MiniMax-M2.5","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"by MiniMax AI | State-of-the-art open-source model — 80.2% on SWE-Bench Verified. Excels at coding and agentic tasks. OpenAI-compatible API format. Available on GitHub + HuggingFace for self-hosting. | 80.2% SWE-Bench OpenAI-compatible API HuggingFace","type":"repo","domains":[],"audience":"intermediate","medium":"code","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"MiniMax M2.5 — 80.2% SWE-Bench, top open-source coding model","drop":false,"links":[{"label":"github.com","url":"https://github.com/MiniMax-AI/MiniMax-M2.5"}],"tier":"A","guide_slug":"","categories":["repo","tool"]},{"post_url":"https://github.com/Tencent-Hunyuan/HY-Motion-1.0","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"by Tencent Hunyuan — featured by @marc.kaz | Billion-parameter text-to-3D motion generation. Type \"a person walks forward then starts jumping\" and get skeleton-based character animation. 200+ action types, 700hrs of pro mocap training. Works on human + robot skeletons. Free on HuggingFace. | DiT + Flow Matching 200+ action types Free","type":"repo","domains":[],"audience":"intermediate","medium":"code","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"HY-Motion 1.0 — Tencent's text-to-3D motion generation","drop":false,"links":[{"label":"github.com","url":"https://github.com/Tencent-Hunyuan/HY-Motion-1.0"}],"tier":"A","guide_slug":"","categories":["repo","tool"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Batch download items from 14 curated archive.org collections. Lists available collections when run without arguments. Supports format filtering (jpg, png, mp4, etc). Uses the ia CLI tool under the hood. | Bash 14 collections Format filtering | tools/archive-downloader.sh","type":"tool","domains":[],"audience":"intermediate","medium":"code","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Archive.org Downloader — batch download from 14 curated collections","drop":false,"links":[{"label":"archive.org","url":"https://archive.org"},{"label":"archive-downloader.sh","url":"https://archive-downloader.sh"}],"tier":"A","guide_slug":"","categories":["tool"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"One-command setup for the full Claude Code design stack in any project. Initializes shadcn/ui, adds 15 essential components (button, card, dialog, tabs, etc.), creates CLAUDE.md with design guidance. Run on any Next.js project. | Bash shadcn/ui 15 components CLAUDE.md | Copy Command","type":"tool","domains":[],"audience":"intermediate","medium":"code","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Design Stack Setup — one-command shadcn + Tailwind for any project","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["tool"]},{"post_url":"https://n8n.io","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Source: @angus.sewell — 4K likes | Open-source workflow automation (self-hosted Zapier). AI-powered LinkedIn content pipelines, email summarizers, lead enrichment, content repurposing. Includes Docker setup, LinkedIn API configuration, and example JSON workflows. | n8n.io Original Post","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"n8n AI Automation — self-hosted Zapier with AI agent nodes","drop":false,"links":[{"label":"n8n.io","url":"https://n8n.io"}],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"https://derivative.ca","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Sources: @the.poet.engineer, @_sashasokolov | Three techniques: 3D scanning with virtual cameras (Polycam), MediaPipe body tracking for interactive dance art, and Gaussian splats for photorealistic 3D scenes. Includes setup, key concepts, and resources. | TouchDesigner","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"TouchDesigner Creative Coding — 3D scanning, MediaPipe, Gaussian splats","drop":false,"links":[{"label":"derivative.ca","url":"https://derivative.ca"}],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Arduino + 4 LDR sensors + servo motors. 20-40% efficiency improvement over fixed mount. Complete code, wiring diagram concept, and $30-50 bill of materials. | guides/solar-tracking-system.md","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Solar Tracking System — Arduino + LDR sensors, 20-40% efficiency gain","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Source: TimeSinkStudio | Modular array of steerable mirror tiles that form images from reflected light. Each tile is a 2-axis pixel. Works with any light source. Includes Python angle computation and DIY component list. | guides/living-mirror-installation.md","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"The Living Mirror — modular steerable mirror tiles that form images","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"https://vvd.world","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Source: @vvdworldbuilding — 60K likes (highest!) | Complete worldbuilding platform: interactive maps, lore/character tracking, connection visualization, publishable wikis. For writers, TTRPG creators, game developers. | guides/worldbuilding-vvd-world.md","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"vvd.world — interactive maps, lore tracking, connection visualizer","drop":false,"links":[{"label":"vvd.world","url":"https://vvd.world"}],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Source: @mavenhq — 7.9K likes | Anthropic's professional certification for Claude expertise. Requires partner network membership + proctored exam. Proves production-grade Claude application building skills. | guides/claude-certified-architect.md","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Claude Certified Architect — Anthropic's pro certification for Claude","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Source: @brand.nat — 2.5K likes | One-line config to display context window usage, session cost, and token metrics. Already available in Claude Code settings. | guides/claude-code-status-bar.md","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Claude Code Status Bar — context window + session cost in your terminal","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"https://21st.dev","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"AI-powered React component marketplace with MCP server integration. Describe components in natural language, get production code. Works as MCP server for Claude Code. | guides/21st-dev-component-registry.md","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"21st.dev Components — AI-powered React marketplace with MCP integration","drop":false,"links":[{"label":"21st.dev","url":"https://21st.dev"}],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Free open-source Claude Code alternative. Comparison table, setup instructions, and when to use it (cost-sensitive, self-hosted, or privacy requirements). | guides/kimi-cli-open-source-coding-agent.md","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Kimi CLI Agent — free open-source Claude Code alternative guide","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Generate QR codes in Microsoft Word using DISPLAYBARCODE field codes. Supports QR, CODE128, EAN13, UPCA. Plus Python alternative. | guides/microsoft-word-qr-codes.md","type":"guide","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Word QR Codes — generate QR codes in Microsoft Word, no plugins","drop":false,"links":[],"tier":"A","guide_slug":"","categories":["guide"]},{"post_url":"https://ui.shadcn.com","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Beautifully designed, customizable component library. Copy-paste into your project — full ownership, no dependency lock-in. The foundation of modern React UI development. | Free React + Tailwind Copy-paste | ui.shadcn.com","type":"platform","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"shadcn/ui — copy-paste React components, design-system foundation","drop":false,"links":[{"label":"ui.shadcn.com","url":"https://ui.shadcn.com"}],"tier":"B","guide_slug":"","categories":["platform"]},{"post_url":"https://stitch.withgoogle.com","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Google's AI design tool. Generate full-page UI mockups from text descriptions. Upload style references. Export designs and feed to Claude Code for implementation. | Free (Labs) Web-based | stitch.withgoogle.com","type":"platform","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Stitch — Google's AI design tool, text-to-full-page UI mockups","drop":false,"links":[{"label":"stitch.withgoogle.com","url":"https://stitch.withgoogle.com"}],"tier":"B","guide_slug":"","categories":["platform"]},{"post_url":"https://hypersketch.com","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"AI concept rendering for industrial designers. Rough doodle → photorealistic render in 30 seconds. Watercolor sketch conversion. Created by STUCK Design. | Paid (iOS app) Code: DONNKOH20 = 20% off | hypersketch.com","type":"platform","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Hypersketch — rough doodle → photorealistic concept render in 30s","drop":false,"links":[{"label":"hypersketch.com","url":"https://hypersketch.com"}],"tier":"B","guide_slug":"","categories":["platform"]},{"post_url":"https://higgsfield.ai","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"AI photo reframing. Upload one photo → generate new camera angles (high, low, zoom) without prompts. Click the angle you want. | Free tier Mobile + Web | higgsfield.ai","type":"platform","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Higgsfield Angles — one photo → new camera angles via AI reframing","drop":false,"links":[{"label":"higgsfield.ai","url":"https://higgsfield.ai"}],"tier":"B","guide_slug":"","categories":["platform"]},{"post_url":"https://n8n.io","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Open-source workflow automation (self-hosted Zapier). 400+ integrations. AI agent nodes support Claude and GPT. Visual node-based editor. | Self-host free Docker / npm 400+ integrations | n8n.io GitHub","type":"platform","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"n8n — open-source self-hosted Zapier with 400+ integrations","drop":false,"links":[{"label":"n8n.io","url":"https://n8n.io"}],"tier":"B","guide_slug":"","categories":["platform"]},{"post_url":"https://derivative.ca","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Node-based visual programming for real-time interactive multimedia. Used for installations, live visuals, interactive art, projection mapping, and Gaussian splats. | Free non-commercial Win + Mac | derivative.ca","type":"platform","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"TouchDesigner — node-based visual programming for interactive media","drop":false,"links":[{"label":"derivative.ca","url":"https://derivative.ca"}],"tier":"B","guide_slug":"","categories":["platform"]},{"post_url":"https://savee.it","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Pinterest alternatives for designers. Cleaner, more curated design inspiration without ads and noise. Savee focuses on graphic design, typography, photography. Soot has AI-powered discovery.","type":"platform","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Savee.it + Soot.com — cleaner Pinterest alternatives for designers","drop":false,"links":[{"label":"savee.it","url":"https://savee.it"}],"tier":"B","guide_slug":"","categories":["platform"]},{"post_url":"https://vvd.world","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Complete worldbuilding toolkit. Interactive maps, character/lore tracking, connection visualization, publishable wiki sites. Highest engagement in collection (60K likes).","type":"platform","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"vvd.world — complete worldbuilding toolkit with interactive maps","drop":false,"links":[{"label":"vvd.world","url":"https://vvd.world"}],"tier":"B","guide_slug":"","categories":["platform"]},{"post_url":"https://archive.org/details/ravezines","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Underground rave culture zines and publications. Raw graphic design from the 90s/2000s rave scene.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Rave Zines — 90s/2000s underground rave graphic design archive","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/ravezines"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/logoarchive","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Historical logo designs. Excellent for studying typography, mark-making, and brand identity evolution.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Logo Archive — historical logos for typography & brand study","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/logoarchive"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/arcadeflyers","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Promotional flyers from arcade games. Bold, colorful graphic design from the golden age of gaming.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Arcade Flyers — bold graphic design from golden age of gaming","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/arcadeflyers"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/david-rumsey-map-collection","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"150,000+ historical maps spanning centuries. Cartographic art, world exploration, and geographic history.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"David Rumsey Maps — 150K+ historical maps spanning centuries","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/david-rumsey-map-collection"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/vintage-australian-print-ads","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Mid-century Australian print advertising. Unique cultural and design reference.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Vintage Australian Ads — mid-century print advertising design ref","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/vintage-australian-print-ads"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/Fine-Art-History","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Classical and historical fine art. High-resolution reproductions of paintings, drawings, and sculptures.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Fine Art History — hi-res classical paintings, drawings, sculptures","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/Fine-Art-History"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/vhsvault","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Digitized VHS recordings. Retro footage, TV recordings, and home video cultural artifacts.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"VHS Vault — digitized retro TV recordings & home video artifacts","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/vhsvault"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/prelinger","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"60,000+ ephemeral films: educational, industrial, amateur, advertising. Public domain footage goldmine.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Prelinger Archives — 60K+ public domain ephemeral films","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/prelinger"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/musictelevision","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Music video and music TV recordings. MTV-era cultural content.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Music Television — MTV-era music video & TV recordings","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/musictelevision"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/digitaltransportation_posters","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Digital transportation posters. Travel, transit, and infrastructure promotional art.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Transportation Posters — travel & transit promotional art","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/digitaltransportation_posters"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/@midwest_rave_flyers","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Regional rave flyer collection from the Midwest US scene.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Midwest Rave Flyers — regional rave scene flyer collection","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/@midwest_rave_flyers"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/manuals","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Vintage technical manuals and instruction booklets.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Technical Manuals — vintage instruction booklets & schematics","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/manuals"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/lifestylemagazines_misc","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Miscellaneous lifestyle magazine scans. Layout and editorial design reference.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Lifestyle Magazines — editorial layout & design reference scans","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/lifestylemagazines_misc"}],"tier":"C","guide_slug":"","categories":["resource"]},{"post_url":"https://archive.org/details/culturalandacademicfilms","creator":"@6ab3","collection":"ai3","date":"","media_type":"image","caption_original":"","summary":"Educational and cultural documentaries. Academic film preservation.","type":"resource","domains":[],"audience":"intermediate","medium":"text","tools_mentioned":[],"repos_or_projects_mentioned":[],"models_mentioned":[],"techniques_mentioned":[],"key_takeaways":[],"deep_dive_candidate":false,"deep_dive_topic":"","card_title":"Cultural & Academic Films — educational documentaries preserved","drop":false,"links":[{"label":"archive.org","url":"https://archive.org/details/culturalandacademicfilms"}],"tier":"C","guide_slug":"","categories":["resource"]}];
+const state = { coll: "ai3", cats: new Set(['all']), tiers: new Set(), search: '', sort: 'tier' };
+function $(s,r=document){return r.querySelector(s)}
+function $$(s,r=document){return Array.from(r.querySelectorAll(s))}
+function tr(t){return {S:0,A:1,B:2,C:3}[t]??4}
+function matches(p){
+  if(state.coll && p.collection!==state.coll)return false;
+  if(state.tiers.size && !state.tiers.has(p.tier))return false;
+  if(!state.cats.has('all')){
+    let any=false;
+    for(const c of p.categories){ if(state.cats.has(c)){any=true;break} }
+    if(!any)return false;
+  }
+  if(state.search){
+    const q=state.search.toLowerCase();
+    const h=[p.summary,p.caption_original,p.creator,p.card_title,...(p.tools_mentioned||[]),...(p.repos_or_projects_mentioned||[]),...(p.techniques_mentioned||[])].join(' ').toLowerCase();
+    if(!h.includes(q))return false;
+  }
+  return true;
+}
+function sf(a,b){
+  if(state.sort==='tier')return tr(a.tier)-tr(b.tier)||(b.date||'').localeCompare(a.date||'');
+  if(state.sort==='date')return (b.date||'').localeCompare(a.date||'');
+  if(state.sort==='creator')return (a.creator||'').localeCompare(b.creator||'');
+  return 0;
+}
+function el(tag, attrs={}, kids=[]){
+  const e=document.createElement(tag);
+  for(const k in attrs){
+    if(k==='class')e.className=attrs[k];
+    else if(k==='text')e.textContent=attrs[k];
+    else e.setAttribute(k,attrs[k]);
+  }
+  for(const c of (Array.isArray(kids)?kids:[kids])){
+    if(c==null)continue;
+    e.appendChild(typeof c==='string'?document.createTextNode(c):c);
+  }
+  return e;
+}
+function ighandleUrl(h){ if(!h)return '#'; return 'https://instagram.com/'+h.replace(/^@/,''); }
+function postId(p){ const m=p.post_url.match(/\/(p|reel)\/([^/]+)/); return 'post-'+(m?m[2]:''); }
+function shortcode(p){ const m=p.post_url.match(/\/(p|reel)\/([^/]+)/); return m?m[2]:''; }
+function card(p){
+  const primary = p.categories[0] || 'resource';
+  const c=el('article',{class:'card cat-'+primary,'data-tier':p.tier,'id':postId(p)});
+  c.appendChild(el('h4',{class:'ctitle',text:p.card_title}));
+  const top=el('div',{class:'top'});
+  const meta=el('div',{class:'meta'});
+  const a=el('a',{href:ighandleUrl(p.creator),target:'_blank',rel:'noopener',text:p.creator||'unknown'});
+  meta.appendChild(a);
+  meta.appendChild(document.createTextNode(' · '+(p.collection||'')+(p.date?(' · '+p.date):'')));
+  top.appendChild(meta);
+  top.appendChild(el('span',{class:'tier '+p.tier,text:p.tier}));
+  c.appendChild(top);
+  const sumWrap=el('div',{class:'sum-wrap'});
+  sumWrap.appendChild(el('p',{class:'summary',text:p.summary||p.caption_original||''}));
+  c.appendChild(sumWrap);
+  const act=el('div',{class:'actions'});
+  const isIG=p.post_url && p.post_url.includes('instagram.com');
+  if(isIG){
+    act.appendChild(el('a',{class:'btn',href:p.post_url,target:'_blank',rel:'noopener',text:'Open post ↗'}));
+  } else if(p.post_url){
+    act.appendChild(el('a',{class:'btn browse',href:p.post_url,target:'_blank',rel:'noopener',text:'Browse ↗'}));
+  }
+  if(p.guide_slug)act.appendChild(el('a',{class:'btn primary',href:'guides/'+p.guide_slug+'.html',text:'Deep dive →'}));
+  c.appendChild(act);
+  if(p.links && p.links.length){
+    const lnks=el('div',{class:'links'});
+    for(const l of p.links){
+      lnks.appendChild(el('a',{href:l.url,target:'_blank',rel:'noopener',text:l.label,title:l.url}));
+    }
+    c.appendChild(lnks);
+  }
+  const sc=shortcode(p);
+  if(sc){
+    const thumb=el('a',{class:'thumb',href:p.post_url,target:'_blank',rel:'noopener'});
+    const img=el('img',{loading:'lazy',alt:p.card_title||'',src:'thumb/'+sc+'.jpg'});
+    img.onerror=function(){ thumb.parentNode && thumb.parentNode.removeChild(thumb); };
+    thumb.appendChild(img);
+    c.appendChild(thumb);
+  }
+  return c;
+}
+const SECTION_ORDER = [
+  ['guide','📘 Guides','var(--c-guide)'],
+  ['repo','🧰 Repos','var(--c-repo)'],
+  ['skill','⚡ Skills','var(--c-skill)'],
+  ['tool','🛠 Tools','var(--c-tool)'],
+  ['platform','🌐 Platforms','var(--c-platform)'],
+  ['art','🎨 Art','var(--c-art)'],
+  ['design','✏️ Design','var(--c-design)'],
+  ['uiux','📐 UI / UX','var(--c-uiux)'],
+  ['resource','📚 Resources','var(--c-resource)']
+];
+function render(){
+  const main=$('#main-content'); main.textContent='';
+  const filtered=POSTS.filter(matches).sort(sf);
+  $('#count').textContent=filtered.length+' post'+(filtered.length===1?'':'s');
+  if(!filtered.length){
+    main.appendChild(el('div',{class:'section-sub',text:'No posts match these filters.'}));
+    return;
+  }
+  // Group sections only when no specific category selected (i.e. 'all')
+  const grouped = state.cats.has('all') && state.cats.size===1;
+  if(grouped){
+    const buckets = {};
+    for(const p of filtered){
+      const primary = p.categories[0] || 'resource';
+      (buckets[primary] = buckets[primary] || []).push(p);
+    }
+    for(const [key,label,color] of SECTION_ORDER){
+      const arr = buckets[key];
+      if(!arr || !arr.length) continue;
+      const head = el('div',{class:'section-head'});
+      const h3 = el('h3');
+      const icon = el('span',{class:'icon'}); icon.style.background=color; icon.textContent=label.split(' ')[0];
+      h3.appendChild(icon);
+      h3.appendChild(document.createTextNode(' '+label.split(' ').slice(1).join(' ')));
+      head.appendChild(h3);
+      head.appendChild(el('span',{class:'count',text:arr.length+' items'}));
+      main.appendChild(head);
+      const grid = el('div',{class:'grid'});
+      arr.forEach(p=>grid.appendChild(card(p)));
+      main.appendChild(grid);
+    }
+  } else {
+    const head = el('div',{class:'section-head'});
+    head.appendChild(el('h3',{text:'📇 Filtered posts'}));
+    head.appendChild(el('span',{class:'count',text:filtered.length+' items'}));
+    main.appendChild(head);
+    const grid = el('div',{class:'grid'});
+    filtered.forEach(p=>grid.appendChild(card(p)));
+    main.appendChild(grid);
+  }
+}
+function init(){
+  $('#search').addEventListener('input',e=>{state.search=e.target.value;render()});
+  $('#sort').addEventListener('change',e=>{state.sort=e.target.value;render()});
+  $$('.cat-btn').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.getAttribute('data-cat');
+    if(k==='all'){
+      state.cats.clear(); state.cats.add('all');
+      $$('.cat-btn').forEach(x=>x.classList.toggle('on',x.getAttribute('data-cat')==='all'));
+    } else {
+      state.cats.delete('all');
+      $('.cat-btn[data-cat="all"]').classList.remove('on');
+      if(state.cats.has(k)){state.cats.delete(k);b.classList.remove('on')}
+      else{state.cats.add(k);b.classList.add('on')}
+      if(!state.cats.size){state.cats.add('all');$('.cat-btn[data-cat="all"]').classList.add('on')}
+    }
+    render();
+  }));
+  $$('.tier-pill').forEach(b=>b.addEventListener('click',()=>{
+    const t=b.getAttribute('data-t');
+    if(state.tiers.has(t)){state.tiers.delete(t);b.classList.remove('on')}
+    else{state.tiers.add(t);b.classList.add('on')}
+    render();
+  }));
+  $$('.coll-pill').forEach(b=>b.addEventListener('click',()=>{
+    const c=b.getAttribute('data-coll');
+    if(state.coll===c){state.coll='';b.classList.remove('on')}
+    else{
+      state.coll=c;
+      $$('.coll-pill').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+    }
+    render();
+  }));
+}
+document.addEventListener('DOMContentLoaded',()=>{init();render();
+  // Segment-bar click → reset filters so the target card is visible, then scroll
+  document.body.addEventListener('click',e=>{
+    const seg=e.target.closest('.seg'); if(!seg)return;
+    e.preventDefault();
+    state.cats.clear(); state.cats.add('all'); state.tiers.clear(); state.search='';
+    $$('.cat-btn').forEach(x=>x.classList.toggle('on',x.getAttribute('data-cat')==='all'));
+    $$('.tier-pill').forEach(x=>x.classList.remove('on'));
+    $('#search').value='';
+    render();
+    const id=seg.getAttribute('href').slice(1);
+    setTimeout(()=>{const t=document.getElementById(id);if(t){t.scrollIntoView({behavior:'smooth',block:'center'});t.style.outline='2px solid var(--accent)';setTimeout(()=>t.style.outline='',1800)}},50);
+  });
+});
+</script>
+</body></html>
