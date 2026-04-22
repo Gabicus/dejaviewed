@@ -424,7 +424,7 @@ function el(tag, attrs={}, kids=[]){
 }
 function ighandleUrl(h){ if(!h)return '#'; return 'https://instagram.com/'+h.replace(/^@/,''); }
 function postId(p){ const m=p.post_url.match(/\/(p|reel)\/([^/]+)/); return 'post-'+(m?m[2]:''); }
-function shortcode(p){ const m=p.post_url.match(/\/(p|reel)\/([^/]+)/); return m?m[2]:''; }
+function shortcode(p){ const m=(p.post_url||'').match(/\/(p|reel)\/([^/]+)/); return m?m[2]:(p.id||'').replace(/\//g,'_'); }
 function card(p){
   const primary = p.categories[0] || 'resource';
   const c=el('article',{class:'card cat-'+primary,'data-tier':p.tier,'id':postId(p)});
