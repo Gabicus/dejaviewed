@@ -101,7 +101,7 @@ Command tab from /finance into /unicron/command.
   rows, status dots). Tests green.
 - Discovered: the old Legion Command chart code depends on Plotly 5.x;
   /unicron is on Plotly 6.x. Needs shim or upgrade.
-- Added Victor's CSS vars to `src/styles/legion-theme.css`.
+- Added your CSS vars to `src/styles/legion-theme.css`.
 
 ## Next up (start here)
 1. Resolve the Plotly version mismatch — decide: shim or upgrade all of unicron.
@@ -111,7 +111,7 @@ Command tab from /finance into /unicron/command.
 3. Run full visual-regression suite before declaring Phase 3 done.
 
 ## Blockers
-- Plotly version decision (above). Needs Victor's input if we go the
+- Plotly version decision (above). Needs your input if we go the
   upgrade route since it touches other tabs.
 
 ## Open questions
@@ -120,8 +120,8 @@ Command tab from /finance into /unicron/command.
   unicron?
 
 ## Don't forget
-- The `.env` in `/unicron` has a placeholder HL_PRIVATE_KEY — Victor
-  needs to set this before running live.
+- The `.env` in `/unicron` has a placeholder HL_PRIVATE_KEY — you
+  need to set this before running live.
 - Arena's WebSocket reconnect logic is the reference implementation for
   any new real-time wiring.
 ```
@@ -234,9 +234,9 @@ cat primer.md
 
 If the hook didn't fire, check `claude --debug` output and `.claude/settings.json` syntax — hooks silently skip on JSON errors.
 
-## Cross-reference: how this complements Victor's MEMORY.md system
+## Cross-reference: how this complements your MEMORY.md system
 
-Victor already runs a related but distinct pattern at `/home/victor/.claude/projects/-home-victor-Desktop-Projects-claude/memory/MEMORY.md` — an index of per-topic memory files covering feedback, projects, and references. It is **auto-updated across conversations** and provides a global knowledge substrate.
+you already run a related but distinct pattern at `~/.claude/projects/<project>/memory/MEMORY.md` — an index of per-topic memory files covering feedback, projects, and references. It is **auto-updated across conversations** and provides a global knowledge substrate.
 
 **The overlap:**
 - Both patterns solve the "Claude has no memory across sessions" problem.
@@ -245,18 +245,18 @@ Victor already runs a related but distinct pattern at `/home/victor/.claude/proj
 
 **The differences:**
 
-| Dimension | Victor's MEMORY.md | primer.md |
+| Dimension | your MEMORY.md | primer.md |
 |---|---|---|
 | **Scope** | Global across all projects | Single project |
 | **Shape** | Index pointing to many sub-files | Single self-contained snapshot |
 | **Lifetime** | Permanent — entries accumulate over months | Ephemeral — rewritten every session |
 | **Granularity** | Learnings, project summaries, reference docs | Active state + next steps |
 | **Update trigger** | `forge` / `retro` / manual capture | Stop hook at session end |
-| **What it answers** | "What do I know about Victor and his projects?" | "Where did we stop and what's next?" |
+| **What it answers** | "What do I know about you and his projects?" | "Where did we stop and what's next?" |
 
-**They are complementary, not redundant.** MEMORY.md says *"project_unicron.md: Arena fully wired end-to-end, Legion port pending"* — the high-altitude state. A `primer.md` inside `~/Desktop/Projects/unicron/` would add *"Legion port is 60% done, blocked on Plotly version mismatch, next file to touch is src/charts/LegionChart.tsx line 42."*
+**They are complementary, not redundant.** MEMORY.md says *"project_unicron.md: Arena fully wired end-to-end, Legion port pending"* — the high-altitude state. A `primer.md` inside `~/projects/unicron/` would add *"Legion port is 60% done, blocked on Plotly version mismatch, next file to touch is src/charts/LegionChart.tsx line 42."*
 
-**Recommendation for Victor:** Adopt `primer.md` per-project for active builds (unicron, trading-agent-team, ai-catalogs). Keep MEMORY.md as the global flywheel it already is. The primer.md hook can even update MEMORY.md at project milestones — fold "session ended" into "if this was a significant milestone, also update the relevant project_*.md in MEMORY.md."
+**Recommendation for you:** Adopt `primer.md` per-project for active builds (unicron, trading-agent-team, ai-catalogs). Keep MEMORY.md as the global flywheel it already is. The primer.md hook can even update MEMORY.md at project milestones — fold "session ended" into "if this was a significant milestone, also update the relevant project_*.md in MEMORY.md."
 
 ## Gotchas
 
@@ -272,8 +272,8 @@ Victor already runs a related but distinct pattern at `/home/victor/.claude/proj
 
 - **A `primer-md` skill** that formalizes the rewrite discipline with a structured prompt — handles the rewrite-not-append rule, enforces the section structure, checks length budget.
 - **A `/prime` slash command** with a PreCompact + Stop hook preset — one-command setup for any project.
-- **A primer.md → MEMORY.md bridge** — if the session ended with a significant milestone, also update Victor's global memory index.
-- **A fleet primer dashboard** — scan all projects under `~/Desktop/Projects/`, read each `primer.md`, render a single "status across all projects" view. Natural fit with Victor's `/flywheel` and `/status` skills.
+- **A primer.md → MEMORY.md bridge** — if the session ended with a significant milestone, also update your global memory index.
+- **A fleet primer dashboard** — scan all projects under `~/projects/`, read each `primer.md`, render a single "status across all projects" view. Natural fit with your `/flywheel` and `/status` skills.
 - **A primer-diff alarm** — alert if primer.md hasn't changed in N days (project stalled) or if the same "Next up" item has persisted for N sessions (blocked, needs human intervention).
 - **A Git-aware primer** — cross-check primer.md's "What changed" section against actual `git log` since last rewrite, flag discrepancies (primer lies, or work that never got committed).
 

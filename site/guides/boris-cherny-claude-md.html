@@ -58,7 +58,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 
 **Why it matters:** Boris's own CLAUDE.md and the workflow rules he published on X became the de facto template that the wider community now cargo-cults. If you've seen a CLAUDE.md with sections like "Workflow Orchestration," "Self-Improvement Loop," and "Verification Before Done," you're looking at a descendant of Boris's file. His team at Anthropic keeps a CLAUDE.md in git at roughly 2.5k tokens — the reference weight class.
 
-This guide reconstructs the template, explains *why* each section exists, and compares it to what Victor already runs in `/home/victor/.claude/CLAUDE.md`.
+This guide reconstructs the template, explains *why* each section exists, and compares it to a real-world global CLAUDE.md setup.
 
 ---
 
@@ -211,33 +211,33 @@ Lint: `[command]`
 - Every rule in this file earned its place by catching a real bug.
 ```
 
-## Contrast with Victor's global CLAUDE.md
+## Contrast with a global CLAUDE.md
 
-Victor's `/home/victor/.claude/CLAUDE.md` is a **fundamentally different genre** of CLAUDE.md than Boris's. Key differences worth understanding:
+A production global CLAUDE.md (`~/.claude/CLAUDE.md`) is a **fundamentally different genre** than Boris's per-project file. Key differences worth understanding:
 
-| Dimension | Boris's template | Victor's global |
+| Dimension | Boris's template | Global orchestrator |
 |---|---|---|
 | **Scope** | Per-project behavioral contract | Global meta-orchestrator across ALL projects |
 | **Length** | ~200 lines, ~2.5k tokens | ~250 lines but dense with tables |
 | **Focus** | Workflow discipline (plan → execute → verify) | Skill routing + knowledge base pointers |
-| **Self-improvement loop** | Yes — "every correction becomes a rule" | Implicit via the forge/retro/flywheel skills |
+| **Self-improvement loop** | Yes — "every correction becomes a rule" | Implicit via forge/retro/flywheel skills |
 | **Trigger mapping** | Not present | Extensive — keyword → skill table |
 | **Domain knowledge** | Project-specific conventions | AI3 resource catalog, installed plugins/MCPs |
 | **Security rules** | Not present | Top-level CRITICAL block on secret protection |
 
-**What Victor's file does that Boris's doesn't:**
+**What a global file does that Boris's doesn't:**
 - Maps user trigger words to specific skill invocations (Boris has no skills system at his abstraction level).
 - Treats the knowledge flywheel (`/flywheel`, `/forge`, `/inject`) as default-on.
 - Enumerates the installed plugin/MCP inventory so Claude knows what tools exist.
 - Points to an external resource catalog (`ai3-resources/`) that the agent can cross-reference.
 
-**What Boris's file does that Victor's doesn't (at the global level):**
+**What Boris's file does that a global file typically doesn't:**
 - Explicit plan-mode gating for non-trivial tasks.
-- Explicit verification-before-done discipline (Victor delegates this to the `verification-before-completion` superpower).
+- Explicit verification-before-done discipline (a global file may delegate this to a `verification-before-completion` superpower).
 - The self-improvement loop as a first-class mechanic ("every correction becomes a rule").
 - Lean, project-specific behavioral rules with teeth.
 
-**The gap to close:** Victor's global CLAUDE.md is excellent at orchestration but light on direct behavioral discipline — it relies on the skill layer to enforce plan mode, TDD, and verification. Boris's pattern pushes that discipline directly into the file so it's enforced even in lightweight sessions where no skill was explicitly invoked. A hybrid per-project CLAUDE.md that inherits Victor's global triggers and adds a Boris-style Workflow/Verification/Self-improvement block would capture both.
+**The gap to close:** A global CLAUDE.md can be excellent at orchestration but light on direct behavioral discipline — relying on the skill layer to enforce plan mode, TDD, and verification. Boris's pattern pushes that discipline directly into the file so it's enforced even in lightweight sessions where no skill was explicitly invoked. A hybrid per-project CLAUDE.md that inherits global triggers and adds a Boris-style Workflow/Verification/Self-improvement block would capture both.
 
 ## Gotchas
 
@@ -250,7 +250,7 @@ Victor's `/home/victor/.claude/CLAUDE.md` is a **fundamentally different genre**
 
 ## What we could build with it
 
-- **A per-project CLAUDE.md generator** that fuses Victor's global orchestration rules with Boris's behavioral discipline blocks, auto-populated from project introspection (stack detection, test/lint commands).
+- **A per-project CLAUDE.md generator** that fuses global orchestration rules with Boris's behavioral discipline blocks, auto-populated from project introspection (stack detection, test/lint commands).
 - **A CLAUDE.md linter** that flags length creep, rule duplication, weak positive framing, and un-earned rules (rules without git blame showing a corresponding correction).
 - **A self-improvement loop hook** — a PostToolUse hook that detects user corrections in the transcript and prompts Claude to propose a CLAUDE.md diff.
 - **A rule-provenance tracker** — every rule in CLAUDE.md links back to the commit/conversation that introduced it, so stale rules can be pruned with evidence.

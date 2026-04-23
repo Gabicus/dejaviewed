@@ -145,7 +145,7 @@ This is also the pattern behind Anthropic's "Agent Teams" feature (`code.claude.
 
 ```bash
 # 1. From your project root on main
-cd ~/Desktop/Projects/myproject
+cd ~/projects/myproject
 git checkout main && git pull
 
 # 2. Create three worktrees beside the main checkout
@@ -242,10 +242,10 @@ Running 10–15 parallel sessions surfaces real problems:
 
 - **A `spawn-parallel.sh` script** that takes a list of task descriptions and spawns N worktrees + Claude sessions + tmux windows in one command, with auto port assignment per worktree.
 - **A review dashboard** (tmux statusbar or small TUI) showing the git status of all active worktrees so you know at a glance which ones are ready for review.
-- **A swarm runner** that takes one large migration task, decomposes it into N independent chunks, spawns N worktrees, and reports back when all are done — essentially the Boris pattern behind the `/swarm` skill Victor already has.
+- **A swarm runner** that takes one large migration task, decomposes it into N independent chunks, spawns N worktrees, and reports back when all are done — essentially the Boris pattern behind the `/swarm` skill.
 - **A CLAUDE.md rule** enforcing "never edit CLAUDE.md outside main" to avoid merge churn.
 - **A per-worktree env injector** that sets `PORT`, `DATABASE_URL`, and `REDIS_URL` to non-colliding values automatically based on the worktree name hash.
-- **Integration with Victor's existing `/crank` and `/codex-team`** skills: use worktree isolation as the default execution substrate for any multi-task epic.
+- **Integration with existing `/crank` and `/codex-team`** skills: use worktree isolation as the default execution substrate for any multi-task epic.
 
 ---
 

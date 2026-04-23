@@ -185,7 +185,7 @@ This is enough to learn the edge. Scaling to $10k+ requires real-time order mana
 
 ---
 
-## 6. How this plugs into Victor's trading-agent-team
+## 6. How this plugs into your trading-agent-team
 
 The trading-agent-team is built around crypto perps. Polymarket weather is an **uncorrelated PnL source** — not a single tick of correlation with BTC, HYPE, or anything in the existing portfolio. That alone is worth a subproject, especially for Unicron which is meant to be a multi-strategy platform.
 
@@ -193,7 +193,7 @@ The trading-agent-team is built around crypto perps. Polymarket weather is an **
 
 1. **New "environmental" arena in Unicron.** Add a Polymarket connector alongside the Hyperliquid one. Run a weather ensemble bot as a sub-strategy. Its PnL curve will be orthogonal to the crypto strategies, which smooths the aggregate Sharpe.
 
-2. **Pure-rules execution, AI-only for ensemble weighting.** Per Victor's rule (feedback_rules_vs_agents.md: pure rules for trade execution, AI only for the research/optimization layer), the weather bot is an ideal fit. Rules: "if `P_ensemble > ask + 10pp`, buy." AI layer: nightly reweighting of ensemble members by recent accuracy per city — that's a small regression problem an LLM or classical ML can own without touching live orders.
+2. **Pure-rules execution, AI-only for ensemble weighting.** Per your rule (feedback_rules_vs_agents.md: pure rules for trade execution, AI only for the research/optimization layer), the weather bot is an ideal fit. Rules: "if `P_ensemble > ask + 10pp`, buy." AI layer: nightly reweighting of ensemble members by recent accuracy per city — that's a small regression problem an LLM or classical ML can own without touching live orders.
 
 3. **Challenge-game parameter sweep.** Parameters: ensemble weights, edge threshold, Kelly fraction, per-market cap, laddering width. Fitness: out-of-sample Sharpe on a replay of historical Polymarket weather data (available via their Subgraph). Exactly the shape `/challenge-game` was built for.
 
@@ -201,7 +201,7 @@ The trading-agent-team is built around crypto perps. Polymarket weather is an **
 
 5. **Kalshi parallel.** Kalshi has the same market category (KXHIGH, KXPRECIP), often with tighter spreads and US-regulated. The same codebase services both — double the venues, same edge. `suislanchez/polymarket-kalshi-weather-bot` already shows the multi-venue shape.
 
-**Why this is a good Victor project specifically:** low capital requirement (can validate live with $100), low correlation to existing strategies, uses the Unicron watchdog pattern naturally (model disagreement = pause), and the research layer (ensemble weighting) is genuine alpha you can keep improving for years.
+**Why this is a good you project specifically:** low capital requirement (can validate live with $100), low correlation to existing strategies, uses the Unicron watchdog pattern naturally (model disagreement = pause), and the research layer (ensemble weighting) is genuine alpha you can keep improving for years.
 
 ---
 

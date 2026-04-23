@@ -56,26 +56,14 @@ html,body{height:100%;overflow:hidden}
 .hint b{color:var(--text)}
 .hint kbd{padding:1px 5px;border-radius:3px;background:rgba(167,139,250,.18);border:1px solid rgba(167,139,250,.35);color:var(--text);font-size:10px;font-family:inherit}
 .cross-path{fill:none;pointer-events:none}
-#u-menu{position:fixed;top:50%;right:16px;transform:translateY(-50%) translateX(12px);width:300px;max-height:84vh;overflow-y:auto;background:rgba(12,12,20,.94);backdrop-filter:blur(18px);border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:18px;z-index:300;opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;font-family:'JetBrains Mono',Menlo,monospace}
-#u-menu.vis{opacity:1;pointer-events:all;transform:translateY(-50%) translateX(0)}
-#u-menu h3{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#cbb7ff;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(167,139,250,.22)}
-#u-menu h4{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);margin:14px 0 6px}
-.u-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:10px;color:var(--text-dim)}
-.u-row label{flex:1;text-transform:uppercase;letter-spacing:.04em;font-size:9px;color:var(--text-dim)}
-.u-row input[type=range]{width:120px}
-.u-row .val{color:#cbb7ff;min-width:32px;text-align:right;font-size:9px}
-.u-btn{padding:4px 10px;font-size:9px;border-radius:6px;border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.06);color:#e8e8f0;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;font-family:inherit;font-weight:700}
-.u-btn:hover{background:rgba(167,139,250,.16)}
-.u-btn.on{background:rgba(167,139,250,.22);border-color:rgba(167,139,250,.6);color:#fff}
-.u-btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-#u-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text-mute);font-size:20px;cursor:pointer;padding:0;line-height:1}
-#u-close:hover{color:var(--text)}
 .u-cross-sw{display:inline-block;width:9px;height:9px;border-radius:50%;flex-shrink:0}
 @media(max-width:900px){
-  .controls{position:fixed;left:0;right:0;top:auto;bottom:0;width:100%;height:auto;max-height:45%;border-radius:14px 14px 0 0}
+  .controls{position:fixed;left:0;right:0;top:auto;bottom:0;width:100%;height:auto;max-height:55vh;border-radius:14px 14px 0 0;transform:translateY(100%);transition:transform .25s ease}
+  .controls.open{transform:translateY(0)}
   .hint{display:none}
   #u-menu{left:8px;right:8px;top:auto;bottom:8px;transform:none;width:auto;max-height:60vh}
   #u-menu.vis{transform:none}
+  #graph{padding-top:48px}
 }
 </style>
 </head>
@@ -334,7 +322,7 @@ html,body{height:100%;overflow:hidden}
     }
   })();
 
-  // ── U-menu live state (defaults from Victor's preferred capture.png) ──
+  // ── U-menu live state (defaults) ──
   const U = {
     linkDist:    1.0,
     chargeMult:  1.0,
@@ -719,10 +707,10 @@ html,body{height:100%;overflow:hidden}
     b.addEventListener('click', ()=>applyPreset(b.dataset.preset));
   });
 
-  // Open U-menu on first visit so Victor's preferred defaults are visible immediately
-  toggleUMenu(true);
-  // Apply forceClusters effect to sim
+  if (!DV.isMobile()) toggleUMenu(true);
   onUChange();
+
+  if (DV.isMobile()) DV.mountMobileToggles({ filters:'.controls', utils:'#u-menu' });
 
   loading.style.display='none';
 })();

@@ -63,7 +63,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 
 ## What it is
 
-Hunyuan3D-2 is Tencent's open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR) surface, ready to drop into Blender, Unity, Unreal, or any standard DCC pipeline. It is the largest and most capable openly released image-to-3D model as of this writing, and it's the missing piece Victor already has a companion for: **HY-Motion** (Tencent's text-to-motion model) is cloned at `/home/victor/Desktop/Projects/claude/ai3-resources/repos/HY-Motion-1.0/`. Together they form a near-complete text → 3D character → animation pipeline (more on this below).
+Hunyuan3D-2 is Tencent's open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR) surface, ready to drop into Blender, Unity, Unreal, or any standard DCC pipeline. It is the largest and most capable openly released image-to-3D model as of this writing, and it's the missing piece that has a companion: **HY-Motion** (Tencent's text-to-motion model), available at `~/projects/ai3-resources/repos/HY-Motion-1.0/`. Together they form a near-complete text → 3D character → animation pipeline (more on this below).
 
 The release is actually a family of models, not a single checkpoint. There's a shape generator that hallucinates geometry from the image, a texture generator that paints the bare mesh, "Turbo" and "Fast" distilled variants for speed, a 600M "mini" variant for low-VRAM setups, and a multiview variant that takes 2–4 views of the same object for much better back/side reconstruction. Version 2.1 adds a full PBR texture stack (albedo / metallic-roughness / normal) so the outputs drop straight into a modern render engine without manual material fixup.
 
@@ -117,7 +117,7 @@ Be honest with yourself about VRAM. This is a big model.
 
 ```bash
 # clone code (small)
-cd /home/victor/Desktop/Projects/claude/ai-catalogs/repos/
+cd ~/projects/ai-catalogs/repos/
 git clone https://github.com/Tencent-Hunyuan/Hunyuan3D-2.git
 cd Hunyuan3D-2
 
@@ -173,7 +173,7 @@ Concretely with Hunyuan3D-2:
 
 ## Integration with HY-Motion — the full pipeline
 
-Victor already has HY-Motion cloned at `/home/victor/Desktop/Projects/claude/ai3-resources/repos/HY-Motion-1.0/`. HY-Motion generates SMPL-X skeletal motion from text ("a character doing a backflip"). Hunyuan3D-2 generates a static character mesh from an image. Chained, you get:
+If you have HY-Motion cloned at `~/projects/ai3-resources/repos/HY-Motion-1.0/`. HY-Motion generates SMPL-X skeletal motion from text ("a character doing a backflip"). Hunyuan3D-2 generates a static character mesh from an image. Chained, you get:
 
 1. **Text prompt** → Flux/SDXL → character reference image
 2. **Character image** → Hunyuan3D-2 (mv variant for quality) → textured GLB
@@ -203,10 +203,10 @@ This is a genuinely powerful pipeline for indie game devs, VTuber creators, and 
 
 ## Related resources in the AI3 hub
 
-- **HY-Motion (Tencent text-to-motion):** `/home/victor/Desktop/Projects/claude/ai3-resources/repos/HY-Motion-1.0/` — direct companion
+- **HY-Motion (Tencent text-to-motion):** `~/projects/ai3-resources/repos/HY-Motion-1.0/` — direct companion
 - **Blender MCP pipeline:** `guides/blender-mcp-tripo-pipeline.md` — how to drive Hunyuan3D-2 from Claude through Blender
-- **TouchDesigner creative coding guide:** `~/Desktop/Projects/claude/ai3-resources/guides/touchdesigner-creative-coding.md` — for real-time visual pipelines once you've generated meshes
-- **Creative coding projection mapping:** `~/Desktop/Projects/claude/ai3-resources/guides/creative-coding-projection-mapping.md` — use generated meshes as projection targets
+- **TouchDesigner creative coding guide:** `~/projects/ai3-resources/guides/touchdesigner-creative-coding.md` — for real-time visual pipelines once you've generated meshes
+- **Creative coding projection mapping:** `~/projects/ai3-resources/guides/creative-coding-projection-mapping.md` — use generated meshes as projection targets
 
 ## Sources
 

@@ -56,7 +56,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 
 A curated, opinionated list of quant projects — skewed toward the ones that actually teach you something and give you a tool you'll keep using. The seed for this list is a Twitter thread credited to @heidioftheeast with ideas like probability of backtest overfitting, Bayesian Black-Litterman, Ornstein-Uhlenbeck, and Kalman filters. I have expanded it with adjacent projects that round out a real quant portfolio, and ranked by build-value (difficulty × payoff × reusability across future work).
 
-Each entry: **what it is → the math in one line → a canonical repo → difficulty → why build it → how it slots into Victor's stack**.
+Each entry: **what it is → the math in one line → a canonical repo → difficulty → why build it → how it slots into your stack**.
 
 Difficulty scale: 🟢 weekend · 🟡 1-2 weeks · 🟠 1 month · 🔴 multi-month
 
@@ -78,7 +78,7 @@ These aren't strategies; they're the *scaffolding* every quant portfolio needs. 
 
 **Why build it:** Because every backtest you'll ever run is at risk of being overfit and you currently have no number for how much. The difference between a strategy with PBO=0.10 and PBO=0.60 is the difference between "ship it" and "throw it out" — and without this you are guessing.
 
-**Plugs into Victor's stack:** Direct gate for the challenge-game tournament flow. Any ensemble that emerges from `/challenge-game` should pass a PBO check before promotion to paper-trading. Specifically the Phase 12 Oracle Commander finding (rolodex WR overfit) is the exact failure mode PBO detects. This is arguably the single highest-leverage tool on this whole list for Victor.
+**Plugs into your stack:** Direct gate for the challenge-game tournament flow. Any ensemble that emerges from `/challenge-game` should pass a PBO check before promotion to paper-trading. Specifically the Phase 12 Oracle Commander finding (rolodex WR overfit) is the exact failure mode PBO detects. This is arguably the single highest-leverage tool on this whole list for you.
 
 ---
 
@@ -94,7 +94,7 @@ These aren't strategies; they're the *scaffolding* every quant portfolio needs. 
 
 **Why build it:** Regular sklearn cross-validation is subtly wrong for financial data. Purged K-Fold fixes it.
 
-**Plugs into Victor's stack:** Pair with PBO in the challenge-game validation gate. Use for all ML-layer training in Oracle Commander / Rolodex.
+**Plugs into your stack:** Pair with PBO in the challenge-game validation gate. Use for all ML-layer training in Oracle Commander / Rolodex.
 
 ---
 
@@ -110,7 +110,7 @@ These aren't strategies; they're the *scaffolding* every quant portfolio needs. 
 
 **Why build it:** Time-bar OHLCV is what every retail trader uses and every professional abandoned a decade ago. The research gap is real.
 
-**Plugs into Victor's stack:** Rebuild the trading-agent-team feature pipeline on dollar bars — the fast-cycler and graduated-TP strategies will almost certainly look different (and probably better) when fed cleaner inputs.
+**Plugs into your stack:** Rebuild the trading-agent-team feature pipeline on dollar bars — the fast-cycler and graduated-TP strategies will almost certainly look different (and probably better) when fed cleaner inputs.
 
 ---
 
@@ -128,7 +128,7 @@ These aren't strategies; they're the *scaffolding* every quant portfolio needs. 
 
 **Why build it:** It's the canonical example for learning how to turn a stochastic differential equation into a trading rule. After you've done it once, half the academic literature opens up.
 
-**Plugs into Victor's stack:** Crypto pairs (e.g., ETH/BTC perp spread, or HYPE/SOL correlation) are great OU candidates on Hyperliquid. Add as a new sub-strategy — uncorrelated with the directional fast-cyclers.
+**Plugs into your stack:** Crypto pairs (e.g., ETH/BTC perp spread, or HYPE/SOL correlation) are great OU candidates on Hyperliquid. Add as a new sub-strategy — uncorrelated with the directional fast-cyclers.
 
 ---
 
@@ -144,7 +144,7 @@ These aren't strategies; they're the *scaffolding* every quant portfolio needs. 
 
 **Why build it:** Kalman filters are one of the few pieces of math every practitioner uses and every textbook explains badly. Pairs trading is the clearest use case to actually grok them.
 
-**Plugs into Victor's stack:** Generalizes OU pairs from #4. Also useful as a *smoother* for any noisy signal — rolling Hawkes branching ratio, funding rate imbalance, OI momentum. The filter is a reusable primitive beyond pairs trading.
+**Plugs into your stack:** Generalizes OU pairs from #4. Also useful as a *smoother* for any noisy signal — rolling Hawkes branching ratio, funding rate imbalance, OI momentum. The filter is a reusable primitive beyond pairs trading.
 
 ---
 
@@ -169,7 +169,7 @@ PyMC version lets you specify full posteriors on views.
 
 **Why build it:** It's the canonical way to combine a strategy's signal ("I think BTC has +5% expected return next week") with market-neutral portfolio math. Most retail approaches ignore covariance entirely; this teaches you to respect it.
 
-**Plugs into Victor's stack:** Position-sizing layer for the multi-coin trading-agent-team. Current approach is mostly equal-weight across 8 coins — BL would let each sub-strategy express its own "view" on a coin's expected return and the portfolio optimizer would blend them with the correlation matrix. Cleanest upgrade path to proper risk-parity allocation.
+**Plugs into your stack:** Position-sizing layer for the multi-coin trading-agent-team. Current approach is mostly equal-weight across 8 coins — BL would let each sub-strategy express its own "view" on a coin's expected return and the portfolio optimizer would blend them with the correlation matrix. Cleanest upgrade path to proper risk-parity allocation.
 
 ---
 
@@ -185,7 +185,7 @@ PyMC version lets you specify full posteriors on views.
 
 **Why build it:** Any time you report a Sharpe ratio without its confidence interval and multiple-testing correction, you're misleading yourself and anyone you show it to.
 
-**Plugs into Victor's stack:** Mandatory reporting field for every challenge-game tournament output.
+**Plugs into your stack:** Mandatory reporting field for every challenge-game tournament output.
 
 ---
 
@@ -203,7 +203,7 @@ PyMC version lets you specify full posteriors on views.
 
 **Why build it:** It's *the* canonical market-making model. Any future conversation about liquidity provision starts from here.
 
-**Plugs into Victor's stack:** Maker leg on Hyperliquid. Full integration story in `avellaneda-stoikov-and-hawkes.md`.
+**Plugs into your stack:** Maker leg on Hyperliquid. Full integration story in `avellaneda-stoikov-and-hawkes.md`.
 
 ---
 
@@ -219,7 +219,7 @@ PyMC version lets you specify full posteriors on views.
 
 **Why build it:** Because Poisson is wrong and everyone pretends otherwise. Hawkes is the simplest upgrade that actually describes real order flow.
 
-**Plugs into Victor's stack:** Regime filter + feature for the existing taker strategies. Full story in `avellaneda-stoikov-and-hawkes.md`.
+**Plugs into your stack:** Regime filter + feature for the existing taker strategies. Full story in `avellaneda-stoikov-and-hawkes.md`.
 
 ---
 
@@ -235,7 +235,7 @@ PyMC version lets you specify full posteriors on views.
 
 **Why build it:** Highest-R² linear predictor of short-horizon price movement that you can compute without any ML. If you build nothing else in microstructure, build this.
 
-**Plugs into Victor's stack:** Direct input to Oracle Commander's coin-selection logic. Use `flowsurface` (in `agents:repos/flowsurface/`) as the L2 data source — it already speaks Hyperliquid.
+**Plugs into your stack:** Direct input to Oracle Commander's coin-selection logic. Use `flowsurface` (in `agents:repos/flowsurface/`) as the L2 data source — it already speaks Hyperliquid.
 
 ---
 
@@ -253,7 +253,7 @@ PyMC version lets you specify full posteriors on views.
 
 **Why build it:** It's the ML approach to trading that actually works in practice, because it decouples the hard problem (direction prediction) from the easier problem (quality filtering).
 
-**Plugs into Victor's stack:** Direct upgrade path for the fast-cycler strategies. Current approach is rule-based entries; meta-label them with an RF trained on order-book and funding features to filter out the losers. Preserves the deterministic execution layer per Victor's rule (rules execute, AI advises).
+**Plugs into your stack:** Direct upgrade path for the fast-cycler strategies. Current approach is rule-based entries; meta-label them with an RF trained on order-book and funding features to filter out the losers. Preserves the deterministic execution layer per your rule (rules execute, AI advises).
 
 ---
 
@@ -269,7 +269,7 @@ PyMC version lets you specify full posteriors on views.
 
 **Why build it:** The cleanest way to express "this strategy works in some regimes and not others" — which is true for *every* strategy.
 
-**Plugs into Victor's stack:** Meta-layer for the ensembles. Instead of running all 10 ensembles constantly, activate subsets by regime. Crisis state → halt entirely or switch to defensive.
+**Plugs into your stack:** Meta-layer for the ensembles. Instead of running all 10 ensembles constantly, activate subsets by regime. Crisis state → halt entirely or switch to defensive.
 
 ---
 
@@ -285,7 +285,7 @@ PyMC version lets you specify full posteriors on views.
 
 **Why build it:** Gives you honest confidence intervals on a strategy's Sharpe. A strategy with mean Sharpe 1.5 and 5th percentile -0.2 is *very different* from one with mean 1.5 and 5th percentile 1.1, and a single backtest run cannot tell you which you have.
 
-**Plugs into Victor's stack:** Graduated-TP and Phase 12 validation: replace the single OOS split with CPCV to get a real confidence interval on the +98% uplift finding.
+**Plugs into your stack:** Graduated-TP and Phase 12 validation: replace the single OOS split with CPCV to get a real confidence interval on the +98% uplift finding.
 
 ---
 
@@ -303,7 +303,7 @@ PyMC version lets you specify full posteriors on views.
 
 **Why build it:** It's the modern HFT research stack. Also the clearest example of "RL for trading" that doesn't immediately overfit — the simulator is synthetic and the agent can be trained to convergence.
 
-**Plugs into Victor's stack:** Too big to plug in directly. Better as a pre-training environment for the maker-leg SAC agent in `avellaneda-stoikov-and-hawkes.md` idea #3.
+**Plugs into your stack:** Too big to plug in directly. Better as a pre-training environment for the maker-leg SAC agent in `avellaneda-stoikov-and-hawkes.md` idea #3.
 
 ---
 
@@ -311,19 +311,19 @@ PyMC version lets you specify full posteriors on views.
 
 **What:** Transformer or LSTM predicting BTC realized volatility from on-chain features (exchange flows, whale wallets, miner behavior, stablecoin supply changes). Already exists as a reference project.
 
-**Repo:** [`bitcoin_synthesizer`](https://github.com/search?q=bitcoin+synthesizer) — also referenced in Victor's `agents:repos/bitcoin_synthesizer/`.
+**Repo:** [`bitcoin_synthesizer`](https://github.com/search?q=bitcoin+synthesizer) — also referenced in your `agents:repos/bitcoin_synthesizer/`.
 
 **Difficulty:** 🔴 multi-month.
 
 **Why build it:** If it works, it's a direct feed for volatility-based sizing on every crypto strategy you run.
 
-**Plugs into Victor's stack:** Already in the trading-agent-team reference repo list. The integration is volatility-based sizing: scale down trade size when predicted vol spikes.
+**Plugs into your stack:** Already in the trading-agent-team reference repo list. The integration is volatility-based sizing: scale down trade size when predicted vol spikes.
 
 ---
 
-## Suggested build order (for Victor specifically)
+## Suggested build order (for you specifically)
 
-If I were Victor and I wanted to spend the next 90 days leveling up the trading-agent-team, this is the order I'd tackle them:
+If I were you and I wanted to spend the next 90 days leveling up the trading-agent-team, this is the order I'd tackle them:
 
 1. **PBO (#1) + PSR/DSR (#7)** — 1 week. Single biggest quality gate you can add right now. Directly addresses the rolodex WR overfit finding.
 2. **Purged K-Fold + CPCV (#2 + #13)** — 2 weeks. Gives honest confidence intervals on every existing strategy. The challenge-game outputs become trustworthy.

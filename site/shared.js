@@ -77,13 +77,63 @@
   //   The title reads "Home" and links to index.html. That's the home pill;
   //   there is no separate Home nav item.
   DV.mountHeader = function mountHeader(root, activeId){
+    const nav = DV.nav(activeId);
+    const burger = DV.el('button', { class:'hamburger', 'aria-label':'Menu', onclick: function(){
+      nav.classList.toggle('open');
+      this.textContent = nav.classList.contains('open') ? '✕' : '☰';
+    }}, '☰');
     const h = DV.el('header', { class:'site' }, [
       DV.el('h1', null, [DV.el('a', { href:BASE+'index.html' }, 'DejaViewed')]),
-      DV.nav(activeId),
+      burger,
+      nav,
     ]);
     root.prepend(h);
     return h;
   };
+
+  DV.isMobile = function(){ return window.innerWidth <= 900; };
+
+  DV.mountMobileToggles = function mountMobileToggles(opts){
+    const backdrop = DV.el('div', { class:'panel-backdrop', onclick: function(){ DV.closeMobilePanels(); }});
+    document.body.appendChild(backdrop);
+    DV._backdrop = backdrop;
+    DV._mobilePanels = [];
+
+    if (opts.filters){
+      const ctrl = typeof opts.filters === 'string' ? document.querySelector(opts.filters) : opts.filters;
+      if (ctrl){
+        const btn = DV.el('button', { class:'mobile-toggle filters-btn', onclick: function(){
+          DV.closeMobilePanels();
+          ctrl.classList.add('open');
+          backdrop.classList.add('vis');
+        }}, 'Filters');
+        document.body.appendChild(btn);
+        DV._mobilePanels.push({ el:ctrl, btn:btn });
+      }
+    }
+    if (opts.utils){
+      const um = typeof opts.utils === 'string' ? document.querySelector(opts.utils) : opts.utils;
+      if (um){
+        const btn = DV.el('button', { class:'mobile-toggle utils-btn', onclick: function(){
+          DV.closeMobilePanels();
+          um.classList.add('vis');
+          backdrop.classList.add('vis');
+        }}, 'Utils');
+        document.body.appendChild(btn);
+        DV._mobilePanels.push({ el:um, btn:btn });
+      }
+    }
+  };
+
+  DV.closeMobilePanels = function(){
+    if (DV._backdrop) DV._backdrop.classList.remove('vis');
+    document.querySelectorAll('.controls.open').forEach(function(c){ c.classList.remove('open'); });
+    document.querySelectorAll('#u-menu.vis').forEach(function(m){ m.classList.remove('vis'); });
+  };
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') DV.closeMobilePanels();
+  });
 
   // ── Tier pill ──
   DV.tierPill = function tierPill(tier){

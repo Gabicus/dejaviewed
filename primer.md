@@ -1,10 +1,10 @@
 # DejaViewed · primer
 
-Updated: 2026-04-22 10:30 EDT
+Updated: 2026-04-22 2:50pm EDT
 
 ## Current status
 
-334 entries across 8 collections. 103 deep dives. 43.5K crosslinks. CMS parquet is source of truth. Fully recovered from deploy script incident.
+334 entries across 8 collections. 103 deep dives. 8 deeper dives. 43.5K crosslinks. 367 thumbnails — all entries covered. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages.
 
 ### Repo locations
 - `~/Desktop/Projects/dejaviewed-plugin/` — main project (github.com/Gabicus/dejaviewed)
@@ -12,34 +12,58 @@ Updated: 2026-04-22 10:30 EDT
 - `~/Desktop/Projects/graph-cosmos/` — Canvas orbital graph (github.com/Gabicus/graph-cosmos) — pushed
 
 ### Active pages
-- index.html, ai1.html, graph.html, graph-cosmos.html, board.html, admin.html
+- index.html (unified catalog — all collections, filters, deep dive cards)
+- graph.html, graph-cosmos.html, board.html, admin.html
+- guides/ (18 deep dive guide pages)
+- deeper/ (8 deeper dive narrative pages)
 - Legacy pages in site/legacy/
+
+### Hosting
+- **Cloudflare Pages** — auto-deploy from main branch, output dir `site/`
+- Custom domain: dejaviewed.dev (Cloudflare DNS)
+- Manual fallback: `scripts/deploy.sh` (wrangler)
+- Auto-deploy may need GitHub OAuth re-auth in Cloudflare dashboard
+
+### Tools installed
+- `gh` CLI (SSH auth as Gabicus)
+- `wrangler` CLI (Cloudflare OAuth as gabe.dewitt@gmail.com)
 
 ## What changed this session
 
-1. Pushed graph-node and graph-cosmos repos to GitHub
-2. SKILL.md fully rewritten — 903 lines, 15 phases, matches actual scripts
-3. plugin.json bumped to v2.0.0 with graph repo dependencies
-4. Added site/CNAME for dejaviewed.dev custom domain
-5. INCIDENT: deploy script wiped .git — recovered all files from USB + sitebackup
-6. Added CLAUDE.md rule: ALWAYS push before destructive operations
-7. Legacy files moved to site/legacy/
+1. Pushed main to GitHub (full recovery commit a9362c6, 436 files)
+2. Deployed site to gh-pages branch via safe temp-clone script
+3. Set up Cloudflare Pages — Git-connected, auto-deploy from main, custom domain dejaviewed.dev
+4. Installed + authed gh CLI and wrangler CLI
+5. Fixed clickable links everywhere:
+   - Deeper dive entries: thumb + title link to posts
+   - index.html connection cards: clickable, open post in new tab
+   - Both graph pages: removed broken "View in catalog", kept "Open post ↗"
+6. Moved ai1-4, quant, catalog → site/legacy/
+7. Rewrote sitemap.xml — active pages only, dejaviewed.dev domain
+8. Fixed thumbnail display — shortcode() falls back to entry ID for non-IG entries
+9. Scraped 29 missing thumbnails via Playwright embed endpoint (26 quant IG + 3 web)
+10. All 334 entries now have thumbnails (367 files on disk)
+11. Updated SKILL.md — site structure, Cloudflare deploy docs
+12. Deleted dejaviewed-plugin-sitebackup/
+13. Created scripts/deploy.sh (wrangler manual fallback)
 
 ## Next up
 
-1. **Commit + push everything on main** (CRITICAL — push before any deploy attempt)
-2. **Fix deploy script** — safe gh-pages deploy that can't kill .git
-3. **Run deploy** — gh-pages branch for GitHub Pages
-4. **Configure GitHub Pages** — custom domain dejaviewed.dev
-5. **Verify DNS** — Cloudflare pointing to GitHub Pages
+1. **Verify Cloudflare auto-deploy** — re-auth GitHub OAuth in Cloudflare dashboard if needed
+2. **HTTPS enforcement** — enable once SSL cert provisions
+3. **render_template.py cleanup** — dead per-collection page logic
+4. **rebuild.sh audit** — 4 of 7 pipeline phases reference scripts that don't exist yet
+5. **Graph data contract sync** — consider if graph pages should consume generic contract from repos
 
 ## Blockers
 
-- None. All data recovered from USB.
+- Cloudflare GitHub OAuth token may be expired — auto-deploy may not trigger until re-authed
 
 ## Don't forget
 
-- ALWAYS push before destructive operations (deploy scripts, branch switches)
+- ALWAYS push before destructive operations
 - DESIGN.md is UI authority for all page styling
 - Admin page is safe on public site (localStorage only)
 - `--reclassify` needed when enrichment dictionaries expand
+- Thumbnail scraping: use `/embed/` endpoint for IG (no login required)
+- wrangler and gh CLI both installed and authed

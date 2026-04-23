@@ -62,7 +62,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 - Agent SDK hooks: https://platform.claude.com/docs/en/agent-sdk/hooks
 - `disler/claude-code-hooks-mastery` (reference examples): https://github.com/disler/claude-code-hooks-mastery
 - ClaudeLog: https://claudelog.com/mechanics/hooks/
-- Victor already has the `hookify` plugin installed (provides `/hookify`, `/hookify:configure`, `/hookify:list`).
+- If you have the `hookify` plugin installed (provides `/hookify`, `/hookify:configure`, `/hookify:list`).
 
 ---
 
@@ -70,7 +70,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 
 Claude Code hooks are **shell commands that run automatically at specific points in the Claude Code lifecycle** — before a tool executes, after it executes, when a session starts, when the model finishes its response, when context compaction happens, and so on. They are Anthropic's answer to "how do I make Claude Code behave deterministically?"
 
-The critical insight: **Claude itself cannot reliably enforce rules on itself.** If you put "never run `rm -rf`" in CLAUDE.md, Claude *usually* follows it, but prompt injection or a confused turn can bypass it. Hooks are executed by the harness — the outer runtime — not by the model. A hook that exits with code 2 on `PreToolUse` will **block** the tool call no matter what the model decided. This is why Victor's global CLAUDE.md says: *"Automated behaviors require hooks configured in settings.json — the harness executes these, not Claude."*
+The critical insight: **Claude itself cannot reliably enforce rules on itself.** If you put "never run `rm -rf`" in CLAUDE.md, Claude *usually* follows it, but prompt injection or a confused turn can bypass it. Hooks are executed by the harness — the outer runtime — not by the model. A hook that exits with code 2 on `PreToolUse` will **block** the tool call no matter what the model decided. This is why your global CLAUDE.md should say: *"Automated behaviors require hooks configured in settings.json — the harness executes these, not Claude."*
 
 Hooks are configured in JSON settings files, take tool I/O as JSON on stdin, and signal via exit codes or structured JSON output. They can run shell commands, call HTTP endpoints, or invoke LLMs for dynamic decisions.
 
@@ -153,7 +153,7 @@ To disable all hooks temporarily: `"disableAllHooks": true` at settings root.
     "command": "rm -rf /",
     "description": "delete everything"
   },
-  "cwd": "/home/victor/project"
+  "cwd": "/home/user/project"
 }
 ```
 
@@ -301,16 +301,16 @@ Append every command Claude runs, with session id, to a TSV file. Trivial to gre
 
 ---
 
-## What Victor already has
+## What you may already have
 
-Victor's global setup includes the **`hookify` plugin** (see `reference_installed_plugins.md`). It provides:
+Your global setup may include the **`hookify` plugin** (see `reference_installed_plugins.md`). It provides:
 
 - `/hookify` — interactive hook creation. Given a behavior you want to prevent, it generates the shell script and the settings.json entry.
 - `/hookify:configure` — enable/disable existing hookify rules interactively.
 - `/hookify:list` — list all installed hookify rules.
 - `hookify:writing-rules` skill — for hand-writing custom hook rules.
 
-Victor's memory also references the **`update-config` skill**, which explicitly says: *"Automated behaviors ('from now on when X', 'each time X', 'whenever X', 'before/after X') require hooks configured in settings.json — the harness executes these, not Claude."* Any time you catch yourself writing a "from now on always X" rule in CLAUDE.md, the correct move is a hook instead.
+Your memory may also reference the **`update-config` skill**, which explicitly says: *"Automated behaviors ('from now on when X', 'each time X', 'whenever X', 'before/after X') require hooks configured in settings.json — the harness executes these, not Claude."* Any time you catch yourself writing a "from now on always X" rule in CLAUDE.md, the correct move is a hook instead.
 
 Quick check for existing hooks:
 
@@ -323,11 +323,11 @@ cat .claude/settings.json 2>/dev/null | jq '.hooks // {}'
 
 ## What we could build with it
 
-- **A `/forge` auto-runner.** `SessionEnd` hook that pipes the transcript into the `forge` skill to automatically mine learnings into MEMORY.md without Victor remembering to run it.
+- **A `/forge` auto-runner.** `SessionEnd` hook that pipes the transcript into the `forge` skill to automatically mine learnings into MEMORY.md without you remembering to run it.
 - **Bash command classifier.** `PreToolUse` hook that routes Bash commands through a local classifier (regex or small LLM) and auto-allows safe ones, prompts on medium, hard-blocks destructive.
 - **Per-project CLAUDE.md injector.** `SessionStart` hook that checks the cwd, looks for matching project memory in `~/.claude/projects/.../MEMORY.md`, and injects the relevant entries.
 - **Trading bot guardrails.** `PreToolUse` hook on any Bash running `python trade.py` that blocks if market is closed, if balance is below threshold, or if a kill-switch file exists. This is a hard rule the model cannot override.
-- **Secret leak prevention.** `PreToolUse` on Edit/Write that greps the proposed `new_string` for anything matching private-key / API-key patterns and exit 2 if found. This enforces Victor's global "never expose secrets" rule deterministically.
+- **Secret leak prevention.** `PreToolUse` on Edit/Write that greps the proposed `new_string` for anything matching private-key / API-key patterns and exit 2 if found. This enforces the global "never expose secrets" rule deterministically.
 - **Auto-test runner.** `PostToolUse` on Edit to source files → run the matching test file → append output to Claude's visible context. TDD without asking.
 - **Compaction-triggered retros.** `PreCompact` hook that snapshots the transcript *and* writes a one-line summary of what was accomplished this window, building a running project log.
 - **Desktop notification on idle.** `Notification` hook that `notify-send`s on Linux so you know Claude is waiting on input even if you alt-tabbed.
@@ -356,7 +356,7 @@ cat .claude/settings.json 2>/dev/null | jq '.hooks // {}'
 
 Hooks are the layer where Claude Code stops being "a smart assistant that mostly follows rules" and becomes "a runtime with hard constraints you can trust." The nine standard events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd) cover 95% of real use cases. Start with three hooks — block destructive Bash, auto-format on edit, inject git context on session start — and add more as you notice yourself saying "Claude should always X" for the nth time. That sentence is always a hook.
 
-For Victor: `hookify` is already installed. Use `/hookify` for interactive creation, and treat every `from now on` / `whenever X` rule in CLAUDE.md as a candidate to migrate into `settings.json` where it becomes enforceable instead of advisory.
+If you have `hookify` installed, use `/hookify` for interactive creation, and treat every `from now on` / `whenever X` rule in CLAUDE.md as a candidate to migrate into `settings.json` where it becomes enforceable instead of advisory.
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>

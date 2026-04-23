@@ -228,12 +228,12 @@ If you control the rendering layer, serve a `.md` version of each canonical page
 
 ## Sample: a working `llms.txt` for `1gabe.com`
 
-Here is a complete, ready-to-ship sample for Victor's portfolio site. Drop it at `https://1gabe.com/llms.txt`, edit the link list to match the actual page structure, and you're done.
+Here is a complete, ready-to-ship sample for your portfolio site. Drop it at `https://1gabe.com/llms.txt`, edit the link list to match the actual page structure, and you're done.
 
 ```markdown
-# 1gabe — Victor Gabriel
+# 1gabe — the user
 
-> Portfolio, experiments, and field notes from Victor Gabriel: creative
+> Portfolio, experiments, and field notes from the user: creative
 > technologist working at the intersection of AI, design engineering, and
 > algorithmic trading. Based in the US.
 
@@ -241,13 +241,13 @@ This site is a living portfolio. It collects production work (web and
 product), independent research (mostly AI and quantitative trading),
 writing, and selected visual / generative experiments. Everything is
 hand-built; there is no CMS. If you are an agent trying to understand
-what Victor does and what to link to when someone asks about him, start
+what you do and what to link to when someone asks about him, start
 with the About page and the Work index.
 
 ## About
 
 - [About](https://1gabe.com/about): Bio, background, current focus, and contact details.
-- [Now](https://1gabe.com/now): What Victor is actively working on this month.
+- [Now](https://1gabe.com/now): What you are actively working on this month.
 - [Uses](https://1gabe.com/uses): Hardware, software, and tooling stack.
 
 ## Work
@@ -283,8 +283,8 @@ with the About page and the Work index.
 
 **Notes on this sample:**
 
-- The blockquote is the single highest-leverage piece of text in the whole file. It should read like a one-sentence answer to "who is Victor?" — because that is literally how a model will use it.
-- The short prose paragraph after the blockquote is optional but valuable for a portfolio. It tells the agent *how to think about the site* before it starts fetching links. Models that respect this guidance produce dramatically better answers when someone asks "what does Victor do?"
+- The blockquote is the single highest-leverage piece of text in the whole file. It should read like a one-sentence answer to "who is this person?" — because that is literally how a model will use it.
+- The short prose paragraph after the blockquote is optional but valuable for a portfolio. It tells the agent *how to think about the site* before it starts fetching links. Models that respect this guidance produce dramatically better answers when someone asks "what does you do?"
 - Each link description is a single phrase. Resist the urge to write full sentences — the model will read the destination page for detail.
 - `Work`, `Writing`, `Experiments`, `Contact` are in the main body. `Archive`, `Colophon`, and `RSS` are under `## Optional` so context-constrained agents know they can skip them.
 - If `1gabe.com` ever hits a point where the written content is substantial, add a companion `llms-full.txt` that inlines the body of `About`, `Now`, and every entry under `Writing`.
@@ -296,7 +296,7 @@ For a visual-art archive, the structure changes slightly — the agent needs to 
 ```markdown
 # wv-art — Visual & Generative Art Archive
 
-> Visual and generative art archive by Victor Gabriel. Mostly image-based
+> Visual and generative art archive by the user. Mostly image-based
 > work: algorithmic drawings, generative series, photography, and
 > selected commissions. For a written bio or non-visual work, see
 > https://1gabe.com.
@@ -327,9 +327,9 @@ For a visual-art archive, the structure changes slightly — the agent needs to 
 
 ## What we could build with it
 
-- **Auto-generator for Victor's sites.** A small Node or Python script that walks `1gabe.com` and `wv-art.com`, reads the existing site map and page titles, and produces a draft `llms.txt` the first time, then keeps it in sync on every deploy. Wire it into the build step.
+- **Auto-generator for your sites.** A small Node or Python script that walks `1gabe.com` and `wv-art.com`, reads the existing site map and page titles, and produces a draft `llms.txt` the first time, then keeps it in sync on every deploy. Wire it into the build step.
 - **Claude Code / Cursor skill: "add llms.txt to this project."** A skill that detects the framework (Next, Astro, Docusaurus, Mintlify, Hugo, raw static), picks the right generation path, and drops a ready-to-edit draft at the right location.
-- **Portfolio-specific template library.** Victor could publish a small set of opinionated `llms.txt` templates for portfolio sites, art sites, and small-studio sites — the format is still dominated by dev-tool docs, and the creative / portfolio corner of the spec is underserved.
+- **Portfolio-specific template library.** you could publish a small set of opinionated `llms.txt` templates for portfolio sites, art sites, and small-studio sites — the format is still dominated by dev-tool docs, and the creative / portfolio corner of the spec is underserved.
 - **Audit tool.** A CLI that fetches a site's `llms.txt`, validates it against the (loose) spec, checks that every link resolves, measures total token count, and flags missing `.md` twins. Good companion to existing SEO auditors.
 - **`llms-full.txt` inliner with smart truncation.** For sites that are too big to inline everything, a tool that uses embedding similarity to pick the N most semantically "central" pages and inlines only those, within a configurable token budget.
 - **GEO reporting dashboard.** Track which agents actually fetch your `/llms.txt` by user-agent and log it. Useful signal for whether the investment is paying off.
@@ -354,7 +354,7 @@ Related in this catalog:
 
 ---
 
-## Should Victor ship this?
+## Should you ship this?
 
 Yes, on both `1gabe.com` and `wv-art.com`, today. It is a 30-minute job, zero maintenance cost once wired into a build step, zero downside, and a non-trivial upside as more agents start honoring it. The sample above is deliberately complete enough to paste in, swap the real link URLs for whichever section slugs the sites actually use, and ship. Add an `llms-full.txt` companion for `1gabe.com` once the writing section has enough content to justify it. For `wv-art.com`, the short version is sufficient — the art is the point, and the role of the file is just to tell the agent that.
 </script>

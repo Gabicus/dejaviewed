@@ -65,6 +65,10 @@ header.site .nav a{padding:6px 12px!important;border-radius:999px!important;font
 header.site .nav a:hover{background:var(--panel-2);color:var(--text);border-color:var(--border-hi)}
 header.site .nav a.active{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25))!important;border-color:rgba(167,139,250,.5)!important;color:#fff!important}
 
+/* Hamburger toggle — hidden on desktop, visible on mobile */
+.hamburger{display:none;background:none;border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-size:20px;padding:4px 8px;cursor:pointer;line-height:1;margin-left:auto}
+.hamburger:hover{color:var(--text);border-color:var(--border-hi)}
+
 /* Main content wrapper (header is sticky now, so no top compensation needed) */
 main.page{padding:28px 22px 60px;max-width:1280px;margin:0 auto}
 
@@ -128,6 +132,11 @@ details.archive .body{padding:4px 18px 18px;border-top:1px solid var(--border)}
 footer.site{padding:40px 22px 30px;text-align:center;color:var(--text-mute);font-size:11px;letter-spacing:.05em;border-top:1px solid var(--border);margin-top:40px}
 footer.site a{color:var(--text-dim)}
 
+@media(max-width:900px){
+  .hamburger{display:block}
+  header.site .nav{display:none!important;width:100%;flex-basis:100%}
+  header.site .nav.open{display:flex!important}
+}
 @media(max-width:640px){
   header.site{padding:10px 14px;gap:10px}
   header.site h1{font-size:18px}
@@ -138,6 +147,11 @@ footer.site a{color:var(--text-dim)}
 /* Used by graph.html (force) + graph-cosmos.html (canvas).                  */
 
 .controls{position:fixed;left:16px;top:72px;bottom:16px;width:260px;z-index:50;padding:16px;background:rgba(18,18,26,0.85);border:1px solid var(--border);border-radius:14px;backdrop-filter:blur(20px);overflow-y:auto}
+@media(min-width:901px) and (max-width:1100px){
+  .controls{width:200px;padding:12px}
+  .main-content{margin-left:228px}
+  .controls .cat-btn{padding:6px 10px;font-size:11px}
+}
 .controls h3{margin:0 0 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text-mute)}
 .controls .group{margin-bottom:18px}
 .controls .row{display:flex;flex-wrap:wrap;gap:6px}
@@ -175,18 +189,18 @@ footer.site a{color:var(--text-dim)}
 .tooltip.pinned .closer:hover{color:var(--text)}
 
 /* Utilities (U) side panel */
-#u-menu{position:fixed;top:50%;right:16px;transform:translateY(-50%) translateX(12px);width:300px;max-height:84vh;overflow-y:auto;background:rgba(12,12,20,.94);backdrop-filter:blur(18px);border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:18px;z-index:300;opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;font-family:'JetBrains Mono',Menlo,monospace}
+#u-menu{position:fixed;top:50%;right:16px;transform:translateY(-50%) translateX(12px);width:280px;max-height:92vh;overflow-y:auto;background:rgba(12,12,20,.94);backdrop-filter:blur(18px);border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:14px;z-index:300;opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;font-family:'JetBrains Mono',Menlo,monospace}
 #u-menu.vis{opacity:1;pointer-events:all;transform:translateY(-50%) translateX(0)}
-#u-menu h3{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#cbb7ff;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(167,139,250,.22)}
-#u-menu h4{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);margin:14px 0 6px}
-.u-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:10px;color:var(--text-dim)}
-.u-row label{flex:1;text-transform:uppercase;letter-spacing:.04em;font-size:9px;color:var(--text-dim)}
-.u-row input[type=range]{width:120px}
-.u-row .val{color:#cbb7ff;min-width:32px;text-align:right;font-size:9px}
-.u-btn{padding:4px 10px;font-size:9px;border-radius:6px;border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.06);color:#e8e8f0;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;font-family:inherit;font-weight:700}
+#u-menu h3{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#cbb7ff;margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(167,139,250,.22)}
+#u-menu h4{font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);margin:8px 0 4px}
+.u-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:4px;font-size:9px;color:var(--text-dim)}
+.u-row label{flex:1;text-transform:uppercase;letter-spacing:.04em;font-size:8px;color:var(--text-dim)}
+.u-row input[type=range]{width:100px;height:4px}
+.u-row .val{color:#cbb7ff;min-width:28px;text-align:right;font-size:8px}
+.u-btn{padding:3px 8px;font-size:8px;border-radius:6px;border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.06);color:#e8e8f0;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;font-family:inherit;font-weight:700}
 .u-btn:hover{background:rgba(167,139,250,.16)}
 .u-btn.on{background:rgba(167,139,250,.22);border-color:rgba(167,139,250,.6);color:#fff}
-.u-btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.u-btn-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
 #u-close{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text-mute);font-size:20px;cursor:pointer;padding:0;line-height:1}
 #u-close:hover{color:var(--text)}
 .u-cross-sw{display:inline-block;width:9px;height:9px;border-radius:50%;flex-shrink:0}
@@ -272,9 +286,22 @@ footer.site a{color:var(--text-dim)}
 .cmd-row code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:5px 11px;border-radius:5px;color:var(--c-repo);font-family:'JetBrains Mono',Menlo,monospace;font-size:12px;flex-shrink:0;white-space:nowrap}
 .cmd-row span{color:var(--text-dim)}
 
-/* Responsive — controls become bottom sheet, hide hint, U-menu becomes bottom drawer */
+/* Mobile floating toggle buttons for panels */
+.mobile-toggle{display:none;position:fixed;z-index:90;border:1px solid rgba(167,139,250,.4);border-radius:12px;padding:8px 14px;font:700 11px/1 'Inter',sans-serif;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;backdrop-filter:blur(14px);color:var(--text);background:rgba(18,18,26,0.92)}
+.mobile-toggle:hover{border-color:rgba(167,139,250,.7);background:rgba(18,18,26,0.98)}
+.mobile-toggle.filters-btn{bottom:16px;left:16px}
+.mobile-toggle.utils-btn{bottom:16px;right:16px}
+.mobile-toggle .badge{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;font-size:9px;background:rgba(167,139,250,.3);color:#cbb7ff}
+
+/* Backdrop overlay for mobile panels */
+.panel-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:45;cursor:pointer}
+.panel-backdrop.vis{display:block}
+
+/* Responsive — controls + U-menu hidden by default on mobile */
 @media(max-width:900px){
-  .controls{position:fixed;left:0;right:0;top:auto;bottom:0;width:100%;height:auto;max-height:45%;border-radius:14px 14px 0 0}
+  .mobile-toggle{display:block}
+  .controls{position:fixed;left:0;right:0;top:auto;bottom:0;width:100%;height:auto;max-height:55vh;border-radius:14px 14px 0 0;transform:translateY(100%);transition:transform .25s ease;z-index:50}
+  .controls.open{transform:translateY(0)}
   .hint{display:none}
   #u-menu{left:8px;right:8px;top:auto;bottom:8px;transform:none;width:auto;max-height:60vh}
   #u-menu.vis{transform:none}

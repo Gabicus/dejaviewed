@@ -1452,8 +1452,10 @@ async function boot() {
   applyPreset('dense');
   initCamera();
   document.getElementById('loading').style.display = 'none';
-  toggleUMenu(true);  // open U-menu on first load (Capture.PNG default)
+  if (!DV.isMobile()) toggleUMenu(true);
   requestAnimationFrame(frame);
+
+  if (DV.isMobile()) DV.mountMobileToggles({ filters:'.controls', utils:'#u-menu' });
 }
 
 // ── Main render loop ─────────────────────────────────────────────────

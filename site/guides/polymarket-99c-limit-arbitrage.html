@@ -173,18 +173,18 @@ for m in targets:
 2. **Smart contract risk.** CTF contract bugs, Polygon bridge issues, Polymarket operator actions.
 3. **Resolution delays.** Your capital sits longer than modeled, compressing annualized return. Not catastrophic, just disappointing.
 4. **Front-running / adverse selection.** The 1¢ of panic sellers knows something you don't about 5% of the time. That's priced in.
-5. **Regulatory.** US persons technically can't trade Polymarket. This is Victor's call, not mine to advise on.
+5. **Regulatory.** US persons technically can't trade Polymarket. This is your call, not mine to advise on.
 6. **Competition from other bots.** This strategy is known. Depth at 99¢ has thinned as more bots run it. You need to be either faster, or post at 97-98¢ and accept more fill variance.
 
 ---
 
-## 6. How this plugs into Victor's trading-agent-team
+## 6. How this plugs into your trading-agent-team
 
 This is a **capital-efficient, low-touch, low-correlation strategy** that fits the Unicron multi-strategy arena model well. It doesn't compete with the fast-cycler or Oracle Commander — it runs in parallel on Polymarket collateral while the perp strategies run on Hyperliquid collateral.
 
 **Concrete integration ideas:**
 
-1. **Pure-rules execution, zero AI in the hot path** — matches Victor's rule from `feedback_rules_vs_agents.md`. The selection logic ("clean source, <72h to resolution, not disputed") is 100% deterministic. No LLM, no ML. The AI layer only runs at market-discovery time: nightly, an agent scans new markets and classifies them as eligible / not eligible with reasoning. Humans review the classification before markets go live.
+1. **Pure-rules execution, zero AI in the hot path** — matches your rule from `feedback_rules_vs_agents.md`. The selection logic ("clean source, <72h to resolution, not disputed") is 100% deterministic. No LLM, no ML. The AI layer only runs at market-discovery time: nightly, an agent scans new markets and classifies them as eligible / not eligible with reasoning. Humans review the classification before markets go live.
 
 2. **Watchdog pattern is a perfect fit.** Unicron's oversight spec already has a watchdog layer. For this strategy, the watchdog monitors UMA dispute events per open market. Dispute detected → cancel + exit via YES/NO merge immediately. This is the highest-leverage line of code in the whole bot.
 
