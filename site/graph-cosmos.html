@@ -1131,6 +1131,104 @@ nodeCvs.addEventListener('mouseleave', () => {
 });
 nodeCvs.addEventListener('contextmenu', e => e.preventDefault());
 
+// ── Touch controls (mobile) ─────────────────────────────────────────
+let touchDragStart = null, touchCamStart = null, touchTotalDrag = 0;
+let pinchStartDist = null, pinchStartScale = null;
+let touchDraggingNode = null, touchDragWorldOff = null, touchNodeMoved = false;
+
+function touchXY(t) { return { x: t.clientX - leftW(), y: t.clientY - topH() }; }
+function pinchDist(ts) { return Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY); }
+function pinchCenter(ts) { return { x: (ts[0].clientX + ts[1].clientX) / 2 - leftW(), y: (ts[0].clientY + ts[1].clientY) / 2 - topH() }; }
+
+nodeCvs.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const ts = e.touches;
+  if (ts.length === 2) {
+    touchDragStart = null; touchDraggingNode = null;
+    pinchStartDist = pinchDist(ts);
+    pinchStartScale = camera.targetScale;
+    return;
+  }
+  if (ts.length !== 1) return;
+  const p = touchXY(ts[0]);
+  mouse.x = p.x; mouse.y = p.y;
+  const hit = hitTestNode(p.x, p.y);
+  if (hit) {
+    touchDraggingNode = hit;
+    touchNodeMoved = false;
+    const w = screenToWorld(p.x, p.y);
+    touchDragWorldOff = { x: hit.wx - w.x, y: hit.wy - w.y };
+    return;
+  }
+  touchDragStart = { x: ts[0].clientX, y: ts[0].clientY };
+  touchCamStart = { x: camera.targetX, y: camera.targetY };
+  touchTotalDrag = 0;
+}, { passive: false });
+
+nodeCvs.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const ts = e.touches;
+  if (ts.length === 2 && pinchStartDist) {
+    const d = pinchDist(ts);
+    const factor = d / pinchStartDist;
+    const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, pinchStartScale * factor));
+    const c = pinchCenter(ts);
+    const W = nodeCvs.width, H = nodeCvs.height;
+    const wx = (c.x - W/2) / camera.targetScale + camera.targetX;
+    const wy = (c.y - H/2) / camera.targetScale + camera.targetY;
+    camera.targetX = wx - (c.x - W/2) / newScale;
+    camera.targetY = wy - (c.y - H/2) / newScale;
+    camera.targetScale = newScale;
+    return;
+  }
+  if (ts.length !== 1) return;
+  const p = touchXY(ts[0]);
+  mouse.x = p.x; mouse.y = p.y;
+  if (touchDraggingNode) {
+    touchNodeMoved = true;
+    const w = screenToWorld(p.x, p.y);
+    touchDraggingNode.wx = w.x + touchDragWorldOff.x;
+    touchDraggingNode.wy = w.y + touchDragWorldOff.y;
+    touchDraggingNode.vx = 0; touchDraggingNode.vy = 0;
+    return;
+  }
+  if (!touchDragStart) return;
+  const dx = ts[0].clientX - touchDragStart.x, dy = ts[0].clientY - touchDragStart.y;
+  touchTotalDrag = Math.hypot(dx, dy);
+  camera.targetX = touchCamStart.x - dx / camera.scale;
+  camera.targetY = touchCamStart.y - dy / camera.scale;
+}, { passive: false });
+
+nodeCvs.addEventListener('touchend', e => {
+  if (touchDraggingNode) {
+    if (!touchNodeMoved) {
+      if (touchDraggingNode.type === 'entry') {
+        showEntryTip(touchDraggingNode, mouse.x + leftW(), mouse.y + topH());
+      } else {
+        camera.targetX = touchDraggingNode.renderWx ?? touchDraggingNode.sx;
+        camera.targetY = touchDraggingNode.renderWy ?? touchDraggingNode.sy;
+        camera.targetScale = Math.max(camera.targetScale * 1.5, touchDraggingNode.type === 'galaxy' ? 3.8 : 9.5);
+      }
+    }
+    touchDraggingNode = null;
+    touchDragWorldOff = null;
+    return;
+  }
+  if (touchDragStart && touchTotalDrag < 10) {
+    const hit = hitTestNode(mouse.x, mouse.y);
+    if (hit) {
+      if (hit.type === 'entry') showEntryTip(hit, mouse.x + leftW(), mouse.y + topH());
+      else {
+        camera.targetX = hit.renderWx ?? hit.sx;
+        camera.targetY = hit.renderWy ?? hit.sy;
+        camera.targetScale = Math.max(camera.targetScale * 1.5, hit.type === 'galaxy' ? 3.8 : 9.5);
+      }
+    } else { hideTip(); }
+  }
+  touchDragStart = null; pinchStartDist = null; pinchStartScale = null;
+  mouse.x = -9999; mouse.y = -9999;
+});
+
 nodeCvs.addEventListener('click', e => {
   if (justDraggedNode) { justDraggedNode = false; return; }
   if (totalDrag > 4) return;
