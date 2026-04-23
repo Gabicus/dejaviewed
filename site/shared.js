@@ -91,7 +91,7 @@
     return h;
   };
 
-  DV.isMobile = function(){ return window.innerWidth <= 1100; };
+  DV.isMobile = function(){ return window.innerWidth <= 900; };
 
   DV.mountMobileToggles = function mountMobileToggles(opts){
     const backdrop = DV.el('div', { class:'panel-backdrop', onclick: function(){ DV.closeMobilePanels(); }});
