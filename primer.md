@@ -1,15 +1,15 @@
 # DejaViewed · primer
 
-Updated: 2026-04-22 2:50pm EDT
+Updated: 2026-04-23 4:30pm EDT
 
 ## Current status
 
-334 entries across 8 collections. 103 deep dives. 8 deeper dives. 43.5K crosslinks. 367 thumbnails — all entries covered. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages.
+334 entries across 8 collections. 103 deep dives. 8 deeper dives. 43.5K crosslinks. 367 thumbnails — all entries covered. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages (auto-deploy from main).
 
 ### Repo locations
 - `~/Desktop/Projects/dejaviewed-plugin/` — main project (github.com/Gabicus/dejaviewed)
-- `~/Desktop/Projects/graph-node/` — D3 force graph (github.com/Gabicus/graph-node) — pushed
-- `~/Desktop/Projects/graph-cosmos/` — Canvas orbital graph (github.com/Gabicus/graph-cosmos) — pushed
+- `~/Desktop/Projects/graph-node/` — D3 force graph (github.com/Gabicus/graph-node)
+- `~/Desktop/Projects/graph-cosmos/` — Canvas orbital graph (github.com/Gabicus/graph-cosmos)
 
 ### Active pages
 - index.html (unified catalog — all collections, filters, deep dive cards)
@@ -22,7 +22,6 @@ Updated: 2026-04-22 2:50pm EDT
 - **Cloudflare Pages** — auto-deploy from main branch, output dir `site/`
 - Custom domain: dejaviewed.dev (Cloudflare DNS)
 - Manual fallback: `scripts/deploy.sh` (wrangler)
-- Auto-deploy may need GitHub OAuth re-auth in Cloudflare dashboard
 
 ### Tools installed
 - `gh` CLI (SSH auth as Gabicus)
@@ -30,22 +29,17 @@ Updated: 2026-04-22 2:50pm EDT
 
 ## What changed this session
 
-1. Pushed main to GitHub (full recovery commit a9362c6, 436 files)
-2. Deployed site to gh-pages branch via safe temp-clone script
-3. Set up Cloudflare Pages — Git-connected, auto-deploy from main, custom domain dejaviewed.dev
-4. Installed + authed gh CLI and wrangler CLI
-5. Fixed clickable links everywhere:
-   - Deeper dive entries: thumb + title link to posts
-   - index.html connection cards: clickable, open post in new tab
-   - Both graph pages: removed broken "View in catalog", kept "Open post ↗"
-6. Moved ai1-4, quant, catalog → site/legacy/
-7. Rewrote sitemap.xml — active pages only, dejaviewed.dev domain
-8. Fixed thumbnail display — shortcode() falls back to entry ID for non-IG entries
-9. Scraped 29 missing thumbnails via Playwright embed endpoint (26 quant IG + 3 web)
-10. All 334 entries now have thumbnails (367 files on disk)
-11. Updated SKILL.md — site structure, Cloudflare deploy docs
-12. Deleted dejaviewed-plugin-sitebackup/
-13. Created scripts/deploy.sh (wrangler manual fallback)
+1. **Mobile responsive overhaul** (shared.css + shared.js):
+   - Hamburger menu on mobile (≤900px), nav hidden by default
+   - Bottom-sheet pattern with backdrop for controls + U-menu panels
+   - Floating toggle buttons (Filters/Utils) for mobile panel access
+   - Mid-range breakpoint (901-1100px): narrower sidebar, collapsed about grid
+   - Compact U-menu on desktop (no scroll needed)
+2. **Removed all "Victor" references** — replaced with generic user language across 28 files
+3. **Removed all local path leaks** — `/home/victor/Desktop/Projects/...` → `~/projects/...`
+4. **Fixed mid-range squash** — about-row grid collapse bumped to 1100px on index.html
+5. Removed duplicate U-menu CSS from graph.html (now uses shared.css)
+6. Committed ac7a08e, pushed to main → Cloudflare auto-deploy
 
 ## Next up
 
