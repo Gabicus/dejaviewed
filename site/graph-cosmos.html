@@ -1062,7 +1062,8 @@ function hitTestNode(screenX, screenY) {
   // Hit-test in SCREEN space so the grab radius stays constant regardless of zoom.
   // Previously we used world-space with `n.r + 10/camera.scale`, which exploded at
   // low zoom (scale=0.2 → +50 world-units of slop) and caught multiple nodes at once.
-  const SCREEN_SLOP = 4; // pixels of extra grab margin beyond the node's drawn radius
+  const isTouchDevice = 'ontouchstart' in window;
+  const SCREEN_SLOP = isTouchDevice ? 18 : 4;
   let best = null, bestD = Infinity;
   allNodes.forEach(n => {
     if (nodeAlpha(n) < 0.12) return;
@@ -1132,25 +1133,25 @@ nodeCvs.addEventListener('mouseleave', () => {
 nodeCvs.addEventListener('contextmenu', e => e.preventDefault());
 
 // ── Touch controls (mobile) ─────────────────────────────────────────
+// Matches graph.html (D3) behavior: tap = select, drag = move, pinch = zoom.
 let touchDragStart = null, touchCamStart = null, touchTotalDrag = 0;
 let pinchStartDist = null, pinchStartScale = null;
-let touchDraggingNode = null, touchDragWorldOff = null, touchNodeMoved = false;
-let lastTapTime = 0, lastTapX = 0, lastTapY = 0;
-const DOUBLE_TAP_MS = 350, DOUBLE_TAP_PX = 30;
+let touchHitNode = null, touchNodeDragging = false;
+const DRAG_THRESHOLD = 8;
 
 function touchXY(t) { return { x: t.clientX - leftW(), y: t.clientY - topH() }; }
 function pinchDist(ts) { return Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY); }
 function pinchCenter(ts) { return { x: (ts[0].clientX + ts[1].clientX) / 2 - leftW(), y: (ts[0].clientY + ts[1].clientY) / 2 - topH() }; }
 
-function handleNodeSelect(hit, screenX, screenY) {
+function handleNodeTap(hit, screenX, screenY) {
   if (hit.type === 'entry') {
     showEntryTip(hit, screenX + leftW(), screenY + topH());
   } else {
     hideTip();
     camera.targetX = hit.renderWx ?? hit.sx;
     camera.targetY = hit.renderWy ?? hit.sy;
-    const ts = { galaxy: 3.8, cluster: 9.5, entry: 18 };
-    camera.targetScale = Math.max(camera.targetScale * 1.5, ts[hit.type] || 3.8);
+    const scales = { galaxy: 3.8, cluster: 9.5, entry: 18 };
+    camera.targetScale = Math.max(camera.targetScale * 1.5, scales[hit.type] || 3.8);
     const fl = document.getElementById('zoom-flash');
     fl.style.opacity = '1'; setTimeout(() => fl.style.opacity = '0', 350);
   }
@@ -1160,7 +1161,7 @@ nodeCvs.addEventListener('touchstart', e => {
   e.preventDefault();
   const ts = e.touches;
   if (ts.length === 2) {
-    touchDragStart = null; touchDraggingNode = null;
+    touchDragStart = null; touchHitNode = null; touchNodeDragging = false;
     pinchStartDist = pinchDist(ts);
     pinchStartScale = camera.targetScale;
     return;
@@ -1171,13 +1172,8 @@ nodeCvs.addEventListener('touchstart', e => {
   touchDragStart = { x: ts[0].clientX, y: ts[0].clientY };
   touchCamStart = { x: camera.targetX, y: camera.targetY };
   touchTotalDrag = 0;
-  const hit = hitTestNode(p.x, p.y);
-  if (hit) {
-    touchDraggingNode = hit;
-    touchNodeMoved = false;
-    const w = screenToWorld(p.x, p.y);
-    touchDragWorldOff = { x: hit.wx - w.x, y: hit.wy - w.y };
-  }
+  touchNodeDragging = false;
+  touchHitNode = hitTestNode(p.x, p.y);
 }, { passive: false });
 
 nodeCvs.addEventListener('touchmove', e => {
@@ -1196,59 +1192,30 @@ nodeCvs.addEventListener('touchmove', e => {
     camera.targetScale = newScale;
     return;
   }
-  if (ts.length !== 1) return;
-  const p = touchXY(ts[0]);
-  mouse.x = p.x; mouse.y = p.y;
-  if (touchDraggingNode) {
-    touchNodeMoved = true;
-    const w = screenToWorld(p.x, p.y);
-    touchDraggingNode.wx = w.x + touchDragWorldOff.x;
-    touchDraggingNode.wy = w.y + touchDragWorldOff.y;
-    touchDraggingNode.vx = 0; touchDraggingNode.vy = 0;
-    return;
-  }
-  if (!touchDragStart) return;
+  if (ts.length !== 1 || !touchDragStart) return;
   const dx = ts[0].clientX - touchDragStart.x, dy = ts[0].clientY - touchDragStart.y;
   touchTotalDrag = Math.hypot(dx, dy);
-  camera.targetX = touchCamStart.x - dx / camera.scale;
-  camera.targetY = touchCamStart.y - dy / camera.scale;
+  if (touchTotalDrag < DRAG_THRESHOLD) return;
+  const p = touchXY(ts[0]);
+  mouse.x = p.x; mouse.y = p.y;
+  if (touchHitNode) {
+    touchNodeDragging = true;
+    const w = screenToWorld(p.x, p.y);
+    touchHitNode.wx = w.x; touchHitNode.wy = w.y;
+    touchHitNode.vx = 0; touchHitNode.vy = 0;
+  } else {
+    camera.targetX = touchCamStart.x - dx / camera.scale;
+    camera.targetY = touchCamStart.y - dy / camera.scale;
+  }
 }, { passive: false });
 
 nodeCvs.addEventListener('touchend', e => {
-  const now = Date.now();
-  const sx = mouse.x, sy = mouse.y;
-  const wasDrag = touchTotalDrag > 10 || touchNodeMoved;
-
-  if (touchDraggingNode && !touchNodeMoved) {
-    const isDoubleTap = (now - lastTapTime < DOUBLE_TAP_MS) &&
-      Math.hypot(sx - lastTapX, sy - lastTapY) < DOUBLE_TAP_PX;
-    if (isDoubleTap) {
-      handleNodeSelect(touchDraggingNode, sx, sy);
-      lastTapTime = 0;
-    } else {
-      lastTapTime = now; lastTapX = sx; lastTapY = sy;
-    }
-    touchDraggingNode = null; touchDragWorldOff = null;
-    touchDragStart = null; pinchStartDist = null;
-    return;
+  if (touchTotalDrag < DRAG_THRESHOLD && touchHitNode) {
+    handleNodeTap(touchHitNode, mouse.x, mouse.y);
+  } else if (touchTotalDrag < DRAG_THRESHOLD && !touchHitNode) {
+    hideTip();
   }
-
-  if (!wasDrag) {
-    const hit = hitTestNode(sx, sy);
-    const isDoubleTap = (now - lastTapTime < DOUBLE_TAP_MS) &&
-      Math.hypot(sx - lastTapX, sy - lastTapY) < DOUBLE_TAP_PX;
-    if (isDoubleTap && hit) {
-      handleNodeSelect(hit, sx, sy);
-      lastTapTime = 0;
-    } else if (isDoubleTap && !hit) {
-      hideTip();
-      lastTapTime = 0;
-    } else {
-      lastTapTime = now; lastTapX = sx; lastTapY = sy;
-    }
-  }
-
-  touchDraggingNode = null; touchDragWorldOff = null;
+  touchHitNode = null; touchNodeDragging = false;
   touchDragStart = null; pinchStartDist = null; pinchStartScale = null;
   mouse.x = -9999; mouse.y = -9999;
 });
