@@ -99,9 +99,15 @@
     DV._backdrop = backdrop;
     DV._mobilePanels = [];
 
+    function addCloseBtn(panel){
+      var close = DV.el('button', { class:'mobile-panel-close', onclick: function(){ DV.closeMobilePanels(); }}, 'Done');
+      panel.appendChild(close);
+    }
+
     if (opts.filters){
       const ctrl = typeof opts.filters === 'string' ? document.querySelector(opts.filters) : opts.filters;
       if (ctrl){
+        addCloseBtn(ctrl);
         const btn = DV.el('button', { class:'mobile-toggle filters-btn', onclick: function(){
           DV.closeMobilePanels();
           ctrl.classList.add('open');
@@ -114,6 +120,7 @@
     if (opts.utils){
       const um = typeof opts.utils === 'string' ? document.querySelector(opts.utils) : opts.utils;
       if (um){
+        addCloseBtn(um);
         const btn = DV.el('button', { class:'mobile-toggle utils-btn', onclick: function(){
           DV.closeMobilePanels();
           um.classList.add('vis');
