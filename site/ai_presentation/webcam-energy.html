@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy Conductor — Hand Tracking Visualizer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; overflow: hidden; height: 100vh; font-family: 'Inter', sans-serif; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap');
+  #container { position: relative; width: 100vw; height: 100vh; }
+  video { display: none; }
+  canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  #start-screen {
+    position: fixed; inset: 0; background: #0a0a0f; z-index: 100;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  #start-screen h1 {
+    font-size: 3em; font-weight: 800;
+    background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06d6a0, #ffbe0b);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 0.3em;
+  }
+  #start-screen p { color: #666; margin-bottom: 2em; font-size: 1.1em; }
+  #start-btn {
+    background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
+    border: none; color: #fff; padding: 16px 48px; border-radius: 12px;
+    font-size: 18px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  #start-btn:hover { transform: scale(1.05); }
+  .hud {
+    position: fixed; top: 16px; left: 16px; z-index: 10;
+    color: #555; font-size: 11px; font-family: monospace;
+  }
+  .controls {
+    position: fixed; top: 16px; left: 16px; z-index: 10;
+    background: rgba(0,0,0,0.6); border-radius: 8px; padding: 10px;
+    font-size: 11px; color: #888;
+  }
+  .controls label { display: block; margin: 4px 0; }
+  .controls input[type="range"] { width: 80px; vertical-align: middle; }
+  .controls select { background: #222; color: #aaa; border: 1px solid #444; border-radius: 4px; padding: 2px 4px; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<div id="start-screen">
+  <h1>Energy Conductor</h1>
+  <p>Hold up both hands — conduct light between your fingertips</p>
+  <button id="start-btn">Enable Camera</button>
+</div>
+
+<div id="container">
+  <video id="video" autoplay playsinline></video>
+  <canvas id="bg"></canvas>
+  <canvas id="fx"></canvas>
+</div>
+
+<div class="controls" id="controls" style="display:none;">
+  <div id="fps" style="font-size:13px;color:#3a86ff;font-weight:bold;">-- fps</div>
+  <div id="hands-count">--</div>
+  <label>Mode <select id="modeSelect">
+    <option value="antigravity">Antigravity</option>
+    <option value="geometric">Geometric Mesh</option>
+    <option value="lightning">Lightning</option>
+    <option value="minimal">Minimal</option>
+  </select></label>
+  <label>Beam Width <input type="range" id="beamWidth" min="2" max="20" value="8"></label>
+  <label>Glow <input type="range" id="glowAmount" min="5" max="60" value="30"></label>
+  <label>Trail <input type="range" id="trailAmount" min="0" max="95" value="40"></label>
+  <label>Cam Opacity <input type="range" id="camOpacity" min="0" max="100" value="25"></label>
+  <hr style="border-color:#333;margin:6px 0;">
+  <label><input type="checkbox" id="showSkeleton" checked> Skeleton</label>
+  <label><input type="checkbox" id="showNodes" checked> Finger Nodes</label>
+  <label><input type="checkbox" id="showPinch" checked> Pinch FX</label>
+  <label><input type="checkbox" id="mirrorCam" checked> Mirror Cam</label>
+  <label><input type="checkbox" id="liteMode"> Lite Mode (↑ FPS)</label>
+  <hr style="border-color:#333;margin:6px 0;">
+  <label>Color Theme <select id="colorTheme">
+    <option value="neon">Neon Rainbow</option>
+    <option value="electric">Electric Blue</option>
+    <option value="fire">Fire</option>
+    <option value="matrix">Matrix</option>
+    <option value="vapor">Vaporwave</option>
+  </select></label>
+  <div style="margin-top:6px;">
+    <span style="color:#555;font-size:10px;">Keys: 1-4 modes · H hide UI · F fullscreen</span>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js" crossorigin="anonymous"></script>
+<script>
+const video = document.getElementById('video');
+const bgCanvas = document.getElementById('bg');
+const fxCanvas = document.getElementById('fx');
+const bgCtx = bgCanvas.getContext('2d');
+const fxCtx = fxCanvas.getContext('2d');
+
+let handData = [];
+let time = 0;
+let frameCount = 0;
+let lastFpsTime = 0;
+
+const TIPS = [4, 8, 12, 16, 20];
+const CONNECTIONS = [
+  [0,1],[1,2],[2,3],[3,4],
+  [0,5],[5,6],[6,7],[7,8],
+  [0,9],[9,10],[10,11],[11,12],
+  [0,13],[13,14],[14,15],[15,16],
+  [0,17],[17,18],[18,19],[19,20],
+  [5,9],[9,13],[13,17]
+];
+
+const COLOR_THEMES = {
+  neon: {
+    beams: ['#ff006e','#8338ec','#3a86ff','#06d6a0','#ffbe0b','#fb5607','#ff006e','#8338ec','#3a86ff','#06d6a0'],
+    neons: ['#ff006e','#ff4da6','#8338ec','#b266ff','#3a86ff','#6eb5ff','#06d6a0','#39ffb5','#ffbe0b','#ffe066','#fb5607','#ff8c4a'],
+    skeleton: '#ff006e'
+  },
+  electric: {
+    beams: ['#00b4ff','#0088ff','#44ccff','#0066dd','#88ddff','#0055cc','#00b4ff','#0088ff','#44ccff','#0066dd'],
+    neons: ['#00b4ff','#44ccff','#0088ff','#66ddff','#0066dd','#88eeff','#00aaee','#33bbff','#0077ee','#55ccff','#0099dd','#77eeff'],
+    skeleton: '#0088ff'
+  },
+  fire: {
+    beams: ['#ff4400','#ff6600','#ff8800','#ffaa00','#ffcc00','#ff3300','#ff5500','#ff7700','#ff9900','#ffbb00'],
+    neons: ['#ff4400','#ff6600','#ff8800','#ffaa00','#ffcc00','#ff2200','#ff5500','#ff7700','#ff9900','#ffbb00','#ffdd00','#ff3300'],
+    skeleton: '#ff5500'
+  },
+  matrix: {
+    beams: ['#00ff41','#00cc33','#00ff66','#00aa22','#33ff77','#00dd44','#00ff41','#00cc33','#00ff66','#00aa22'],
+    neons: ['#00ff41','#00cc33','#00ff66','#33ff77','#00dd44','#00aa22','#44ff88','#00ee55','#22ff55','#00bb33','#55ff99','#00ff41'],
+    skeleton: '#00ff41'
+  },
+  vapor: {
+    beams: ['#ff71ce','#01cdfe','#05ffa1','#b967ff','#fffb96','#ff71ce','#01cdfe','#05ffa1','#b967ff','#fffb96'],
+    neons: ['#ff71ce','#01cdfe','#05ffa1','#b967ff','#fffb96','#ff71ce','#01cdfe','#05ffa1','#b967ff','#fffb96','#ff71ce','#01cdfe'],
+    skeleton: '#b967ff'
+  }
+};
+
+function getTheme() { return COLOR_THEMES[document.getElementById('colorTheme').value] || COLOR_THEMES.neon; }
+function getBeamColors() { return getTheme().beams; }
+function getNeonColors() { return getTheme().neons; }
+function getSkeletonColor() { return getTheme().skeleton; }
+
+document.getElementById('start-btn').addEventListener('click', async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }
+    });
+    video.srcObject = stream;
+    await video.play();
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('controls').style.display = 'block';
+    initHandTracking();
+  } catch(e) {
+    alert('Camera access denied: ' + e.message);
+  }
+});
+
+function initHandTracking() {
+  const hands = new Hands({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${file}`
+  });
+  hands.setOptions({
+    maxNumHands: 2,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.7,
+    minTrackingConfidence: 0.5
+  });
+  hands.onResults(onResults);
+  const camera = new Camera(video, {
+    onFrame: async () => { await hands.send({ image: video }); },
+    width: 1280, height: 720
+  });
+  camera.start();
+  requestAnimationFrame(render);
+}
+
+function onResults(results) {
+  handData = [];
+  if (results.multiHandLandmarks) {
+    for (const landmarks of results.multiHandLandmarks) {
+      const pts = landmarks.map(lm => ({
+        x: (1 - lm.x) * fxCanvas.width,
+        y: lm.y * fxCanvas.height,
+        z: lm.z
+      }));
+      handData.push(pts);
+    }
+  }
+  document.getElementById('hands-count').textContent =
+    handData.length ? `${handData.length} hand${handData.length > 1 ? 's' : ''}` : 'Show hands';
+}
+
+function render(ts) {
+  requestAnimationFrame(render);
+  time = ts / 1000;
+
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  bgCanvas.width = w; bgCanvas.height = h;
+
+  if (fxCanvas.width !== w || fxCanvas.height !== h) {
+    fxCanvas.width = w; fxCanvas.height = h;
+  }
+
+  frameCount++;
+  if (ts - lastFpsTime > 1000) {
+    document.getElementById('fps').textContent = frameCount + ' fps';
+    frameCount = 0;
+    lastFpsTime = ts;
+  }
+
+  const camOpacity = document.getElementById('camOpacity').value / 100;
+  const trail = document.getElementById('trailAmount').value / 100;
+
+  const mirror = document.getElementById('mirrorCam').checked;
+  bgCtx.save();
+  bgCtx.globalAlpha = camOpacity;
+  if (mirror) { bgCtx.translate(w, 0); bgCtx.scale(-1, 1); }
+  bgCtx.drawImage(video, 0, 0, w, h);
+  bgCtx.restore();
+
+  // Trail effect on fx canvas
+  fxCtx.save();
+  fxCtx.globalCompositeOperation = 'destination-in';
+  fxCtx.fillStyle = `rgba(0, 0, 0, ${trail})`;
+  fxCtx.fillRect(0, 0, w, h);
+  fxCtx.restore();
+
+  if (handData.length === 0) return;
+
+  const mode = document.getElementById('modeSelect').value;
+  const beamWidth = parseInt(document.getElementById('beamWidth').value);
+  const glow = parseInt(document.getElementById('glowAmount').value);
+
+  const showSkeleton = document.getElementById('showSkeleton').checked;
+  const showNodes = document.getElementById('showNodes').checked;
+  const showPinch = document.getElementById('showPinch').checked;
+  const lite = document.getElementById('liteMode').checked;
+
+  if (showSkeleton) {
+    for (const pts of handData) {
+      drawHandSkeleton(pts, lite ? glow * 0.3 : glow);
+    }
+  }
+
+  if (handData.length === 2) {
+    switch (mode) {
+      case 'antigravity': drawAntigravity(beamWidth, glow, showPinch, lite); break;
+      case 'geometric': drawGeometricMesh(beamWidth, glow, lite); break;
+      case 'lightning': drawLightningBeams(beamWidth, glow, lite); break;
+      case 'minimal': drawMinimalBeams(beamWidth, glow); break;
+    }
+  }
+
+  if (showNodes) {
+    for (const pts of handData) {
+      for (let i = 0; i < TIPS.length; i++) {
+        const tip = pts[TIPS[i]];
+        const color = getNeonColors()[i * 2];
+        drawNode(tip.x, tip.y, lite ? 8 : 12 + Math.sin(time * 4 + i) * 3, color, lite ? glow * 0.5 : glow);
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+// HAND SKELETON
+// ═══════════════════════════════════════════
+function drawHandSkeleton(pts, glow) {
+  // Batch all bones into one path
+  fxCtx.beginPath();
+  for (const [a, b] of CONNECTIONS) {
+    fxCtx.moveTo(pts[a].x, pts[a].y);
+    fxCtx.lineTo(pts[b].x, pts[b].y);
+  }
+  const skelColor = getSkeletonColor();
+  fxCtx.strokeStyle = skelColor + 'b3';
+  fxCtx.lineWidth = 2.5;
+  fxCtx.shadowColor = skelColor;
+  fxCtx.shadowBlur = glow * 0.3;
+  fxCtx.stroke();
+  fxCtx.shadowBlur = 0;
+
+  fxCtx.beginPath();
+  for (const pt of pts) {
+    fxCtx.moveTo(pt.x + 3, pt.y);
+    fxCtx.arc(pt.x, pt.y, 3, 0, Math.PI * 2);
+  }
+  fxCtx.fillStyle = skelColor;
+  fxCtx.fill();
+}
+
+// ═══════════════════════════════════════════
+// ANTIGRAVITY MODE — thick neon rainbow beams
+// ═══════════════════════════════════════════
+function drawAntigravity(beamWidth, glow, showPinch, lite) {
+  const h1 = handData[0];
+  const h2 = handData[1];
+
+  // Fingertip-to-fingertip beams (thick, neon, rainbow)
+  for (let i = 0; i < 5; i++) {
+    const a = h1[TIPS[i]];
+    const b = h2[TIPS[i]];
+    drawNeonBeam(a, b, getBeamColors()[i], beamWidth, glow);
+  }
+
+  if (!lite) {
+    const crossPairs = [[0,2], [1,3], [2,4], [3,0], [4,1]];
+    for (let i = 0; i < crossPairs.length; i++) {
+      const [f1, f2] = crossPairs[i];
+      const a = h1[TIPS[f1]];
+      const b = h2[TIPS[f2]];
+      drawNeonBeam(a, b, getBeamColors()[i + 5], beamWidth * 0.6, glow * 0.7);
+    }
+
+    for (let i = 0; i < 4; i++) {
+      const a1 = h1[TIPS[i]], a2 = h1[TIPS[i+1]];
+      const b1 = h2[TIPS[i]], b2 = h2[TIPS[i+1]];
+      drawGeoQuad(a1, a2, b2, b1, getBeamColors()[i], 0.06);
+    }
+  }
+
+  if (showPinch) {
+    drawPinchEffects(h1, 0);
+    drawPinchEffects(h2, 1);
+  }
+}
+
+// ═══════════════════════════════════════════
+// GEOMETRIC MESH — wireframe polygons
+// ═══════════════════════════════════════════
+function drawGeometricMesh(beamWidth, glow, lite) {
+  const h1 = handData[0];
+  const h2 = handData[1];
+  const allTips1 = TIPS.map(i => h1[i]);
+  const allTips2 = TIPS.map(i => h2[i]);
+
+  // Connect every tip to every tip across hands
+  for (let i = 0; i < 5; i++) {
+    for (let j = 0; j < 5; j++) {
+      const colorIdx = (i + j) % BEAM_COLORS.length;
+      const width = i === j ? beamWidth : beamWidth * 0.4;
+      drawNeonBeam(allTips1[i], allTips2[j], getBeamColors()[colorIdx], width, glow * (i === j ? 1 : 0.4));
+    }
+  }
+
+  // Fill triangles
+  for (let i = 0; i < 4; i++) {
+    drawGeoTriangle(allTips1[i], allTips1[i+1], allTips2[i], getBeamColors()[i], 0.05);
+    drawGeoTriangle(allTips2[i], allTips2[i+1], allTips1[i+1], getBeamColors()[i+1], 0.05);
+  }
+
+  // Particles at intersections
+  for (let i = 0; i < 5; i++) {
+    const mid = {
+      x: (allTips1[i].x + allTips2[i].x) / 2,
+      y: (allTips1[i].y + allTips2[i].y) / 2
+    };
+    const pulse = Math.sin(time * 3 + i * 1.2) * 0.4 + 0.6;
+    drawNode(mid.x, mid.y, 8 * pulse, getBeamColors()[i], glow);
+  }
+}
+
+// ═══════════════════════════════════════════
+// LIGHTNING — chaotic electric arcs
+// ═══════════════════════════════════════════
+function drawLightningBolt(ax, ay, bx, by, width, glow, depth) {
+  const segs = 12 + Math.floor(Math.random() * 8);
+  const points = [{x: ax, y: ay}];
+  for (let s = 1; s < segs; s++) {
+    const t = s / segs;
+    const spread = (1 - Math.abs(t - 0.5) * 2) * 80 * (1 + depth * 0.3);
+    points.push({
+      x: ax + (bx - ax) * t + (Math.random() - 0.5) * spread,
+      y: ay + (by - ay) * t + (Math.random() - 0.5) * spread
+    });
+  }
+  points.push({x: bx, y: by});
+
+  // Main bolt — bright blue-white core
+  fxCtx.beginPath();
+  fxCtx.moveTo(points[0].x, points[0].y);
+  for (let i = 1; i < points.length; i++) fxCtx.lineTo(points[i].x, points[i].y);
+  fxCtx.strokeStyle = depth === 0 ? '#88ccff' : `rgba(120,180,255,${0.6 - depth * 0.2})`;
+  fxCtx.lineWidth = width * (depth === 0 ? 1 : 0.4);
+  fxCtx.shadowColor = '#4488ff';
+  fxCtx.shadowBlur = glow * (depth === 0 ? 1.5 : 0.8);
+  fxCtx.stroke();
+
+  // White-hot center on main bolts
+  if (depth === 0) {
+    fxCtx.beginPath();
+    fxCtx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) fxCtx.lineTo(points[i].x, points[i].y);
+    fxCtx.strokeStyle = 'rgba(220,240,255,0.9)';
+    fxCtx.lineWidth = width * 0.3;
+    fxCtx.shadowColor = '#aaccff';
+    fxCtx.shadowBlur = glow * 0.5;
+    fxCtx.stroke();
+  }
+  fxCtx.shadowBlur = 0;
+
+  // Branch forks
+  if (depth < 2) {
+    for (let i = 3; i < points.length - 2; i++) {
+      if (Math.random() < 0.25) {
+        const branchLen = 30 + Math.random() * 60;
+        const angle = Math.atan2(by - ay, bx - ax) + (Math.random() - 0.5) * 1.8;
+        drawLightningBolt(
+          points[i].x, points[i].y,
+          points[i].x + Math.cos(angle) * branchLen,
+          points[i].y + Math.sin(angle) * branchLen,
+          width * 0.5, glow * 0.6, depth + 1
+        );
+      }
+    }
+  }
+}
+
+function drawLightningBeams(beamWidth, glow, lite) {
+  const h1 = handData[0];
+  const h2 = handData[1];
+  const boltsPerFinger = lite ? 1 : 2;
+
+  for (let i = 0; i < 5; i++) {
+    const a = h1[TIPS[i]];
+    const b = h2[TIPS[i]];
+    for (let bolt = 0; bolt < boltsPerFinger; bolt++) {
+      drawLightningBolt(a.x, a.y, b.x, b.y, beamWidth * 0.7, glow, 0);
+    }
+  }
+
+  // Random cross-hand zaps — bright white flash
+  if (Math.random() < 0.25) {
+    const f1 = Math.floor(Math.random() * 5);
+    const f2 = Math.floor(Math.random() * 5);
+    drawLightningBolt(
+      h1[TIPS[f1]].x, h1[TIPS[f1]].y,
+      h2[TIPS[f2]].x, h2[TIPS[f2]].y,
+      beamWidth * 0.4, glow * 0.8, 0
+    );
+  }
+
+  // Blue glow orbs at fingertips
+  if (!lite) {
+    for (const pts of [h1, h2]) {
+      for (let i = 0; i < TIPS.length; i++) {
+        const tip = pts[TIPS[i]];
+        const pulse = 0.5 + Math.random() * 0.5;
+        fxCtx.save();
+        const grad = fxCtx.createRadialGradient(tip.x, tip.y, 0, tip.x, tip.y, 25);
+        grad.addColorStop(0, `rgba(120,180,255,${pulse * 0.6})`);
+        grad.addColorStop(0.5, 'rgba(68,136,255,0.15)');
+        grad.addColorStop(1, 'transparent');
+        fxCtx.fillStyle = grad;
+        fxCtx.beginPath();
+        fxCtx.arc(tip.x, tip.y, 25, 0, Math.PI * 2);
+        fxCtx.fill();
+        fxCtx.restore();
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+// MINIMAL — clean lines, subtle
+// ═══════════════════════════════════════════
+function drawMinimalBeams(beamWidth, glow) {
+  const h1 = handData[0];
+  const h2 = handData[1];
+
+  for (let i = 0; i < 5; i++) {
+    const a = h1[TIPS[i]];
+    const b = h2[TIPS[i]];
+    drawNeonBeam(a, b, getBeamColors()[i], beamWidth * 0.5, glow * 0.5);
+
+    // Midpoint nodes
+    const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+    drawNode(mid.x, mid.y, 5, getBeamColors()[i], glow * 0.5);
+  }
+}
+
+// ═══════════════════════════════════════════
+// DRAWING PRIMITIVES
+// ═══════════════════════════════════════════
+function drawNeonBeam(a, b, color, width, glow) {
+  fxCtx.lineCap = 'round';
+  fxCtx.shadowColor = color;
+  fxCtx.shadowBlur = glow;
+
+  // Outer glow
+  fxCtx.globalAlpha = 0.15;
+  fxCtx.lineWidth = width * 2.5;
+  fxCtx.strokeStyle = color;
+  fxCtx.beginPath();
+  fxCtx.moveTo(a.x, a.y);
+  fxCtx.lineTo(b.x, b.y);
+  fxCtx.stroke();
+
+  // Core color
+  fxCtx.globalAlpha = 0.7;
+  fxCtx.lineWidth = width;
+  fxCtx.beginPath();
+  fxCtx.moveTo(a.x, a.y);
+  fxCtx.lineTo(b.x, b.y);
+  fxCtx.stroke();
+
+  // White center
+  fxCtx.shadowBlur = 0;
+  fxCtx.globalAlpha = 0.6;
+  fxCtx.lineWidth = width * 0.25;
+  fxCtx.strokeStyle = '#ffffff';
+  fxCtx.beginPath();
+  fxCtx.moveTo(a.x, a.y);
+  fxCtx.lineTo(b.x, b.y);
+  fxCtx.stroke();
+
+  fxCtx.globalAlpha = 1;
+}
+
+function drawNode(x, y, radius, color, glow) {
+  // Outer glow
+  fxCtx.save();
+  const grad = fxCtx.createRadialGradient(x, y, 0, x, y, radius * 3);
+  grad.addColorStop(0, color);
+  grad.addColorStop(0.3, color + '88');
+  grad.addColorStop(1, 'transparent');
+  fxCtx.fillStyle = grad;
+  fxCtx.globalAlpha = 0.5;
+  fxCtx.beginPath();
+  fxCtx.arc(x, y, radius * 3, 0, Math.PI * 2);
+  fxCtx.fill();
+
+  // Core
+  fxCtx.globalAlpha = 1;
+  fxCtx.beginPath();
+  fxCtx.arc(x, y, radius, 0, Math.PI * 2);
+  fxCtx.fillStyle = '#ffffff';
+  fxCtx.shadowColor = color;
+  fxCtx.shadowBlur = glow;
+  fxCtx.fill();
+  fxCtx.restore();
+}
+
+function drawGeoQuad(a, b, c, d, color, alpha) {
+  fxCtx.save();
+  fxCtx.globalAlpha = alpha;
+  fxCtx.beginPath();
+  fxCtx.moveTo(a.x, a.y);
+  fxCtx.lineTo(b.x, b.y);
+  fxCtx.lineTo(c.x, c.y);
+  fxCtx.lineTo(d.x, d.y);
+  fxCtx.closePath();
+  fxCtx.fillStyle = color;
+  fxCtx.fill();
+  fxCtx.restore();
+}
+
+function drawGeoTriangle(a, b, c, color, alpha) {
+  fxCtx.save();
+  fxCtx.globalAlpha = alpha;
+  fxCtx.beginPath();
+  fxCtx.moveTo(a.x, a.y);
+  fxCtx.lineTo(b.x, b.y);
+  fxCtx.lineTo(c.x, c.y);
+  fxCtx.closePath();
+  fxCtx.fillStyle = color;
+  fxCtx.fill();
+  fxCtx.restore();
+}
+
+// ═══════════════════════════════════════════
+// PINCH DETECTION + EFFECTS
+// ═══════════════════════════════════════════
+let pinchState = [{}, {}];
+
+function drawPinchEffects(pts, handIdx) {
+  const thumb = pts[4];
+  const fingers = [
+    { idx: 8, name: 'index' },
+    { idx: 12, name: 'middle' },
+    { idx: 16, name: 'ring' },
+    { idx: 20, name: 'pinky' }
+  ];
+
+  for (const f of fingers) {
+    const tip = pts[f.idx];
+    const dist = Math.hypot(thumb.x - tip.x, thumb.y - tip.y);
+    const pinchThreshold = 40;
+    const key = `${handIdx}_${f.name}`;
+
+    if (dist < pinchThreshold) {
+      const pinchIntensity = 1 - (dist / pinchThreshold);
+      const cx = (thumb.x + tip.x) / 2;
+      const cy = (thumb.y + tip.y) / 2;
+
+      if (!pinchState[handIdx][f.name]) {
+        pinchState[handIdx][f.name] = { startTime: time, x: cx, y: cy };
+      }
+
+      const ps = pinchState[handIdx][f.name];
+      const elapsed = time - ps.startTime;
+
+      // Expanding ring burst on pinch
+      const ringRadius = elapsed * 150;
+      const ringAlpha = Math.max(0, 1 - elapsed * 0.8) * pinchIntensity;
+      if (ringAlpha > 0 && ringRadius < 200) {
+        fxCtx.save();
+        fxCtx.globalAlpha = ringAlpha;
+        fxCtx.beginPath();
+        fxCtx.arc(cx, cy, ringRadius, 0, Math.PI * 2);
+        fxCtx.strokeStyle = getBeamColors()[f.idx === 8 ? 0 : f.idx === 12 ? 1 : f.idx === 16 ? 2 : 3];
+        fxCtx.lineWidth = 3 * pinchIntensity;
+        fxCtx.shadowColor = fxCtx.strokeStyle;
+        fxCtx.shadowBlur = 20;
+        fxCtx.stroke();
+        fxCtx.shadowBlur = 0;
+        fxCtx.restore();
+      }
+
+      // Bright pinch point glow
+      drawNode(cx, cy, 15 * pinchIntensity, '#ffffff', 25);
+
+      // Sparkle rays
+      const numRays = 6;
+      for (let r = 0; r < numRays; r++) {
+        const angle = (r / numRays) * Math.PI * 2 + time * 3;
+        const rayLen = 20 + pinchIntensity * 30 + Math.sin(time * 8 + r) * 10;
+        fxCtx.beginPath();
+        fxCtx.moveTo(cx, cy);
+        fxCtx.lineTo(cx + Math.cos(angle) * rayLen, cy + Math.sin(angle) * rayLen);
+        fxCtx.strokeStyle = `rgba(255, 255, 255, ${pinchIntensity * 0.5})`;
+        fxCtx.lineWidth = 1.5;
+        fxCtx.stroke();
+      }
+    } else {
+      pinchState[handIdx][f.name] = null;
+    }
+  }
+}
+
+document.addEventListener('keydown', e => {
+  const modes = ['antigravity', 'geometric', 'lightning', 'minimal'];
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= 4) {
+    document.getElementById('modeSelect').value = modes[num - 1];
+  }
+  if (e.key === 'h' || e.key === 'H') {
+    const ctrl = document.getElementById('controls');
+    ctrl.style.display = ctrl.style.display === 'none' ? 'block' : 'none';
+  }
+  if (e.key === 'f' || e.key === 'F') {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  }
+  if (e.key === 's') document.getElementById('showSkeleton').click();
+  if (e.key === 'n') document.getElementById('showNodes').click();
+  if (e.key === 'p') document.getElementById('showPinch').click();
+  if (e.key === 'l') document.getElementById('liteMode').click();
+});
+</script>
+</body>
+</html>

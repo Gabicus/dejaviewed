@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI &amp; Art: The Next Evolution</title>
+  <link rel="stylesheet" href="reveal-dist/reveal.css">
+  <link rel="stylesheet" href="reveal-dist/theme/night.css" id="theme">
+  <link rel="stylesheet" href="reveal-dist/plugin/highlight/monokai.css">
+  <style>
+    :root {
+      --r-background-color: #0a0a0f;
+      --r-main-color: #e0e0e0;
+      --r-heading-color: #ffffff;
+      --r-link-color: #64b5f6;
+      --r-link-color-hover: #90caf9;
+      --r-selection-background-color: #64b5f644;
+      --r-heading-font: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --r-main-font: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+
+    .reveal { font-weight: 300; }
+    .reveal h1, .reveal h2 { font-weight: 800; letter-spacing: -0.02em; }
+    .reveal h3 { font-weight: 600; color: #64b5f6; }
+
+    .accent { color: #64b5f6; }
+    .warn { color: #ff6b6b; }
+    .glow { color: #ffd93d; }
+    .dim { color: #666; font-size: 0.7em; }
+    .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+
+    .big-number {
+      font-size: 4em;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #64b5f6, #ce93d8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: center;
+      gap: 3em;
+      margin: 1em 0;
+    }
+    .stat-box {
+      text-align: center;
+    }
+    .stat-box .num {
+      font-size: 2.5em;
+      font-weight: 900;
+      color: #64b5f6;
+    }
+    .stat-box .label {
+      font-size: 0.6em;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .timeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 1.5em 0;
+    }
+    .timeline .era {
+      text-align: center;
+      padding: 0.5em 1.5em;
+      position: relative;
+    }
+    .timeline .era::after {
+      content: '→';
+      position: absolute;
+      right: -0.5em;
+      color: #64b5f6;
+      font-size: 1.5em;
+    }
+    .timeline .era:last-child::after { content: ''; }
+    .timeline .year { font-size: 0.6em; color: #666; }
+    .timeline .tool { font-weight: 600; color: #64b5f6; }
+
+    .side-by-side {
+      display: flex;
+      gap: 2em;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .side-by-side > div { flex: 1; max-width: 45%; }
+
+    .quote {
+      font-style: italic;
+      font-size: 1.3em;
+      color: #ce93d8;
+      border-left: 4px solid #ce93d8;
+      padding-left: 0.8em;
+      margin: 1em auto;
+      max-width: 80%;
+      text-align: left;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1em;
+      margin: 1em 0;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 1em;
+      text-align: center;
+    }
+    .card h4 { margin: 0.3em 0; color: #64b5f6; font-size: 0.8em; }
+    .card p { margin: 0; font-size: 0.55em; color: #aaa; }
+
+    .reveal section img {
+      border: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      border-radius: 8px;
+      max-height: 55vh;
+    }
+    .reveal section img.no-shadow {
+      box-shadow: none;
+      border-radius: 0;
+    }
+    .reveal section img.full {
+      max-height: 70vh;
+      max-width: 90%;
+    }
+
+    .prompt-demo {
+      background: #1a1a2e;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 1.2em;
+      text-align: left;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.55em;
+      line-height: 1.6;
+      max-width: 85%;
+      margin: 1em auto;
+    }
+    .prompt-demo .user { color: #64b5f6; }
+    .prompt-demo .ai { color: #81c784; }
+
+    .reveal .slide-number { font-size: 14px; color: #444; }
+
+    /* Sequential auto-animations on slide load */
+    .seq {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .seq.seq-go {
+      animation: seqFadeUp 0.6s ease both;
+    }
+    @keyframes seqFadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══ Bottom nav dots ═══ */
+    #nav-dots {
+      position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+      z-index: 30; display: flex; gap: 6px; align-items: flex-start;
+      padding: 6px 12px; border-radius: 20px;
+      background: rgba(0,0,0,0.3); backdrop-filter: blur(6px);
+      transition: opacity 0.3s;
+    }
+    .reveal.overview #nav-dots { opacity: 0; pointer-events: none; }
+    .nav-section {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      cursor: pointer;
+    }
+    .nav-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      transition: all 0.25s;
+    }
+    .nav-dot.active {
+      background: #64b5f6;
+      box-shadow: 0 0 8px rgba(100,181,246,0.6);
+      width: 8px; height: 8px;
+    }
+    .nav-dot.section-active {
+      background: rgba(100,181,246,0.3);
+    }
+
+    .three-col {
+      display: flex; gap: 2em; justify-content: center; align-items: flex-start;
+      margin: 1em 0;
+    }
+    .three-col > div { flex: 1; max-width: 32%; text-align: center; }
+    .three-col img {
+      width: auto; max-width: 100%; height: 45vh; object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .three-col h3 { margin-top: 0.5em; font-size: 1em; }
+    .three-col p { font-size: 0.6em; color: #888; margin-top: 0.2em; }
+
+    .arrow-flow {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.5em; margin: 1em 0;
+    }
+    .arrow-flow > div { text-align: center; flex: 1; }
+    .arrow-flow img {
+      max-height: 30vh; border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .arrow-flow .arrow {
+      flex: 0; font-size: 2em; color: #64b5f6;
+      padding: 0 0.3em;
+    }
+
+    .video-row {
+      display: flex; gap: 1em; justify-content: center;
+      margin: 1em 0;
+    }
+    .video-row iframe {
+      flex: 1; max-width: 30%; aspect-ratio: 9/16;
+      border: none; border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(100, 181, 246, 0.15);
+      border: 1px solid rgba(100, 181, 246, 0.3);
+      color: #64b5f6;
+      padding: 0.2em 0.6em;
+      border-radius: 20px;
+      font-size: 0.5em;
+      margin: 0.2em;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 1: WHO AM I (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="zoom" data-background-gradient="radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0f 70%)">
+          <h1 style="font-size: 2.5em;">AI <span class="accent">&amp;</span> Art</h1>
+          <h3 style="color: #ce93d8; font-weight: 300; font-size: 0.9em;">The Next Evolution</h3>
+          <p style="margin-top: 2em; font-size: 0.7em; color: #888;">Gabe DeWitt &nbsp;·&nbsp; Fairmont State University &nbsp;·&nbsp; 2026</p>
+          <p style="font-size: 0.5em; color: #555; margin-top: 1em;">← → navigate topics &nbsp;&nbsp; ↑ ↓ dive deeper &nbsp;&nbsp; ESC overview</p>
+        </section>
+
+        <section data-transition="fade" data-background-color="#0a0a0f">
+          <p style="margin: 0; font-size: 1.2em; font-weight: 600; color: #ccc; letter-spacing: 0.02em;">Gabe DeWitt, PE</p>
+          <div style="display: flex; gap: 0.5em; justify-content: center; align-items: stretch; height: 95vh; margin-top: 0.2em;">
+            <img src="img/Gabe_Artist.png" alt="Gabe as Artist" style="max-height: 95vh; height: 100%; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            <img src="img/Gabe_Engineer.png" alt="Gabe as Engineer" style="max-height: 95vh; height: 100%; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            <img src="img/Gabe_Mountaineer.png" alt="Gabe as Mountaineer" style="max-height: 95vh; height: 100%; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <h2>My Art</h2>
+          <img src="img/Gabe_art_photos.png" class="full" alt="Photography and artwork collection">
+          <p class="dim">Astrophotography · Aurora · Watercolor · Ink pointillism</p>
+        </section>
+
+
+
+        <section data-transition="fade">
+          <h2>My Work</h2>
+          <img src="img/netl_portfolio.jpg" style="max-height: 75vh; max-width: 95%;" alt="NETL Data Visualization Portfolio">
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 2: WHAT IS AI (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="convex">
+          <h2>"AI" <span class="accent">as a User Interface</span></h2>
+          <img src="img/slide1_ai_as_ui.png" class="full" alt="AI as User Interface diagram">
+        </section>
+
+        <section data-transition="fade">
+          <h2>What's Actually Happening</h2>
+          <div style="text-align: left; max-width: 80%; margin: 0 auto;">
+            <p class="seq" style="animation-delay: 0.4s;">
+              <span class="accent">Linear Algebra</span> — data organized into massive grids of numbers
+            </p>
+            <p class="seq" style="animation-delay: 0.8s;">
+              <span class="accent">Calculus</span> — gradient descent tweaks billions of weights to reduce error
+            </p>
+            <p class="seq" style="animation-delay: 1.2s;">
+              <span class="accent">Probability</span> — predicts the most statistically likely next word or pixel
+            </p>
+            <p class="seq" style="animation-delay: 1.6s; margin-top: 1.5em;">
+              <span class="glow" style="font-size: 1.2em;">Pattern recognition at a scale orders of magnitude beyond anything before.</span>
+            </p>
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <p class="quote">"AI is the performance on the stage.<br>Machine Learning is the physics that makes the equipment move."</p>
+          <h3 class="seq" style="animation-delay: 0.4s; margin-top: 1.5em; font-size: 1.3em;">It's not thinking.<br>It's <span class="glow">calculating</span>.</h3>
+        </section>
+
+        <section data-transition="fade" data-auto-animate>
+          <h2>The Trick</h2>
+          <p style="font-size: 1.5em; margin: 1em 0;" data-auto-animate-delay="0.3">Talk to it <span class="warn">like a robot</span>.</p>
+          <p style="font-size: 1.8em; font-weight: 800;" data-auto-animate-delay="0.6">It listens <span class="accent">really</span> well.</p>
+          <div class="prompt-demo" data-auto-animate-delay="0.9">
+            <p><span class="user">You:</span> I have 40 watercolor paintings photographed on my phone. Build me a portfolio website with a gallery, an about page with my artist statement, and a contact form. Make it feel like handmade paper — warm, textured, not corporate.</p>
+            <p><span class="ai">AI:</span> I'll set that up. Cream linen background, subtle paper texture, masonry gallery grid that loads your images. Artist statement section with your bio. Contact form that emails you directly...</p>
+          </div>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 3: THE LANDSCAPE (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="zoom">
+          <h2>The Landscape <span class="dim">April 2026</span></h2>
+          <img src="img/slide3_llm_scores.png" class="full no-shadow" alt="LLM benchmark scores" style="background: white; padding: 0.5em; border-radius: 8px;">
+          <p class="dim">Source: Artificial Analysis · Composite benchmark scores</p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>The Trajectory</h2>
+          <img src="img/slide5_ai_growth.png" class="full no-shadow" alt="METR AI growth chart" style="background: white; padding: 0.5em; border-radius: 8px;">
+          <p class="seq" style="animation-delay: 0.4s; font-size: 1.1em; margin-top: 0.5em;">
+            That Y-axis is <span class="warn">logarithmic</span>. This line is <span class="glow">exponential growth</span>.
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>AI Modalities</h2>
+          <div class="card-grid">
+            <div class="card">
+              <h4>💬 Chatbots</h4>
+              <p>ChatGPT, Claude, Gemini</p>
+              <p>Text, code, images, reasoning</p>
+            </div>
+            <div class="card">
+              <h4>🖥️ Copilot IDEs</h4>
+              <p>Cursor, VS Code, Windsurf</p>
+              <p>Edit, run, debug in your editor</p>
+            </div>
+            <div class="card">
+              <h4>⌨️ CLI Agents</h4>
+              <p>Claude Code, Codex, Gemini CLI</p>
+              <p>AI does anything a human can from terminal</p>
+            </div>
+            <div class="card">
+              <h4>🎨 Image Gen</h4>
+              <p>Midjourney, DALL-E, Stable Diffusion</p>
+              <p>Text → images, style transfer</p>
+            </div>
+            <div class="card">
+              <h4>🎬 Video Gen</h4>
+              <p>Sora, Runway, Kling</p>
+              <p>Text → video, motion, VFX</p>
+            </div>
+            <div class="card">
+              <h4>🧊 3D Gen</h4>
+              <p>World Labs, Tripo, Meshy</p>
+              <p>Text/image → 3D models</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 4: THE PATTERN (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="convex">
+          <h2>We've Seen This Before</h2>
+          <p style="font-size: 0.8em; color: #888;">Every transformative tool faced the same resistance.</p>
+        </section>
+
+        <section data-transition="fade" data-auto-animate>
+          <h2 data-id="title">The Calculator <span class="dim">1970s</span></h2>
+          <p data-id="quote" class="quote">"Calculators will destroy children's ability to do math!"</p>
+          <p class="seq" style="animation-delay: 0.4s; font-size: 1.1em;">They were <span class="glow">kind of right</span>. 😄</p>
+          <p class="seq" style="animation-delay: 0.8s; font-size: 0.9em; color: #888;">But the engineers who embraced them built rockets.</p>
+        </section>
+
+        <section data-transition="fade" data-auto-animate>
+          <h2 data-id="title">AutoCAD <span class="dim">1980s</span></h2>
+          <p data-id="quote" class="quote">"This will ruin the craft of drafting!"</p>
+          <p class="seq" style="animation-delay: 0.4s;">Every drafter who refused to learn it<br><span class="warn">was replaced by one who did</span>.</p>
+          <p class="seq" style="animation-delay: 0.8s; font-size: 0.9em; color: #888;">The craft didn't die. It evolved.</p>
+        </section>
+
+        <section data-transition="fade" data-auto-animate>
+          <h2 data-id="title">Photoshop <span class="dim">1990s</span></h2>
+          <p data-id="quote" class="quote">"Digital art isn't real art!"</p>
+          <p class="seq" style="animation-delay: 0.4s;">Now it's the industry standard.</p>
+          <p class="seq" style="animation-delay: 0.8s; font-size: 0.9em; color: #888;">The artists who learned it first got the jobs.</p>
+        </section>
+
+        <section data-transition="fade" data-auto-animate>
+          <h2 data-id="title">Digital Photography <span class="dim">2000s</span></h2>
+          <p data-id="quote" class="quote">"Digital will never match the quality of film!"</p>
+          <p class="seq" style="animation-delay: 0.4s;">Kodak believed that. <span class="warn">Filed for bankruptcy in 2012</span>.</p>
+          <p class="seq" style="animation-delay: 0.8s; font-size: 0.9em; color: #888;">The photographers who switched early defined the next era.</p>
+        </section>
+
+        <section data-transition="fade">
+          <img src="img/south-park-jobs.png" alt="They took our jobs" style="max-height: 70vh; max-width: 85%; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+          <p class="seq" style="animation-delay: 0.4s; font-size: 1.2em; margin-top: 0.5em;">Every. Single. Time.</p>
+        </section>
+
+        <section data-transition="fade" data-auto-animate>
+          <h2 data-id="title">3D Printing <span class="dim">2010s</span></h2>
+          <p data-id="quote" class="quote">"It's not real craftsmanship!"</p>
+          <p class="seq" style="animation-delay: 0.4s;">Now sculptors, architects, and designers use it daily.</p>
+          <p class="seq" style="animation-delay: 0.8s; font-size: 0.9em; color: #888;">It didn't replace hands. It extended them.</p>
+        </section>
+
+        <section data-transition="fade" data-auto-animate>
+          <h2 data-id="title">AI <span class="dim">2020s</span></h2>
+          <p data-id="quote" class="quote">"AI will replace artists!"</p>
+          <p class="seq" style="animation-delay: 0.4s; font-size: 1.3em;">No.</p>
+          <p class="seq" style="animation-delay: 0.8s; font-size: 1.1em;">
+            Artists who <span class="accent">use AI</span> will replace artists who <span class="warn">don't</span>.
+          </p>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 5: MY CEILING (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="zoom">
+          <h2>My Coding Ceiling</h2>
+          <p style="font-size: 1.3em; margin: 1em 0;">
+            I'm <span class="accent">great</span> at reading code.
+          </p>
+          <p style="font-size: 1.3em;">
+            I'm <span class="warn">terrible</span> at writing it.
+          </p>
+          <p class="seq" style="animation-delay: 0.4s; margin-top: 1.5em; font-size: 0.9em; color: #888;">
+            For over a decade, I had ideas I couldn't build.<br>
+            I could see the architecture. I just couldn't type the syntax.
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>The Old Days <span class="dim">2015–2018</span></h2>
+          <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="card">
+              <h4>D3 Sunburst</h4>
+              <p>Radial hierarchy diagram</p>
+              <p style="color: #ff6b6b;">Weeks of struggle</p>
+              <a href="https://1gabe.com/demo/sunburst/" target="_blank" class="badge">live →</a>
+            </div>
+            <div class="card">
+              <h4>Sankey Diagrams</h4>
+              <p>Energy flow visualizations</p>
+              <p style="color: #ff6b6b;">Months of iteration</p>
+              <a href="https://1gabe.com/demo/sankey/" target="_blank" class="badge">live →</a>
+            </div>
+            <div class="card">
+              <h4>Reveal.js Presenter</h4>
+              <p>This very format, v1</p>
+              <p style="color: #ff6b6b;">Days of HTML wrangling</p>
+              <a href="https://1gabe.com/demo/presenter/" target="_blank" class="badge">live →</a>
+            </div>
+            <div class="card">
+              <h4>StoryMap.js</h4>
+              <p>Narrative map project</p>
+              <p style="color: #ff6b6b;">Painful JSON editing</p>
+              <a href="https://1gabe.com/demo/storymapjs/" target="_blank" class="badge">live →</a>
+            </div>
+          </div>
+          <p class="dim" style="margin-top: 0.5em;">Click any badge to see the live project · All still running on 1gabe.com</p>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 7: ART I'VE DONE WITH AI (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="zoom" data-background-gradient="radial-gradient(ellipse at center, #2a1a2a 0%, #0a0a0f 70%)">
+          <h2>Art I've Done <span class="accent">with AI</span></h2>
+          <p style="font-size: 1.1em; color: #888;">Before the chatbots. Before the hype.</p>
+          <p class="seq" style="animation-delay: 0.4s; font-size: 0.9em; color: #ce93d8; margin-top: 1em;">
+            StyleGAN · NVIDIA · 30,000 iterations · 100% GPU for a week
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>The Pipeline</h2>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 0.3em; height: 65vh;">
+            <div style="text-align: center; flex: 1;">
+              <img src="img/dots.jpg" alt="Original dot art" style="max-height: 60vh; width: auto; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+              <p class="dim" style="margin-top: 0.3em;">This taught</p>
+            </div>
+            <div style="font-size: 2.5em; color: #64b5f6; flex: 0; padding: 0 0.2em;">→</div>
+            <div style="text-align: center; flex: 1;">
+              <img src="img/DD_Artsamples.png" alt="Collected art samples" style="max-height: 60vh; width: auto; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+              <p class="dim" style="margin-top: 0.3em;">This taught</p>
+            </div>
+            <div style="font-size: 2.5em; color: #64b5f6; flex: 0; padding: 0 0.2em;">→</div>
+            <div style="text-align: center; flex: 1;">
+              <video src="video/stylegan_result.mp4" autoplay loop muted playsinline style="max-height: 60vh; width: auto; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);"></video>
+              <p class="dim" style="margin-top: 0.3em;">This</p>
+            </div>
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <h2>AI Art Videos</h2>
+          <div style="display: flex; gap: 1em; justify-content: center; align-items: center; height: 65vh;">
+            <video src="video/art_video_1.mp4" autoplay loop muted playsinline style="height: 100%; width: auto; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);"></video>
+            <video src="video/art_video_2.mp4" autoplay loop muted playsinline style="height: 100%; width: auto; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);"></video>
+            <video src="video/art_video_3.mp4" autoplay loop muted playsinline style="height: 100%; width: auto; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);"></video>
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <h2>So What?</h2>
+          <p style="font-size: 1.2em; color: #888; max-width: 80%; margin: 1em auto; text-align: center;">
+            These look pretty. They make cool posts.
+          </p>
+          <p class="seq" style="animation-delay: 0.4s; font-size: 1.3em; color: #ff6b6b; margin-top: 1em;">
+            But they serve no purpose.
+          </p>
+          <p class="seq" style="animation-delay: 0.8s; font-size: 1em; color: #888; margin-top: 1.5em;">
+            I hadn't collected the data I needed.<br>
+            The process wasn't what I thought it could be.
+          </p>
+          <p class="seq" style="animation-delay: 1.2s; font-size: 1.1em; margin-top: 1.5em;">
+            <span class="glow">The interesting part isn't the output.</span><br>
+            <span class="accent">It's that I could attempt it at all.</span>
+          </p>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 8: WORK I'VE DONE WITH AI (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="zoom" data-background-gradient="radial-gradient(ellipse at center, #1a2a1a 0%, #0a0a0f 70%)">
+          <h2>Work I've Done <span class="accent">with AI</span></h2>
+          <p style="font-size: 1.1em; color: #888;">Using computational power to grow a project</p>
+          <p class="seq" style="animation-delay: 0.4s; font-size: 0.9em; color: #81c784; margin-top: 1em;">
+            From a 2MB file analyzing one year by month<br>
+            → 10 years by hour for the entire US gas turbine fleet
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>The Starting Point</h2>
+          <p style="font-size: 0.9em; color: #888; max-width: 85%; margin: 0 auto 0.5em;">I start by free-writing what I want, then free-writing how I think I'd accomplish it:</p>
+          <div class="prompt-demo" style="font-size: 0.42em; line-height: 1.6;">
+            <p><span class="user">Me:</span> I'd like to write python on script to go through this hourly data file, emissions-hourly-2024-q1_100k.csv. This is just an export of 100k rows as the full data set is about 7 gigs. I only want to look at IDs that match another data set I have NETLTurbineID.xlsx. In my hourly data, a new Column "UniquID" will be added based on [Facility ID] + " – " + [Unit ID] in the hourly data set. My resulting data will only keep Unique IDs matched between NETLTurbineID.xlsx and emissions-hourly-2024-q1_100k.csv. I'd like to begin by loading this data into a data frame for analysis and visualization and data transformation exports. This is where we'll start.</p>
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <h2>The Result</h2>
+          <div style="display: flex; gap: 1em; justify-content: center; align-items: center; height: 70vh;">
+            <img src="img/brownbag_slide8.png" style="height: 100%; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            <img src="img/brownbag_slide9.png" style="height: 100%; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <h2>Turbine Program Dashboards</h2>
+          <img src="img/Gabe_graphs.png" style="max-height: 75vh; max-width: 95%;" alt="Gas turbine program dashboard visualizations">
+        </section>
+
+        <section data-transition="fade">
+          <h2>The Scale Jump</h2>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 1em; margin: 1em 0;">
+            <div style="text-align: center; flex: 1;">
+              <h3 style="color: #ff6b6b;">Start</h3>
+              <p style="font-size: 1.8em; font-weight: 800;">2 MB</p>
+              <p style="font-size: 0.7em; color: #888;">1 year · Monthly · One plant</p>
+            </div>
+            <div style="font-size: 2em; color: #64b5f6; flex: 0;">→</div>
+            <div style="text-align: center; flex: 1;">
+              <h3 style="color: #ffd93d;">Then</h3>
+              <p style="font-size: 1.8em; font-weight: 800;">7 GB</p>
+              <p style="font-size: 0.7em; color: #888;">Quarterly exports · Hourly data</p>
+            </div>
+            <div style="font-size: 2em; color: #64b5f6; flex: 0;">→</div>
+            <div style="text-align: center; flex: 1;">
+              <h3 style="color: #81c784;">Now</h3>
+              <p style="font-size: 1.8em; font-weight: 800;">100 GB</p>
+              <p style="font-size: 0.7em; color: #888;">10 years · Hourly · Entire US fleet</p>
+            </div>
+          </div>
+          <p class="seq" style="animation-delay: 0.4s; margin-top: 1.5em; font-size: 1.1em;">
+            The tools did the heavy lifting.
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>Citation Tree</h2>
+          <img src="img/citation-tree.png" style="max-height: 75vh; max-width: 95%;" alt="Citation tree visualization — High-Entropy Alloys research paper">
+          <p class="dim" style="margin-top: 0.3em;">6,804 citations · 894 nodes · Built with AI from a single seed paper</p>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 9: DEJAVIEWED (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="convex" data-background-image="img/dejaviewed-hero.png" data-background-opacity="0.15">
+          <h2>DejaViewed</h2>
+          <p style="font-size: 1.1em;">A living content intelligence platform</p>
+          <div class="stat-row seq" style="animation-delay: 0.4s;">
+            <div class="stat-box">
+              <div class="num">334</div>
+              <div class="label">Entries</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">103</div>
+              <div class="label">Deep Dives</div>
+            </div>
+            <div class="stat-box">
+              <div class="num">43.5K</div>
+              <div class="label">Crosslinks</div>
+            </div>
+          </div>
+          <p class="seq" style="animation-delay: 0.8s;">
+            <a href="https://dejaviewed.dev" target="_blank" class="badge">dejaviewed.dev →</a>
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>The Catalog</h2>
+          <img src="img/dejaviewed-live.png" class="full" alt="DejaViewed card catalog">
+        </section>
+
+        <section data-transition="fade">
+          <h2>Deep Dives &amp; Creators</h2>
+          <img src="img/dejaviewed-creators-deepdives.png" class="full" alt="Deep dives and creators">
+        </section>
+
+        <section data-transition="fade">
+          <h2>Graph Cosmos</h2>
+          <img src="img/graph-cosmos-live.png" class="full" alt="Graph Cosmos visualization">
+          <p style="margin-top: 0.5em;">
+            <a href="https://dejaviewed.dev/graph-cosmos" target="_blank" class="badge">live cosmos →</a>
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>Force-Directed Graph</h2>
+          <img src="img/graph-force-live.png" class="full" alt="D3 force directed graph">
+          <p style="margin-top: 0.5em;">
+            <a href="https://dejaviewed.dev/graph" target="_blank" class="badge">live force graph →</a>
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>Deeper Dives</h2>
+          <p style="font-size: 1em; color: #888; margin-bottom: 1em;">AI-generated research pages built from my curated content</p>
+          <div style="text-align: left; max-width: 80%; margin: 0 auto;">
+            <p class="seq" style="animation-delay: 0.4s; margin: 0.8em 0;">
+              <span class="glow">Body → Machine → Art</span><br>
+              <span style="font-size: 0.7em; color: #888;">A $40,000 interactive installation you can build for $300</span><br>
+              <a href="https://dejaviewed.dev/deeper/deeper-insight-interactive-installations.html" target="_blank" class="badge">open deep dive →</a>
+            </p>
+            <p class="seq" style="animation-delay: 0.8s; margin: 0.8em 0;">
+              <span class="glow">Napkin Sketch → Production Asset</span><br>
+              <span style="font-size: 0.7em; color: #888;">Your own design team in a 5-tool creative pipeline</span><br>
+              <a href="https://dejaviewed.dev/deeper/deeper-insight-sketch-to-production.html" target="_blank" class="badge">open deep dive →</a>
+            </p>
+            <p class="seq" style="animation-delay: 1.2s; margin: 0.8em 0;">
+              <span class="glow">Code as Canvas</span><br>
+              <span style="font-size: 0.7em; color: #888;">When algorithms become the artist</span><br>
+              <a href="https://dejaviewed.dev/deeper/deeper-insight-generative-art-code.html" target="_blank" class="badge">open deep dive →</a>
+            </p>
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <h2>Design Resources</h2>
+          <p style="font-size: 0.8em; color: #888; margin-bottom: 0.8em;">Archive.org collections — public domain, free to use</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8em 3em; max-width: 85%; margin: 0 auto; font-size: 1em;">
+            <p style="text-align: right;"><a href="https://archive.org/details/Fine-Art-History" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">Fine Art History</a></p>
+            <p style="text-align: left;"><a href="https://archive.org/details/logoarchive" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">Logo Archive</a></p>
+            <p style="text-align: right;"><a href="https://archive.org/details/david-rumsey-map-collection" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">David Rumsey Map Collection</a></p>
+            <p style="text-align: left;"><a href="https://archive.org/details/vintage-australian-print-ads" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">Vintage Print Ads</a></p>
+            <p style="text-align: right;"><a href="https://archive.org/details/arcadeflyers" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">Arcade Flyers</a></p>
+            <p style="text-align: left;"><a href="https://archive.org/details/ravezines" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">Rave Zines</a></p>
+            <p style="text-align: right;"><a href="https://archive.org/details/digitaltransportation_posters" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">Transportation Posters</a></p>
+            <p style="text-align: left;"><a href="https://archive.org/details/prelinger" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">Prelinger Archives</a></p>
+            <p style="text-align: right;"><a href="https://archive.org/details/manuals" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">Technical Manuals</a></p>
+            <p style="text-align: left;"><a href="https://archive.org/details/culturalandacademicfilms" target="_blank" class="badge" style="font-size: 0.7em; padding: 0.3em 0.8em;">Cultural &amp; Academic Films</a></p>
+          </div>
+          <p class="seq dim" style="animation-delay: 0.4s; margin-top: 0.8em;">All public domain · Use for reference, composition, training data</p>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 12: (removed Career Intelligence + Cosmos Hero) -->
+      <!-- ═══════════════════════════════════════════════ -->
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 13: ALL-SEEING EYE (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="zoom" data-background-gradient="radial-gradient(ellipse at center, #0a1a2a 0%, #0a0a0f 70%)">
+          <h2 style="margin-bottom: 0.2em;">All-Seeing Eye — Evolution</h2>
+          <p class="dim" style="margin-bottom: 0.3em;">Next.js · React Three Fiber · Three.js · WebGL · Zustand · GLSL Shaders</p>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: 1fr 1fr; gap: 0.8em; max-width: 90%; max-height: 72vh; margin: 0 auto;">
+            <div style="position: relative; overflow: hidden;">
+              <img src="img/ase-v1.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);">
+              <span style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 0.45em; color: rgba(255,255,255,0.8); text-shadow: 0 1px 6px #000, 0 0 12px #000;">v1 — Rings</span>
+            </div>
+            <div style="position: relative; overflow: hidden;">
+              <img src="img/ase-v3.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);">
+              <span style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 0.45em; color: rgba(255,255,255,0.8); text-shadow: 0 1px 6px #000, 0 0 12px #000;">v2 — Particles + Eye</span>
+            </div>
+            <div style="position: relative; overflow: hidden;">
+              <img src="img/ase-v5.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);">
+              <span style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 0.45em; color: rgba(255,255,255,0.8); text-shadow: 0 1px 6px #000, 0 0 12px #000;">v3 — HUD + Beam</span>
+            </div>
+            <div style="position: relative; overflow: hidden;">
+              <img src="img/ase-v6.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);">
+              <span style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 0.45em; color: rgba(255,255,255,0.8); text-shadow: 0 1px 6px #000, 0 0 12px #000;">v4 — Market View</span>
+            </div>
+            <div style="position: relative; overflow: hidden;">
+              <img src="img/ase-v7.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);">
+              <span style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 0.45em; color: rgba(255,255,255,0.8); text-shadow: 0 1px 6px #000, 0 0 12px #000;">v5 — Complete</span>
+            </div>
+            <div style="position: relative; overflow: hidden;">
+              <img src="img/ase-v8.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.5);">
+              <span style="position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 0.45em; color: rgba(255,255,255,0.8); text-shadow: 0 1px 6px #000, 0 0 12px #000;">v6 — Retro Eye</span>
+            </div>
+          </div>
+        </section>
+
+        <section data-transition="fade" data-background-color="#020206">
+          <h2 style="position: absolute; top: 10px; left: 20px; font-size: 0.8em; z-index: 10; opacity: 0.5;">All-Seeing Eye — Live</h2>
+          <iframe data-src="all-seeing-eye/index.html" data-preload style="width: 100%; height: 85vh; border: none; border-radius: 8px;"></iframe>
+        </section>
+
+        <section data-transition="fade" data-background-color="#0a0a0f">
+          <h2 style="position: absolute; top: 10px; left: 20px; font-size: 0.8em; z-index: 10; opacity: 0.5;">3D Cosmos — Live</h2>
+          <iframe data-src="cosmos-standalone/index.html" data-preload style="width: 100%; height: 85vh; border: none; border-radius: 8px;"></iframe>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION: DEVIL'S ADVOCATE (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="fade">
+          <h3 style="color: #ff6b6b; font-size: 1em; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5em;">Devil's Advocate</h3>
+          <h2 style="font-size: 2.2em; font-weight: 900;">But the foundation<br><span class="warn">still matters</span>.</h2>
+          <p class="seq" style="animation-delay: 0.5s; font-size: 1.1em; color: #ccc; margin-top: 1em; max-width: 80%; margin-left: auto; margin-right: auto;">
+            Knowing how film works makes you a better digital photographer.<br>
+            Understanding anatomy makes you a better 3D modeler.<br>
+            Learning music theory makes you a better producer.
+          </p>
+          <p class="seq" style="animation-delay: 1.2s; font-size: 1.2em; margin-top: 1em;">
+            Tools raise the ceiling — but <span class="glow">knowledge is the floor</span>.
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>When the Floor Disappears</h2>
+          <div style="display: flex; gap: 1.5em; align-items: center; justify-content: center; margin-top: 0.5em;">
+            <div style="flex: 1; max-width: 45%;">
+              <img src="img/bridge-failure.jpg" alt="Marcy Bridge collapse — lateral torsional buckling" style="width: 100%; max-height: 55vh; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+              <p class="dim" style="margin-top: 0.3em;">Marcy Bridge, NY · October 2002</p>
+            </div>
+            <div style="flex: 1; max-width: 50%; text-align: left;">
+              <p style="font-size: 0.9em; color: #ccc;">170-ft pedestrian bridge <span class="warn">rotated and collapsed</span> during concrete placement. One killed, nine injured.</p>
+              <p class="seq" style="animation-delay: 0.4s; font-size: 0.85em; color: #888; margin-top: 0.8em;">
+                No top-flange bracing on the steel tub girder.<br>
+                Lateral torsional buckling under construction loads<br>
+                — the software modeled the <em>finished</em> composite section.
+              </p>
+              <p class="seq" style="animation-delay: 0.8s; font-size: 0.95em; margin-top: 1em; color: #ccc;">
+                The software got the <span class="accent">final design</span> right.<br>
+                Nobody checked the <span class="warn">construction sequence</span>.
+              </p>
+              <p class="seq dim" style="animation-delay: 1.2s; margin-top: 0.5em;">AASHTO rewrote their specs after this.</p>
+            </div>
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <div style="display: flex; gap: 1.5em; align-items: center; justify-content: center;">
+            <div style="flex: 1; max-width: 55%; text-align: left;">
+              <h2 style="font-size: 1.8em; text-align: left;">People <span class="warn">will</span> skip it.</h2>
+              <p class="seq" style="animation-delay: 0.4s; font-size: 1.05em; color: #ccc; margin-top: 0.8em;">
+                They'll generate code they can't read.<br>
+                Designs they can't evaluate.<br>
+                Structures they can't verify.
+              </p>
+              <p class="seq" style="animation-delay: 1s; font-size: 1.2em; margin-top: 1.2em;">
+                And those are the ones we have to worry about<br>
+                <span class="warn" style="font-size: 1.2em;">launching Skynet</span>.
+              </p>
+            </div>
+            <div class="seq" style="animation-delay: 0.6s; flex: 1; max-width: 40%;">
+              <img src="img/terminator.jpg" alt="Terminator" style="max-height: 55vh; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            </div>
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <h3 style="color: #ff6b6b; font-size: 1em; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5em;">Devil's Advocate</h3>
+          <h2 style="font-size: 1.8em;">The Environmental Cost</h2>
+          <div style="display: flex; gap: 1.5em; align-items: center; justify-content: center; margin-top: 0.5em;">
+            <div style="flex: 1; max-width: 40%;">
+              <img src="img/manbearpig.png" alt="ManBearPig" style="width: 100%; max-height: 50vh; object-fit: contain; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            </div>
+            <div style="flex: 1; max-width: 55%; text-align: left;">
+              <p style="font-size: 0.95em; color: #ccc;">AI training and inference consume <span class="warn">massive energy</span>. This is real. This matters.</p>
+              <p class="seq" style="animation-delay: 0.5s; font-size: 0.85em; color: #888; margin-top: 0.8em;">
+                But it's the same pattern we've seen with every technology<br>
+                we've rapidly adopted as a species — cars, air travel,<br>
+                smartphones, streaming, crypto —
+              </p>
+              <p class="seq" style="animation-delay: 1s; font-size: 0.95em; color: #ccc; margin-top: 0.8em;">
+                We consume first. Think about consequences later.
+              </p>
+              <p class="seq" style="animation-delay: 1.5s; font-size: 1em; margin-top: 0.8em;">
+                AI's footprint is <span class="accent">no less and no more</span> urgent<br>
+                than any other carbon problem we've created.
+              </p>
+              <p class="seq" style="animation-delay: 2s; font-size: 1em; margin-top: 0.5em;">
+                It needs solving. <span class="glow">Not ignoring</span>.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section data-transition="fade" data-background-gradient="radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0f 70%)">
+          <h2 style="font-size: 2.2em; font-weight: 900; margin-bottom: 0.5em;">The blank page<br><span class="accent">is gone</span>.</h2>
+          <p class="seq" style="animation-delay: 0.4s; font-size: 1.1em; color: #ccc; max-width: 80%; margin: 0 auto;">
+            Every generation has had more opportunity for inspiration than the last.
+          </p>
+          <p class="seq" style="animation-delay: 0.9s; font-size: 1.1em; color: #ccc; margin-top: 0.8em; max-width: 80%; margin-left: auto; margin-right: auto;">
+            But from now on — you'll never have to stare at an empty screen<br>
+            wondering where to start. You can ask for ideas. Get a synopsis<br>
+            of something you half-remember from a lecture you weren't paying attention to.
+          </p>
+          <p class="seq" style="animation-delay: 1.5s; font-size: 1.3em; margin-top: 1.2em;">
+            Never lose your love for<br>
+            <span class="glow" style="font-size: 1.1em;">the pleasure of finding things out</span>.
+          </p>
+          <p class="seq" style="animation-delay: 2.2s; font-size: 1.2em; margin-top: 1em; color: #ccc;">
+            And <span class="accent">always keep your hand on the wheel</span>.
+          </p>
+          <p class="seq" style="animation-delay: 2.8s; font-size: 1em; color: #888; margin-top: 0.5em;">
+            Never let AI do all the work for you.<br>
+            Because what fun is that?
+          </p>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION: LIVE BUILD (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="zoom" data-background-gradient="radial-gradient(ellipse at center, #1a2a1a 0%, #0a0a0f 70%)">
+          <h2>Let's Build Something</h2>
+          <p style="animation-delay: 0.4s; font-size: 1.2em;" class="seq">Right now.</p>
+          <p style="animation-delay: 0.8s; font-size: 1.2em;" class="seq">One prompt.</p>
+          <p style="animation-delay: 1.2s; font-size: 1.2em;" class="seq">
+            <span class="accent">Interactive hand-tracking energy visualizer.</span>
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>What You Say</h2>
+          <div class="prompt-demo" style="font-size: 0.65em; line-height: 1.8;">
+            <p><span class="user">Human:</span> Build a webcam hand-tracking art visualizer. MediaPipe Hands, dual canvas, neon rainbow beams between fingertips, 4 modes (antigravity, geometric mesh, blue lightning, minimal), pinch effects, color themes, performance toggles. Single HTML file, dark UI.</p>
+          </div>
+          <p class="seq" style="animation-delay: 0.4s; font-size: 1.1em; margin-top: 1em;">
+            <span class="glow">42 words.</span> That's it.
+          </p>
+        </section>
+
+        <section data-transition="fade">
+          <h2>What the AI Understands</h2>
+          <div class="prompt-demo" style="font-size: 0.5em; line-height: 1.7;">
+            <p><span class="ai">AI interprets:</span> Single HTML file. Webcam hand-tracking visualizer using MediaPipe Hands. Dual canvas — bg for camera feed, fx for effects with trail persistence. Detect 21 hand landmarks, draw neon skeleton + glowing fingertip nodes. When 2 hands visible: thick neon beams between matching fingertips with 3-layer glow (outer, core color, white center). 4 modes: Antigravity (rainbow beams + cross-connections + geometric fills), Geometric Mesh (all-to-all connections + triangle fills), Lightning (blue branching electric arcs with forks), Minimal (clean lines + midpoint nodes). Pinch detection: thumb-to-fingertip distance threshold triggers expanding ring burst + sparkle rays. Controls: beam width, glow, trail, camera opacity, skeleton/node/pinch toggles, color themes (neon/electric/fire/matrix/vapor), lite mode for FPS. Keyboard: 1-4 modes, H hide UI, F fullscreen. Dark UI, start screen with gradient title.</p>
+          </div>
+          <p class="seq dim" style="animation-delay: 0.4s;">You provide the vision. The AI fills in the engineering.</p>
+        </section>
+
+        <section data-transition="fade" data-background-gradient="radial-gradient(ellipse at center, #0a1a2a 0%, #0a0a0f 70%)">
+          <h2 style="font-size: 2.5em;">Live Demo</h2>
+          <p style="font-size: 1.5em; margin: 1em 0;">
+            <a href="webcam-energy.html" target="_blank" class="badge" style="font-size: 1em; padding: 0.4em 1em;">launch Energy Conductor →</a>
+          </p>
+          <p class="dim" style="margin-top: 1em;">Built by AI · ~550 lines · No human code written</p>
+          <p class="dim">Keys: 1-4 modes · H hide controls · F fullscreen</p>
+        </section>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 15: YOUR MOVE (horizontal) -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <section>
+        <section data-transition="zoom" data-background-gradient="radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0f 70%)">
+          <div style="display: flex; flex-direction: column; justify-content: space-between; height: 80vh;">
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+              <h2 class="seq" style="animation-delay: 0.3s; font-size: 3em; font-weight: 900; margin: 0; background: linear-gradient(135deg, #64b5f6, #ce93d8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">What Will You Build?</h2>
+              <h2 class="seq" style="animation-delay: 0.7s; font-size: 2.5em; font-weight: 900; margin: 0.2em 0 0; background: linear-gradient(135deg, #ce93d8, #ffd93d); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">What <em style="-webkit-text-fill-color: transparent;">Can't</em> You Build?</h2>
+              <p class="seq" style="animation-delay: 1.1s; font-size: 1.2em; margin-top: 1.5em; color: #ccc;">
+                The tools are here. The barrier is gone.
+              </p>
+              <p class="seq" style="animation-delay: 1.5s; font-size: 1em; color: #999; margin-top: 0.3em;">
+                The only question left is what you want to make.
+              </p>
+            </div>
+            <div class="seq" style="animation-delay: 2s; font-size: 0.6em; color: #555; letter-spacing: 0.05em; padding-bottom: 0.5em;">
+              <p style="margin: 0;">Gabe DeWitt</p>
+              <p style="margin: 0.4em 0 0;">
+                <a href="https://instagram.com/6ab3" target="_blank" style="color: #666; text-decoration: none;">@6ab3</a>
+                <span style="margin: 0 0.8em; color: #444;">·</span>
+                <a href="https://dejaviewed.dev" target="_blank" style="color: #666; text-decoration: none;">dejaviewed.dev</a>
+                <span style="margin: 0 0.8em; color: #444;">·</span>
+                <a href="https://1gabe.com" target="_blank" style="color: #666; text-decoration: none;">1gabe.com</a>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section data-transition="fade">
+          <h2>My Creative Portfolio</h2>
+          <img src="img/showcase-live.png" class="full" alt="Artist portfolio section">
+          <p style="margin-top: 0.5em;"><a href="https://dejaviewed.dev/about" target="_blank" class="badge">dejaviewed.dev/about →</a></p>
+          <p class="dim">Built in ~3 hours with Claude Code</p>
+        </section>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="nav-dots"></div>
+
+  <script src="reveal-dist/reveal.js"></script>
+  <script src="reveal-dist/plugin/highlight/highlight.js"></script>
+  <script src="reveal-dist/plugin/zoom.js"></script>
+  <script src="reveal-dist/plugin/notes.js"></script>
+  <script src="reveal-dist/plugin/search.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: false,
+      center: true,
+      navigationMode: 'grid',
+      transition: 'slide',
+      transitionSpeed: 'default',
+      backgroundTransition: 'fade',
+      width: 1920,
+      height: 1080,
+      margin: 0.08,
+      minScale: 0.2,
+      maxScale: 2.0,
+      plugins: [
+        RevealHighlight,
+        RevealZoom,
+        RevealNotes,
+        RevealSearch,
+      ]
+    }).then(() => {
+      buildNavDots();
+      Reveal.on('slidechanged', updateNavDots);
+
+      // Re-trigger .seq animations on every slide change
+      Reveal.on('slidechanged', () => {
+        document.querySelectorAll('.seq').forEach(el => {
+          el.classList.remove('seq-go');
+          el.offsetHeight;
+        });
+        requestAnimationFrame(() => {
+          document.querySelectorAll('.seq').forEach(el => {
+            el.classList.add('seq-go');
+          });
+        });
+      });
+      // Trigger for initial slide
+      document.querySelectorAll('.seq').forEach(el => el.classList.add('seq-go'));
+
+      // Override left/right to always jump to top of section
+      Reveal.addKeyBinding({keyCode: 39, key: 'ArrowRight', description: 'Next section'}, () => {
+        const {h} = Reveal.getIndices();
+        const total = Reveal.getHorizontalSlides().length;
+        if (h < total - 1) Reveal.slide(h + 1, 0);
+      });
+      Reveal.addKeyBinding({keyCode: 37, key: 'ArrowLeft', description: 'Prev section'}, () => {
+        const {h} = Reveal.getIndices();
+        if (h > 0) Reveal.slide(h - 1, 0);
+      });
+    });
+
+    function buildNavDots() {
+      const container = document.getElementById('nav-dots');
+      const hSections = document.querySelectorAll('.reveal > .slides > section');
+
+      hSections.forEach((hSection, h) => {
+        const col = document.createElement('div');
+        col.className = 'nav-section';
+
+        const vSlides = hSection.querySelectorAll(':scope > section');
+        const count = vSlides.length || 1;
+
+        for (let v = 0; v < count; v++) {
+          const dot = document.createElement('div');
+          dot.className = 'nav-dot';
+          dot.dataset.h = h;
+          dot.dataset.v = v;
+          dot.addEventListener('click', () => Reveal.slide(h, v));
+          col.appendChild(dot);
+        }
+        container.appendChild(col);
+      });
+      updateNavDots();
+    }
+
+    function updateNavDots() {
+      const {h, v} = Reveal.getIndices();
+      document.querySelectorAll('.nav-dot').forEach(dot => {
+        const dh = parseInt(dot.dataset.h);
+        const dv = parseInt(dot.dataset.v);
+        dot.classList.remove('active', 'section-active');
+        if (dh === h && dv === v) dot.classList.add('active');
+        else if (dh === h) dot.classList.add('section-active');
+      });
+    }
+  </script>
+</body>
+</html>
