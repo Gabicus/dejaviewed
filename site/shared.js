@@ -63,6 +63,7 @@
 
   DV.nav = function nav(active){
     const items = [
+      { id:'guides',   href:BASE+'guides/',             label:'Guides'  },
       { id:'graph',    href:BASE+'graph.html',        label:'Graph · Force'  },
       { id:'cosmos',   href:BASE+'graph-cosmos.html', label:'Graph · Cosmos' },
       { id:'board',    href:BASE+'board.html',        label:'Board'   },

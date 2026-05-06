@@ -1,0 +1,167 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guides · DejaViewed</title>
+<meta name="description" content="24 deep dive guides — tool breakdowns, workflow pipelines, and insight analyses from the DejaViewed catalog.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.guides-page{max-width:900px;margin:30px auto;padding:0 22px}
+.guides-page h1{font-size:34px;font-weight:900;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;margin:0 0 6px}
+.guides-page .subtitle{color:var(--text-dim);font-size:14px;margin-bottom:28px}
+.guide-section{margin-bottom:32px}
+.guide-section h2{font-size:18px;font-weight:800;color:var(--text);margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.guide-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;transition:border-color .15s;text-decoration:none;display:block}
+.guide-card:hover{border-color:var(--accent)}
+.guide-card.insight{border-color:rgba(167,139,250,.3)}
+.guide-card.insight:hover{border-color:var(--accent);background:rgba(167,139,250,.06)}
+.guide-card .g-title{font-size:14px;font-weight:800;color:#fff;margin:0 0 6px;line-height:1.35}
+.guide-card .g-meta{font-size:11.5px;color:var(--text-dim);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.guide-card .g-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.g-badge.insight{background:rgba(167,139,250,.15);color:var(--accent)}
+.g-badge.tool{background:rgba(76,218,140,.12);color:var(--c-repo)}
+.g-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo)}
+.g-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool)}
+.filter-row{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.filter-btn{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .15s}
+.filter-btn:hover{border-color:var(--accent);color:var(--text)}
+.filter-btn.on{background:var(--accent);color:#0a0a0f;border-color:var(--accent)}
+</style>
+</head><body>
+<script>DV.mountHeader(document.body, 'guides');</script>
+<div class="guides-page">
+  <h1>Guides</h1>
+  <div class="subtitle" id="stats"></div>
+  <div class="filter-row" id="filters"></div>
+  <div id="guide-list"></div>
+</div>
+<script>
+(function(){
+  const GUIDES = [
+    {file:'agent-architecture.html', title:'Why Your Agent Sucks: Architecture Patterns That Actually Work', type:'insight', confidence:'high', tags:['agents','architecture','claude']},
+    {file:'ai-trading-agents.html', title:'25 Agents Walk Into a Market: AI-Powered Trading Infrastructure', type:'insight', confidence:'high', tags:['quant','agents','trading']},
+    {file:'claude-code-mastery.html', title:"The Claude Code Power User's Toolkit: From Token Waste to Terminal Dominance", type:'insight', confidence:'high', tags:['claude code','workflow','productivity']},
+    {file:'prompt-engineering-discipline.html', title:"Prompt Engineering Isn't Dead — It Just Grew Up", type:'insight', confidence:'medium', tags:['prompts','llm','frameworks']},
+    {file:'game-theory-ai.html', title:'The Incentive Trap: Game Theory for the AI Age', type:'insight', confidence:'medium', tags:['game theory','strategy','incentives']},
+    {file:'one-person-creative-studio.html', title:'The One-Person Creative Empire: AI Tools That Replace an Entire Agency', type:'insight', confidence:'high', tags:['creative','marketing','video']},
+    {file:'blender-mcp-tripo-pipeline.html', title:'Blender MCP + Tripo — Reference Image to Rendered Scene', type:'tool', confidence:'high', tags:['3D','blender','mcp']},
+    {file:'hunyuan3d-2.html', title:"Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator", type:'tool', confidence:'high', tags:['3D','mesh','open source']},
+    {file:'world-labs-3d-generation.html', title:'World Labs — Marble and Generative 3D Worlds', type:'tool', confidence:'medium', tags:['3D','generation','worlds']},
+    {file:'boris-cherny-claude-md.html', title:"Boris Cherny's CLAUDE.md — The Canonical Template", type:'tool', confidence:'high', tags:['claude code','workflow','config']},
+    {file:'claude-code-hooks-system.html', title:'Claude Code Hooks System', type:'tool', confidence:'high', tags:['claude code','hooks','automation']},
+    {file:'claude-code-leaked-system-prompt.html', title:'Claude Code Leaked System Prompt', type:'tool', confidence:'high', tags:['claude code','prompts','internals']},
+    {file:'claude-code-parallel-worktrees.html', title:"Claude Code Parallel Worktrees — Boris Cherny's Workflow", type:'tool', confidence:'high', tags:['claude code','git','parallel']},
+    {file:'gemini-cli.html', title:"Gemini CLI — Google's Free Terminal Coding Agent", type:'tool', confidence:'high', tags:['gemini','cli','coding']},
+    {file:'n8n-mcp-and-obsidian-skills.html', title:'n8n-MCP + Obsidian Skills — Two High-Leverage Extensions', type:'tool', confidence:'high', tags:['n8n','obsidian','mcp']},
+    {file:'onyx-self-hosted-ai.html', title:'Onyx — Self-Hosted Open-Source ChatGPT/Claude Replacement', type:'tool', confidence:'high', tags:['self-hosted','rag','open source']},
+    {file:'openscreen-screen-recorder.html', title:'OpenScreen — Free Open-Source Screen Studio Alternative', type:'tool', confidence:'medium', tags:['screen recording','open source','video']},
+    {file:'primer-md-pattern.html', title:'primer.md — The Living Handoff Document Pattern', type:'tool', confidence:'high', tags:['workflow','documentation','claude code']},
+    {file:'llms-txt-standard.html', title:'llms.txt — The Website Manifest for LLM Agents', type:'tool', confidence:'high', tags:['llm','standard','seo']},
+    {file:'l1b3rt4s-jailbreak-repo.html', title:"L1B3RT4S — Elder Plinius's Jailbreak Corpus (Defensive Research)", type:'tool', confidence:'medium', tags:['security','prompts','adversarial']},
+    {file:'avellaneda-stoikov-and-hawkes.html', title:'Avellaneda-Stoikov + Hawkes — Market Making and Order Flow', type:'tool', confidence:'high', tags:['quant','market making','math']},
+    {file:'polymarket-99c-limit-arbitrage.html', title:'Polymarket 99c Limit Order Arbitrage', type:'tool', confidence:'high', tags:['quant','polymarket','arbitrage']},
+    {file:'polymarket-weather-trading.html', title:'Polymarket Weather Trading — Ensemble Forecasts as Edge', type:'tool', confidence:'medium', tags:['quant','weather','prediction']},
+    {file:'quant-project-ideas-list.html', title:'Quant Project Ideas — 15 Projects Worth Building', type:'tool', confidence:'high', tags:['quant','projects','ideas']},
+  ];
+
+  const el = DV.el;
+  const list = document.getElementById('guide-list');
+  const filters = document.getElementById('filters');
+  const stats = document.getElementById('stats');
+  let active = 'all';
+
+  stats.textContent = GUIDES.length + ' guides — insight analyses, tool breakdowns, and workflow pipelines';
+
+  function render(){
+    list.innerHTML = '';
+    const shown = active === 'all' ? GUIDES
+      : active === 'insight' ? GUIDES.filter(g => g.type === 'insight')
+      : GUIDES.filter(g => g.tags.some(t => t === active));
+
+    const sections = {};
+    for(const g of shown){
+      const key = g.type === 'insight' ? 'Insight Analyses' : 'Tool & Workflow Guides';
+      if(!sections[key]) sections[key] = [];
+      sections[key].push(g);
+    }
+
+    for(const [title, items] of Object.entries(sections)){
+      const sec = document.createElement('div');
+      sec.className = 'guide-section';
+      const icon = title.includes('Insight') ? '⚡' : '📘';
+      sec.innerHTML = '<h2>' + icon + ' ' + title + ' (' + items.length + ')</h2>';
+      const grid = document.createElement('div');
+      grid.className = 'guide-grid';
+      for(const g of items){
+        const a = document.createElement('a');
+        a.href = g.file;
+        a.className = 'guide-card' + (g.type === 'insight' ? ' insight' : '');
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'g-title';
+        titleDiv.textContent = g.title;
+        a.appendChild(titleDiv);
+        const meta = document.createElement('div');
+        meta.className = 'g-meta';
+        if(g.type === 'insight'){
+          const b = document.createElement('span');
+          b.className = 'g-badge insight';
+          b.textContent = 'insight';
+          meta.appendChild(b);
+        }
+        if(g.confidence){
+          const b = document.createElement('span');
+          b.className = 'g-badge ' + g.confidence;
+          b.textContent = g.confidence + ' confidence';
+          meta.appendChild(b);
+        }
+        const tags = document.createElement('span');
+        tags.textContent = g.tags.slice(0,3).join(' · ');
+        meta.appendChild(tags);
+        a.appendChild(meta);
+        grid.appendChild(a);
+      }
+      sec.appendChild(grid);
+      list.appendChild(sec);
+    }
+  }
+
+  // Build filter buttons
+  const allTags = new Set();
+  GUIDES.forEach(g => g.tags.forEach(t => allTags.add(t)));
+  const tagCounts = {};
+  allTags.forEach(t => { tagCounts[t] = GUIDES.filter(g => g.tags.includes(t)).length; });
+  const topTags = Object.entries(tagCounts).sort((a,b) => b[1]-a[1]).slice(0,8);
+
+  function setFilter(f, btn){
+    active = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    render();
+  }
+
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn on';
+  allBtn.textContent = 'All (' + GUIDES.length + ')';
+  allBtn.addEventListener('click', function(){ setFilter('all', allBtn); });
+  filters.appendChild(allBtn);
+
+  const insBtn = document.createElement('button');
+  insBtn.className = 'filter-btn';
+  insBtn.textContent = '⚡ Insights (' + GUIDES.filter(g=>g.type==='insight').length + ')';
+  insBtn.addEventListener('click', function(){ setFilter('insight', insBtn); });
+  filters.appendChild(insBtn);
+
+  topTags.forEach(function(pair){
+    const tag = pair[0], cnt = pair[1];
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.textContent = tag + ' (' + cnt + ')';
+    btn.addEventListener('click', function(){ setFilter(tag, btn); });
+    filters.appendChild(btn);
+  });
+
+  render();
+})();
+</script>
+</body></html>

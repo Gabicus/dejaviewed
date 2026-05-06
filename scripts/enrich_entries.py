@@ -221,7 +221,7 @@ def classify_type_from_caption(caption: str, collection: str, title: str = "") -
         return "design"
     if any(w in lower for w in ["tutorial", "how to", "step by step", "guide", "learn",
                                  "walkthrough", "masterclass"]):
-        return "tutorial"
+        return "skill"
     if any(w in lower for w in ["demo", "simulation", "visualization", "visualize",
                                  "interactive", "playground"]):
         return "demo"
@@ -270,6 +270,52 @@ def guess_tier(caption: str, tools: list, techniques: list, is_art: bool) -> str
     return "C"
 
 
+def build_title(entry: dict, tools: list, techniques: list) -> str:
+    """Generate 'Subject — angle' title from caption content."""
+    caption = entry.get("caption", "")
+    if not caption:
+        return ""
+    first_line = caption.split("\n")[0].strip()
+    # Clean up hashtags, emojis-only lines, "comment X" bait
+    first_line = re.sub(r"#\w+", "", first_line).strip()
+    first_line = re.sub(r"comment\s+['\"]?\w+['\"]?\s*(and|for|to)\b.*", "", first_line, flags=re.I).strip()
+
+    # Try to extract a subject from tools or first meaningful phrase
+    subject = ""
+    if tools:
+        subject = tools[0]
+    elif len(first_line) > 5:
+        # Use first sentence or phrase up to punctuation
+        m = re.match(r"^(.+?)[.!?\n]", first_line)
+        subject = m.group(1).strip() if m else first_line[:60]
+
+    if not subject:
+        return ""
+
+    # Build angle from caption context
+    angle = ""
+    lines = [l.strip() for l in caption.split("\n") if l.strip() and not l.strip().startswith("#")]
+    for line in lines[1:4]:
+        cleaned = re.sub(r"#\w+", "", line).strip()
+        if len(cleaned) > 15 and not cleaned.lower().startswith(("comment", "follow", "like", "share")):
+            angle = cleaned[:80]
+            if len(cleaned) > 80:
+                angle = angle.rsplit(" ", 1)[0] + "..."
+            break
+
+    if angle and subject.lower() not in angle.lower():
+        title = f"{subject} — {angle}"
+    elif angle:
+        title = angle
+    else:
+        title = subject
+
+    # Cap at 120 chars
+    if len(title) > 120:
+        title = title[:117] + "..."
+    return title
+
+
 def build_summary(entry: dict, tools: list, techniques: list) -> str:
     creator = entry.get("creator", "")
     caption = entry.get("caption", "")
@@ -312,6 +358,10 @@ def enrich_entry(entry: dict) -> dict:
     if creator.startswith("@"):
         entry["creator"] = creator.lstrip("@")
     entry["tier"] = guess_tier(caption, tools, techniques, is_art)
+    if not entry.get("title") or "[NEEDS ENRICHMENT]" in entry.get("title", ""):
+        new_title = build_title(entry, tools, techniques)
+        if new_title:
+            entry["title"] = new_title
     entry["summary"] = build_summary(entry, tools, techniques)
 
     if is_art:
@@ -353,6 +403,12 @@ def enrich_sweep(entry: dict, force_reclassify: bool = False) -> dict:
     creator = entry.get("creator", "")
     if creator.startswith("@"):
         entry["creator"] = creator.lstrip("@")
+
+    # Generate title for placeholder entries
+    if not entry.get("title") or "[NEEDS ENRICHMENT]" in entry.get("title", ""):
+        new_title = build_title(entry, entry.get("tools", []), entry.get("techniques", []))
+        if new_title:
+            entry["title"] = new_title
 
     if not entry.get("summary") or entry["summary"].startswith("Post by"):
         entry["summary"] = build_summary(entry, entry.get("tools", []), entry.get("techniques", []))

@@ -1,89 +1,99 @@
 # DejaViewed · primer
 
-Updated: 2026-04-24 1:45am EDT
+Updated: 2026-05-06
 
 ## Current status
 
-334 entries across 8 collections. 103 deep dives. 8 deeper dives. 43.5K crosslinks. 367 thumbnails. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages (auto-deploy from main).
+437 entries across 14 collections. 71,547 crosslinks. 14 curated insight dives. 24 guide pages. 14 deeper dive pages. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages (auto-deploy from main).
 
-**New: Social media pipeline built.** Voice bible, 4 templates, 5 automation scripts, AI pulse monitor live, 7 drafts generated, story lifecycle tracker building.
+### Collections (14)
+ai1, ai2, ai3, ai4, ai5, ai6, quant, stock2, music, creative, prompts, game-theory, art-inspiration, art-i-like
+
+### Active pages
+- index.html — unified catalog, dynamic filters, deep dive cards, collection pills
+- guides/index.html — filterable grid of all 24 guide pages
+- guides/*.html — 6 insight analyses + 18 tool/workflow guides
+- deeper/*.html — 14 narrative deeper dive pages
+- graph.html, graph-cosmos.html — standalone graph visualizations (D3 + Canvas)
+- board.html, admin.html
+- links/index.html, about/index.html
 
 ### Repo locations
 - `~/Desktop/Projects/dejaviewed-plugin/` — main project (github.com/Gabicus/dejaviewed)
-- `~/Desktop/Projects/graph-node/` — D3 force graph (github.com/Gabicus/graph-node)
-- `~/Desktop/Projects/graph-cosmos/` — Canvas orbital graph (github.com/Gabicus/graph-cosmos)
-- `~/Desktop/Projects/wordpress/` — WP REST API reference for 1gabe.com
-
-### Active pages
-- index.html (unified catalog — all collections, filters, deep dive cards)
-- graph.html, graph-cosmos.html, board.html, admin.html
-- guides/ (18 deep dive guide pages), deeper/ (8 deeper dive narrative pages)
-- links/index.html (personal bio/links page)
+- `~/Desktop/Projects/dejaviewed.social/` — PRIVATE social pipeline
+- `~/Desktop/Projects/graph-node/` — D3 force graph (generic, separate repo)
+- `~/Desktop/Projects/graph-cosmos/` — Canvas orbital graph (generic, separate repo)
 
 ### Hosting
 - **Cloudflare Pages** — auto-deploy from main branch, output dir `site/`
 - Custom domain: dejaviewed.dev (Cloudflare DNS)
-- Manual fallback: `scripts/deploy.sh` (wrangler)
 
-### Tools installed
-- `gh` CLI (SSH auth as Gabicus)
-- `wrangler` CLI (Cloudflare OAuth as gabe.dewitt@gmail.com)
+## What changed this session (May 6)
 
-## Social media pipeline (NEW — Apr 24)
+### New collections ingested (103 entries)
+- agent-browser (`npx agent-browser`) replaced Playwright MCP for IG scraping
+- 6 stock2, 28 music, 30 ai6, 28 creative, 5 prompts, 6 game-theory
 
-### Voice & Templates
-- `social/VOICE.md` — brand voice bible (anti-pander, devil's advocate, can't-misunderstand rule)
-- `social/templates/` — 4 templates: tool-spotlight, technique-howto, deep-dive-synthesis, art-visual
+### Deep dives overhauled
+- 14 curated insight dives (was 8) in manual_dives.json
+- 6 new: agent-architecture, ai-trading-agents, claude-code-mastery, prompt-engineering, game-theory-ai, one-person-creative-studio
+- 114 total dives (14 curated + 100 auto-detected)
+- All 14 curated dives have deeper pages + full guide pages
 
-### Scripts
-- `scripts/social_tracker.py` — post tracker (parquet CRUD, engagement tracking, unposted finder)
-- `scripts/freshness.py` — time-weighted decay scoring (λ=0.01, 47 evergreens identified)
-- `scripts/content_calendar.py` — auto-generate posting schedule (type mix: 40/30/20/10)
-- `scripts/ai_pulse.py` — GitHub+HN+ArXiv trend aggregation (live data: claude, agent, llm trending)
-- `scripts/fill_template.py` — entry → ready-to-post draft (7 drafts in social/drafts/)
-- `scripts/story_lifecycle.py` — living story tracker: merge, split, evolve, version (building)
+### Guide pages system
+- 24 total guide pages in site/guides/
+- Guide index page at site/guides/index.html with filterable grid
+- "Guides" nav pill added to shared.js (site-wide)
+- Index deep dive cards link to both "Deeper Dive →" and "Full Guide →"
 
-### Pipeline flow
+### Index page dynamic
+- Collection pills generated from data (buildCollPills())
+- Stats tagline computed at runtime
+- "tutorial" type merged into "skill" (sidebar shows Skills: 50)
+- Tutorials button removed from sidebar
+
+### Enrichment improvements
+- build_title() generates "Subject — angle" titles from captions
+- classify_type_from_caption returns "skill" instead of "tutorial"
+- Crosslinks jumped 70,810 → 71,547 from reclassification
+
+## Scraping workflow (agent-browser)
+
+```bash
+# 1. Close Chrome (profile locked while running)
+npx agent-browser close
+npx agent-browser --profile Default --headed open "<collection_url>"
+
+# 2. Extract URLs
+bash scripts/ab_extract_urls.sh <name> "<url>"
+
+# 3. Ingest
+python3 scripts/ingest.py --urls-file data/<name>_urls.json --collection <name> --non-interactive
+
+# 4. Scrape captions
+python3 scripts/ab_scrape_posts.py
+
+# 5. Enrich
+python3 scripts/enrich_entries.py --sweep
+
+# 6. Deep dives + guides
+python3 scripts/deep_dives.py
+python3 scripts/deeper_dives.py --all-curated
+# Generate guide pages for new curated dives
+
+# 7. Rebuild CMS
+python3 scripts/cms.py rebuild
 ```
-ai_pulse.py scan → freshness.py score → story_lifecycle.py evolve →
-content_calendar.py generate → fill_template.py --auto →
-social_tracker.py add → POST → social_tracker.py update (engagement)
-```
-
-### Content philosophy
-- Stories are living entities: seed → growing → mature → posted → evolving → archived
-- Stories merge (B+B=A), split (broad → children), and version (thesis changes tracked)
-- Every post gets: breakpoint disclosure + devil's advocate + counter-argument
-- "Make things so people CAN'T misunderstand them" — permanent rule
-
-### Skills installed (7 kept of 14 evaluated)
-copywriting-core, youtube-pipeline, course-material-creator, book-marketing, brand-voice, industry-pulse, social-media-analyzer
-
-### Still ahead
-1. Story lifecycle script completion + init from deep_dives.json
-2. `dejaviewed-social` orchestrator skill (one-command pipeline)
-3. Platform API integration (instagrapi / Meta Graph API)
-4. Phase space viz — dragon plots from Unicron project (pynamical + plotly)
-5. `/schedule` routines for automated daily runs
-6. Feedback loop: engagement data → adjust recommendations
-
-## Key architecture
-
-- **shared.css** — 900px global mobile breakpoint (NEVER change for page-specific issues)
-- **index.html** — 1100px override via inline `<style>` for home page sidebar
-- **graph.html** — D3 handles touch natively via d3.drag() and d3.zoom()
-- **graph-cosmos.html** — manual Canvas + custom touch event listeners
-- **shared.js** — DV.isMobile() at 900px, DV.mountMobileToggles() adds panel buttons + Done close
-
-## Prior work (Apr 23)
-- Mobile panel fix, cosmos touch controls, blog post published, SEO updates, WordPress reference
 
 ## Don't forget
 
-- NEVER change shared.css breakpoints for single-page issues (broke graphs 3x)
-- WordPress username is email (gabe.dewitt@gmail.com), not display name
-- Yoast SEO meta desc NOT writable via REST — use excerpt field
+- NEVER change shared.css breakpoints for single-page issues
 - ALWAYS push before destructive operations
 - DESIGN.md is UI authority for all page styling
-- session-log.md has full tables/plans/tool audits from this session
-- social/VOICE.md is authority for ALL content tone and style
+- agent-browser needs Chrome closed to read profile cookies
+- `agent-browser close` between profile/session changes
+- Collection pills are dynamic — no HTML changes for new collections
+- Graph pages are standalone in site/ — separate from graph-node/graph-cosmos repos
+- "tutorial" merged into "skill" — don't add it back
+- Verify entry IDs exist before writing manual_dives.json
+- Guide pages use markdown-in-script-tag + marked.js + DOMPurify

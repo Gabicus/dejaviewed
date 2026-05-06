@@ -1,0 +1,165 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why Your Agent Sucks: Architecture Patterns That Actually Work · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Why Your Agent Sucks: Architecture Patterns That Actually Work
+
+**Insight class:** Emergent Capability · **Difficulty:** Hard · **Quality:** 5/5
+**Connected entries:** 6 · **Tools:** Kimi, Onyx, RAG, onyx-dot-app/onyx
+
+---
+
+## Thesis
+
+Better models won't fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness engineering — not model capability.
+
+---
+
+## Why it matters
+
+Everyone's building agents. Almost nobody's building agents that work past the demo. The 103 new entries from this session surfaced a pattern: the posts that actually teach agent building focus on architecture — context management, memory hierarchies, harness engineering — not on which model to use. The context vs memory vs harness framework is the clearest mental model we've seen for why most agents fail: they dump everything into context, have no persistent memory, and lack structural guardrails. This dive connects the theory (architecture patterns) with the infrastructure (Onyx, MCP, Kimi) needed to implement it.
+
+---
+
+## The evidence — connected entries
+
+### Better models won’t fix your agent
+**Creator:** [@howard.mov](https://instagram.com/howard.mov) · **Tier:** S
+
+> The thesis: model upgrades mask architecture debt. Fix the scaffold, not the brain.
+
+Better models won’t fix your agent. — @howard.mov; demonstrates AI agents.
+
+[View original post](https://www.instagram.com/p/DXStFLkkphz/)
+### Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...
+**Creator:** [@lindavivah](https://instagram.com/lindavivah) · **Tier:** S
+
+> Three disciplines — context, memory, harness — that separate toy agents from real ones
+
+Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Alake ⚡️ — @lindavivah; demonstrates AI agents.
+
+[View original post](https://www.instagram.com/p/DXx6KhJshmv/)
+### Comment “agency” to learn how to build your own agentic OS
+**Creator:** [@chase.h.ai](https://instagram.com/chase.h.ai) · **Tier:** A
+
+> Building an agentic OS: the orchestration layer above individual agents
+
+Comment “agency” to learn how to build your own agentic OS — @chase.h.ai; demonstrates AI agents.
+
+[View original post](https://www.instagram.com/p/DXYSxNLpIAY/)
+### Onyx — open-source self-hosted agentic RAG platform
+**Creator:** [@marc.kaz](https://instagram.com/marc.kaz) · **Tier:** S
+**Tools:** Onyx, RAG, onyx-dot-app/onyx
+
+> Onyx: production-grade self-hosted RAG — the retrieval layer agents actually need
+
+@marc.kaz flags onyx-dot-app/onyx hitting #1 GitHub trending: self-hostable AI platform with agentic RAG, deep research mode, custom agents, web+code execution, voice/image gen, 50+ connectors. Strong self-hosted AI stack option.
+
+[View original post](https://www.instagram.com/p/DWtgbzLDgwm/)
+### Kind of like giving your AI glasses lol
+**Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** A
+
+> Giving agents perception: MCP as the sensory bridge to external tools
+
+Kind of like giving your AI glasses lol — @angus.sewell.
+
+[View original post](https://www.instagram.com/p/DXKAbR8ETEo/)
+### Kimi K2.5 — Moonshot's open multimodal agentic model
+**Creator:** [@6ab3](https://instagram.com/6ab3) · **Tier:** A
+**Tools:** Kimi
+
+> Kimi K2.5: open multimodal agentic model — when the model IS the agent
+
+by Moonshot AI | Open-source native multimodal agentic model. Strong coding and reasoning benchmarks. Modified MIT License. Available on HuggingFace for self-hosting as an alternative LLM backend. | Modified MIT HuggingFace Self-hostable
+
+[View original post](https://github.com/MoonshotAI/Kimi-K2.5)
+
+---
+
+## Action sketch — how to implement this
+
+Audit your agent's context window usage → separate context (ephemeral) from memory (persistent) from harness (structural) → implement retrieval layer (Onyx or similar) → add tool-use via MCP → test with Claude Code as the orchestrator → measure task completion, not conversation quality.
+
+---
+
+## Prerequisites
+
+Familiarity with LLM APIs, basic understanding of RAG. Claude Code or similar agent framework.
+
+---
+
+## Key tools and resources
+
+- **Kimi**
+- **Onyx**
+- **RAG**
+- **onyx-dot-app/onyx**
+
+## Creators to follow
+
+- [@6ab3](https://instagram.com/6ab3)
+- [@angus.sewell](https://instagram.com/angus.sewell)
+- [@chase.h.ai](https://instagram.com/chase.h.ai)
+- [@howard.mov](https://instagram.com/howard.mov)
+- [@lindavivah](https://instagram.com/lindavivah)
+- [@marc.kaz](https://instagram.com/marc.kaz)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../index.html) — 437 entries across the full catalog.
+
+---
+
+*Generated 2026-05-06 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>
