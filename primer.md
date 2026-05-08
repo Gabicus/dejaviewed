@@ -1,6 +1,6 @@
 # DejaViewed · primer
 
-Updated: 2026-05-06
+Updated: 2026-05-07
 
 ## Current status
 
@@ -57,6 +57,15 @@ ai1, ai2, ai3, ai4, ai5, ai6, quant, stock2, music, creative, prompts, game-theo
 - classify_type_from_caption returns "skill" instead of "tutorial"
 - Crosslinks jumped 70,810 → 71,547 from reclassification
 
+### WordPress blog posts (3 total)
+- AI Trading Agents (6682) — published, SEO OK, keyphrase "AI trading agents"
+- DejaViewed (6593) — published, SEO OK, keyphrase "Instagram saved knowledge graph"
+- Vox Machina (6702) — DRAFT, SEO Good, readability Good, keyphrase "sardonic AI voice"
+  - 10 images + 4 audio embeds (MP3 via multipart form upload)
+  - Hero: cinematic split spectrogram (raw vs IRIS staircase pitch)
+  - Timeline: "an evening and most of the night" with Claude Code
+- `/wordpress-post` skill updated: readability checklist, SEO targets, voice patterns, Yoast workflow
+
 ## Scraping workflow (agent-browser)
 
 ```bash
@@ -97,3 +106,5 @@ python3 scripts/cms.py rebuild
 - "tutorial" merged into "skill" — don't add it back
 - Verify entry IDs exist before writing manual_dives.json
 - Guide pages use markdown-in-script-tag + marked.js + DOMPurify
+- WordPress posts: use curl not Python requests (ModSecurity WAF), `/wordpress-post` skill
+- WordPress voice: read Victor's actual posts before writing, not cached voice notes
