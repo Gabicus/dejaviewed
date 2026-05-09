@@ -1,6 +1,6 @@
 # DejaViewed · primer
 
-Updated: 2026-05-07
+Updated: 2026-05-08
 
 ## Current status
 
@@ -28,43 +28,43 @@ ai1, ai2, ai3, ai4, ai5, ai6, quant, stock2, music, creative, prompts, game-theo
 - **Cloudflare Pages** — auto-deploy from main branch, output dir `site/`
 - Custom domain: dejaviewed.dev (Cloudflare DNS)
 
-## What changed this session (May 6)
+## What changed (May 7-8)
 
-### New collections ingested (103 entries)
-- agent-browser (`npx agent-browser`) replaced Playwright MCP for IG scraping
-- 6 stock2, 28 music, 30 ai6, 28 creative, 5 prompts, 6 game-theory
+### Vox Machina blog post (6702) — PUBLISHED
+- Full post about building sardonic AI voice system (IRIS & SILAS)
+- 10 matplotlib images (dark DejaViewed theme, SEO-named, clickable/zoomable)
+- 4 audio embeds: IRIS demo, SILAS demo, raw TTS, IRIS final output
+- Hero: cinematic split spectrogram (raw vs IRIS staircase pitch contour)
+- Audio fix: 24kHz→44.1kHz resample (MPEG-2 silent in browsers), wp:html blocks not wp:audio
+- SEO "Good", Readability "Good", keyphrase "sardonic AI voice"
+- Timeline: "an evening and most of the night" (not "two weeks")
 
-### Deep dives overhauled
-- 14 curated insight dives (was 8) in manual_dives.json
-- 6 new: agent-architecture, ai-trading-agents, claude-code-mastery, prompt-engineering, game-theory-ai, one-person-creative-studio
-- 114 total dives (14 curated + 100 auto-detected)
-- All 14 curated dives have deeper pages + full guide pages
+### Yoast SEO set on all 3 posts
+- Vox Machina (6702) — keyphrase "sardonic AI voice", SEO Good, Readability Good
+- AI Trading Agents (6682) — keyphrase "AI trading agents", SEO OK, Readability OK
+- DejaViewed (6593) — keyphrase "Instagram saved knowledge graph", SEO OK, Readability Good
+- Meta descriptions set via Draft.js execCommand in wp-admin
+- Compact Audio Player plugin installed on WordPress
 
-### Guide pages system
-- 24 total guide pages in site/guides/
-- Guide index page at site/guides/index.html with filterable grid
-- "Guides" nav pill added to shared.js (site-wide)
-- Index deep dive cards link to both "Deeper Dive →" and "Full Guide →"
+### WordPress skill overhauled
+- 25 lessons learned (audio encoding, wp:html blocks, voice calibration, Yoast workflow)
+- Full readability checklist (transition words 30%+, sentence/paragraph length, Flesch targets)
+- SEO checklist (keyphrase placement, density, meta desc, alt text)
+- Victor's real voice patterns documented from adventure/photo posts
+- 10-step post composition workflow
+- Skill now tracked in .claude git repo
 
-### Index page dynamic
-- Collection pills generated from data (buildCollPills())
-- Stats tagline computed at runtime
-- "tutorial" type merged into "skill" (sidebar shows Skills: 50)
-- Tutorials button removed from sidebar
+### .claude brain committed
+- wordpress-post skill added to git (was untracked)
+- Caveman hooks added (activate, config, mode-tracker, statusline, fix-plugin-hooks)
+- CLAUDE.md, settings.json, dejaviewed skill updated
 
-### Enrichment improvements
-- build_title() generates "Subject — angle" titles from captions
-- classify_type_from_caption returns "skill" instead of "tutorial"
-- Crosslinks jumped 70,810 → 71,547 from reclassification
+## Previous session (May 6)
 
-### WordPress blog posts (3 total)
-- AI Trading Agents (6682) — published, SEO OK, keyphrase "AI trading agents"
-- DejaViewed (6593) — published, SEO OK, keyphrase "Instagram saved knowledge graph"
-- Vox Machina (6702) — DRAFT, SEO Good, readability Good, keyphrase "sardonic AI voice"
-  - 10 images + 4 audio embeds (MP3 via multipart form upload)
-  - Hero: cinematic split spectrogram (raw vs IRIS staircase pitch)
-  - Timeline: "an evening and most of the night" with Claude Code
-- `/wordpress-post` skill updated: readability checklist, SEO targets, voice patterns, Yoast workflow
+### Bulk ingest (103 entries from 6 collections)
+- agent-browser replaced Playwright MCP for IG scraping
+- Deep dives: 8→14 curated, 114 total, all with guide pages
+- Guide index page, dynamic collection pills, tutorial→skill merge
 
 ## Scraping workflow (agent-browser)
 
@@ -88,7 +88,6 @@ python3 scripts/enrich_entries.py --sweep
 # 6. Deep dives + guides
 python3 scripts/deep_dives.py
 python3 scripts/deeper_dives.py --all-curated
-# Generate guide pages for new curated dives
 
 # 7. Rebuild CMS
 python3 scripts/cms.py rebuild
@@ -100,11 +99,13 @@ python3 scripts/cms.py rebuild
 - ALWAYS push before destructive operations
 - DESIGN.md is UI authority for all page styling
 - agent-browser needs Chrome closed to read profile cookies
-- `agent-browser close` between profile/session changes
 - Collection pills are dynamic — no HTML changes for new collections
 - Graph pages are standalone in site/ — separate from graph-node/graph-cosmos repos
 - "tutorial" merged into "skill" — don't add it back
 - Verify entry IDs exist before writing manual_dives.json
 - Guide pages use markdown-in-script-tag + marked.js + DOMPurify
-- WordPress posts: use curl not Python requests (ModSecurity WAF), `/wordpress-post` skill
-- WordPress voice: read Victor's actual posts before writing, not cached voice notes
+- WordPress: curl not Python requests (WAF), `/wordpress-post` skill has full workflow
+- WordPress voice: read Victor's REAL adventure/photo posts, not AI-written tech posts
+- WordPress audio: always 44.1kHz MP3, use wp:html blocks, 3+ second demos
+- WordPress images: `{post-slug}-{descriptive}.jpg`, clickable `<a href>` wraps
+- Yoast keyphrase: wp-admin via Playwright, navigate dashboard first then window.location.href
