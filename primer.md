@@ -100,10 +100,20 @@ python3 scripts/cms.py rebuild
 
 ## Next up
 
-- ~100 videos still need Whisper transcription (IG auth cookie issue)
-- Caption gaps: ai1 (57), ai2 (24), ai3 (31), ai4 (56), quant (26) = 194 old entries
-- ai3 missing 23 thumbnails
-- Claude Mastery guide could grow with new model releases and features
+### High priority
+- **Whisper transcription:** ~100 videos still need transcription. IG auth cookie issue — Chrome must be closed, use `--cookies-from-browser chrome`. Some posts return "empty media response" (login-required). May need fresh cookie export or `agent-browser` download approach.
+- **Caption gaps:** 194 old entries missing captions across 5 collections: ai1 (57), ai2 (24), ai3 (31), ai4 (56), quant (26). Run `ab_scrape_posts.py` targeting these collections.
+- **Thumbnails:** ai3 missing 23 thumbnails. Run `python3 scripts/ab_download_thumbs.py` after opening agent-browser.
+
+### Medium priority
+- **Claude Mastery guide maintenance:** Living document — update with new model releases, features, skills as they ship. Add new entries as they're ingested.
+- **Re-enrich after transcription:** Once Whisper transcripts land, re-run `enrich_entries.py --sweep --reclassify` — transcripts dramatically improve tier/type/domain classification.
+- **Deep dive refresh:** After caption + transcript gaps filled, regenerate deep dives — new connections will surface from richer text data.
+
+### Low priority / ideas
+- Consider auto-generating Claude Mastery guide sections from catalog data (currently hand-written HTML)
+- Explore RSS/atom feed for new entries
+- Keywords engine integration (parquet + spaCy + NetworkX from keyword-engine project)
 
 ## Don't forget
 
