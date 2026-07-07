@@ -1,22 +1,32 @@
 # DejaViewed · primer
 
-Updated: 2026-05-08
+Updated: 2026-07-07
 
 ## Current status
 
-437 entries across 14 collections. 71,547 crosslinks. 14 curated insight dives. 24 guide pages. 14 deeper dive pages. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages (auto-deploy from main).
+581 entries across 15 collections. 131,518 crosslinks. 21 curated insight dives (1 featured). 31 guide pages. 21 deeper dive pages. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages (auto-deploy from main).
 
-### Collections (14)
-ai1, ai2, ai3, ai4, ai5, ai6, quant, stock2, music, creative, prompts, game-theory, art-inspiration, art-i-like
+### Collections (15)
+ai1, ai2, ai3, ai4, ai5, ai6, ai7, quant, stock2, music, creative, prompts, game-theory, art-inspiration, art-i-like
 
 ### Active pages
-- index.html — unified catalog, dynamic filters, deep dive cards, collection pills
-- guides/index.html — filterable grid of all 24 guide pages
-- guides/*.html — 6 insight analyses + 18 tool/workflow guides
-- deeper/*.html — 14 narrative deeper dive pages
+- index.html — unified catalog, dynamic filters, deep dive cards with tier badges + date sort
+- guides/index.html — filterable grid of all 31 guide pages (Featured/Guide/Standalone pills)
+- guides/claude-mastery.html — FEATURED: comprehensive 9-section Claude reference (157 entries)
+- guides/*.html — 13 curated insight guides + 18 tool/workflow guides
+- deeper/*.html — 21 narrative deeper dive pages
+- All guide + deeper pages have shared nav header + cross-links to siblings
 - graph.html, graph-cosmos.html — standalone graph visualizations (D3 + Canvas)
 - board.html, admin.html
 - links/index.html, about/index.html
+
+### Deep dive visual hierarchy
+- **FEATURED** badge (pink gradient, pulse) — Claude Mastery, always sorted first
+- **GUIDE** badge (purple) — 21 curated dives with full guide pages
+- **DEEPER** badge (gold) — deeper dive narrative pages
+- **AUTO** badge (dim) — 122 auto-detected dives
+- Sort controls: Quality / Newest / Oldest / Most entries
+- Date ranges computed from entry post dates
 
 ### Repo locations
 - `~/Desktop/Projects/dejaviewed-plugin/` — main project (github.com/Gabicus/dejaviewed)
@@ -28,43 +38,38 @@ ai1, ai2, ai3, ai4, ai5, ai6, quant, stock2, music, creative, prompts, game-theo
 - **Cloudflare Pages** — auto-deploy from main branch, output dir `site/`
 - Custom domain: dejaviewed.dev (Cloudflare DNS)
 
-## What changed (May 7-8)
+## What changed (July 6-7)
 
-### Vox Machina blog post (6702) — PUBLISHED
-- Full post about building sardonic AI voice system (IRIS & SILAS)
-- 10 matplotlib images (dark DejaViewed theme, SEO-named, clickable/zoomable)
-- 4 audio embeds: IRIS demo, SILAS demo, raw TTS, IRIS final output
-- Hero: cinematic split spectrogram (raw vs IRIS staircase pitch contour)
-- Audio fix: 24kHz→44.1kHz resample (MPEG-2 silent in browsers), wp:html blocks not wp:audio
-- SEO "Good", Readability "Good", keyphrase "sardonic AI voice"
-- Timeline: "an evening and most of the night" (not "two weeks")
+### AI7 + Creative bulk ingest (144 new entries)
+- 99 ai7 + 73 creative entries ingested, enriched, deployed
+- Fixed critical [NEEDS ENRICHMENT] parquet↔catalog.json sync bug (3-layer defense in cms.py)
+- 364/581 entries transcribed via Whisper (remaining ~100 need IG auth cookies)
+- Fixed deeper_dives.py `_esc()` to handle list prerequisites
 
-### Yoast SEO set on all 3 posts
-- Vox Machina (6702) — keyphrase "sardonic AI voice", SEO Good, Readability Good
-- AI Trading Agents (6682) — keyphrase "AI trading agents", SEO OK, Readability OK
-- DejaViewed (6593) — keyphrase "Instagram saved knowledge graph", SEO OK, Readability Good
-- Meta descriptions set via Draft.js execCommand in wp-admin
-- Compact Audio Player plugin installed on WordPress
+### 7 new curated deep dives (14→21 total)
+1. The Claude Harness Pattern (9 entries) — context/memory/harness engineering
+2. MediaPipe × TouchDesigner Pipeline (10 entries) — body-to-art creative coding
+3. The One-Person Studio (23 entries) — creative tech stack replacing teams
+4. Beyond Prompting: Prompt Architecture (13 entries) — prompt engineering as discipline
+5. Art Without Gatekeepers (12 entries) — AI disrupting art market
+6. Autonomous Agents in the Wild (22 entries) — what works/fails in agent deployment
+7. Claude Mastery (50 entries, FEATURED) — comprehensive setup-to-advanced guide
 
-### WordPress skill overhauled
-- 25 lessons learned (audio encoding, wp:html blocks, voice calibration, Yoast workflow)
-- Full readability checklist (transition words 30%+, sentence/paragraph length, Flesch targets)
-- SEO checklist (keyphrase placement, density, meta desc, alt text)
-- Victor's real voice patterns documented from adventure/photo posts
-- 10-step post composition workflow
-- Skill now tracked in .claude git repo
+### Claude Mastery guide page
+- 9 sections: Getting Started → CLAUDE.md → Skills/Hooks/MCP → Memory/Context → Prompts → Agents → Creative → Model Timeline → Reference Library
+- 157 sourced entries with thumbnails and dates
+- Strikethroughs for deprecated patterns with "replaced by" annotations
+- Model timeline: Claude Code launch → Opus 4.6 → 4.7 → 4.8 → Fable 5
+- JSON-LD structured data for AI crawler consumption
+- Sticky nav jump bar, collapsible reference sections
 
-### .claude brain committed
-- wordpress-post skill added to git (was untracked)
-- Caveman hooks added (activate, config, mode-tracker, statusline, fix-plugin-hooks)
-- CLAUDE.md, settings.json, dejaviewed skill updated
-
-## Previous session (May 6)
-
-### Bulk ingest (103 entries from 6 collections)
-- agent-browser replaced Playwright MCP for IG scraping
-- Deep dives: 8→14 curated, 114 total, all with guide pages
-- Guide index page, dynamic collection pills, tutorial→skill merge
+### UI improvements
+- Tier badges on all deep dive cards (FEATURED/GUIDE/DEEPER/AUTO)
+- Date ranges on cards computed from entry post dates
+- Sort controls (Quality/Newest/Oldest/Most entries)
+- Guides index with tier filter pills (Featured/Guide/Standalone)
+- Nav header mounted on all guide + deeper dive pages (was missing)
+- Cross-links between 13 guide↔deeper dive pairs
 
 ## Scraping workflow (agent-browser)
 
@@ -93,6 +98,13 @@ python3 scripts/deeper_dives.py --all-curated
 python3 scripts/cms.py rebuild
 ```
 
+## Next up
+
+- ~100 videos still need Whisper transcription (IG auth cookie issue)
+- Caption gaps: ai1 (57), ai2 (24), ai3 (31), ai4 (56), quant (26) = 194 old entries
+- ai3 missing 23 thumbnails
+- Claude Mastery guide could grow with new model releases and features
+
 ## Don't forget
 
 - NEVER change shared.css breakpoints for single-page issues
@@ -103,9 +115,7 @@ python3 scripts/cms.py rebuild
 - Graph pages are standalone in site/ — separate from graph-node/graph-cosmos repos
 - "tutorial" merged into "skill" — don't add it back
 - Verify entry IDs exist before writing manual_dives.json
-- Guide pages use markdown-in-script-tag + marked.js + DOMPurify
-- WordPress: curl not Python requests (WAF), `/wordpress-post` skill has full workflow
-- WordPress voice: read Victor's REAL adventure/photo posts, not AI-written tech posts
-- WordPress audio: always 44.1kHz MP3, use wp:html blocks, 3+ second demos
-- WordPress images: `{post-slug}-{descriptive}.jpg`, clickable `<a href>` wraps
-- Yoast keyphrase: wp-admin via Playwright, navigate dashboard first then window.location.href
+- Guide/deeper pages must call `DV.mountHeader()` for nav
+- Cross-links between guide↔deeper siblings via inline div (not template)
+- [NEEDS ENRICHMENT] bug: 3-layer defense in cms.py (strip on read, strip on write, allow overwrite in upsert) — documented in dejaviewed skill
+- Enrichment deletes parquet before internal migrate to avoid stale title merge
