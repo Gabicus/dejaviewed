@@ -280,26 +280,36 @@ def build_title(entry: dict, tools: list, techniques: list) -> str:
     first_line = re.sub(r"#\w+", "", first_line).strip()
     first_line = re.sub(r"comment\s+['\"]?\w+['\"]?\s*(and|for|to)\b.*", "", first_line, flags=re.I).strip()
 
-    # Try to extract a subject from tools or first meaningful phrase
+    # Clean all lines for angle extraction
+    all_lines = [l.strip() for l in caption.split("\n") if l.strip()]
+    clean_lines = []
+    for l in all_lines:
+        l = re.sub(r"#\w+", "", l).strip()
+        l = re.sub(r"comment\s+['\"]?\w+['\"]?\s*(and|for|to)\b.*", "", l, flags=re.I).strip()
+        l = re.sub(r"^(follow|like|share|save|tag)\b.*", "", l, flags=re.I).strip()
+        l = re.sub(r"^[\U0001F300-\U0001FAD6\U0001F600-\U0001F64F☀-⛿✀-➿\s]+", "", l).strip()
+        if len(l) > 10:
+            clean_lines.append(l)
+
     subject = ""
     if tools:
         subject = tools[0]
-    elif len(first_line) > 5:
-        # Use first sentence or phrase up to punctuation
-        m = re.match(r"^(.+?)[.!?\n]", first_line)
-        subject = m.group(1).strip() if m else first_line[:60]
+    elif clean_lines:
+        fl = clean_lines[0]
+        m = re.match(r"^(.+?)[.!?\n—]", fl)
+        subject = m.group(1).strip()[:60] if m else fl[:60]
+
+    if not subject and clean_lines:
+        subject = clean_lines[0][:60]
 
     if not subject:
         return ""
 
-    # Build angle from caption context
     angle = ""
-    lines = [l.strip() for l in caption.split("\n") if l.strip() and not l.strip().startswith("#")]
-    for line in lines[1:4]:
-        cleaned = re.sub(r"#\w+", "", line).strip()
-        if len(cleaned) > 15 and not cleaned.lower().startswith(("comment", "follow", "like", "share")):
-            angle = cleaned[:80]
-            if len(cleaned) > 80:
+    for l in clean_lines[1:3]:
+        if len(l) > 15:
+            angle = l[:70]
+            if len(l) > 70:
                 angle = angle.rsplit(" ", 1)[0] + "..."
             break
 
@@ -310,7 +320,6 @@ def build_title(entry: dict, tools: list, techniques: list) -> str:
     else:
         title = subject
 
-    # Cap at 120 chars
     if len(title) > 120:
         title = title[:117] + "..."
     return title
@@ -362,6 +371,8 @@ def enrich_entry(entry: dict) -> dict:
         new_title = build_title(entry, tools, techniques)
         if new_title:
             entry["title"] = new_title
+        elif "[NEEDS ENRICHMENT]" in entry.get("title", ""):
+            entry["title"] = entry.get("post_id") or entry.get("id", "Untitled")
     entry["summary"] = build_summary(entry, tools, techniques)
 
     if is_art:
@@ -404,11 +415,12 @@ def enrich_sweep(entry: dict, force_reclassify: bool = False) -> dict:
     if creator.startswith("@"):
         entry["creator"] = creator.lstrip("@")
 
-    # Generate title for placeholder entries
     if not entry.get("title") or "[NEEDS ENRICHMENT]" in entry.get("title", ""):
         new_title = build_title(entry, entry.get("tools", []), entry.get("techniques", []))
         if new_title:
             entry["title"] = new_title
+        elif "[NEEDS ENRICHMENT]" in entry.get("title", ""):
+            entry["title"] = entry.get("post_id") or entry.get("id", "Untitled")
 
     if not entry.get("summary") or entry["summary"].startswith("Post by"):
         entry["summary"] = build_summary(entry, entry.get("tools", []), entry.get("techniques", []))
@@ -487,6 +499,9 @@ def main():
     print(f"Saved {len(entries)} entries to catalog.json + catalog.js")
 
     # Sync enriched data back to parquet CMS
+    # Delete existing parquet to prevent stale title merge artifacts
+    for f in (ROOT / "data" / "entries.parquet", ROOT / "data" / "crosslinks.parquet"):
+        f.unlink(missing_ok=True)
     import subprocess
     print("[enrich] Syncing enriched data to parquet CMS...")
     result = subprocess.run(

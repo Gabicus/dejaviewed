@@ -72,6 +72,7 @@ def download_audio(url: str, out_dir: Path) -> Path | None:
         "no_warnings": True,
         "outtmpl": out_tmpl,
         "format": "bestaudio/best",
+        "cookiesfrombrowser": ("chrome",),
     }
     if _has_ffmpeg() and shutil.which("ffprobe"):
         import subprocess as _sp

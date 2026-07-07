@@ -283,11 +283,12 @@ def load_entries() -> list[dict]:
                 r[field.name] = []
             else:
                 r[field.name] = ""
+        if "[NEEDS ENRICHMENT]" in (r.get("title") or ""):
+            r["title"] = r.get("post_id") or r.get("id", "")
     return rows
 
 
 def write_entries(rows: list[dict]) -> None:
-    # Ensure every row has every schema field
     normalized = []
     for r in rows:
         out = {}
@@ -298,6 +299,8 @@ def write_entries(rows: list[dict]) -> None:
                 out[field.name] = list(r.get(field.name) or [])
             else:
                 out[field.name] = r.get(field.name) or ""
+        if "[NEEDS ENRICHMENT]" in (out.get("title") or ""):
+            out["title"] = out.get("post_id") or out.get("id", "")
         normalized.append(out)
     t = pa.Table.from_pylist(normalized, schema=SCHEMA)
     pq.write_table(t, ENTRIES_PARQUET, compression="zstd")
@@ -394,10 +397,9 @@ def upsert(rows: list[dict], new_row: dict) -> tuple[list[dict], str]:
         if k == "last_edited_at" and existing.get("last_edited_at"):
             continue  # keep edit timestamp
         if existing.get("last_edited_at"):
-            # If a field was manually edited, don't clobber it with scraped data.
-            # Heuristic: if the user edited anything, preserve tier/title/summary.
             if k in ("tier", "title", "summary"):
-                if existing.get(k):
+                val = existing.get(k) or ""
+                if val and "[NEEDS ENRICHMENT]" not in val:
                     continue
         merged[k] = v
     # Merge collections (multi-membership)
