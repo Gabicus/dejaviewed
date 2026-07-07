@@ -203,6 +203,18 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 @keyframes ddFadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 .dd-detail .dd-close{float:right;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text-dim);cursor:pointer;padding:4px 10px;font-size:11px}
 .dd-detail .dd-close:hover{border-color:var(--accent);color:#fff}
+.dd-tier-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;margin-left:auto}
+.dd-tier-badge.tier-featured{background:linear-gradient(135deg,rgba(167,139,250,.25),rgba(244,114,182,.25));color:#f472b6;border:1px solid rgba(244,114,182,.4);font-weight:900;animation:featuredPulse 3s ease-in-out infinite}
+@keyframes featuredPulse{0%,100%{box-shadow:0 0 0 0 rgba(244,114,182,0)}50%{box-shadow:0 0 8px 2px rgba(244,114,182,.15)}}
+.dd-tier-badge.tier-guide{background:rgba(167,139,250,.18);color:#a78bfa;border:1px solid rgba(167,139,250,.35)}
+.dd-tier-badge.tier-deeper{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.dd-tier-badge.tier-auto{background:rgba(255,255,255,.05);color:var(--text-mute);border:1px solid rgba(255,255,255,.08)}
+.dd-card.featured{border:1px solid rgba(244,114,182,.35);background:linear-gradient(135deg,rgba(167,139,250,.06),rgba(244,114,182,.06))}
+.dd-date{font-size:10px;color:var(--text-mute);margin-top:4px}
+.dd-title-row{display:flex;align-items:flex-start;gap:6px}
+.dd-sort-bar{display:flex;gap:8px;align-items:center;margin:8px 0 0;font-size:11px;color:var(--text-dim)}
+.dd-sort-btn{background:none;border:none;color:var(--text-mute);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px}
+.dd-sort-btn:hover,.dd-sort-btn.on{color:var(--accent)}
 .dd-guide-link{display:inline-block;margin:8px 0 4px;padding:6px 14px;background:linear-gradient(135deg,var(--accent),#a78bfa);color:#fff;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;transition:opacity .15s}
 .dd-guide-link:hover{opacity:.85}
 .dd-deeper-link{display:inline-block;margin:8px 0 4px 8px;padding:6px 14px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;transition:opacity .15s}
@@ -613,23 +625,92 @@ document.addEventListener('DOMContentLoaded',()=>{buildCollPills();updateCounts(
     const getType = d => d.type || d.dive_type || d.class || d.dive_class || d.value_type || 'insight';
     const getCount = d => d.entry_count || (d.entry_ids||[]).length;
     const isCurated = d => d.pinned || d.suggested_by==='curated';
+    const isFeatured = d => d.id==='dd-insight-claude-mastery';
+    const hasGuide = d => isCurated(d);
+    const hasDeeper = d => isCurated(d);
+    function getDiveTier(d){ if(isFeatured(d)) return 'featured'; if(hasGuide(d)) return 'guide'; if(hasDeeper(d)) return 'deeper'; return 'auto'; }
+    const tierLabel = {featured:'FEATURED',guide:'GUIDE',deeper:'DEEPER',auto:'AUTO'};
+
+    function parseDate(s){
+      if(!s) return null;
+      const d=new Date(s);
+      return isNaN(d.getTime()) ? null : d;
+    }
+    function getDiveDateRange(d){
+      if(!d.entry_ids||!d.entry_ids.length) return {oldest:null,newest:null};
+      let oldest=null,newest=null;
+      for(const id of d.entry_ids){
+        const post=POSTS.find(p=>p.id===id);
+        if(!post) continue;
+        const dt=parseDate(post.date);
+        if(!dt) continue;
+        if(!oldest||dt<oldest) oldest=dt;
+        if(!newest||dt>newest) newest=dt;
+      }
+      return {oldest,newest};
+    }
+    function fmtDate(d){ if(!d) return ''; const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return m[d.getMonth()]+' '+d.getFullYear(); }
+    function daysSince(d){ if(!d) return Infinity; return Math.floor((Date.now()-d.getTime())/(1000*60*60*24)); }
+
+    // precompute date ranges
+    dives.forEach(d=>{ d._dateRange=getDiveDateRange(d); });
 
     let active = 'all';
+    let sortBy = 'quality';
+    function sortDives(arr){
+      return [...arr].sort((a,b)=>{
+        if(sortBy==='newest'){
+          const an=a._dateRange.newest, bn=b._dateRange.newest;
+          if(an&&bn) return bn-an;
+          return an?-1:bn?1:0;
+        }
+        if(sortBy==='oldest'){
+          const ao=a._dateRange.oldest, bo=b._dateRange.oldest;
+          if(ao&&bo) return ao-bo;
+          return ao?-1:bo?1:0;
+        }
+        if(sortBy==='entries') return getCount(b)-getCount(a);
+        // default: featured first, then curated, then quality_rating
+        const fa=isFeatured(a)?2:isCurated(a)?1:0, fb=isFeatured(b)?2:isCurated(b)?1:0;
+        if(fa!==fb) return fb-fa;
+        return (b.quality_rating||0)-(a.quality_rating||0);
+      });
+    }
     function renderDD(){
       grid.textContent='';
-      const shown = active==='all' ? dives
+      const filtered = active==='all' ? dives
         : active==='curated' ? dives.filter(isCurated)
         : dives.filter(d=>getType(d)===active);
-      const top = shown;
-      for(const d of top){
-        const c = el('div',{class:'dd-card'});
-        if(isCurated(d)) c.style.borderColor='rgba(167,139,250,0.4)';
-        c.appendChild(el('div',{class:'dd-title',text:d.title}));
+      const shown = sortDives(filtered);
+      for(const d of shown){
+        const c = el('div',{class:'dd-card'+(isFeatured(d)?' featured':'')});
+        const tier = getDiveTier(d);
+        if(tier==='featured') { /* styled via .featured class */ }
+        else if(tier==='guide') c.style.borderColor='rgba(167,139,250,0.4)';
+        else if(tier==='deeper') c.style.borderColor='rgba(251,191,36,0.25)';
+
+        const titleRow = el('div',{class:'dd-title-row'});
+        titleRow.appendChild(el('div',{class:'dd-title',text:d.title}));
+        const badge = el('span',{class:'dd-tier-badge tier-'+tier,text:tierLabel[tier]});
+        titleRow.appendChild(badge);
+        c.appendChild(titleRow);
+
         const meta = getCount(d)+' posts · '+getType(d);
         const extra = d.quality_rating ? ' · '+('★'.repeat(d.quality_rating)) : '';
         const diff = d.execution_difficulty ? ' · '+d.execution_difficulty : '';
         const creator = d.creators&&d.creators.length ? ' · @'+d.creators[0] : '';
         c.appendChild(el('div',{class:'dd-meta',text:meta+extra+diff+creator}));
+
+        const dr = d._dateRange;
+        if(dr.newest){
+          const age = daysSince(dr.newest);
+          const ageText = age<30?'this month':age<90?'recent':age<180?fmtDate(dr.newest):fmtDate(dr.oldest)+' – '+fmtDate(dr.newest);
+          const dateEl = el('div',{class:'dd-date',text:ageText});
+          if(age<30) dateEl.style.color='#4ade80';
+          else if(age<90) dateEl.style.color='#7dd3fc';
+          c.appendChild(dateEl);
+        }
+
         if(d.thesis){
           const thesis = el('div',{class:'dd-meta'});
           thesis.style.marginTop='4px';thesis.style.color='var(--text)';thesis.style.fontStyle='italic';
@@ -648,12 +729,24 @@ document.addEventListener('DOMContentLoaded',()=>{buildCollPills();updateCounts(
         grid.appendChild(c);
       }
     }
+
+    // Sort controls
+    const sortBar = el('div',{class:'dd-sort-bar'});
+    sortBar.appendChild(el('span',{text:'Sort:'}));
+    const sorts = [{key:'quality',label:'Quality'},{key:'newest',label:'Newest'},{key:'oldest',label:'Oldest'},{key:'entries',label:'Most entries'}];
+    sorts.forEach(s=>{
+      const btn = el('button',{class:'dd-sort-btn'+(s.key===sortBy?' on':''),text:s.label});
+      btn.addEventListener('click',()=>{sortBy=s.key;$$('.dd-sort-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderDD()});
+      sortBar.appendChild(btn);
+    });
+    tabs.parentNode.insertBefore(sortBar,grid);
+
     const curatedCount = dives.filter(isCurated).length;
     const allTab = el('button',{class:'dd-tab on',text:'All ('+dives.length+')'});
     allTab.addEventListener('click',()=>{active='all';$$('.dd-tab').forEach(t=>t.classList.remove('on'));allTab.classList.add('on');renderDD()});
     tabs.appendChild(allTab);
     if(curatedCount){
-      const cTab = el('button',{class:'dd-tab',text:'⚡ Insights ('+curatedCount+')'});
+      const cTab = el('button',{class:'dd-tab',text:'📘 Guides ('+curatedCount+')'});
       cTab.addEventListener('click',()=>{active='curated';$$('.dd-tab').forEach(t=>t.classList.remove('on'));cTab.classList.add('on');renderDD()});
       tabs.appendChild(cTab);
     }
@@ -683,11 +776,18 @@ document.addEventListener('DOMContentLoaded',()=>{buildCollPills();updateCounts(
       closeBtn.addEventListener('click',()=>{while(panel.firstChild) panel.removeChild(panel.firstChild);$$('.dd-card.active').forEach(c=>c.classList.remove('active'))});
       wrap.appendChild(closeBtn);
 
-      wrap.appendChild(el('h4',{text:d.title}));
+      const detailTitleRow = el('div',{style:'display:flex;align-items:center;gap:8px'});
+      detailTitleRow.appendChild(el('h4',{text:d.title}));
+      const detailTier = getDiveTier(d);
+      detailTitleRow.appendChild(el('span',{class:'dd-tier-badge tier-'+detailTier,text:tierLabel[detailTier]}));
+      wrap.appendChild(detailTitleRow);
       let metaText = typeLabel+' · '+getCount(d)+' posts';
       if(stars) metaText += ' · '+stars;
       if(d.execution_difficulty) metaText += ' · '+d.execution_difficulty;
       if(d.creators&&d.creators.length) metaText += ' · @'+d.creators.join(', @');
+      const dr = d._dateRange;
+      if(dr&&dr.oldest&&dr.newest) metaText += ' · '+fmtDate(dr.oldest)+' – '+fmtDate(dr.newest);
+      else if(dr&&dr.newest) metaText += ' · '+fmtDate(dr.newest);
       wrap.appendChild(el('div',{class:'dd-detail-meta',text:metaText}));
 
       if(d.type==='guide' && d.anchor_tag){

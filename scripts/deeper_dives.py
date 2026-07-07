@@ -194,7 +194,9 @@ a.dd-entry-title:hover{{text-decoration:underline;color:var(--accent)}}
 
 
 def _esc(s):
-    """HTML-escape a string."""
+    """HTML-escape a string or join a list."""
+    if isinstance(s, list):
+        s = ", ".join(str(x) for x in s)
     return (s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 

@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Autonomous Agents in the Wild: What's Actually Working in 2026 — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">emergent_capability</div>
+  <h1>Autonomous Agents in the Wild: What's Actually Working in 2026</h1>
+  <div class="thesis">Autonomous agents went from demo-ware to daily drivers in 2026. But the gap between 'impressive demo' and 'reliable tool' is massive. These entries map the frontier: Qwen agents roaming NYC streets, Claude automating daily workflows, Kronos failing hedge fund stress tests. The pattern: narrow agents with clear guardrails work; general agents with vague goals don't.</div>
+  <div class="tools"><span class='tool-pill'>Anthropic</span> · <span class='tool-pill'>ChatGPT</span> · <span class='tool-pill'>Claude</span> · <span class='tool-pill'>Claude Code</span> · <span class='tool-pill'>Codex</span> · <span class='tool-pill'>Cursor</span> · <span class='tool-pill'>DeepSeek</span> · <span class='tool-pill'>Docker</span> · <span class='tool-pill'>Gemini</span> · <span class='tool-pill'>Notion</span> · <span class='tool-pill'>Ollama</span> · <span class='tool-pill'>Qwen</span> · <span class='tool-pill'>React</span> · <span class='tool-pill'>Zapier</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>1. Start narrow: one task, one tool, one feedback loop
+2. Build in guardrails before capability (kill switches, budget limits, scope constraints)
+3. Test adversarially: what happens when the agent encounters edge cases?
+4. Add persistence: agents need memory to avoid repeating mistakes
+5. Monitor: log everything, review regularly, prune bad patterns
+6. Scale horizontally: multiple narrow agents &gt; one general agent</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> Understanding of LLM capabilities and limits, Experience with at least one agent framework, Tolerance for debugging non-deterministic systems</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (22)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DXx6KhJshmv/" target="_blank" rel="noopener"><img src="../thumb/DXx6KhJshmv.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DXx6KhJshmv/" target="_blank" rel="noopener" class="dd-entry-title">Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @lindavivah</div>
+    <div class="dd-entry-summary">Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Alake ⚡️ — @lindavivah; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DV84iOPgE5f/" target="_blank" rel="noopener"><img src="../thumb/DV84iOPgE5f.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DV84iOPgE5f/" target="_blank" rel="noopener" class="dd-entry-title">Qwen — Been roaming around NYC with a smol autonomous agent on a rooted...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @cyril.engman</div>
+    <div class="dd-entry-summary">Part 2 with Additional technical details! — @cyril.engman; uses Qwen; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DWUy57jDulU/" target="_blank" rel="noopener"><img src="../thumb/DWUy57jDulU.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DWUy57jDulU/" target="_blank" rel="noopener" class="dd-entry-title">Docker — Off topic, and with all due respect, are we watching an AI avatar?</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> resource · @gigaqian</div>
+    <div class="dd-entry-summary">DeerFlow 2.0 is a “super agent harness.” Think OpenClaw but way more robust - and the only thing bigger than that in ... — @gigaqian; uses Docker; demonstrates AI agents, code generation.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DX7oRT3J1Hq/" target="_blank" rel="noopener"><img src="../thumb/DX7oRT3J1Hq.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DX7oRT3J1Hq/" target="_blank" rel="noopener" class="dd-entry-title">ChatGPT — Generally feel the same across everything you set. The reasons all...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @chase.h.ai</div>
+    <div class="dd-entry-summary">Comment “agent” to get my Claude code guides — @chase.h.ai; uses ChatGPT, Claude, Claude Code; demonstrates AI agents, code generation.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DXeZ7C5kcl8/" target="_blank" rel="noopener"><img src="../thumb/DXeZ7C5kcl8.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DXeZ7C5kcl8/" target="_blank" rel="noopener" class="dd-entry-title">Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @fionaylin</div>
+    <div class="dd-entry-summary">Comment Prompt 1, 2, 3, 4, 5 or 6 and I’ll DM you my prompt! Here are the 6 @claudeai cowork agents I have running my... — @fionaylin; uses Claude, Notion; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DY8TYwpCd8P/" target="_blank" rel="noopener"><img src="../thumb/DY8TYwpCd8P.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DY8TYwpCd8P/" target="_blank" rel="noopener" class="dd-entry-title">React — made a little 3D racer that runs right in the browser. anti-grav...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> design · @rndyrbrts</div>
+    <div class="dd-entry-summary">cool way to build complex 3D creative stuff on the web with AI agent workflows. you build yourself a library first, t... — @rndyrbrts; uses React; demonstrates AI agents, code generation.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYNXFvVN0c_/" target="_blank" rel="noopener"><img src="../thumb/DYNXFvVN0c_.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYNXFvVN0c_/" target="_blank" rel="noopener" class="dd-entry-title">Qwen — Been roaming around NYC with a smol autonomous agent on a rooted...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @cyril.engman</div>
+    <div class="dd-entry-summary">Part 2 with Additional technical details! — @cyril.engman; uses Qwen; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYTxLQgRdZJ/" target="_blank" rel="noopener"><img src="../thumb/DYTxLQgRdZJ.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYTxLQgRdZJ/" target="_blank" rel="noopener" class="dd-entry-title">Anthropic — for more details:</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> technique · @itsjustjlin</div>
+    <div class="dd-entry-summary">the way anthropic is handling this is disgusting. be straight with your customers. — @itsjustjlin; uses Anthropic, Claude, Codex; demonstrates AI agents, API integration.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYXWNTERFhZ/" target="_blank" rel="noopener"><img src="../thumb/DYXWNTERFhZ.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYXWNTERFhZ/" target="_blank" rel="noopener" class="dd-entry-title">Anthropic — @lostandlucky you’re the reason why Im not worried about the tools I...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> tool · @lostandlucky</div>
+    <div class="dd-entry-summary">just your friendly neighborhood anti-hype post of the day. — @lostandlucky; uses Anthropic, Claude, Claude Code; demonstrates AI agents, API integration.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYakjE8JDcX/" target="_blank" rel="noopener"><img src="../thumb/DYakjE8JDcX.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYakjE8JDcX/" target="_blank" rel="noopener" class="dd-entry-title">Claude — Markdowns and folders wrapped in a harness</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @gigaqian</div>
+    <div class="dd-entry-summary">Companies are marketing ordinary chatbots and simple API tools as “AI Agents.” It’s time we discuss what that actuall... — @gigaqian; uses Claude, Claude Code; demonstrates AI agents, API integration.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYbGP6TjV_6/" target="_blank" rel="noopener"><img src="../thumb/DYbGP6TjV_6.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYbGP6TjV_6/" target="_blank" rel="noopener" class="dd-entry-title">Anthropic — I've made it a hobby of trying to radicalize the LLms to socialism....</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> technique · @lizthedeveloper</div>
+    <div class="dd-entry-summary">You are welcome — @lizthedeveloper; uses Anthropic, Claude; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYiMDGWynHq/" target="_blank" rel="noopener"><img src="../thumb/DYiMDGWynHq.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYiMDGWynHq/" target="_blank" rel="noopener" class="dd-entry-title">The US spent years and sacrificed billions to stop Chinese A — Intellectual Property Right is as made up as the conce...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> skill · @gigaqian</div>
+    <div class="dd-entry-summary">The US spent years and sacrificed billions to stop Chinese Al development. Believe it or not, it was a food delivery ... — @gigaqian; demonstrates AI agents, prompt engineering.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYoJ0GZi5p0/" target="_blank" rel="noopener"><img src="../thumb/DYoJ0GZi5p0.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYoJ0GZi5p0/" target="_blank" rel="noopener" class="dd-entry-title">Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> design · @rndyrbrts</div>
+    <div class="dd-entry-summary">Let me know if you want this skill.. — @rndyrbrts; demonstrates AI agents, prompt engineering.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZ5R-8OxvUQ/" target="_blank" rel="noopener"><img src="../thumb/DZ5R-8OxvUQ.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZ5R-8OxvUQ/" target="_blank" rel="noopener" class="dd-entry-title">Oh and if you want my (theoretical) guide on how to set this</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @angus.sewell</div>
+    <div class="dd-entry-summary">Oh and if you want my (theoretical) guide on how to set this up comment “app” and I’ll send it your way — @angus.sewell; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZGC7HXtr1f/" target="_blank" rel="noopener"><img src="../thumb/DZGC7HXtr1f.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZGC7HXtr1f/" target="_blank" rel="noopener" class="dd-entry-title">We’re building something cool — 5000 M tokens were consumed in less than a minute</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> resource · @huwprosser</div>
+    <div class="dd-entry-summary">We’re building something cool. 😎 #ironman #jarvis #technology #vr — @huwprosser; demonstrates AI agents, MCP.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZOunMaJjjK/" target="_blank" rel="noopener"><img src="../thumb/DZOunMaJjjK.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZOunMaJjjK/" target="_blank" rel="noopener" class="dd-entry-title">Claude</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @chase.h.ai</div>
+    <div class="dd-entry-summary">Comment “agent” to get my Claude code guides — @chase.h.ai; uses Claude, Claude Code; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZVXehQRe3T/" target="_blank" rel="noopener"><img src="../thumb/DZVXehQRe3T.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZVXehQRe3T/" target="_blank" rel="noopener" class="dd-entry-title">Claude — Rendered via 3D Gaussian splatting.</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @kaustav.py</div>
+    <div class="dd-entry-summary">A gorgeous strange attractor known as Thomas' cyclically symmetric attractor — @kaustav.py; uses Claude; demonstrates AI agents, MCP.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZc2ci4xCp6/" target="_blank" rel="noopener"><img src="../thumb/DZc2ci4xCp6.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZc2ci4xCp6/" target="_blank" rel="noopener" class="dd-entry-title">Per the usual if you comment “content” I’ll send you the gui</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @angus.sewell</div>
+    <div class="dd-entry-summary">Per the usual if you comment “content” I’ll send you the guide on how to set up an autonomous content agent — @angus.sewell; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DaLT2hFRrFZ/" target="_blank" rel="noopener"><img src="../thumb/DaLT2hFRrFZ.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DaLT2hFRrFZ/" target="_blank" rel="noopener" class="dd-entry-title">There Is No Democracy Without Journalism — Scott Pelley was asked about President Trump reportedly calling him a...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> demo · @politicallyhomeless1982</div>
+    <div class="dd-entry-summary">There Is No Democracy Without Journalism — @politicallyhomeless1982; demonstrates AI agents, workflow automation.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYk77lLPFyi/" target="_blank" rel="noopener"><img src="../thumb/DYk77lLPFyi.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYk77lLPFyi/" target="_blank" rel="noopener" class="dd-entry-title">Wild times we are living in — Hehe... 😂 i love this. I legit thought of this the other day. Im...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @lostandlucky</div>
+    <div class="dd-entry-summary">Wild times we are living in. — @lostandlucky; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZLBMRjRzMW/" target="_blank" rel="noopener"><img src="../thumb/DZLBMRjRzMW.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZLBMRjRzMW/" target="_blank" rel="noopener" class="dd-entry-title">Comment “skill” and I’ll send you the prompts — my_body_my_joyce</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> tool · @angus.sewell</div>
+    <div class="dd-entry-summary">Comment “skill” and I’ll send you the prompts — @angus.sewell; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZpveoMRy0b/" target="_blank" rel="noopener"><img src="../thumb/DZpveoMRy0b.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZpveoMRy0b/" target="_blank" rel="noopener" class="dd-entry-title">If you are also tryna rip a few influencer deals comment “in</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> resource · @angus.sewell</div>
+    <div class="dd-entry-summary">If you are also tryna rip a few influencer deals comment “influencer” and I’ll send you this whole system — @angus.sewell; demonstrates AI agents.</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-07-07T09:32:38.471976 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+</div>
+</main>
+</body></html>
