@@ -93,13 +93,33 @@ def scrape_post(url: str) -> dict:
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--missing-captions', action='store_true',
+                        help='Target entries with empty captions (not just NEEDS ENRICHMENT)')
+    parser.add_argument('--collection', type=str, nargs='+',
+                        help='Only scrape these collections')
+    args = parser.parse_args()
+
     entries = load_entries()
-    placeholders = [
-        e for e in entries
-        if '[NEEDS ENRICHMENT]' in e.get('title', '')
-        and e.get('url', '').startswith('https://www.instagram.com/')
-    ]
-    print(f"Found {len(placeholders)} placeholder entries to scrape")
+
+    if args.missing_captions:
+        placeholders = [
+            e for e in entries
+            if not e.get('caption', '').strip()
+            and e.get('url', '').startswith('https://www.instagram.com/')
+        ]
+    else:
+        placeholders = [
+            e for e in entries
+            if '[NEEDS ENRICHMENT]' in e.get('title', '')
+            and e.get('url', '').startswith('https://www.instagram.com/')
+        ]
+
+    if args.collection:
+        placeholders = [e for e in placeholders if e.get('collection') in args.collection]
+
+    print(f"Found {len(placeholders)} entries to scrape")
 
     scraped_count = 0
     failed_count = 0
