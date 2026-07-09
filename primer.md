@@ -4,7 +4,12 @@ Updated: 2026-07-07
 
 ## Current status
 
-581 entries across 15 collections. 131,518 crosslinks. 21 curated insight dives (1 featured). 31 guide pages. 21 deeper dive pages. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages (auto-deploy from main).
+581 entries across 15 collections. 146,252 crosslinks. 150 deep dives (21 curated, 1 featured). 31 guide pages. 21 deeper dive pages. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages (auto-deploy from main).
+
+### Coverage (as of July 8, 2026)
+- Captions: 546/581 (5 IG failures, 30 non-IG URLs — expected)
+- Transcripts: 510/581 (13 video failures, 58 images — no audio)
+- Thumbnails: 570/581 (4 no og:image, 7 other)
 
 ### Collections (15)
 ai1, ai2, ai3, ai4, ai5, ai6, ai7, quant, stock2, music, creative, prompts, game-theory, art-inspiration, art-i-like
@@ -100,10 +105,16 @@ python3 scripts/cms.py rebuild
 
 ## Next up
 
-### High priority
-- **Whisper transcription:** ~100 videos still need transcription. IG auth cookie issue — Chrome must be closed, use `--cookies-from-browser chrome`. Some posts return "empty media response" (login-required). May need fresh cookie export or `agent-browser` download approach.
-- **Caption gaps:** 194 old entries missing captions across 5 collections: ai1 (57), ai2 (24), ai3 (31), ai4 (56), quant (26). Run `ab_scrape_posts.py` targeting these collections.
-- **Thumbnails:** ai3 missing 23 thumbnails. Run `python3 scripts/ab_download_thumbs.py` after opening agent-browser.
+### High priority (COMPLETED July 8)
+- ~~**Caption gaps:**~~ 161 scraped via `ab_scrape_posts.py --missing-captions`. 546/581 now have captions.
+- ~~**Whisper transcription:**~~ 146 transcribed via `transcribe.py --all --model small`. 510/581 total.
+- ~~**Thumbnails:**~~ 570/581. 4 remaining have no og:image (carousel/non-standard posts).
+- ~~**Re-enrichment:**~~ All 581 re-enriched with new text data. Crosslinks 131K → 146K.
+- ~~**Deep dive refresh:**~~ 150 dives regenerated, 21 curated deeper pages rebuilt.
+
+### High priority (current)
+- **Skill published on site:** Ensure dejaviewed.dev advertises the skill and how to use it
+- **context.md regeneration:** `build_context.py` broken (expects catalog.jsonl, not parquet). Fix script to read from parquet/catalog.json.
 
 ### Medium priority
 - **Claude Mastery guide maintenance:** Living document — update with new model releases, features, skills as they ship. Add new entries as they're ingested.

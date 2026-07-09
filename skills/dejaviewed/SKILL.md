@@ -14,11 +14,9 @@ metadata:
   tier: execution
   dependencies:
     - name: graph-node
-      repo: github.com/Gabicus/graph-node
       purpose: D3 force-directed graph visualization
       data_contract: generic (nodes/edges with group/weight/tags/metadata)
     - name: graph-cosmos
-      repo: github.com/Gabicus/graph-cosmos
       purpose: Canvas orbital physics visualization
       data_contract: generic (nodes/edges with group/weight/tags/metadata)
 context:
@@ -59,21 +57,23 @@ The user provides one or more saved collection URLs. Claude does everything else
 
 ```bash
 scripts/rebuild.sh \
-  --collections ai1=<url> ai2=<url> ai3=<url> ai4=<url> ai5=<url> \
-                quant=<url> art-inspiration=<url> art-i-like=<url>
+  --collections mycollection1=<url> mycollection2=<url> mycollection3=<url>
 ```
 
 Skip phases with `--skip <phase>[,<phase>...]`. Phases (in order):
 
 | Phase | Script | What it does |
 |-------|--------|--------------|
-| `scrape` | Playwright MCP | Extract URLs from saved collection pages |
+| `scrape` | `scripts/ab_extract_cumulative.py` | Extract URLs from saved collections (cumulative scroll) |
+| `captions` | `scripts/ab_scrape_posts.py` | Scrape captions/metadata from posts via agent-browser |
 | `process` | `scripts/process_raw.py` | Convert raw scraped JSON into catalog entries |
 | `migrate` | `scripts/cms.py migrate` | Seed/update parquet from catalog.json |
-| `enrich` | `scripts/enrich_entries.py --sweep` | Classify, tier, extract metadata |
-| `dives` | `scripts/deep_dives.py` | Auto-detect deep dive clusters |
-| `deeper` | `scripts/deeper_dives.py` | Generate narrative deeper dive pages |
-| `thumbs` | `scripts/download_thumbs.py` | Download thumbnails locally |
+| `enrich` | `scripts/enrich_entries.py --sweep` | Classify, tier, extract metadata, generate titles |
+| `transcribe` | `scripts/transcribe.py --all` | Whisper transcription for all video entries |
+| `dives` | `scripts/deep_dives.py` | Auto-detect + merge curated deep dive clusters |
+| `deeper` | `scripts/deeper_dives.py --all-curated` | Generate narrative deeper dive pages |
+| `guides` | Guide page generator | Full guide pages for all curated dives |
+| `thumbs` | `scripts/ab_download_thumbs.py` | Download thumbnails via agent-browser og:image |
 | `digest` | `scripts/digest.py` | Cluster + rank into summaries + recommendations |
 | `rebuild` | `scripts/cms.py rebuild` | Recompute crosslinks + refresh exports |
 | `context` | `build_context.py` | Agent context layer (context.md, llms.txt) |
@@ -140,7 +140,8 @@ scripts/cms.py — the CMS engine (688 lines)
 
 ```
 site/
-  index.html           Unified catalog: all collections, filters, deep dive cards, bar chart
+  index.html           Landing: bar chart + deep dive cards
+  <collection>.html    Per-collection catalog page
   graph.html           D3 force-directed graph (powered by graph-node)
   graph-cosmos.html    Canvas orbital graph (powered by graph-cosmos)
   board.html           Drag-to-connect thought board
@@ -150,21 +151,20 @@ site/
   catalog.json         Full catalog export
   summaries.json       Digest cluster summaries
   recommendations.json Digest ranked recommendations
-  sitemap.xml          Active pages only (dejaviewed.dev domain)
+  sitemap.xml          All URLs
   llms.txt             LLM discovery file
   llms-full.txt        Full LLM context
   robots.txt           Crawler rules
-  CNAME                Custom domain (dejaviewed.dev)
-  thumb/               Downloaded thumbnails (338+)
+  thumb/               Downloaded thumbnails
   api/                 Machine-readable JSON exports
     catalog.json
     creators.json
     tools.json
     collections.json
     deep_dives.json
-  guides/              Deep dive guide pages (clickable from catalog cards)
-  deeper/              Deeper dive narrative pages (clickable entries link to posts)
-  legacy/              Archived pages (ai1-4, quant, catalog, dejaviewed, etc.)
+  guides/              Deep dive guide pages
+  deeper/              Deeper dive narrative pages
+  legacy/              Archived pages
 ```
 
 ### Graph Repos (External Dependencies)
@@ -179,24 +179,24 @@ Both graph repos use a **generic data contract**. DejaViewed maps its domain voc
 | `{title, summary, url, creator, tier}` | `metadata{}` | Free-form tooltip data |
 | crosslinks (a_id, b_id, dim, weight) | `edges[]` | Direct mapping |
 
-**graph-node** (`github.com/Gabicus/graph-node`):
+**graph-node** (D3 force-directed):
 - D3 force-directed SVG graph
 - Sidebar filters by group, search, node detail panel
 - Data: `{ nodes: [...], edges: [...], config: { title, groupColors } }`
 
-**graph-cosmos** (`github.com/Gabicus/graph-cosmos`):
+**graph-cosmos** (Canvas orbital):
 - Canvas-based orbital physics with hierarchical orbits
 - Presets, responsive breakpoints, tooltip overlays
 - Same data contract as graph-node
 
-**Relationship:** DejaViewed ships its own graph pages (`site/graph.html`, `site/graph-cosmos.html`) with DejaViewed-specific UX (shared.css theme, nav, tier colors, catalog.json loading). The standalone repos (`graph-node`, `graph-cosmos`) are clean-room implementations of the same visualizations using a generic data contract — usable by anyone with any dataset. They share the same data contract spec but are independent codebases, not runtime imports.
+**Relationship:** DejaViewed ships its own graph pages (`site/graph.html`, `site/graph-cosmos.html`) with DejaViewed-specific UX (shared.css theme, nav, tier colors, catalog.json loading). The graph engines are clean-room implementations using a generic data contract — usable by anyone with any dataset. They share the same data contract spec but are independent codebases, not runtime imports.
 
 ---
 
 ## Prerequisites
 
 ### What the user provides:
-1. **One or more saved collection URLs** — e.g., `https://www.instagram.com/user/saved/quant/12345/`
+1. **One or more saved collection URLs** — e.g., `https://www.instagram.com/user/saved/mycollection/12345/`
 2. **A copied Chrome/Chromium profile** (one-time setup, already done for returning users)
 
 ### What must exist on disk:
@@ -222,85 +222,74 @@ mkdir -p <project>/data <project>/guides <project>/site/thumb <project>/site/gui
 
 ---
 
-## Phase 0: URL Extraction via Playwright MCP
+## Phase 0: URL Extraction via agent-browser
 
 **THIS IS THE CRITICAL AUTOMATION STEP. NEVER SKIP IT. NEVER ASK THE USER TO DO THIS MANUALLY.**
 
-The user gives a collection URL. Claude uses Playwright MCP to:
-1. Navigate to the saved collection page
-2. Scroll to load all posts (infinite scroll)
-3. Extract every post URL from the DOM
-4. Write URLs to `data/<collection>_urls.json`
+**agent-browser** (`npx agent-browser`) replaces Playwright MCP for Instagram scraping. It reads Chrome's login state directly via `--profile Default`.
 
-### Step 0.1: Extract cookies from Chrome profile
+### Prerequisites
+- Chrome must be CLOSED (profile is locked while Chrome runs)
+- User must be logged into Instagram in Chrome
+- `npx agent-browser` available (installs on first run)
 
-```python
-import sqlite3, json
-from pathlib import Path
+### Step 0.1: Open collection and extract URLs
 
-profile = Path("<project>/.profile-copy/Default")
-cookies_db = profile / "Cookies"
+```bash
+# Close any existing agent-browser daemon
+npx agent-browser close
 
-conn = sqlite3.connect(str(cookies_db))
-rows = conn.execute("""
-    SELECT name, value, host_key, path, is_secure, is_httponly,
-           CASE WHEN expires_utc = 0 THEN -1
-                ELSE (expires_utc / 1000000) - 11644473600 END as expires
-    FROM cookies
-    WHERE host_key LIKE '%instagram.com'
-""").fetchall()
-conn.close()
+# Open collection page with Chrome's login state
+npx agent-browser --profile Default --headed open "<collection_url>"
 
-cookies = []
-for name, value, host, path, secure, httponly, expires in rows:
-    cookies.append({
-        "name": name, "value": value,
-        "domain": host, "path": path,
-        "secure": bool(secure), "httpOnly": bool(httponly),
-        "expires": expires
-    })
-
-(Path("<project>/.playwright-mcp") / "ig_cookies.json").write_text(json.dumps(cookies))
-print(f"Extracted {len(cookies)} cookies")
-
-required = {"sessionid", "csrftoken", "ds_user_id"}
-found = {c["name"] for c in cookies} & required
-print(f"Session cookies present: {found}")
-assert found == required, f"Missing: {required - found}"
+# Run the scroll-and-extract script
+bash scripts/ab_extract_urls.sh <collection_name> "<collection_url>"
 ```
 
-### Step 0.2: Playwright scroll-and-extract
+`ab_extract_urls.sh` scrolls the collection page, waits for stability (3 rounds same count = done), extracts all `a[href*="/p/"]` and `a[href*="/reel/"]` links, writes to `data/<name>_urls.json`.
 
-Use Playwright MCP tools:
-1. `browser_navigate` to the collection URL (with `waitUntil: 'domcontentloaded'`)
-2. Inject cookies via `browser_run_code` using `context.addCookies()`
-3. Scroll loop: `browser_run_code` to scroll + extract `a[href*="/p/"]` links
-4. Collect all URLs, write to `data/<collection>_urls.json`
+### Step 0.2: If login is needed
 
-### Step 0.3: Handle the result
-
-```python
-import json
-from pathlib import Path
-from scripts.cms import load_entries, has_entry, derive_post_id
-
-urls = json.loads(Path(f"data/{collection}_urls.json").read_text())
-existing = load_entries()
-new_urls = [u for u in urls if not has_entry(existing, u, derive_post_id(u))]
-print(f"Extracted {len(urls)} URLs — {len(new_urls)} new, {len(urls) - len(new_urls)} already scraped")
+If agent-browser shows a login page:
+```bash
+npx agent-browser close
+npx agent-browser --profile Default --headed open "https://www.instagram.com/"
+# Tell user to log in manually in the headed browser window
+# After login confirmed, re-run extraction
 ```
 
-### Playwright Troubleshooting
+### Step 0.3: Ingest URLs into parquet
 
-- **`require()` blocked:** Cannot use `require('fs')` inside `browser_run_code`. Write scripts to `.playwright-mcp/` files and use the `filename` parameter.
-- **File path rejected:** Scripts must live in `.playwright-mcp/` or the project directory. `/tmp/` paths are rejected.
-- **Use `domcontentloaded`, never `networkidle`:** Instagram streams analytics forever. `networkidle` always times out.
-- **Cookies must use `context.addCookies()`:** `document.cookie` cannot set HttpOnly cookies. Session will fail silently.
-- **Login wall detection:** Some posts return 200 but contain `"loginRequired"` in the body. Check for it.
+```bash
+python3 scripts/ingest.py --urls-file data/<name>_urls.json --collection <name> --non-interactive
+```
 
-### Cookie injection — why
+### Step 0.4: Scrape captions from posts
 
-Instagram requires HttpOnly cookies (`sessionid`, `csrftoken`, `ds_user_id`). These cannot be set via JavaScript `document.cookie`. The only way is `context.addCookies()` in Playwright, which requires extracting them from the user's Chrome profile SQLite database.
+```bash
+python3 scripts/ab_scrape_posts.py                          # targets [NEEDS ENRICHMENT] entries only
+python3 scripts/ab_scrape_posts.py --missing-captions       # targets ALL entries with empty captions
+python3 scripts/ab_scrape_posts.py --missing-captions --collection col1 col2  # specific collections only
+```
+
+Uses `get text "main"` (not JS eval — IG DOM is obfuscated). Python text parsing finds time markers, extracts creator + caption. Saves progress every 20 posts.
+
+**IMPORTANT:** After initial enrichment, entries get titles but may still have empty captions. The default filter (`[NEEDS ENRICHMENT]` title check) will skip them. Use `--missing-captions` to target enriched entries that still lack captions. This is the normal second-pass workflow.
+
+### agent-browser Troubleshooting
+
+- **Daemon stale / profile ignored:** `npx agent-browser close` then restart with `--profile Default`
+- **Double-encoded JSON from eval:** agent-browser `eval` wraps return in JSON string. Unwrap: `json.loads(json.loads(raw))`
+- **JS eval returns 0 results:** IG DOM is obfuscated. Use `get text "main"` + Python text parsing instead
+- **URL file has brackets/quotes:** Strip with `url.strip().strip('"').strip(',').strip('"')`
+- **ingest.py EOF error:** Use `--non-interactive` flag to skip ig_session_id prompt
+- **Chrome locked:** Close Chrome before running agent-browser with `--profile Default`
+- **IG DOM unloading:** Use `scripts/ab_extract_cumulative.py` (NOT `ab_extract_urls.sh`) — cumulative extraction handles DOM element recycling during scroll
+- **URL format:** `ab_extract_cumulative.py` outputs JSON arrays. Convert to one-URL-per-line .txt before `ingest.py`, or pipe through: `python3 -c "import json,sys;[print(u) for u in json.load(open(sys.argv[1]))]" data/urls.json > data/urls.txt`
+
+### Legacy: Playwright MCP approach (deprecated)
+
+The old approach used Playwright MCP + Chrome profile copy (`.profile-copy/Default/Cookies` SQLite extraction). This fails when Chrome is running (locked profile). agent-browser replaced it entirely.
 
 ---
 
@@ -309,9 +298,9 @@ Instagram requires HttpOnly cookies (`sessionid`, `csrftoken`, `ds_user_id`). Th
 The unified ingestion CLI. Reads URLs, dedupes against parquet, scrapes new ones, upserts.
 
 ```bash
-python scripts/ingest.py --urls-file data/ai5_urls.json --collection ai5
-python scripts/ingest.py --url https://instagram.com/p/XXX/ --collection quant
-echo "https://instagram.com/p/XXX/" | python scripts/ingest.py --collection ai5
+python scripts/ingest.py --urls-file data/<collection>_urls.json --collection <collection>
+python scripts/ingest.py --url https://instagram.com/p/XXX/ --collection <collection>
+echo "https://instagram.com/p/XXX/" | python scripts/ingest.py --collection <collection>
 ```
 
 **What ingest.py does:**
@@ -343,7 +332,7 @@ Scraped fields are minimal — url, post_id, source_collection, caption, creator
 Converts Playwright-scraped raw JSON into catalog entries, dedupes, merges.
 
 ```bash
-python scripts/process_raw.py --raw data/ai5_raw.json --collection ai5
+python scripts/process_raw.py --raw data/<collection>_raw.json --collection <collection>
 ```
 
 For batch scrapes that produce raw JSON dumps, this normalizes data into the catalog schema before CMS migration. For single-URL ingestion, `ingest.py` handles this internally.
@@ -467,6 +456,54 @@ python scripts/deeper_dives.py --dry-run            # preview without writing
 - Cross-references to related deep dives
 - Same dark theme as all other pages
 
+### Deep Dive Curation Workflow (IMPORTANT — do this every session)
+
+After enrichment, curate the best cross-cutting themes as insight dives:
+
+1. **Identify themes:** Find S/A-tier entries sharing tools/techniques across collections
+2. **Create curated dives** in `data/manual_dives.json` with full schema:
+   - id, title, class (6 insight classes), thesis, entry_ids, connection_map
+   - quality_rating (1-5), execution_difficulty, value_type, action_sketch
+   - suggested_by: "curated", pinned: true, why_it_matters, prerequisites
+3. **Verify entry IDs exist** in catalog before saving
+4. **Regenerate:** `python3 scripts/deep_dives.py` (merges curated + auto-detected)
+5. **Generate deeper pages:** `python3 scripts/deeper_dives.py --all-curated`
+6. **Generate guide pages:** Run the guide page generator (see Phase 5b below)
+
+### Phase 5b: Guide Page Generation
+
+Every curated dive gets a full guide page in `site/guides/`. Template:
+
+```
+HTML shell: shared.css + shared.js + inline guide styles
+<article class="guide">
+  <div class="confidence-badge {high|medium}">Source confidence: {level}</div>
+  <div id="guide-body"></div>
+</article>
+<script id="md" type="text/markdown">
+  # Title
+  ## Thesis / ## Why it matters / ## The evidence / ## Action sketch / ## Prerequisites
+</script>
+<script src="marked.min.js"></script> + DOMPurify
+```
+
+- Slug: `d.id.replace('dd-insight-', '')` → `{slug}.html`
+- Confidence: high if quality_rating >= 5, medium otherwise
+- Guide index page at `site/guides/index.html` lists all guides with filters
+- Nav link "Guides" in shared.js DV.nav links to `guides/`
+- Index.html deep dive detail panel shows "Full Guide →" for curated dives
+
+### 6 Insight Classes
+
+| Class | Description |
+|-------|-------------|
+| emergent_capability | Something that became possible only recently |
+| workflow_multiplier | One person doing the work of a team |
+| arbitrage_opportunity | Information/skill asymmetry creating value |
+| creative_fusion | Cross-domain combination producing new medium |
+| expression_amplifier | Tools that amplify creative output |
+| life_leverage | Systems that compound over time |
+
 ---
 
 ## Phase 6: Download Thumbnails (scripts/download_thumbs.py)
@@ -541,13 +578,13 @@ Complete JSON with pre-built indices:
 ```json
 {
   "version": "1.0",
-  "stats": { "total_entries": 334, "tiers": {"S": 8, "A": 33} },
+  "stats": { "total_entries": N, "tiers": {"S": n, "A": n} },
   "indices": {
-    "by_domain": { "quant": ["id1", "id2"] },
-    "by_tool": { "python": ["id1"] },
+    "by_domain": { "domain1": ["id1", "id2"] },
+    "by_tool": { "tool1": ["id1"] },
     "by_technique": {},
     "by_tier": { "S": [], "A": [] },
-    "by_collection": { "quant": [], "ai1": [] }
+    "by_collection": { "collection1": [], "collection2": [] }
   },
   "entries": [{ "id": "...", "url": "...", "title": "..." }]
 }
@@ -593,7 +630,15 @@ python scripts/build_api.py
 python scripts/render_template.py
 ```
 
-Re-renders the unified index.html catalog page. The `<script>const POSTS=[...];</script>` block is refreshed from parquet. All collections are shown in one page with filter pills — no per-collection pages.
+Re-renders per-collection static pages. Each page has a `<script>const POSTS=[...];</script>` block refreshed from parquet.
+
+#### Adding a new collection
+
+Update 4 locations in render_template.py:
+1. `NAV_SOURCES` list
+2. `COLL_META` dict (display name, description, icon)
+3. Render loop
+4. Sidebar pills
 
 ### JS Wrappers (scripts/catalog_js.py)
 
@@ -614,10 +659,22 @@ One `site/e/<id>.html` per entry. Currently archived in `site/legacy/e/` pending
 ### Transcription (scripts/transcribe.py)
 
 ```bash
-python scripts/transcribe.py
+python3 scripts/transcribe.py --all                    # all video entries without transcripts
+python3 scripts/transcribe.py --all --model small      # specify whisper model (tiny/base/small/medium/large)
+python3 scripts/transcribe.py --id <entry_id>          # single entry
+python3 scripts/transcribe.py --all --limit 10         # cap at 10 entries
+python3 scripts/transcribe.py --all --force            # overwrite existing transcripts
 ```
 
-Downloads media + transcribes via local Whisper (faster-whisper + yt-dlp + imageio-ffmpeg). 129/130 videos done. Supports IG CC captions as fast path.
+Downloads media via yt-dlp + transcribes via faster-whisper (CPU, int8). Chrome MUST be closed — yt-dlp uses `cookiesfrombrowser: ("chrome",)` for authenticated IG content.
+
+**What it targets:** Entries where `media_type` ∈ {video, reel, mp4} and `transcript` is empty. Caption scraping (`ab_scrape_posts.py`) updates `media_type` from the DOM, so run captions BEFORE transcription — otherwise many videos appear as "image" and get skipped.
+
+**Pipeline:** download audio (yt-dlp) → convert to wav (ffmpeg) → transcribe (faster-whisper) → persist to parquet. Saves incrementally after each successful transcription.
+
+**Failure modes:** "No video formats found" = post is actually an image/carousel despite media_type. "Login required" = IG auth cookies expired or Chrome was open. ~8-10% failure rate is normal.
+
+**Typical results:** ~90% of video entries transcribe successfully. Common failures: images mis-tagged as video (yt-dlp returns "No video formats found"), private/login-walled posts, expired cookies. Image entries have no audio to transcribe — this is expected, not a failure.
 
 ---
 
@@ -650,8 +707,8 @@ Two standalone repos provide the visualization engines. DejaViewed maps its data
   "config": {
     "title": "DejaViewed Knowledge Graph",
     "groupColors": {
-      "ai1": "#a78bfa", "ai5": "#f0a050", "quant": "#4cda8c",
-      "art-inspiration": "#f472b6", "art-i-like": "#60a5fa"
+      "collection1": "#a78bfa", "collection2": "#f0a050", "collection3": "#4cda8c",
+      "collection4": "#f472b6", "collection5": "#60a5fa"
     }
   }
 }
@@ -765,19 +822,19 @@ Cross-source dedup: same URL from Chrome AND Instagram — merger keeps the rich
 
 ## Phase 15: Deploy
 
-**Cloudflare Pages (dejaviewed.dev) — auto-deploy:**
-1. Push to `main` → Cloudflare Pages auto-deploys from `site/` directory
-2. Custom domain: dejaviewed.dev (managed via Cloudflare)
-
-**Manual deploy (fallback):**
-```bash
-scripts/deploy.sh          # wrangler pages deploy site/
-```
-
 **Local preview:**
 ```bash
 cd site && python3 -m http.server 8765
 ```
+
+**Static hosting (any provider):**
+The `site/` directory is fully self-contained static HTML/CSS/JS. Deploy to any static host:
+- **Cloudflare Pages:** Connect repo, set output dir to `site/`, auto-deploys on push
+- **GitHub Pages:** Push `site/` to gh-pages branch or use deploy script
+- **Netlify/Vercel:** Point build output to `site/`
+- **Manual:** Upload `site/` contents to any web server
+
+No build step required — everything is pre-rendered static files.
 
 ---
 
@@ -835,6 +892,23 @@ cd site && python3 -m http.server 8765
 23. **deep_dives.js needs `type` field from parquet.** cms.py handles this.
 24. **Legacy pages live in `site/legacy/`.** Don't link from active nav.
 25. **ALWAYS push before destructive operations.** Deploy scripts, branch switches, bulk file moves — push first, delete later. No exceptions.
+26. **agent-browser daemon persists.** `npx agent-browser close` between profile/session changes.
+27. **agent-browser eval is double-encoded.** `json.loads(json.loads(raw))` to unwrap.
+28. **JS eval fails on IG DOM.** Use `get text "main"` + Python text parsing for captions.
+29. **ingest.py blocks on interactive prompt.** Use `--non-interactive` for batch runs.
+30. **URL files from agent-browser have stray quotes/brackets.** Strip with `.strip().strip('"').strip(',').strip('"')`.
+31. **Collection pills must be dynamic.** Never hardcode HTML — `buildCollPills()` generates from data.
+32. **Stats tagline must be dynamic.** Entry count, collection count, creator count from POSTS array.
+33. **"tutorial" type merged into "skill".** enrich_entries.py returns "skill", not "tutorial".
+34. **Graph pages are standalone.** site/graph.html and site/graph-cosmos.html are self-contained. They don't import from graph-node/graph-cosmos repos at runtime.
+35. **Guide pages need marked.js + DOMPurify.** Markdown-in-script-tag pattern, rendered client-side.
+36. **Verify entry IDs before writing manual_dives.json.** Bad IDs cause silent broken links.
+37. **enrich_sweep didn't generate titles.** Had to add build_title() and wire into both enrich_entry() and enrich_sweep().
+38. **Caption scrape default filter misses enriched entries.** After enrichment gives titles, `[NEEDS ENRICHMENT]` filter finds 0. Use `--missing-captions` for second-pass.
+39. **Run captions BEFORE Whisper.** Caption scrape corrects `media_type` field. Without it, Whisper skips videos tagged as "image".
+40. **Non-IG entries won't have captions.** ~30 GitHub/archive.org URLs are expected gaps, not bugs.
+41. **Re-enrich after bulk transcription.** New text data changes tier/type classification and grows crosslinks significantly.
+42. **site/ is fully static.** Deploy to any static host (Cloudflare Pages, GitHub Pages, Netlify, Vercel). No build step.
 
 ---
 
@@ -875,8 +949,11 @@ Before declaring done, verify:
 **Deep dives:**
 - [ ] Deep dive cards on index page
 - [ ] Click opens inline detail panel (thesis, connections, action sketch)
-- [ ] Deeper dive pages in site/deeper/
+- [ ] Deeper dive pages in site/deeper/ for all curated dives
+- [ ] Full guide pages in site/guides/ for all curated dives
+- [ ] Guide index page at site/guides/index.html with filters
 - [ ] Curated dives survive regeneration (manual_dives.json)
+- [ ] "Deeper Dive →" and "Full Guide →" links in detail panel
 
 **Board + Admin:**
 - [ ] Board loads entries, drag-to-connect works
@@ -891,6 +968,99 @@ Before declaring done, verify:
 
 **Navigation:**
 - [ ] Header: DejaViewed links to index.html
-- [ ] Nav: Graph · Force | Graph · Cosmos | Board | Admin
+- [ ] Nav: Guides | Graph · Force | Graph · Cosmos | Board | Admin
 - [ ] Active page gets gradient highlight
 - [ ] Tested at desktop (1440px), tablet (768px), mobile (375px)
+
+**Dynamic elements (must NOT be hardcoded):**
+- [ ] Collection pills generated from POSTS data via buildCollPills()
+- [ ] Stats tagline computed at runtime (entry count, collection count, creator count)
+- [ ] Category sidebar counts computed from POSTS array
+- [ ] No "tutorial" type in sidebar — merged into "skill"
+
+---
+
+## Known Errors & Pitfalls (MUST AVOID)
+
+### CRITICAL: Parquet ↔ catalog.json Title Sync Loop
+
+The CMS has a circular data flow that can trap stale titles:
+
+1. `enrich_entries.py` writes catalog.json with heuristic titles (some `[NEEDS ENRICHMENT]`)
+2. Enrichment's internal `cms.py migrate` creates parquet WITH `last_edited_at` set
+3. `upsert()` merge guard (cms.py line 396-401) preserves existing title if `last_edited_at` is set
+4. `cms.py rebuild` reads parquet → overwrites catalog.json → stale titles propagate back
+
+**Fix applied:** cms.py `upsert()` now has an exception: titles containing `[NEEDS ENRICHMENT]` are ALWAYS overwritable regardless of `last_edited_at`.
+
+**Prevention:** When fixing titles externally (not through enrichment), ALWAYS:
+1. Fix titles in catalog.json
+2. DELETE `data/entries.parquet` and `data/crosslinks.parquet`
+3. Run `cms.py migrate` (creates fresh parquet from clean catalog.json)
+4. NEVER run `cms.py rebuild` between steps 1-3 (it reads parquet → overwrites catalog.json)
+
+### IG DOM Unloading During Scroll
+
+Instagram removes DOM elements for posts scrolled past. Naive extraction captures only visible posts (~30).
+
+**Fix:** Use `scripts/ab_extract_cumulative.py` — scrolls incrementally, extracts URLs at each position, merges into cumulative set. Stops after 4 stable rounds.
+
+### ingest.py JSON vs TXT Format Mismatch
+
+`ingest.py` reads one-URL-per-line TXT files. JSON arrays with brackets/quotes create garbage entries (`[`, `"url",` as URL values).
+
+**Fix:** Always convert JSON URL arrays to plain .txt (one URL per line) before ingesting. Or use `--urls-file` with proper JSON handling.
+
+### yt-dlp Authentication for Instagram
+
+yt-dlp needs Chrome cookies for authenticated IG content. Without them, all downloads fail.
+
+**Fix:** Add `"cookiesfrombrowser": ("chrome",)` to yt-dlp opts. Chrome MUST be closed (profile lock).
+
+### Parquet Corruption via PyArrow
+
+`pa.Table.from_pandas()` can produce invalid parquet files (thrift deserialization error). 
+
+**Fix:** Use `pa.Table.from_pylist()` with explicit schema instead. If parquet corrupts, delete and rebuild from catalog.json via `cms.py migrate`.
+
+### Enrichment Title Quality
+
+`build_title()` heuristic fails on ~25% of entries (thin captions, hashtag-only, comment bait). Returns empty string → title stays as `[NEEDS ENRICHMENT] <post_id>`.
+
+**Fix:** After enrichment sweep, run a second pass with more aggressive caption parsing: first meaningful sentence as subject, second as angle. Format: "Subject — angle" (em-dash).
+
+### Thumbnail Download Requires agent-browser
+
+`download_thumbs.py` (requests-based) fails on IG CDN signed URLs. `ab_download_thumbs.py` (agent-browser) navigates to each post page, extracts `og:image` meta tag, downloads JPEG.
+
+**Fix:** Always use `scripts/ab_download_thumbs.py` for IG thumbnails. Requires agent-browser with Chrome profile.
+
+### Caption Scraping: JS eval vs get text
+
+IG DOM is heavily obfuscated. `document.querySelector` selectors break regularly.
+
+**Fix:** Use `npx agent-browser get text "main"` + Python text parsing (find time markers, extract creator + caption). Never rely on CSS selectors for IG content.
+
+### Caption Scrape: Two-Pass Workflow
+
+First ingest creates entries with `[NEEDS ENRICHMENT]` titles. First enrichment gives them real titles but may NOT fill captions (enrichment generates titles from whatever text exists). After enrichment, `ab_scrape_posts.py` default filter (`[NEEDS ENRICHMENT]` title check) finds 0 entries — but captions are still empty.
+
+**Fix:** Use `--missing-captions` flag for second-pass caption scraping. This targets all entries with empty captions regardless of title state. Added `--collection` flag to scope runs.
+
+### Transcription Ordering: Captions Before Whisper
+
+`ab_scrape_posts.py` updates `media_type` field from the DOM (detecting video vs image). `transcribe.py` filters by `media_type ∈ {video, reel, mp4}`. If you run Whisper BEFORE captions, many videos still show `media_type: "image"` and get skipped.
+
+**Fix:** Always run caption scraping before transcription. Caption scrape → media_type gets corrected → Whisper sees all actual videos.
+
+### Non-IG Entries Have No Captions
+
+~30 entries are GitHub repos, archive.org pages, or other non-IG URLs. These will never have Instagram-style captions. Don't report them as gaps — they're expected. The 5 remaining IG failures are posts that return no text from `get text "main"` (private, deleted, or login-walled).
+
+### Enrichment After Transcription
+
+New captions + transcripts dramatically improve tier/type/domain classification. After bulk caption scraping or Whisper transcription, ALWAYS re-run `enrich_entries.py --sweep`. Crosslinks increase significantly with richer text data (typically 10-15% growth).
+
+### Thumbnail og:image Failures
+
+~4 posts return no `og:image` meta tag via agent-browser. These are typically carousels or posts with non-standard IG rendering. Not fixable via the current `ab_download_thumbs.py` approach. Acceptable loss.
