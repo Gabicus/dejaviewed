@@ -39,6 +39,29 @@ context:
 
 ---
 
+## Two Modes: Public vs Operator
+
+**Check FIRST, before any pipeline work:** does `references/site-deployment.md` exist in this installed skill?
+
+| | **Public Mode** (file absent) | **Operator Mode** (file present) |
+|---|---|---|
+| Who | Anyone who installed the skill from GitHub | The site owner's own machine |
+| Builds | User's OWN local catalog site from THEIR saves | Owner's established instance |
+| Deploy | Local preview by default; OFFER static hosting options, never assume a target | Read `references/site-deployment.md` for hosting, domain, collections, deploy workflow — deploy there when asked |
+| First run | Offer to create their own `site-deployment.md` from `site-deployment.example.md` once they pick hosting | Overlay already exists — follow it |
+
+**Public Mode rules:**
+- NEVER reference or deploy to any pre-existing site (e.g. dejaviewed.dev) — that is the original author's instance, not yours
+- Everything is built locally in the user's project dir; `site/` is self-contained static files
+- The user's collections, counts, and gaps are THEIRS — discover them from their data, don't assume any
+
+**Operator Mode rules:**
+- `references/site-deployment.md` is the single source of truth for instance-specific facts (hosting, domain, collections, coverage stats, known gaps)
+- Keep that file updated after big pipeline runs — never write instance-specific facts into this SKILL.md
+- The overlay file is private. Never commit it to the public skill distribution.
+
+---
+
 ## Quick Start
 
 ```bash
@@ -197,23 +220,24 @@ Both graph repos use a **generic data contract**. DejaViewed maps its domain voc
 
 ### What the user provides:
 1. **One or more saved collection URLs** — e.g., `https://www.instagram.com/user/saved/mycollection/12345/`
-2. **A copied Chrome/Chromium profile** (one-time setup, already done for returning users)
+2. **A Chrome install with an active Instagram session** (agent-browser reads its profile directly)
 
 ### What must exist on disk:
-1. **Chrome profile copy** at `<project>/.profile-copy/Default/Cookies`
-   - User copies their Chrome profile directory while Chrome is CLOSED
-   - Linux: `cp -r ~/.config/google-chrome/Default <project>/.profile-copy/Default`
-   - macOS: `cp -r ~/Library/Application\ Support/Google/Chrome/Default <project>/.profile-copy/Default`
-   - This profile must have an active Instagram session
+1. **Chrome with logged-in Instagram session**
+   - agent-browser reads Chrome's profile via `--profile Default` — no profile copy needed
+   - Chrome must be CLOSED when agent-browser (or yt-dlp cookie reads) run — the profile is locked while Chrome runs
 
 2. **Python 3.10+** with packages:
    ```bash
-   pip install requests browser-cookie3 pyarrow duckdb
+   pip install requests pyarrow duckdb pandas
+   pip install yt-dlp faster-whisper   # for video transcription
    ```
 
-3. **Playwright MCP server** must be available (standard Claude Code plugin)
-   - Verify: check if `mcp__plugin_playwright_playwright__browser_navigate` tool exists
-   - If not available, fall back to asking user for URLs (last resort only)
+3. **Node.js with npx** — agent-browser installs on first `npx agent-browser` run
+
+4. **ffmpeg on PATH** — for Whisper audio extraction (`ffmpeg` + `ffprobe`)
+
+**Legacy (deprecated):** the old flow used a Chrome profile copy at `.profile-copy/Default/Cookies` + Playwright MCP. agent-browser replaced both. `browser-cookie3` is only needed if using the legacy adapters.
 
 ### First-time project setup:
 ```bash
@@ -306,7 +330,7 @@ echo "https://instagram.com/p/XXX/" | python scripts/ingest.py --collection <col
 **What ingest.py does:**
 1. Loads existing entries from `data/entries.parquet` via cms.py
 2. Dedupes incoming URLs against existing entries
-3. For new URLs: scrapes post metadata (cookies from `.profile-copy/`)
+3. For new URLs: creates placeholder entries; captions come from `ab_scrape_posts.py` (Phase 0.4)
 4. Upserts each row into the parquet store
 5. Recomputes crosslinks
 6. Refreshes catalog exports (`site/catalog.json`, `site/catalog.js`)
@@ -506,14 +530,16 @@ HTML shell: shared.css + shared.js + inline guide styles
 
 ---
 
-## Phase 6: Download Thumbnails (scripts/download_thumbs.py)
+## Phase 6: Download Thumbnails (scripts/ab_download_thumbs.py)
 
 ```bash
-python scripts/download_thumbs.py
+python3 scripts/ab_download_thumbs.py    # PRIMARY: agent-browser og:image extraction
+python scripts/download_thumbs.py        # legacy: direct download from stored media_url
 ```
 
-For each entry with a `media_url`: download JPEG to `site/thumb/<post_id>.jpg`.
-Resume-safe (skips existing). 1.5s pacing.
+`ab_download_thumbs.py` navigates each post via agent-browser, extracts the `og:image` meta tag, downloads JPEG to `site/thumb/<post_id>.jpg`. Resume-safe (skips existing). Requires Chrome closed + agent-browser session.
+
+The legacy `download_thumbs.py` (requests-based) only works for entries with a fresh `media_url` — IG CDN URLs are signed and expire within hours, so it fails on anything older than the current session.
 
 **WHY LOCAL:** IG CDN URLs are signed + expire + referer-blocked. Hotlinking will 403 within hours. Always download.
 
@@ -568,6 +594,8 @@ python scripts/cms.py rebuild
 ```bash
 python build_context.py
 ```
+
+**KNOWN ISSUE:** `build_context.py` still reads legacy `data/catalog.jsonl` — it predates the parquet CMS. If it fails with `FileNotFoundError: catalog.jsonl`, either regenerate the jsonl from parquet first, or update the script to read `site/catalog.json`. Until fixed, `site/context.md` goes stale after pipeline runs — check its generated date before trusting it.
 
 Transforms the catalog into a structured knowledge base for AI agents.
 
@@ -909,6 +937,8 @@ No build step required — everything is pre-rendered static files.
 40. **Non-IG entries won't have captions.** ~30 GitHub/archive.org URLs are expected gaps, not bugs.
 41. **Re-enrich after bulk transcription.** New text data changes tier/type classification and grows crosslinks significantly.
 42. **site/ is fully static.** Deploy to any static host (Cloudflare Pages, GitHub Pages, Netlify, Vercel). No build step.
+43. **Engagement-bait captions poison title generation.** "Comment X for the guide" captions produce bare-name titles ("Claude") and inflated tiers. When a caption is bait, generate the title from the TRANSCRIPT — that's where the real content is. After any bulk re-enrichment, audit: `df[df['title'].str.len()<14]` should be empty, and S-tier should stay under ~15% per collection.
+44. **Keep instance facts out of SKILL.md.** Entry counts, coverage stats, domains belong in `references/site-deployment.md` (Operator Mode overlay) — SKILL.md text goes stale and confuses public users.
 
 ---
 

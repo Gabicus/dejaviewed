@@ -113,8 +113,14 @@ python3 scripts/cms.py rebuild
 - ~~**Deep dive refresh:**~~ 150 dives regenerated, 21 curated deeper pages rebuilt.
 
 ### High priority (current)
+- **R1 — Catalog→Claude recall loop:** Fix `build_context.py` (reads legacy catalog.jsonl, predates parquet) then wire catalog.json querying into session starts. See session-log.md 2026-07-13 for full recommendations R1-R6.
 - **Skill published on site:** Ensure dejaviewed.dev advertises the skill and how to use it
-- **context.md regeneration:** `build_context.py` broken (expects catalog.jsonl, not parquet). Fix script to read from parquet/catalog.json.
+
+### Skill architecture (July 13)
+- ONE generic skill, TWO modes: `references/site-deployment.md` present = Operator Mode (Victor's install, deploys to dejaviewed.dev); absent = Public Mode (user builds own local site)
+- Personal overlay is gitignored — NEVER commit it to the public repo
+- Public repo ships `site-deployment.example.md` template instead
+- Title-quality gate after any bulk enrichment: `title.len<14` count must be 0, S-rate <15%/collection (lesson #43)
 
 ### Medium priority
 - **Claude Mastery guide maintenance:** Living document — update with new model releases, features, skills as they ship. Add new entries as they're ingested.
