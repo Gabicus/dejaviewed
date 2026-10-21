@@ -98,6 +98,7 @@ Skip phases with `--skip <phase>[,<phase>...]`. Phases (in order):
 | `dives` | `scripts/deep_dives.py` | Auto-detect + merge curated dives |
 | `deeper` | `scripts/deeper_dives.py --all-curated` | Narrative deeper-dive pages |
 | `guides` | `scripts/build_guides.py` | Full guide pages + `guides/index.html` |
+| `landing` | `scripts/build_landing_meta.py` | `site/landing_meta.js` — guide/deeper slugs the showcase `index.html` links to |
 | `digest` | `scripts/digest.py` | summaries.json / recommendations.json |
 | `rebuild` | `scripts/cms.py rebuild` | Crosslinks + exports |
 | `api` | `scripts/build_api.py` | `site/api/*.json`, per-entry pages, sitemap.xml |
@@ -165,8 +166,9 @@ scripts/cms.py — the CMS engine (688 lines)
 
 ```
 site/
-  index.html           Landing: bar chart + deep dive cards
-  <collection>.html    Per-collection catalog page
+  index.html           Showcase landing: live stats, destinations, curated insight dives, freshest saves, install
+  catalog.html         Unified catalog: filters, creators chart, deep dive cards, all entries
+  <collection>.html    Per-collection catalog page (legacy)
   graph.html           D3 force-directed graph (powered by graph-node)
   graph-cosmos.html    Canvas orbital graph (powered by graph-cosmos)
   board.html           Drag-to-connect thought board
@@ -988,7 +990,7 @@ No build step required — everything is pre-rendered static files.
 
 **Navigation (shared.js):**
 - Header h1 links to index.html ("DejaViewed")
-- Nav: Graph · Force | Graph · Cosmos | Board | Admin
+- Nav: Catalog | Guides | Graph · Force | Graph · Cosmos | Board | About (Admin reachable at admin.html, not in nav)
 - Active tab gets gradient highlight
 - `DV.nav(activeId)` / `DV.mountHeader(root, activeId)`
 

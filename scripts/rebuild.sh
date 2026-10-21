@@ -22,6 +22,7 @@
 #   dives       scripts/deep_dives.py          auto + curated dives
 #   deeper      scripts/deeper_dives.py        narrative pages for curated dives
 #   guides      scripts/build_guides.py        full guide pages + guides/index.html
+#   landing     scripts/build_landing_meta.py  site/landing_meta.js (guide/deeper slugs for the showcase index)
 #   digest      scripts/digest.py              summaries.json / recommendations.json
 #   rebuild     scripts/cms.py rebuild         crosslinks + exports
 #   api         scripts/build_api.py           site/api/*.json, per-entry pages, sitemap.xml
@@ -93,6 +94,7 @@ fi
 run_py dives   scripts/deep_dives.py
 run_py deeper  scripts/deeper_dives.py --all-curated
 run_py guides  scripts/build_guides.py
+run_py landing scripts/build_landing_meta.py
 run_py digest  scripts/digest.py
 run_py rebuild scripts/cms.py rebuild
 run_py api     scripts/build_api.py
