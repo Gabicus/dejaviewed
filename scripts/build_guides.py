@@ -232,7 +232,7 @@ def build_markdown(d: dict, entries: list[dict], classes: dict, catalog_total: i
 
     out += [
         "## Related deep dives", "",
-        f"Browse more deep dives at [DejaViewed](../index.html) — {catalog_total} entries across the full catalog.",
+        f"Browse more deep dives at [DejaViewed](../catalog.html) — {catalog_total} entries across the full catalog.",
         "", "---", "",
         f"*Generated {date.today().isoformat()} · curated by [@{CURATOR}](https://instagram.com/{CURATOR}) for DejaViewed*",
         "",

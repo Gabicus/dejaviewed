@@ -63,11 +63,13 @@
 
   DV.nav = function nav(active){
     const items = [
-      { id:'guides',   href:BASE+'guides/',             label:'Guides'  },
+      { id:'catalog',  href:BASE+'catalog.html',      label:'Catalog' },
+      { id:'guides',   href:BASE+'guides/',           label:'Guides'  },
       { id:'graph',    href:BASE+'graph.html',        label:'Graph · Force'  },
       { id:'cosmos',   href:BASE+'graph-cosmos.html', label:'Graph · Cosmos' },
       { id:'board',    href:BASE+'board.html',        label:'Board'   },
-      { id:'admin',    href:BASE+'admin.html',        label:'Admin'   },
+      { id:'about',    href:BASE+'about/',            label:'About'   },
+      // Admin is intentionally not in the public nav — still reachable at admin.html
     ];
     return DV.el('div', { class:'nav' }, items.map(it =>
       DV.el('a', { href: it.href, class: (active===it.id?'active':'') }, it.label)
@@ -75,8 +77,8 @@
   };
 
   // ── Header builder — mount with DV.mountHeader(document.body, 'catalog') ──
-  //   The title reads "Home" and links to index.html. That's the home pill;
-  //   there is no separate Home nav item.
+  //   The wordmark links to index.html (the showcase landing); the catalog
+  //   lives at catalog.html. There is no separate Home nav item.
   DV.mountHeader = function mountHeader(root, activeId){
     const nav = DV.nav(activeId);
     const burger = DV.el('button', { class:'hamburger', 'aria-label':'Menu', onclick: function(){
@@ -153,5 +155,5 @@
   DV.guideUrl = function guideUrl(slug){ return slug ? BASE+'guides/'+encodeURIComponent(slug)+'.html' : null; };
 
   // ── Entry internal URL — anchors into the catalog home page ──
-  DV.entryUrl = function entryUrl(id){ return BASE+'index.html#post-'+encodeURIComponent(id); };
+  DV.entryUrl = function entryUrl(id){ return BASE+'catalog.html#post-'+encodeURIComponent(id); };
 })();
