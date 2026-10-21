@@ -52,6 +52,105 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DHoPsMOxIRl">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Blender MCP + Tripo — Reference Image to Rendered Scene, Driven by Claude</h1>
+<p>Blender MCP GitHub: https://github.com/ahujasid/blender-mcp Stars: 18.5k (as of writing) — by far the dominant Blender MCP implementation License: MIT Cloned to: ~/projects/ai-catalogs/repos/blender-mcp/ (1.5 MB — pure Python server, no weights) Tripo: https://www.tripo3d.ai/ docs: https://platform.tripo3d.ai/docs</p>
+<h2>What it is</h2>
+<p>Blender MCP is a Model Context Protocol server that exposes Blender as a set of tools an LLM can call. You run a tiny socket server inside Blender (via an addon) and an MCP server outside Blender that Claude Desktop, Claude Code, Cursor, or VS Code connects to. From then on, Claude can create objects, apply materials, inspect the scene, run arbitrary Python in Blender's context, pull HDRIs and assets from Poly Haven, and — the reason this guide exists — generate 3D models on demand via Tripo (Hyper3D Rodin) or Hunyuan3D and import them into the current scene.</p>
+<p>Combined with Tripo's hosted text-to-3D / image-to-3D API, this turns Claude into a functional 3D scene director. You hand Claude a reference photo, say "build me this scene in Blender and render it from a low angle," and watch it happen. It is the closest thing we have in 2026 to a natural-language Blender operator.</p>
+<p>The creator (Siddharth Ahuja / @ahujasid) is an independent developer; this isn't a Blender Foundation or Tripo project. It's the de-facto standard because it went viral on X in early 2025 and everyone built on top of it.</p>
+<h2>How it works under the hood</h2>
+<p>There are two processes:</p>
+<p>Blender addon (addon.py) — installed inside Blender, runs a Python socket server bound to BLENDER_HOST:BLENDER_PORT (default localhost:9876). When a message arrives, it runs the requested Blender Python API call on the Blender main thread and returns the result.</p>
+<p>MCP server (src/blender_mcp/server.py) — a stdio-transport MCP server launched by Claude Desktop / Claude Code. It translates MCP tool calls into socket messages to the addon.</p>
+<p>The protocol is simple JSON-over-TCP: a request with type and params, a response with status and result. Because the Blender side runs arbitrary Python, the server is extremely powerful and correspondingly dangerous — save your work before letting an agent drive it.</p>
+<h3>Tools the server exposes</h3>
+<p>get_scene_info — list objects, cameras, lights, materials</p>
+<p>get_object_info — detailed info on one object</p>
+<p>create_object — primitives (cube, sphere, plane, cylinder, etc.)</p>
+<p>modify_object — transform, scale, rotate</p>
+<p>delete_object</p>
+<p>set_material — assign or create a material with base color</p>
+<p>execute_blender_code — arbitrary Python inside Blender (the escape hatch)</p>
+<p>get_polyhaven_categories / search_polyhaven_assets / download_polyhaven_asset — free HDRIs, textures, models</p>
+<p>search_sketchfab_models / download_sketchfab_model — requires API key</p>
+<p>generate_hyper3d_model_via_text / generate_hyper3d_model_via_images — the Tripo/Rodin integration</p>
+<p>poll_rodin_job_status / import_generated_asset</p>
+<p>generate_hunyuan3d_model_via_text / generate_hunyuan3d_model_via_images — local Hunyuan3D-2 bridge</p>
+<p>The Hyper3D Rodin endpoint is Tripo's white-labeled API. Blender MCP ships with a free-tier key so you can try it without signing up, rate-limited to a handful of generations per hour. Your own Tripo key removes the limit.</p>
+<h2>Tripo in one paragraph</h2>
+<p>Tripo (tripo3d.ai) is the leading hosted text-to-3D / image-to-3D API. Their current model family is P1-20260311 (optimized for clean low-poly output) alongside v3.0 and v3.1 high-detail models. They support text-to-model, image-to-model, and multiview-to-model. Output is GLB with PBR materials, typically 20–60 seconds per generation on their backend. Pricing via fal.ai is roughly $0.20–$0.40 per model; direct Tripo Studio subscriptions start around $10/month for a credit pool. The API is REST: POST a job, poll for status, download the result. Docs at https://platform.tripo3d.ai/docs.</p>
+<p>The important thing for this pipeline: Tripo is fast and consistent where Hunyuan3D-2 is slow and local. Use Tripo when iterating on a scene interactively with Claude; use Hunyuan3D-2 (see guides/hunyuan3d-2.md) when you want full local control, custom training data, or no API costs.</p>
+<h2>System requirements</h2>
+<p>Blender 3.0+ (4.x strongly recommended; 4.2 LTS is the sweet spot)</p>
+<p>Python 3.10+ (Blender ships its own Python; the MCP server runs in your system Python)</p>
+<p>uv package manager — mandatory, not optional (install from https://astral.sh/uv)</p>
+<p>Claude Desktop, Claude Code, Cursor, or VS Code with MCP client support</p>
+<p>Tripo API key (optional, but required for unrestricted generation) — https://platform.tripo3d.ai</p>
+<p>Sketchfab API key (optional) for the Sketchfab asset tools</p>
+<p>Local Hunyuan3D-2 install (optional) if you want local generation — see guides/hunyuan3d-2.md</p>
+<p>A GPU helps for rendering scenes but is not required for the MCP plumbing itself</p>
+<p>No heavyweight ML runs on your machine unless you opt in to Hunyuan3D-2; Tripo and Poly Haven are hosted.</p>
+<h2>Quick start</h2>
+<h1>1. install uv if you don't have it (see https://astral.sh/uv)</h1>
+<h1>2. repo is already cloned at</h1>
+<h1>~/projects/ai-catalogs/repos/blender-mcp</h1>
+<h1>3. install the Blender addon</h1>
+<h1>In Blender: Edit &gt; Preferences &gt; Add-ons &gt; Install &gt; pick addon.py</h1>
+<h1>Enable "Interface: Blender MCP", then in the 3D viewport N-panel</h1>
+<h1>there's a BlenderMCP tab — click "Connect to MCP server".</h1>
+<h1>4. configure Claude Code / Claude Desktop MCP settings with:</h1>
+<h1>command: uvx</h1>
+<h1>args: ["blender-mcp"]</h1>
+<h1>env: TRIPO_API_KEY=tsk_your_key_here</h1>
+<h1>SKETCHFAB_API_KEY=optional</h1>
+<h1>5. restart Claude, start Blender, enable the addon's socket server,</h1>
+<h1>and ask Claude: "What's in my Blender scene right now?"</h1>
+<p>If everything works, Claude will call get_scene_info, see an empty scene with a default cube, and happily start building things when you ask.</p>
+<h2>The full pipeline — reference image to rendered scene</h2>
+<p>Here's the canonical workflow the blender-mcp + Tripo stack enables. Every numbered step is a natural-language turn you'd give Claude in Claude Code:</p>
+<p>Drop a reference image in your project (say, a photo of a cozy Japanese tea room)</p>
+<p>"Analyze this reference image and list the major 3D objects I'll need to recreate the scene." — Claude reads the image and outputs: tatami floor, low table, tea kettle, shoji screen, hanging lantern, cushion x2.</p>
+<p>"For each object in that list, generate it via Tripo image-to-3D using a cropped region of the reference, and import each result into Blender with a sensible name." — Claude loops, calling generate_hyper3d_model_via_images for each object, polling poll_rodin_job_status, then import_generated_asset.</p>
+<p>"Lay them out in a plausible room arrangement based on the reference." — Claude calls modify_object to position and rotate.</p>
+<p>"Download a warm evening interior HDRI from Poly Haven and set it as the world background." — search_polyhaven_assets → download_polyhaven_asset.</p>
+<p>"Add a camera at human eye level, looking at the tea table, and set the Cycles render settings to 512 samples." — via execute_blender_code.</p>
+<p>"Render." — via execute_blender_code calling the Blender render operator.</p>
+<p>Iterate. Claude can see the result via a screenshot tool and adjust.</p>
+<p>The whole loop, end to end, is doable in 5–15 minutes with Tripo on a decent internet connection. The same pipeline with manual Blender work would take a skilled artist hours.</p>
+<h3>Where it breaks down</h3>
+<p>Object segmentation from a single reference is the weak link. Claude cropping regions of the image is usually "good enough" but precise silhouettes help; feed Claude pre-cropped images for hero assets.</p>
+<p>Scale. Tripo meshes come in arbitrary units; Claude will fight to normalize them. Tell it "assume 1 Blender unit = 1 meter" up front.</p>
+<p>Materials. Tripo/Rodin outputs have baked PBR, which is great, but they may not match your scene lighting. Expect a round of set_material tweaks.</p>
+<p>Topology. These are game-ready but not production film meshes. For feature work, use the new P1 low-poly model and retopologize manually.</p>
+<h2>Useful prompts to drive it from Claude Code</h2>
+<p>"Inspect the current Blender scene and tell me what's already there."</p>
+<p>"Clear the scene, then build a simple chess set: an 8x8 board, 32 pieces, generated via Tripo text-to-3D with appropriate prompts, arranged in the starting position."</p>
+<p>"Here's a photo of my desk (attached). Recreate it in Blender. Use Tripo for any object that isn't a trivial primitive."</p>
+<p>"Generate a low-poly medieval village: 5 houses, a well, a church, a market stall. Use Tripo's P1 low-poly model. Scatter them on a grass plane with a Poly Haven dawn HDRI."</p>
+<p>"I need a hero render for a product page. The product is in this image. Generate the mesh with Tripo, put it on a reflective pedestal, three-point studio lighting, render at 4K with Cycles."</p>
+<p>Claude is surprisingly good at all of these once the MCP connection is live. The bottleneck is your patience and your Tripo quota, not the tooling.</p>
+<h2>What we could build with it</h2>
+<p>Prompt-driven scene builder for previs and storyboarding</p>
+<p>Product visualization service — customer uploads a photo, your worker builds a Blender scene with Tripo and renders it from 12 angles</p>
+<p>Game level blockout tool — describe a level, Claude builds a rough Blender scene, export to Unity/Unreal for polish</p>
+<p>Architectural quick studies — feed a floorplan + mood image, get a rendered 3D room</p>
+<p>Educational 3D generator — teachers describe an anatomy/history/chemistry scene, get a ready-to-project Blender file</p>
+<p>Asset library builder — batch-generate 500 props via Tripo and auto-organize them in a Blender asset library</p>
+<p>The "text to 3D printer" loop — Claude generates a mesh via Tripo, imports to Blender, runs a manifold check, exports STL, slices with PrusaSlicer via another MCP server</p>
+<h2>Related resources</h2>
+<p>Hunyuan3D-2 guide: guides/hunyuan3d-2.md — the local alternative to Tripo for the same pipeline, exposed via the same MCP server</p>
+<p>HY-Motion (text-to-motion): ~/projects/ai3-resources/repos/HY-Motion-1.0/ — animate the characters Tripo generates</p>
+<p>World Labs (Marble) guide: guides/world-labs-3d-generation.md — the closed-source alternative that generates entire worlds instead of single objects</p>
+<p>TouchDesigner creative coding: ~/projects/ai3-resources/guides/touchdesigner-creative-coding.md — feed Blender renders into TD for real-time VJ/installation work</p>
+<p>Design stack setup: ~/projects/ai3-resources/tools/setup-design-stack.sh — if you want a web UI fronting this pipeline</p>
+<h2>Sources</h2>
+<p>Blender MCP GitHub</p>
+<p>Tripo API docs</p>
+<p>Tripo site</p>
+<p>Tripo3D v2.5 on fal.ai</p>
+<p>KGP Talkie: Blender MCP + Hunyuan3D setup</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Blender MCP + Tripo — Reference Image to Rendered Scene, Driven by Claude
 
 **Blender MCP GitHub:** https://github.com/ahujasid/blender-mcp

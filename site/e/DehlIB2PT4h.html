@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-s">S-TIER</span> <span class="pill">art</span></div>
   <h1>Mandelbulb — ray-marching a 3D fractal from z⁸ + c</h1>
   <div class="meta">elemental.math · 2026-10-15T18:18:09.000Z · in ai8</div>
@@ -55,5 +58,6 @@ There is no such multiplication for points in 3D. William Rowan Hamilton tried f
 
 To draw it, every pixel shoots a ray. The formula gives a distance …</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">This one line of math builds an entire world. It runs inside Mandelbulb, an open source program that flies a camera through fractals. It all starts flat, with the Mandelbrot set. Pick a point C, start at zero, square it, add C, and repeat. If it never runs away, paint it black. And squaring hides a trick. The length gets squared, and the angle doubles. In three dimensions, numbers like that do not exist. William Hamilton spent years trying to multiply triplets. Every morning his sons asked, well Papa, can you multiply triplets? And he always answered, no, I can only add and subtract them. So Daniel White just copied the geometry, and Paul Milander pushed it further. Raise the length to the eighth power, and multiply both angles by eight. At power two, it&#x27;s a lumpy blob. At power eight, it blooms, with bumps on bumps all the way down. To draw it, every pixel shoots a ray. The formula says how close the surface could be. So the ray jumps exactly that far, and asks again. This one needed thirteen jumps. One frame of this video takes eight million rays, a hundred million jumps, and three hundred million turns of that one line. And all of it comes from one line.</div></details>
 </main>
 </body></html>

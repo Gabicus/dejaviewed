@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">technique</span></div>
   <h1>Efficiency-ratio forecaster — skip choppy days to lift a strategy&#x27;s metrics</h1>
   <div class="meta">telonicstrading · 2026-10-05T00:22:47.000Z · in stock2</div>
@@ -49,5 +52,6 @@ Kaufman efficiency ratio, algorithmic trading, logistic regression, regime gatin
 
 Comment “MODEL” to see what it predicts every day. #machinelearning #daytrading #futurestrading #tradingstrategy #trading</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">I built a machine learning model that predicts how the market will move. It improved almost every performance metric on one of my strategies. Instead of trying to predict direction, the model predicts the next day&#x27;s efficiency ratio. The efficiency ratio basically measures how efficiently price moves in one direction. A high ratio means price moved clean in one direction while a low ratio means price chopped back and forth. The model makes its predictions with a logistic regression that weights 15 different measurements of how price has been moving. To see if these predictions actually mean anything, I took one of my strategies and I split each trade based off what the model predicted. And the difference was pretty clear. High efficiency days performed the best while the low efficiency days made about a third of the money per trade. So I added a gate that skips those low efficiency days entirely, and that one change improved almost every performance metric. And more importantly, that improvement held on two years of data the model&#x27;s never seen. If you want to see what this model predicts every day, comment model and I&#x27;ll send it to you.</div></details>
 </main>
 </body></html>

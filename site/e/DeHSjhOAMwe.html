@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">resource</span></div>
   <h1>Quake III fast inverse square root — the 0x5f3759df bit hack explained</h1>
   <div class="meta">mygearhut · 2026-10-05T13:14:04.000Z · in ai8</div>
@@ -51,5 +54,6 @@ Newton-Raphson iteration, code generation, float bit reinterpretation</div></div
 
 #quake iii #fast inverse square root #0x5f3759df #computer history #graphics programming #john carmack #algorithms #math explained #software engineering</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">In 1999, ID Software open-sourced Quake 3. Buried inside the game engine was a four-line mathematical mystery. It calculated the inverse square root four times faster than silicon hardware, driven by an unexplained hexadecimal number, 0x5F3759DF, and the developer comments simply read, what the fuck. Why was this function so desperate? In 3D graphics, every ray of light, every shadow and every surface reflection requires normalizing vector angles. You divide the vector by its length, one over the square root of x. But on a 1999 Pentium, floating-point division and square root took over 70 clock cycles. Computing millions of them per frame brought CPUs to their knees. The breakthrough started with a bizarre trick. Inside computer memory, a 32-bit floating-point number has a sine, an exponent and a fraction. If you treat those raw bits not as a float, but as an integer, the number behaves logarithmically. Shifting the bits right by one divides the exponent by two. In other words, a simple bit shift calculates a square root. To get the inverse square root, you negate the exponent and subtract the bits from a magic number. That constant had to balance the floating-point exponent bias of 127 and minimize piecewise linear error. When mathematician Greg Walsh calculated the optimal bias, the formula produced 1,597,463,007 0x5F3759DF. The bit-level hack was fast, but it was only an approximation, with about 1% error. To make it game-ready, the code ran a single pass of…</div></details>
 </main>
 </body></html>

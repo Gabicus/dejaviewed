@@ -52,6 +52,78 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DWl3Bo6jqX1">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>OpenScreen — Free Open-Source Screen Studio Alternative</h1>
+<p>GitHub: https://github.com/siddharthvaddem/openscreen License: MIT Stack: Electron + React + TypeScript + Vite + PixiJS + Tailwind Platforms: macOS 13+, Windows, Linux (PipeWire) Repo path: repos/openscreen/ (clone pending — sandbox blocked git clone in this session; run git clone https://github.com/siddharthvaddem/openscreen.git repos/openscreen manually)</p>
+<h2>What it is</h2>
+<p>OpenScreen is a free, open-source desktop screen recorder built as a deliberate clone of Screen Studio — the $229 macOS app that single-handedly defined the "polished product demo with smooth auto-zoom and animated cursor" aesthetic that's now everywhere on X and YouTube. The creator's pitch is refreshingly honest: "a much simpler take, just the basics for folks who want control and don't want to pay."</p>
+<p>That framing is accurate. OpenScreen is not trying to match Screen Studio feature-for-feature. It nails the core that makes Screen Studio recordings instantly recognizable — automatic cursor-aware zooms, cinematic backgrounds, motion blur, clean exports — while skipping fancier pro features. In exchange you get: free, MIT-licensed, cross-platform (Mac / Windows / Linux), and source available.</p>
+<p>The closest analogs:</p>
+<p>Screen Studio — $229, macOS only, polished, the gold standard; OpenScreen clones its core loop</p>
+<p>Cap — open-source, Rust + Tauri, more feature-rich, focused on async video messaging (Loom-style)</p>
+<p>Tella — cloud-hosted SaaS, polished but subscription and not local</p>
+<p>OBS Studio — free, pro-grade, zero polish (no auto-zoom, no cursor animation)</p>
+<p>QuickTime / Windows Snipping Tool — free but bare-metal, no editing</p>
+<p>OpenScreen sits in the "free and polished enough for 90% of demos" slot that nothing else really filled before — Cap is close but much heavier.</p>
+<h2>How it works</h2>
+<p>OpenScreen is an Electron desktop app. The recording and editing pipeline is:</p>
+<p>Capture — Electron's desktopCapturer API pulls a MediaStream for the selected screen/window. On macOS 14.2+ it requests the audio capture entitlement; on Linux it relies on PipeWire's screen capture portal. Windows has first-class system audio support.</p>
+<p>Cursor tracking — alongside the video stream, OpenScreen records high-resolution cursor position events. This is the secret sauce: because cursor data is captured as discrete events rather than baked into the video, the editor can later generate smooth animated cursors and compute zoom targets that actually track where attention is.</p>
+<p>Editor / compositor — a PixiJS scene composites the raw screen recording, a generated synthetic cursor (styled and animated), a background layer (wallpapers, colors, gradients), and effects like motion blur. PixiJS gives it hardware-accelerated 2D rendering which is why the preview is smooth.</p>
+<p>Timeline — built on dnd-timeline for draggable segments, trims, and speed ramps.</p>
+<p>Auto-zoom engine — analyzes cursor velocity and click events to place zoom keyframes automatically; you can also drop manual zooms with configurable depth and duration.</p>
+<p>Export — renders the composed timeline out to MP4/WebM at configurable aspect ratios and resolutions.</p>
+<h2>Core features (what actually works)</h2>
+<p>Record a specific window or the full screen</p>
+<p>Automatic zooms driven by cursor/click events, with adjustable depth and duration</p>
+<p>Manual zoom keyframes on the timeline</p>
+<p>Animated synthetic cursor — larger, smoothed, styled separately from the OS cursor</p>
+<p>Microphone + system audio capture (system audio on Windows and macOS 14.2+; Linux via PipeWire)</p>
+<p>Background customization — wallpapers, solid colors, gradients</p>
+<p>Motion blur effect for smooth zoom transitions</p>
+<p>Annotations — text, arrows, images</p>
+<p>Segment trim, split, speed adjust</p>
+<p>Multiple aspect ratios (16:9, 9:16, 1:1, etc.) and export resolutions</p>
+<p>Local-first, no cloud, no account</p>
+<h2>System requirements</h2>
+<p>macOS: 13 Ventura or later; macOS 14.2+ recommended for system audio capture</p>
+<p>Windows: 10/11, works with system audio out of the box</p>
+<p>Linux: Must have PipeWire (most modern distros — Fedora, recent Ubuntu, Arch — do); X11-only systems won't work</p>
+<p>RAM: 8 GB minimum, 16 GB recommended for 4K/long recordings (Electron + PixiJS + raw frame buffers add up)</p>
+<p>GPU: Any modern integrated GPU; PixiJS uses WebGL</p>
+<p>Disk: Enough free space for raw recordings — plan ~1 GB per 5 minutes at 1440p</p>
+<h2>Quick start</h2>
+<p>Install from releases (recommended): Download from the GitHub Releases page.</p>
+<p>macOS:</p>
+<h1>After downloading the .dmg and dragging to Applications</h1>
+<p>xattr -rd com.apple.quarantine /Applications/Openscreen.app open /Applications/Openscreen.app</p>
+<p>(The xattr step is required because the app isn't notarized — Gatekeeper will otherwise refuse to launch it.)</p>
+<p>Linux (AppImage):</p>
+<p>chmod +x Openscreen-Linux-.AppImage ./Openscreen-Linux-.AppImage</p>
+<p>Windows: run the installer .exe.</p>
+<p>Build from source (for hacking or if no release matches your platform):</p>
+<p>git clone https://github.com/siddharthvaddem/openscreen.git cd openscreen npm install npm run dev # launches Electron in dev mode with hot reload npm run build # produces a platform installer in dist/</p>
+<h2>Gotchas</h2>
+<p>No notarization on macOS — every release needs the xattr dequarantine step or Gatekeeper blocks it. If you share a recording workflow with non-technical people, point them at a notarized alternative instead.</p>
+<p>Linux system audio is hit-or-miss. PipeWire portal support varies by distro and desktop environment. If system audio doesn't work, fall back to capturing mic + running the app's audio through a virtual sink.</p>
+<p>Electron overhead. Startup is 1-2 seconds slower than native apps, and RAM usage sits around 400-700 MB while idle. Not ideal for older laptops.</p>
+<p>Feature gap vs Screen Studio: no multi-camera picture-in-picture, no advanced speed ramps, no per-clip color grading, no teleprompter. If those matter, stay on Screen Studio.</p>
+<p>Project is young. Expect rough edges, occasional crashes, active development. Check the issue tracker before committing to it for mission-critical recordings.</p>
+<h2>How it compares</h2>
+<p>Feature OpenScreen Screen Studio Cap OBS QuickTime</p>
+<p>Price Free $229 Free / paid cloud Free Free OSS Yes (MIT) No Yes Yes No Auto zoom Yes Yes (best) Yes No No Animated cursor Yes Yes (best) Yes No No Backgrounds/wallpapers Yes Yes Yes Manual No Motion blur Yes Yes Yes No No Annotations Yes Yes Limited Plugin No Cross-platform Mac/Win/Linux Mac only Mac/Win/Linux All Mac only Polish Good, young Best in class Very good Pro but ugly Basic Cloud sharing No Optional Built-in No No</p>
+<p>The honest call: if you're already paying for Screen Studio, keep using it — it's still the benchmark. If you're on Windows or Linux, or you want open-source, OpenScreen is the most direct clone of the Screen Studio aesthetic available for free. Cap is a strong alternative, especially if you want cloud sharing, but it's optimized more for async messaging than cinematic demo recording.</p>
+<h2>What we could build with it / use it for</h2>
+<p>Record Unicron and trading-agent-team demos with the same cinematic feel as Screen Studio, without the $229 tag, for X/YouTube/blog posts</p>
+<p>Tutorial content for Claude Code workflows, skill chains, AgentOps usage — the auto-zoom is exactly the style that's visually dominant on CodeTok</p>
+<p>Bug repros for open-source PRs — the animated cursor makes it obvious what you clicked; much clearer than QuickTime</p>
+<p>Design review recordings — record a web app, annotate, export in mobile aspect ratio for responsive-test showcases</p>
+<p>Hack the editor — because it's MIT + PixiJS, you can add custom effects, export presets, or AI-driven auto-zoom by forking the cursor-analysis module</p>
+<p>Self-host it behind a shared drop folder as a team's standard recording tool so everyone produces consistently styled demos</p>
+<p>Feed recordings into SentrySearch for a searchable internal demo library</p>
+<h2>Bottom line</h2>
+<p>OpenScreen is a legitimately useful free alternative to Screen Studio for the exact style of product demo everyone is making in 2026. The feature set is narrower than Cap but more focused on the cinematic-demo aesthetic, and it works on Windows and Linux where Screen Studio does not. Worth cloning, worth having installed, worth using for any public-facing recording that doesn't justify a Screen Studio license.</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># OpenScreen — Free Open-Source Screen Studio Alternative
 
 **GitHub:** https://github.com/siddharthvaddem/openscreen

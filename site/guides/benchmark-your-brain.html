@@ -45,6 +45,90 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Benchmark Your Brain — the skill-optimizer loop, pointed at the human</h1>
+<p>Insight class: Workflow Multiplier · Difficulty: Easy · Quality: 4/5 Connected entries: 9 · Tools: Anthropic, Anthropic Economic Index, ChatGPT, Claude, Database Detective, Grokbot, NotebookLM, ONET, OpenAI, SkillOpt</p>
+<h2>Thesis</h2>
+<p>The agent world now rewrites skills against benchmarks: SkillOpt rejects any edit that doesn't beat the eval, Karpathy-style autoresearch adds an outer coach loop, and skills log their own failures for batch rewrites. Meanwhile the catalog's learning entries stop at 'turn saves into quizzes'. Run the same loop on yourself. Your saves are the training set, auto-generated quizzes are the eval set, and an outer coach rewrites your study playbook whenever your scores plateau.</p>
+<h2>Why it matters</h2>
+<p>Most people's save folders are graveyards, and this catalog is one. Closing the loop turns passive saving into measured skill gain, and it reports which topics never stick, so you can drop or re-approach them. The same harness already works for agents, so the build is small.</p>
+<h2>The evidence — connected entries</h2>
+<h3>Self-study pipeline — saved links to AI-generated study guides and quizzes</h3>
+<p>Creator: @angus.sewell · Tier: B Tools: NotebookLM</p>
+<p>Input loop: saves table → agent groups by topic → study guides + quizzes</p>
+<p>Save videos and articles via Chrome extensions or text into a table, then give your agent a skill that groups recent saves by topic and generates study guides and quizzes, optionally through NotebookLM. Active recall instead of passive watching.</p>
+<p>View original post</p>
+<h3>Microsoft SkillOpt — agent skills that rewrite themselves against benchmarks</h3>
+<p>Creator: @marc.kaz · Tier: S Tools: SkillOpt</p>
+<p>Core rule: every playbook rewrite must beat the benchmark or is rejected</p>
+<p>Microsoft open-sourced SkillOpt: a base model runs a task, an optimizer rewrites the skill instructions from results, successful paths are separated from failures, and edits that don't beat the benchmark are auto-rejected. Claimed to beat hand-written prompts and TextGrad and to transfer across models.</p>
+<p>View original post</p>
+<h3>Bilevel autoresearch loops — an outer coach loop rewrites the search</h3>
+<p>Creator: @raycfu · Tier: A Tools: OpenAI</p>
+<p>Outer coach loop that stops the inner learner repeating the same failing approach</p>
+<p>Builds on Karpathy's autoresearch loop (try change, test, keep or revert). An outer coach loop watches the inner worker and rewrites its search playbook so it stops repeating the same ideas; claimed ~5x better on Karpathy's benchmark with the same models.</p>
+<p>View original post</p>
+<h3>Self-improving skills vs AI teammates — log issues, rewrite skills</h3>
+<p>Creator: @angus.sewell · Tier: B Tools: Grokbot</p>
+<p>Failure logging: each session writes issues for batch rewrites</p>
+<p>Argues personified 'AI teammates' are static while skills are adaptable: keep every skill in a database table, have each skill log issues about itself when used into a second table, then periodically run a prompt that reads the accumulated issues and rewrites the skill. Specific workflows with clear end states beat persona prompts.</p>
+<p>View original post</p>
+<h3>Chat-history mining — derive better custom instructions from your AI logs</h3>
+<p>Creator: @angus.sewell · Tier: B Tools: ChatGPT, Claude</p>
+<p>Second data source: mine your AI chat history for where you keep asking the same thing</p>
+<p>Export your full ChatGPT or Claude history, have a small model like Jev tag every conversation for mistakes and usage patterns, then feed the analysis to your main assistant to write new custom instructions. A cheaper alternative to building a full personal 'Jarvis' agent.</p>
+<p>View original post</p>
+<h3>Anthropic job index audit — map your tasks to automation vs augmentation</h3>
+<p>Creator: @angus.sewell · Tier: A Tools: Anthropic, Anthropic Economic Index, ONET</p>
+<p>Curriculum selection: what's worth learning vs automating, at task level</p>
+<p>Download Anthropic's job index, combine it with the US Labor Department's ONET task database for your role, and have an AI split your tasks by Anthropic's automation-versus-augmentation ratio. A second prompt builds a 90-day plan to automate the automatable parts and get excellent at the rest.</p>
+<p>View original post</p>
+<h3>Database Detective — solve crimes by writing SQL queries</h3>
+<p>Creator: @frostechgmz · Tier: B Tools: Database Detective</p>
+<p>Format: learning as a game where the real skill is choosing the right question</p>
+<p>Database Detective is a Steam game where you solve absurd police cases by querying tables with SELECT, WHERE and JOIN to rule out suspects. Beginner-friendly with a manual, clear errors and a hint assistant, and it trains asking the right data question first. English only.</p>
+<p>View original post</p>
+<h3>Glenn Gould's humming — thinking music away from the piano</h3>
+<p>Creator: @dailyhistoryclips · Tier: B</p>
+<p>Target state: build an inner model away from the instrument (Gould), not recall trivia</p>
+<p>Glenn Gould hummed audibly on nearly every recording despite Columbia engineers' mic tricks. He traced it to practising under a vacuum cleaner's noise, which taught him to hear pieces internally and learn away from the instrument; the voice is the overflow, audible on the Goldberg Variations.</p>
+<p>View original post</p>
+<h3>5 ChatGPT learning prompts — 80/20, intern mode, skill plan</h3>
+<p>Creator: @yourchatgptguide · Tier: S Tools: ChatGPT</p>
+<p>Prompt seeds: Pareto learning, 30-day skill plan</p>
+<p>@yourchatgptguide's list of 5 stock prompts: Pareto learning, report-writing intern, 30-day skill plan, summarize-to-bullets, self-prompt generator. Decent template bank for study/research workflows.</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Export the last 60 days of saves (DejaViewed parquet works) into a table; a weekly Claude skill clusters them into 3 topics and writes 15 retrieval questions each, held out from the study notes.</p>
+<p>Quiz yourself cold, log scores per topic; the coach skill rewrites the study playbook (spacing, format: explain-back, build-a-thing, game) only if next week's held-out score beats the last.</p>
+<p>Add chat-history mining monthly: questions you re-asked the AI become forced quiz items.</p>
+<p>Falsifier: if held-out scores after 6 weeks are no better than a no-coach control topic studied with plain flashcards, the outer loop adds overhead not learning.</p>
+<h2>Prerequisites</h2>
+<p>A saves export (this catalog qualifies)</p>
+<p>Claude/agent with scheduled skills</p>
+<p>~20 min/week of honest self-quizzing</p>
+<h2>Key tools and resources</h2>
+<p>Anthropic</p>
+<p>Anthropic Economic Index</p>
+<p>ChatGPT</p>
+<p>Claude</p>
+<p>Database Detective</p>
+<p>Grokbot</p>
+<p>NotebookLM</p>
+<p>ONET</p>
+<p>OpenAI</p>
+<p>SkillOpt</p>
+<h2>Creators to follow</h2>
+<p>@angus.sewell</p>
+<p>@dailyhistoryclips</p>
+<p>@frostechgmz</p>
+<p>@marc.kaz</p>
+<p>@raycfu</p>
+<p>@yourchatgptguide</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-21 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Benchmark Your Brain — the skill-optimizer loop, pointed at the human
 
 **Insight class:** Workflow Multiplier · **Difficulty:** Easy · **Quality:** 4/5

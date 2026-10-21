@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">technique</span></div>
   <h1>Vibe-coded app performance — five fixes Claude usually skips</h1>
   <div class="meta">haydenschmitty · 2026-06-21T21:32:17.000Z · in ai8</div>
@@ -48,5 +51,6 @@
 batch writes, latency profiling, optimistic UI, response compression, static caching</div></div>
 <div class="level"><h3>1k ft — Deep-dive / try it</h3><div class="body">5 ways to make your vibecoded app more performant #claudecode #vibecoder #vibecoding #startuphacks #aicoding</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">If Claude writes all of your code, your app is painfully slow and you don&#x27;t even realize it yet. So here are the five things it probably forgot to do. Don&#x27;t worry, all of these are vibe-codable changes you just need to know to ask for them. Number one, your JSON is going over the wire uncompressed, which just makes everybody wait longer for everything your backend server responds with. Number two, your app is writing new rows to your database one at a time, which increases overhead for no reason. This isn&#x27;t something that you would notice at one user, but at a thousand users your app would feel like molasses. Number three, you have a single dependency bottleneck. To identify this, you can audit your roundtrip latency and break it down into specific network events. If one action is taking 90% of the roundtrip time, that is your bottleneck. Number four, every single action the user takes waits on the response from the backend before updating anything in the user interface. Number five, your frontend web server is rebuilding HTML for every visitor that loads up the site. And if you want to fix these issues with copy-pastable prompts, you can drop directly into cloud code, like the video and comment links, and I will send them over to you directly.</div></details>
 </main>
 </body></html>

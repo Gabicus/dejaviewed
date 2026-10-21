@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Blind Re-rate — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<script src="catalog.js"></script>
+<style>
+  main.rate { max-width: 860px; margin: 20px auto 80px; padding: 0 20px; }
+  .eyebrow { font: 500 11px/1.4 'JetBrains Mono', monospace; color: var(--text-mute);
+             text-transform: uppercase; letter-spacing: .1em; }
+  .intro h2 { font-weight: 900; font-size: 22px; margin: 6px 0 6px; color: #fff; }
+  .intro p { color: var(--text-dim); font-size: 13px; line-height: 1.55; margin: 0 0 14px; }
+  .glass { border: 1px solid var(--border); border-radius: 14px; background: rgba(18,18,26,0.85);
+           backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .progress { display: flex; align-items: center; gap: 12px; margin: 10px 0 14px; }
+  .progress .track { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.06); overflow: hidden; }
+  .progress .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2));
+                    transition: width .2s; }
+  .progress .count { font: 700 12px/1 'JetBrains Mono', monospace; color: var(--text-dim); min-width: 64px; text-align: right; }
+  .entry { overflow: hidden; }
+  .entry .thumb { display: block; aspect-ratio: 16/9; max-height: 340px; width: 100%; background: #0a0a12;
+                  border-bottom: 1px solid var(--border); overflow: hidden; }
+  .entry .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .entry .thumb.none { display: flex; align-items: center; justify-content: center; color: var(--text-mute);
+                       font: 500 12px 'JetBrains Mono', monospace; aspect-ratio: auto; height: 64px; }
+  .entry .body { padding: 16px 18px 18px; }
+  .entry h3 { margin: 4px 0 8px; font-weight: 800; font-size: 18px; line-height: 1.3; color: #fff; }
+  .entry .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 500 12px/1.4 'JetBrains Mono', monospace;
+                 color: var(--text-mute); margin-bottom: 10px; }
+  .entry .meta b { color: var(--text-dim); font-weight: 500; }
+  .entry .summary { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin: 0 0 12px; }
+  .entry a.orig { font: 500 12px 'JetBrains Mono', monospace; color: var(--accent-3); text-decoration: none; word-break: break-all; }
+  .entry a.orig:hover { text-decoration: underline; }
+  .choices { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0 8px; }
+  .choice { padding: 14px 6px; border-radius: 10px; border: 1px solid var(--border-hi); background: var(--panel);
+            color: var(--text); cursor: pointer; font: 900 20px/1 Inter, system-ui; transition: background .15s, border-color .15s; }
+  .choice small { display: block; margin-top: 6px; font: 500 10px/1.2 'JetBrains Mono', monospace; color: var(--text-mute);
+                  letter-spacing: .04em; text-transform: uppercase; }
+  .choice:hover { background: var(--panel-2); }
+  .choice.s { color: var(--c-entry-s); } .choice.s:hover, .choice.s.on { border-color: var(--c-entry-s); background: rgba(251,191,36,.10); }
+  .choice.a { color: var(--c-entry-a); } .choice.a:hover, .choice.a.on { border-color: var(--c-entry-a); background: rgba(167,139,250,.12); }
+  .choice.b { color: var(--c-entry-b); } .choice.b:hover, .choice.b.on { border-color: var(--c-entry-b); background: rgba(96,165,250,.12); }
+  .choice.c { color: #a0a0b8; }         .choice.c:hover, .choice.c.on { border-color: var(--c-entry-c); background: rgba(106,106,128,.18); }
+  .subbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+  .subbar .keys { font: 500 11px 'JetBrains Mono', monospace; color: var(--text-mute); }
+  .btn { padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border-hi); background: var(--panel);
+         color: var(--text); cursor: pointer; font: 800 11px/1 Inter, system-ui; letter-spacing: .08em; text-transform: uppercase; }
+  .btn:hover { background: rgba(255,255,255,0.08); }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .btn.primary { background: linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3)); color: #fff; border-color: rgba(167,139,250,.55); }
+  .btn.warn { border-color: #f05060; color: #f05060; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+  .stat { padding: 14px; }
+  .stat .v { font: 900 24px/1.1 Inter, system-ui; color: #fff; }
+  .stat .l { margin-top: 4px; }
+  .stat .n { margin-top: 4px; font-size: 11px; color: var(--text-dim); line-height: 1.4; }
+  .section { padding: 16px 18px; margin-bottom: 14px; }
+  .section h3 { margin: 0 0 10px; font-size: 14px; font-weight: 800; color: #fff; }
+  table.cm { border-collapse: collapse; font: 500 13px 'JetBrains Mono', monospace; }
+  table.cm th, table.cm td { border: 1px solid var(--border); padding: 7px 12px; text-align: center; }
+  table.cm th { color: var(--text-mute); font-weight: 500; }
+  table.cm td.diag { background: rgba(76,218,140,.12); color: #fff; }
+  table.cm td.zero { color: var(--text-mute); }
+  .scroll { overflow-x: auto; }
+  table.res { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.res th { text-align: left; font: 500 11px 'JetBrains Mono', monospace; color: var(--text-mute);
+                 text-transform: uppercase; letter-spacing: .06em; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  table.res td { padding: 7px 8px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text-dim); }
+  table.res td.t a { color: var(--text); text-decoration: none; }
+  table.res td.t a:hover { text-decoration: underline; }
+  table.res tr.dis td.d { color: var(--warn); font-family: 'JetBrains Mono', monospace; }
+  table.res tr.agree td.d { color: var(--ok); font-family: 'JetBrains Mono', monospace; }
+  .rp { display: inline-block; min-width: 26px; text-align: center; padding: 3px 8px; border-radius: 999px;
+        font: 900 11px/1.2 Inter, system-ui; border: 1px solid var(--border); }
+  .rp.s { color: var(--c-entry-s); background: rgba(251,191,36,.15); border-color: rgba(251,191,36,.45); }
+  .rp.a { color: var(--c-entry-a); background: rgba(167,139,250,.15); border-color: rgba(167,139,250,.45); }
+  .rp.b { color: var(--c-entry-b); background: rgba(96,165,250,.15); border-color: rgba(96,165,250,.45); }
+  .rp.c { color: #a0a0b8; background: rgba(106,106,128,.18); border-color: rgba(106,106,128,.5); }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .rate-hint { color: var(--text-mute); font-size: 12px; margin-top: 8px; line-height: 1.5; }
+  .rate-hint code { font-family: 'JetBrains Mono', monospace; color: var(--text-dim); }
+  @media (max-width: 640px) {
+    main.rate { padding: 0 12px; margin-top: 12px; }
+    .choices { gap: 6px; }
+    .choice { padding: 12px 4px; font-size: 18px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .entry .body { padding: 14px; }
+    .entry h3 { font-size: 16px; }
+  }
+</style>
+</head><body>
+<script>DV.mountHeader(document.body, 'rate');</script>
+
+<main class="rate" id="app">
+  <div class="loading">Loading catalog…</div>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  const el = DV.el;
+  const TIERS = ['S','A','B','C'];          // ordinal, best first
+  const SAMPLE_N = 30;
+  const params = new URLSearchParams(location.search);
+  const SEED = (params.get('seed') || '2026').trim() || '2026';
+  const STORE_KEY = 'dv-rate:v1:' + SEED;
+  const app = document.getElementById('app');
+
+  // ── Seeded RNG: string seed → 32-bit via FNV-1a, then mulberry32 ──
+  function hashSeed(s){
+    let h = 0x811c9dc5;
+    for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+    return h >>> 0;
+  }
+  function mulberry32(a){
+    return function(){
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  // Sorting by id first makes the sample independent of catalog row order.
+  function pickSample(entries, seed, n){
+    const pool = entries.filter(e => e && e.id && TIERS.includes(String(e.tier||'').toUpperCase()))
+                        .slice().sort((a,b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+    const rnd = mulberry32(hashSeed(seed));
+    for (let i = pool.length - 1; i > 0; i--){
+      const j = Math.floor(rnd() * (i + 1));
+      const t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+    }
+    return pool.slice(0, Math.min(n, pool.length));
+  }
+
+  // ── Agreement statistics (exposed for testing) ──
+  // pairs: [[ownerTier, modelTier], ...]. Linear weights w_ij = 1 - |i-j|/(k-1).
+  function confusion(pairs){
+    const k = TIERS.length, m = Array.from({length:k}, () => new Array(k).fill(0));
+    for (const [o, md] of pairs){
+      const i = TIERS.indexOf(o), j = TIERS.indexOf(md);
+      if (i >= 0 && j >= 0) m[i][j]++;
+    }
+    return m;   // rows = owner, cols = model
+  }
+  function kappa(pairs, weighted){
+    const k = TIERS.length, m = confusion(pairs);
+    let n = 0; const row = new Array(k).fill(0), col = new Array(k).fill(0);
+    for (let i = 0; i < k; i++) for (let j = 0; j < k; j++){ n += m[i][j]; row[i] += m[i][j]; col[j] += m[i][j]; }
+    if (!n) return null;
+    let po = 0, pe = 0;
+    for (let i = 0; i < k; i++) for (let j = 0; j < k; j++){
+      const w = weighted ? 1 - Math.abs(i - j) / (k - 1) : (i === j ? 1 : 0);
+      po += w * m[i][j] / n;
+      pe += w * (row[i] / n) * (col[j] / n);
+    }
+    if (Math.abs(1 - pe) < 1e-12) return po >= 1 - 1e-12 ? 1 : 0;  // degenerate: one category only
+    return (po - pe) / (1 - pe);
+  }
+  window.__rateStats = { kappa, confusion, pickSample, hashSeed, TIERS };
+
+  // ── Persistence (localStorage; page still works if it throws) ──
+  function loadState(){
+    try { const s = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); if (s && s.ratings) return s; }
+    catch (e) {}
+    return { seed: SEED, ratings: {}, idx: 0, started: new Date().toISOString() };
+  }
+  function saveState(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+  let state = loadState();
+  let sample = [];
+
+  function thumbSrc(e){
+    const m = String(e.url || '').match(/\/(p|reel|reels|tv)\/([^/?#]+)/);
+    const code = m ? m[2] : String(e.id || '').replace(/\//g, '_');
+    return 'thumb/' + code.replace(/\//g, '_') + '.jpg';
+  }
+  function safeHref(u){ return /^https?:\/\//i.test(String(u||'')) ? String(u) : null; }
+  function ratedCount(){ return sample.filter(e => state.ratings[e.id]).length; }
+
+  function clear(){ while (app.firstChild) app.removeChild(app.firstChild); }
+
+  function intro(){
+    return el('div', { class:'intro' }, [
+      el('div', { class:'eyebrow' }, '$ /dejaviewed rate --blind --seed ' + SEED),
+      el('h2', null, 'Blind re-rate'),
+      el('p', null, 'Rate ' + sample.length + ' randomly drawn saves without seeing the tier the model gave them. ' +
+        'At the end you get agreement, weighted kappa and a confusion matrix — an outside check on whether the tiers mean anything.'),
+    ]);
+  }
+
+  function progress(){
+    const done = ratedCount(), pct = sample.length ? Math.round(100 * done / sample.length) : 0;
+    const fill = el('div', { class:'fill' }); fill.style.width = pct + '%';
+    return el('div', { class:'progress', role:'progressbar', 'aria-valuemin':'0',
+                       'aria-valuemax':String(sample.length), 'aria-valuenow':String(done) }, [
+      el('div', { class:'track' }, [fill]),
+      el('div', { class:'count' }, done + ' / ' + sample.length),
+    ]);
+  }
+
+  function renderEntry(){
+    clear();
+    const e = sample[state.idx];
+    app.appendChild(intro());
+    app.appendChild(progress());
+
+    const href = safeHref(e.url);
+    const img = el('img', { loading:'eager', alt:'', src: thumbSrc(e) });
+    const thumb = el(href ? 'a' : 'div', href ? { class:'thumb', href, target:'_blank', rel:'noopener' } : { class:'thumb' }, [img]);
+    img.onerror = function(){ thumb.className = 'thumb none'; img.remove(); thumb.appendChild(document.createTextNode('no thumbnail')); };
+
+    const colls = (Array.isArray(e.collections) && e.collections.length ? e.collections : [e.source_collection]).filter(Boolean);
+    const meta = el('div', { class:'meta' }, [
+      el('span', null, ['by ', el('b', null, e.creator ? '@' + String(e.creator).replace(/^@/, '') : 'unknown')]),
+      el('span', null, ['in ', el('b', null, colls.join(', ') || '—')]),
+      e.type ? el('span', null, ['type ', el('b', null, String(e.type))]) : null,
+    ]);
+    const current = state.ratings[e.id];
+    const choices = el('div', { class:'choices' }, TIERS.map(t => el('button', {
+      class: 'choice ' + t.toLowerCase() + (current === t ? ' on' : ''),
+      'aria-label': 'Rate tier ' + t, onclick: () => rate(t)
+    }, [t, el('small', null, ({S:'must keep',A:'high value',B:'solid',C:'reference'})[t])])));
+
+    app.appendChild(el('article', { class:'entry glass' }, [
+      thumb,
+      el('div', { class:'body' }, [
+        el('div', { class:'eyebrow' }, 'Entry ' + (state.idx + 1) + ' of ' + sample.length),
+        el('h3', null, e.title || e.id),
+        meta,
+        el('p', { class:'summary' }, e.summary || '(no summary)'),
+        href ? el('a', { class:'orig', href, target:'_blank', rel:'noopener' }, 'Open original ↗ ' + href) : null,
+        choices,
+        el('div', { class:'subbar' }, [
+          el('div', { class:'actions', style:'margin:0' }, [
+            el('button', { class:'btn', onclick: back, disabled: state.idx === 0 ? 'disabled' : null }, '← Back'),
+            el('button', { class:'btn', onclick: skip }, 'Skip'),
+            ratedCount() ? el('button', { class:'btn', onclick: () => { state.view = 'results'; saveState(); render(); } }, 'Results so far') : null,
+          ]),
+          el('span', { class:'keys' }, 'keys: s a b c · ← back · x skip'),
+        ]),
+      ]),
+    ]));
+  }
+
+  function rate(t){
+    const e = sample[state.idx];
+    state.ratings[e.id] = t;
+    advance();
+  }
+  function advance(){
+    // jump to next unrated entry after the current one, else first unrated, else results
+    const n = sample.length;
+    for (let s = 1; s <= n; s++){
+      const i = (state.idx + s) % n;
+      if (!state.ratings[sample[i].id] && !(state.skipped || {})[sample[i].id]){ state.idx = i; saveState(); return render(); }
+    }
+    state.view = 'results'; saveState(); render();
+  }
+  function skip(){
+    state.skipped = state.skipped || {};
+    state.skipped[sample[state.idx].id] = true;
+    advance();
+  }
+  function back(){ if (state.idx > 0){ state.idx--; saveState(); render(); } }
+
+  function pill(t){ return el('span', { class:'rp ' + String(t).toLowerCase() }, String(t)); }
+  function fmt(x, d){ return x == null ? '—' : x.toFixed(d == null ? 3 : d); }
+
+  function results(){
+    const rows = sample.filter(e => state.ratings[e.id]).map(e => ({
+      id: e.id, owner_tier: state.ratings[e.id], model_tier: String(e.tier).toUpperCase(),
+      title: e.title || '', url: e.url || '', collection: e.source_collection || ((e.collections||[])[0]) || ''
+    }));
+    const pairs = rows.map(r => [r.owner_tier, r.model_tier]);
+    const agree = rows.filter(r => r.owner_tier === r.model_tier).length;
+    const within1 = rows.filter(r => Math.abs(TIERS.indexOf(r.owner_tier) - TIERS.indexOf(r.model_tier)) <= 1).length;
+    return { rows, pairs, n: rows.length, agree, within1,
+             pct: rows.length ? 100 * agree / rows.length : null,
+             pct1: rows.length ? 100 * within1 / rows.length : null,
+             kw: kappa(pairs, true), ku: kappa(pairs, false), cm: confusion(pairs) };
+  }
+
+  function kappaWord(k){
+    if (k == null) return 'not enough data';
+    if (k < 0) return 'worse than chance';
+    if (k < 0.2) return 'slight';
+    if (k < 0.4) return 'fair';
+    if (k < 0.6) return 'moderate';
+    if (k < 0.8) return 'substantial';
+    return 'almost perfect';
+  }
+
+  function download(r){
+    const payload = {
+      kind: 'dejaviewed-ratings', version: 1, seed: SEED, sample_size: sample.length,
+      generated_at: new Date().toISOString(),
+      stats: { n: r.n, exact_agreement: r.pct, within_one_tier: r.pct1, kappa_linear_weighted: r.kw, kappa_unweighted: r.ku },
+      ratings: r.rows,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+    const a = el('a', { href: URL.createObjectURL(blob), download: 'dejaviewed-ratings-seed' + SEED + '.json' });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  function renderResults(){
+    clear();
+    const r = results();
+    app.appendChild(intro());
+    app.appendChild(progress());
+    const stat = (v, l, n) => el('div', { class:'stat glass' }, [el('div', { class:'v' }, v), el('div', { class:'eyebrow l' }, l), n ? el('div', { class:'n' }, n) : null]);
+    app.appendChild(el('div', { class:'stats' }, [
+      stat(String(r.n), 'rated', (sample.length - r.n) ? (sample.length - r.n) + ' left unrated' : 'sample complete'),
+      stat(r.pct == null ? '—' : r.pct.toFixed(0) + '%', 'exact agreement', r.pct1 == null ? null : r.pct1.toFixed(0) + '% within one tier'),
+      stat(fmt(r.kw), 'weighted kappa', 'linear weights · ' + kappaWord(r.kw)),
+      stat(fmt(r.ku), 'unweighted kappa', kappaWord(r.ku)),
+    ]));
+    if (r.n && r.n < 20) app.appendChild(el('p', { class:'rate-hint' }, 'Small sample: kappa on fewer than ~20 ratings swings a lot. Treat it as directional.'));
+
+    // Confusion matrix
+    const head = el('tr', null, [el('th', null, 'owner ↓ / model →')].concat(TIERS.map(t => el('th', null, t))).concat([el('th', null, 'Σ')]));
+    const body = TIERS.map((t, i) => el('tr', null, [el('th', null, t)].concat(
+      TIERS.map((u, j) => el('td', { class: (i === j ? 'diag' : '') + (r.cm[i][j] ? '' : ' zero') }, String(r.cm[i][j])))
+    ).concat([el('td', null, String(r.cm[i].reduce((a,b) => a+b, 0)))])));
+    const colSum = el('tr', null, [el('th', null, 'Σ')].concat(TIERS.map((_, j) => el('td', null, String(r.cm.reduce((a,row) => a+row[j], 0))))).concat([el('td', null, String(r.n))]));
+    app.appendChild(el('div', { class:'section glass' }, [
+      el('h3', null, 'Confusion matrix'),
+      el('div', { class:'scroll' }, [el('table', { class:'cm' }, [el('thead', null, [head]), el('tbody', null, body.concat([colSum]))])]),
+      el('p', { class:'rate-hint' }, 'Rows are your tier, columns the model’s. Above the diagonal the model rated lower than you; below it, higher.'),
+    ]));
+
+    // Per-entry table, disagreements first
+    const sorted = r.rows.slice().sort((a, b) =>
+      Math.abs(TIERS.indexOf(b.owner_tier) - TIERS.indexOf(b.model_tier)) - Math.abs(TIERS.indexOf(a.owner_tier) - TIERS.indexOf(a.model_tier)));
+    const trs = sorted.map(x => {
+      const d = TIERS.indexOf(x.model_tier) - TIERS.indexOf(x.owner_tier);
+      const href = safeHref(x.url);
+      return el('tr', { class: d ? 'dis' : 'agree' }, [
+        el('td', { class:'t' }, [href ? el('a', { href, target:'_blank', rel:'noopener' }, x.title || x.id) : (x.title || x.id)]),
+        el('td', null, [pill(x.owner_tier)]),
+        el('td', null, [pill(x.model_tier)]),
+        el('td', { class:'d' }, d === 0 ? '=' : (d > 0 ? 'model −' + d : 'model +' + (-d))),
+      ]);
+    });
+    app.appendChild(el('div', { class:'section glass' }, [
+      el('h3', null, 'Per entry'),
+      el('div', { class:'scroll' }, [el('table', { class:'res' }, [
+        el('thead', null, [el('tr', null, [el('th', null, 'entry'), el('th', null, 'you'), el('th', null, 'model'), el('th', null, 'gap')])]),
+        el('tbody', null, trs),
+      ])]),
+      el('div', { class:'actions' }, [
+        el('button', { class:'btn primary', onclick: () => download(r), disabled: r.n ? null : 'disabled' }, 'Download JSON'),
+        ratedCount() < sample.length ? el('button', { class:'btn', onclick: () => { state.view = 'rate'; state.skipped = {}; advance(); } }, 'Keep rating') : null,
+        el('button', { class:'btn', onclick: () => { state.view = 'rate'; state.idx = 0; saveState(); render(); } }, 'Review from start'),
+        el('button', { class:'btn warn', onclick: () => {
+          if (!confirm('Clear all ratings for seed ' + SEED + '?')) return;
+          state = { seed: SEED, ratings: {}, idx: 0, started: new Date().toISOString() }; saveState(); render();
+        }}, 'Reset'),
+      ]),
+      el('p', { class:'rate-hint' }, ['Apply with ', el('code', null, 'python3 scripts/apply_ratings.py dejaviewed-ratings-seed' + SEED + '.json'),
+        ' (dry run) then add ', el('code', null, '--apply'), '. New sample: add ', el('code', null, '?seed=anything'), ' to the URL.']),
+    ]));
+  }
+
+  function render(){
+    if (!sample.length){ clear(); app.appendChild(el('div', { class:'empty' }, 'No rateable entries in the catalog.')); return; }
+    if (state.view === 'results' || ratedCount() === sample.length && state.view !== 'rate') return renderResults();
+    if (state.idx < 0 || state.idx >= sample.length) state.idx = 0;
+    renderEntry();
+  }
+
+  document.addEventListener('keydown', function(ev){
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+    if (state.view === 'results' || !sample.length) return;
+    const tag = (ev.target && ev.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    const k = ev.key.toLowerCase();
+    if (k === 's' || k === 'a' || k === 'b' || k === 'c'){ ev.preventDefault(); rate(k.toUpperCase()); }
+    else if (k === 'arrowleft' || k === 'backspace'){ ev.preventDefault(); back(); }
+    else if (k === 'x'){ ev.preventDefault(); skip(); }
+  });
+
+  (async function init(){
+    let cat = null;
+    try { cat = await DV.loadCatalog(); } catch (e) {}
+    const entries = cat ? (Array.isArray(cat) ? cat : (cat.entries || [])) : [];
+    sample = pickSample(entries, SEED, SAMPLE_N);
+    // Drop ratings for ids no longer in this sample (catalog changed)
+    const ids = new Set(sample.map(e => e.id));
+    for (const id of Object.keys(state.ratings)) if (!ids.has(id)) delete state.ratings[id];
+    render();
+  })();
+})();
+</script>
+</body></html>

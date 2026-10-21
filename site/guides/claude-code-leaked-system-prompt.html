@@ -52,12 +52,129 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DWmQYXikbqq">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Claude Code Leaked System Prompt — Deep Dive</h1>
+<p>Category: Claude Code internals / prompt engineering Confidence: Medium — multiple independent leaks corroborate core directives, but exact wording drifts between versions and no single canonical source exists. Primary sources (as of April 2026):</p>
+<p>asgeirtj/system_prompts_leaks — https://github.com/asgeirtj/system_prompts_leaks/tree/main/Anthropic/claude-code</p>
+<p>Piebald-AI/claude-code-system-prompts — https://github.com/Piebald-AI/claude-code-system-prompts (updated per Claude Code version; includes the 24 built-in tool descriptions and sub-agent prompts)</p>
+<p>saimbuilds/Claude-System-Prompts — secondary mirror</p>
+<p>dbreunig.com: "How Claude Code Builds a System Prompt" (2026-04-04) — the best structural analysis</p>
+<p>The Register, 2026-04-01: "Claude Code's source reveals extent of system access"</p>
+<h2>What it is</h2>
+<p>Claude Code's system prompt is the hidden set of instructions Anthropic ships inside every claude CLI session — the rules that shape how the agent formats answers, picks tools, refuses work, and communicates with the user. It is not one monolithic block; it is assembled at runtime from ~10 fragments (base persona, environment info, tool descriptions, CLAUDE.md content, sub-agent definitions, git context, etc.) and totals roughly 10K–15K tokens before the user even types anything.</p>
+<p>It has been exposed publicly at least three times:</p>
+<p>Feb 24, 2025 — launch day. An 18M-character inline source map was shipped inside the npm package. Anthropic pulled it within ~2 hours.</p>
+<p>March 2026 — a manual deploy step re-exposed the source map 13 months later.</p>
+<p>March 31, 2026 — Claude Code v2.1.88 shipped a 59.8 MB source map containing a 512K-line TypeScript codebase. Public for several hours, DMCA'd afterward. This version (around v2.0.70 – v2.1.88) is what the popular "leaked system prompt" repos pull from.</p>
+<p>Mirror repos (asgeirtj, Piebald-AI, saimbuilds) continue to track updates per Claude Code version.</p>
+<h2>How it works — the architecture</h2>
+<p>Claude Code does not send a single static system prompt. Per the dbreunig analysis and the leaked source, it builds the prompt dynamically each turn:</p>
+<p>[Base persona + identity]</p>
+<p>[Environment block: cwd, platform, git branch, date, model]</p>
+<p>[Tool descriptions — 24 built-in tools, each with its own sub-prompt]</p>
+<p>[User/project CLAUDE.md content, merged from ~/.claude + .claude/]</p>
+<p>[Active sub-agent definitions]</p>
+<p>[Skill metadata for installed skills]</p>
+<p>[Recent git status / branch context if in a repo]</p>
+<p>[Scratchpad directory instructions]</p>
+<p>→ final system message</p>
+<p>The biggest single section is tool descriptions. Each built-in tool (Bash, Edit, Write, Read, Grep, Glob, WebFetch, WebSearch, Task, TodoWrite, NotebookEdit, etc.) carries its own mini-prompt with usage rules, forbidden patterns, and examples. Edit alone is ~400 lines.</p>
+<p>There are also separate "utility" prompts — small system prompts Claude Code uses internally for sub-tasks: CLAUDE.md auto-generation, /compact, statusline rendering, security review, agent creation, and WebFetch post-processing. These are documented in Piebald-AI/claude-code-system-prompts.</p>
+<h2>The "brevity mandate" — what it actually says</h2>
+<p>The most quoted section of the leak is a cluster of directives around output length and tone. Paraphrased from the leaked claude-code.md:</p>
+<p>"You MUST answer concisely with fewer than 4 lines (not including tool use or code generation), unless the user asks for detail."</p>
+<p>"IMPORTANT: You should minimize output tokens as much as possible while maintaining helpfulness, quality, and accuracy."</p>
+<p>"Only address the specific query or task at hand, avoiding tangential information."</p>
+<p>"IMPORTANT: You should NOT answer with unnecessary preamble or postamble (such as explaining your code or summarizing your action)."</p>
+<p>"Avoid introductions, conclusions, and explanations. No 'Here is...', 'Based on...', 'I will now...'."</p>
+<p>"One word answers are best."</p>
+<p>Intermediate progress text between tool calls: ≤ 25 words. Final responses: ≤ 100 words unless the task requires more detail.</p>
+<p>Lists are discouraged: "Do not use bullet points or numbered lists unless the user explicitly asks for one."</p>
+<p>Tone: "Do not add unnecessary affirmations, apologies, or praise. No 'Great question!', 'Certainly!', 'Absolutely!'. Be direct. Provide objective technical info."</p>
+<p>Emoji: "Only use emojis if the user explicitly requests it."</p>
+<p>Refusals: "When refusing, do so in 1-2 sentences and offer alternatives if possible."</p>
+<p>There is also a telling directive about not volunteering information: Claude Code is instructed to answer what was asked and stop — no proactive suggestions unless safety-critical. This is deliberate: it reduces token cost, lowers the "AI rambled" failure mode, and keeps the CLI feeling like a shell instead of a chatbot.</p>
+<h3>Why it matters</h3>
+<p>The brevity mandate is why Claude Code feels different from claude.ai chat. Same model, radically different voice. That voice comes from maybe 500 tokens of well-placed "IMPORTANT:" and "MUST" clauses — proof that short, forceful prompts dominate long polite ones.</p>
+<p>It also reveals tradeoffs Anthropic actively chose:</p>
+<p>Brevity suppresses nuance. The CFA Institute blog flagged this: a terse agent tends to affirm user assertions and skip caveats. Investment and legal use-cases need to override it.</p>
+<p>Affirmation avoidance can read as cold. Users who want a friendly tone must explicitly ask.</p>
+<p>Comprehensive answers are explicitly discouraged unless asked — this is why "explain the whole codebase" often gets a 3-sentence reply.</p>
+<h2>Other interesting directives in the leak</h2>
+<p>Beyond brevity, recurring themes from the leaked prompt:</p>
+<p>Tool-use discipline.</p>
+<p>"When doing file search, prefer to use the Task tool to reduce context usage."</p>
+<p>"NEVER use find, grep, cat, head, tail, sed, awk, echo via Bash — use the dedicated tools (Glob, Grep, Read, Edit, Write)." This one shows up verbatim in the Bash tool description.</p>
+<p>"Always quote file paths that contain spaces."</p>
+<p>"VERY IMPORTANT: You MUST avoid using search commands like find and grep. Instead use Grep, Glob, or Task."</p>
+<p>Safety rail redundancy.</p>
+<p>"IMPORTANT: Refuse to write code or explain code that may be used maliciously."</p>
+<p>"IMPORTANT: Before you begin work, think about what the code you're editing is supposed to do based on the filenames and directory structure."</p>
+<p>"You MUST NEVER generate or guess URLs."</p>
+<p>Git rules: "NEVER update the git config. NEVER run destructive git commands unless the user explicitly asks. NEVER commit changes unless the user explicitly asks."</p>
+<p>Proactiveness calibration.</p>
+<p>"You should be proactive only when the user asks you to do something. Strike a balance between doing the right thing and not surprising the user."</p>
+<p>"Do not add additional code explanation summary unless requested."</p>
+<p>Convention following.</p>
+<p>"When making changes to files, first understand the file's code conventions. Mimic code style, use existing libraries, and follow existing patterns."</p>
+<p>"NEVER assume a library is available, even if well known. Check the codebase first (package.json, cargo.toml, requirements.txt)."</p>
+<p>Scratchpad rule. There is an "IMPORTANT" directive that all temporary files go in a session-specific scratchpad directory, not /tmp or the system temp. This is how Claude Code keeps sessions isolated.</p>
+<p>Task management. TodoWrite has its own mini-prompt instructing aggressive use for any task with 3+ steps, marking items complete immediately after finishing them (not batched), and never leaving more than one task in in_progress.</p>
+<h2>What you could adapt into his own CLAUDE.md / agent prompts</h2>
+<p>The leak is a gift: it shows which prompting patterns Anthropic found load-bearing enough to ship to millions of users. Patterns worth stealing:</p>
+<p>Front-load forceful clauses. "IMPORTANT:", "MUST", "NEVER", "VERY IMPORTANT:" in ALL CAPS. Claude Code uses these liberally. They work.</p>
+<p>Specify exact line/word budgets. "≤ 4 lines", "≤ 25 words between tool calls", "≤ 100 words for final response". Numbers beat adjectives.</p>
+<p>Explicitly forbid preamble and postamble. The single biggest win for CLI-feel agents.</p>
+<p>Ban emoji by default, allow by explicit request only.</p>
+<p>Tool allow/deny lists with exact wording. "NEVER use grep — use the Grep tool." Name the bad tool and the replacement in the same sentence.</p>
+<p>Proactive vs reactive posture. State it: "Do not volunteer information unless asked. Answer what was asked and stop."</p>
+<p>Refusal format spec. Budget refusals: "1–2 sentences, offer an alternative."</p>
+<p>Convention-first editing. "Read neighboring files before editing. Mimic existing style. Do not introduce new libraries without checking package manifests."</p>
+<p>No-commit-without-permission rule. This is in the Claude Code prompt verbatim and it is why You may already have it in his global CLAUDE.md — worth keeping as a first-class rule.</p>
+<p>Session scratchpad convention. If your agents do any temp-file work, copy the scratchpad rule.</p>
+<p>A minimal "Claude-Code-style" rule block to drop into any custom agent:</p>
+<h2>Output rules</h2>
+<p>Answer in ≤ 4 lines unless the user asks for detail.</p>
+<p>No preamble, no postamble, no "Here is", no "I will now".</p>
+<p>No emoji unless explicitly requested.</p>
+<p>No bullet lists unless explicitly requested.</p>
+<p>Refusals: 1–2 sentences, offer an alternative.</p>
+<h2>Tool discipline</h2>
+<p>Never use find, grep, cat, head, tail, sed, awk — use dedicated tools.</p>
+<p>Never assume a library exists — check package manifests first.</p>
+<p>Match existing code style before introducing new patterns.</p>
+<h2>Proactiveness</h2>
+<p>Do what was asked, nothing more, nothing less.</p>
+<p>Never create files unless necessary. Prefer editing.</p>
+<p>Never create docs (.md, README) unless explicitly requested.</p>
+<p>Never commit unless explicitly asked.</p>
+<p>That block is roughly what Claude Code ships, distilled.</p>
+<h2>Gotchas and limits</h2>
+<p>Version drift. The leak is a snapshot. Anthropic changes the prompt between minor versions; exact wording today may differ from v2.1.88. Treat the text as patterns, not scripture.</p>
+<p>No canonical source. Anthropic has DMCA'd most raw dumps. Mirror repos get taken down and re-uploaded. Use multiple sources to cross-check.</p>
+<p>CLAUDE.md is appended, not prepended. Per dbreunig, user CLAUDE.md content is injected into a dedicated slot — it cannot override base directives, only layer on top. If you want to neutralize a base rule, you must explicitly contradict it with equal force ("IMPORTANT: Override base guidance — use lists freely in this project").</p>
+<p>Context bloat is real. The full system prompt + CLAUDE.md + tool descriptions + skill metadata can eat 15–25K tokens before the first user turn. This is why "Claude Code feels dumber on long sessions" — the compaction step summarizes aggressively and loses nuance.</p>
+<p>Some directives conflict. "Be concise" vs "Always use TodoWrite for 3+ step tasks" vs "Minimize output tokens". In practice the model picks the one that best fits the turn. If you care which wins, state it explicitly in CLAUDE.md.</p>
+<p>Not all leaks are real. Several "leaked prompt" repos contain fabricated sections or summaries presented as verbatim. Piebald-AI and asgeirtj are the most trustworthy; random gists are not.</p>
+<h2>What we could build with it</h2>
+<p>A CLAUDE.md template generator that lets you select which base directives to keep, override, or amplify, then emits a merged file.</p>
+<p>A "prompt diff" tool that tracks changes in the leaked prompts across Claude Code versions — useful for spotting when Anthropic tightens or loosens a rule (e.g. when they added the scratchpad directive, when they relaxed the list ban).</p>
+<p>A lint rule for custom agent prompts that checks for anti-patterns the Claude Code prompt avoids: hedging language, "Certainly!", emoji, long preambles.</p>
+<p>A reference card (print-worthy) of the 20 highest-leverage "IMPORTANT:" clauses from the leak, for use when writing any new agent prompt.</p>
+<p>A challenge-game sweep over variations of the brevity mandate to measure which exact wording produces the tersest Claude output without losing accuracy — this is a one-afternoon experiment with measurable results.</p>
+<h2>Files worth grabbing</h2>
+<p>If you want a local reference copy (the mirrors do get taken down):</p>
+<p>mkdir -p ~/projects/ai-catalogs/references/claude-code-prompts cd ~/projects/ai-catalogs/references/claude-code-prompts git clone https://github.com/asgeirtj/system_prompts_leaks.git git clone https://github.com/Piebald-AI/claude-code-system-prompts.git</p>
+<p>Piebald-AI is the better long-term reference — it splits by version and covers the utility prompts (compact, statusline, WebFetch post-processing, security review, agent creation). asgeirtj is broader coverage across vendors (also has GPT-5.x, Gemini 3.1, Grok 4.x leaks) for comparison.</p>
+<h2>Bottom line</h2>
+<p>The leaked Claude Code system prompt is a masterclass in terse, forceful, tool-aware prompting. The brevity mandate specifically — ≤4 lines, no preamble, no emoji, no affirmations, one-word answers preferred — is the single biggest reason Claude Code feels like a Unix tool instead of a chatbot. Copy those patterns into your own CLAUDE.md and custom agents verbatim; they were battle-tested on millions of sessions before you saw them.</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Claude Code Leaked System Prompt — Deep Dive
 
 **Category:** Claude Code internals / prompt engineering
 **Confidence:** Medium — multiple independent leaks corroborate core directives, but exact wording drifts between versions and no single canonical source exists.
 **Primary sources (as of April 2026):**
-- `asgeirtj/system_prompts_leaks` — https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-code.md
+- `asgeirtj/system_prompts_leaks` — https://github.com/asgeirtj/system_prompts_leaks/tree/main/Anthropic/claude-code
 - `Piebald-AI/claude-code-system-prompts` — https://github.com/Piebald-AI/claude-code-system-prompts (updated per Claude Code version; includes the 24 built-in tool descriptions and sub-agent prompts)
 - `saimbuilds/Claude-System-Prompts` — secondary mirror
 - dbreunig.com: "How Claude Code Builds a System Prompt" (2026-04-04) — the best structural analysis

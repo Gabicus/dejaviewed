@@ -65,6 +65,7 @@
     const items = [
       { id:'catalog',  href:BASE+'catalog.html',      label:'Catalog' },
       { id:'guides',   href:BASE+'guides/',           label:'Guides'  },
+      { id:'search',   href:BASE+'search.html',       label:'Search'  },
       { id:'graph',    href:BASE+'graph.html',        label:'Graph · Force'  },
       { id:'cosmos',   href:BASE+'graph-cosmos.html', label:'Graph · Cosmos' },
       { id:'board',    href:BASE+'board.html',        label:'Board'   },

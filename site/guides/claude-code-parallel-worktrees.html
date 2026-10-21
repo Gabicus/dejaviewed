@@ -52,6 +52,116 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DVMmXlME6mZ">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow</h1>
+<p>Category: Claude Code workflow / productivity Confidence: High — documented by Claude Code's creator on X/Threads, shipped as a native --worktree flag, and covered in official Anthropic docs. Primary sources:</p>
+<p>Boris Cherny on X, "Do more in parallel": https://x.com/bcherny/status/2017742743125299476</p>
+<p>Boris Cherny on X, "Use claude --worktree for isolation": https://x.com/bcherny/status/2025007394967957720</p>
+<p>Anthropic official docs, "Orchestrate teams of Claude Code sessions": https://code.claude.com/docs/en/agent-teams</p>
+<p>"How Boris Uses Claude Code": https://howborisusesclaudecode.com/</p>
+<p>Community guides: shareuhack.com, thepromptshelf.dev, botmonster.com</p>
+<h2>What it is</h2>
+<p>Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree. It is, in his own words, "the single biggest productivity unlock" and "the top tip from the team." This pattern became the canonical Anthropic-internal workflow in late 2025 / early 2026 and got native CLI support via the claude --worktree flag.</p>
+<p>The core insight is boring and load-bearing: LLM coding is I/O-bound on the human, not the machine. You spend 80% of your time reviewing, 20% typing the next prompt. If you run one Claude at a time, the model is idle while you read. If you run five, you are always reviewing something while the other four work. This is not "multi-agent orchestration" — it is single-operator parallelism. You are a director, not a coder.</p>
+<p>Git worktrees are the enabling primitive because they give each session its own working directory on its own branch, sharing the same .git object store. Five worktrees = five isolated checkouts of the same repo, zero disk duplication of git history, zero merge conflicts between running sessions.</p>
+<h2>How it works</h2>
+<h3>The git worktree primitive</h3>
+<p>git worktree is a vanilla git feature from 2015 that almost nobody uses. It lets one repo have multiple working directories:</p>
+<h1>From inside a normal repo</h1>
+<p>git worktree add ../myproject-feature-a feature-a # new branch git worktree add ../myproject-bugfix main # existing branch git worktree list # show all git worktree remove ../myproject-feature-a # clean up</p>
+<p>Each worktree is a full checkout with its own HEAD, its own index, its own untracked files. They share the .git directory (via .git file pointing back to the main repo), so object storage is deduplicated. Branch safety is enforced: you can't check out the same branch in two worktrees simultaneously.</p>
+<h3>The Boris pattern, step by step</h3>
+<p>Start from a clean main. git checkout main &amp;&amp; git pull.</p>
+<p>Spin up N worktrees, one per independent task:</p>
+<p>git worktree add ../proj-auth -b feat/auth git worktree add ../proj-billing -b feat/billing git worktree add ../proj-refactor -b chore/refactor-api git worktree add ../proj-bugfix -b fix/issue-412</p>
+<p>Open a terminal tab (or tmux pane) per worktree and launch Claude in each:</p>
+<p>cd ../proj-auth &amp;&amp; claude cd ../proj-billing &amp;&amp; claude cd ../proj-refactor &amp;&amp; claude cd ../proj-bugfix &amp;&amp; claude</p>
+<p>Prompt each session with one focused task. One task = one worktree = one session. Do not multiplex tasks inside a single session.</p>
+<p>Cycle through the sessions while they work. When one finishes, review, commit, push, open a PR, then either give it the next task or git worktree remove it.</p>
+<p>Merge back via normal PRs. The worktrees never touch each other's filesystems; all coordination happens through git + PRs, the same as any human team.</p>
+<h3>The claude --worktree shortcut</h3>
+<p>In late 2025 / early 2026 Anthropic shipped native worktree support so you do not have to manage them by hand:</p>
+<p>claude --worktree # auto-creates a worktree, Claude picks the name claude --worktree my-feature-name # explicit name claude --worktree --tmux # also launch inside its own tmux session</p>
+<p>This handles the git worktree add, cd into it, and launches Claude in one command. The Desktop app has had this for longer; it was ported to the CLI because the team realized everyone was doing it manually.</p>
+<h3>Sub-agents with worktree isolation</h3>
+<p>The Task tool (sub-agents) can also be worktree-isolated. In your sub-agent frontmatter:</p>
+<p>name: migration-worker isolation: worktree</p>
+<p>When dispatched, the sub-agent gets its own worktree. When it finishes, the worktree path and branch name are returned to the parent agent for review/merge. This is the power move for large batched changes — migrations, codemod-style refactors, mass dependency bumps — where you want 10 sub-agents each handling a subdirectory without stomping on each other.</p>
+<p>This is also the pattern behind Anthropic's "Agent Teams" feature (code.claude.com/docs/en/agent-teams): teammates coordinate through git commits in their respective worktrees.</p>
+<h2>Quick start — 3-worktree minimum viable parallel workflow</h2>
+<h1>1. From your project root on main</h1>
+<p>cd ~/projects/myproject git checkout main &amp;&amp; git pull</p>
+<h1>2. Create three worktrees beside the main checkout</h1>
+<p>git worktree add ../myproject-a -b task/a git worktree add ../myproject-b -b task/b git worktree add ../myproject-c -b task/c</p>
+<h1>3. Open three terminal tabs (or tmux windows) and launch Claude in each</h1>
+<h1>tab 1</h1>
+<p>cd ../myproject-a &amp;&amp; claude</p>
+<h1>tab 2</h1>
+<p>cd ../myproject-b &amp;&amp; claude</p>
+<h1>tab 3</h1>
+<p>cd ../myproject-c &amp;&amp; claude</p>
+<h1>4. Prompt each with one focused task. Cycle between tabs.</h1>
+<h1>5. When a task is done: review, commit, push, open PR</h1>
+<p>cd ../myproject-a git add -A &amp;&amp; git commit -m "feat: task a" git push -u origin task/a gh pr create --fill</p>
+<h1>6. Clean up after merge</h1>
+<p>git worktree remove ../myproject-a</p>
+<p>Or, the native way:</p>
+<p>claude --worktree task-a claude --worktree task-b claude --worktree task-c</p>
+<p>Each command spawns a fresh Claude session in its own worktree in one line.</p>
+<h3>With tmux (recommended for 5+ sessions)</h3>
+<p>Beyond ~4 terminal tabs, tmux becomes essential — you want a single keystroke to cycle through sessions and a persistent layout that survives terminal closure.</p>
+<p>tmux new -s claude-parallel</p>
+<h1>inside tmux</h1>
+<p>claude --worktree --tmux task-a # spawns in its own tmux window claude --worktree --tmux task-b claude --worktree --tmux task-c</p>
+<h1>Ctrl-b n / Ctrl-b p to cycle windows</h1>
+<p>Tools worth knowing:</p>
+<p>workmux (github.com/raine/workmux) — turns "create worktree + open tmux window + cd in + launch Claude" into one command.</p>
+<p>claude-tmux (github.com/nielsgroen/claude-tmux) — tmux popup TUI that manages multiple Claude Code sessions, worktrees, and PRs from one view.</p>
+<p>muxtree — simpler alternative with the same idea.</p>
+<h2>When to use it (and when not to)</h2>
+<p>Use parallel worktrees when:</p>
+<p>You have 2+ genuinely independent tasks — different files, different concerns, no shared state.</p>
+<p>You are doing a large migration where chunks can be parallelized (e.g. "convert all 40 React class components to function components").</p>
+<p>You are exploring N alternative approaches to the same problem and want to compare results side-by-side.</p>
+<p>You are bug-hunting across multiple issues and want each fix in its own branch/PR.</p>
+<p>You are reviewing work on one task while another runs — the "director mode" benefit.</p>
+<p>Do not use parallel worktrees when:</p>
+<p>Tasks depend on each other — one needs the other's output. Chain them in a single session instead.</p>
+<p>You are exploring an unfamiliar codebase — you need focus, not five things shouting at you.</p>
+<p>You are debugging a subtle issue — context-switching kills debugging flow.</p>
+<p>You have shared global state outside git (a single dev database, a single running server on a single port). Two worktrees can't both npm run dev on port 3000.</p>
+<p>You are on a laptop with &lt;32GB RAM and each session spawns heavy dev servers. Each worktree is a full checkout; if each runs webpack, you will OOM.</p>
+<h2>What breaks at scale</h2>
+<p>Running 10–15 parallel sessions surfaces real problems:</p>
+<p>Port collisions. Dev servers default to the same port. Fix: env vars per worktree (PORT=3001, PORT=3002), or a port-picker script.</p>
+<p>Database state. SQLite is fine (each worktree gets its own file). Postgres/Mysql with a shared dev DB is a disaster — migrations from one worktree break another. Use per-worktree Docker containers, or schema namespaces.</p>
+<p>node_modules duplication. Each worktree gets its own node_modules, which at 500MB–2GB × 10 = bad. Fix: pnpm with shared-workspace-lockfile, or a global store (pnpm store, yarn berry pnp).</p>
+<p>Review bottleneck shifts to you. At ~5 sessions the model is no longer the bottleneck — you are. More parallelism past your review capacity is wasted.</p>
+<p>Context fragmentation in your head. Switching between 10 tasks is exhausting. Most experienced users settle around 3–5 concurrent worktrees, not 15.</p>
+<p>Git hooks that assume one worktree. Pre-commit hooks that write to a shared cache can race. Configure hooks to be worktree-aware.</p>
+<p>IDE confusion. VS Code's git extension can get confused by worktrees; it sometimes shows the wrong branch. Open each worktree as its own window.</p>
+<p>CLAUDE.md drift. If each worktree edits CLAUDE.md, you get conflicts on merge. Convention: only edit CLAUDE.md on main, never in feature worktrees.</p>
+<p>API rate limits / billing. 10 parallel Claude sessions = 10x token spend. On a subscription plan you will hit rate limits fast. Monitor ~/.claude/usage if available.</p>
+<p>Merge conflicts from adjacent edits. If two sessions both edit package.json, you will merge-conflict. Plan tasks to touch disjoint file sets.</p>
+<h2>What we could build with it</h2>
+<p>A spawn-parallel.sh script that takes a list of task descriptions and spawns N worktrees + Claude sessions + tmux windows in one command, with auto port assignment per worktree.</p>
+<p>A review dashboard (tmux statusbar or small TUI) showing the git status of all active worktrees so you know at a glance which ones are ready for review.</p>
+<p>A swarm runner that takes one large migration task, decomposes it into N independent chunks, spawns N worktrees, and reports back when all are done — essentially the Boris pattern behind the /swarm skill.</p>
+<p>A CLAUDE.md rule enforcing "never edit CLAUDE.md outside main" to avoid merge churn.</p>
+<p>A per-worktree env injector that sets PORT, DATABASE_URL, and REDIS_URL to non-colliding values automatically based on the worktree name hash.</p>
+<p>Integration with existing /crank and /codex-team skills: use worktree isolation as the default execution substrate for any multi-task epic.</p>
+<h2>Gotchas and limits</h2>
+<p>git worktree add refuses to check out a branch already checked out elsewhere — this is a feature, not a bug. If you need two worktrees on the same branch, one of them must detach (--detach).</p>
+<p>Worktrees share hooks. Husky/pre-commit hooks live in .git/hooks which is shared. If a hook writes to a cache directory, make that cache worktree-scoped.</p>
+<p>git worktree remove refuses to delete a dirty worktree. Use --force if you really want to, but prefer committing or stashing first.</p>
+<p>Sub-module behavior is awkward. Each worktree initializes its own submodules; this can double disk use.</p>
+<p>The --worktree flag is relatively new. On older Claude Code versions (pre late-2025) you have to do the manual git worktree add dance.</p>
+<p>Native worktree support in the Desktop app predates the CLI. If you use the Desktop app, you already have this; the CLI caught up later.</p>
+<p>The single biggest mistake newcomers make: running parallel sessions on the same task, racing them. Don't. One session per task. Parallelism is across independent tasks, not across attempts at the same task.</p>
+<p>Throughput gains cap around 3-5x, not 15x. Boris personally runs "3-5 at once"; the "10-15" number is the team's ceiling, not a target. Review bandwidth is the binding constraint.</p>
+<h2>Bottom line</h2>
+<p>claude --worktree is the single highest-leverage workflow change you can make to Claude Code usage. Two commands — git worktree add + claude — turn you from a serial coder into a director of 3-5 concurrent agents. Start with 3, add a 4th when you feel idle between reviews, stop when review stops being fun. Use tmux once you exceed 4. Never run parallel sessions on tasks that share state. The gains come from your own time being the bottleneck, not the model's.</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow
 
 **Category:** Claude Code workflow / productivity

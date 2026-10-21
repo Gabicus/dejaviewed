@@ -101,13 +101,16 @@ TEMPLATE = """<!doctype html>
   .pill {{ display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }}
+  details.level summary {{ cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }}
+  details.level[open] summary {{ margin-bottom: 8px; }}
   .back {{ color: var(--muted); font-size: 12px; text-decoration: none; }}
   .back:hover {{ color: var(--accent); }}
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0">{tier_pill} {type_pill}</div>
   <h1>{title}</h1>
   <div class="meta">{meta}</div>
@@ -117,9 +120,30 @@ TEMPLATE = """<!doctype html>
   <section class="tableau">
     {levels_html}
   </section>
+  {transcript_html}
 </main>
 </body></html>
 """
+
+
+TRANSCRIPT_CLIP = 1500  # keep entry pages light; full text lives in catalog.json
+
+
+def clip(text: str, n: int) -> str:
+    text = " ".join((text or "").split())
+    if len(text) <= n:
+        return text
+    cut = text[:n].rsplit(" ", 1)[0]
+    return cut + "…"
+
+
+def transcript_block(row: dict) -> str:
+    """Collapsed transcript excerpt — visible on demand, and indexed by Pagefind."""
+    t = clip(row.get("transcript") or "", TRANSCRIPT_CLIP)
+    if not t:
+        return ""
+    return ('<details class="level transcript"><summary>Transcript excerpt</summary>'
+            f'<div class="body">{esc(t)}</div></details>')
 
 
 def render_one(row: dict) -> str:
@@ -152,6 +176,7 @@ def render_one(row: dict) -> str:
         meta=meta,
         source_link=source_link,
         levels_html=levels_html,
+        transcript_html=transcript_block(row),
     )
 
 

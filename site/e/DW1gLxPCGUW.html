@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">skill</span></div>
   <h1>Claude Code rate-limit workarounds — Nate Herkai&#x27;s tips</h1>
   <div class="meta">nateherkai · 2026-04-07T15:47:43.000Z · in ai4</div>
@@ -51,5 +54,6 @@ jtylerray
 13w
 Context-mode changed my friggin life. An HOURS long session I only get up to 50% context.</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">Here are my best cloud code hacks for token management. All right, so now that we kind of understand a little bit more about how cloud code works and how tokens work, let&#x27;s move into the hacks. We&#x27;re going to start here with tier one hacks. These are the ones that are going to be super easy to implement and everyone should be able to understand. So we&#x27;ve got nine of these. Number one is to start fresh conversations. Use slash clear between unrelated tasks. Number two is to disconnect MCP servers. Every single connected MCP server loads all of its tool definitions into your context on every message. So one server alone might be something like 18,000 tokens per message. All right, number three, batch prompts into one message. Three separate messages cost three times what one combined message costs because of the way the tokens work, right? Instead of summarize this as one message and then now extract the issues, now suggest a fix, send it all in one prompt. Okay, number four is to use plan mode before any real task. This lets Claude map out the approach, ask you the right questions, and it prevents the single biggest source of token waste, which is just having Claude go down the wrong path. Number five, we have run slash context and slash cost. Slash context shows you exactly what&#x27;s eating your tokens right now and slash cost shows you your actual token usage and estimated spend for that current session. So when you run slash context, this is what it will look like. It&#x27;ll…</div></details>
 </main>
 </body></html>

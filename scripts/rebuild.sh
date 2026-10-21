@@ -29,6 +29,7 @@
 #   context     build_context.py               context.md, llms.txt, llms-full.txt, ai-plugin.json
 #   render      scripts/render_template.py     collection page HTML
 #   js          scripts/catalog_js.py          window.__CATALOG wrappers for file:// previews
+#   search      scripts/build_search.sh        search_prep.py + Pagefind 1.3.0 -> site/pagefind/ (committed)
 #
 # Phases that need a human/agent in the loop (llm, curate) stop with instructions instead of running.
 set -euo pipefail
@@ -101,6 +102,7 @@ run_py api     scripts/build_api.py
 run_py context build_context.py
 run_py render  scripts/render_template.py
 run_py js      scripts/catalog_js.py
+if should_skip search; then echo "[skip] search"; else echo "[run ] search — scripts/build_search.sh"; bash scripts/build_search.sh; fi
 run_py gate    scripts/quality_gate.py
 
 echo "=== done === $(date -Is)"

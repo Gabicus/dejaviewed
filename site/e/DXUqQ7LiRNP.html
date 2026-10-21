@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">technique</span></div>
   <h1>Llama — Engineers have been quantizing the cache down for years. 8 bits works. 4 bits...</h1>
   <div class="meta">adam_rosler · 2026-04-19T18:11:58.000Z · in ai6</div>
@@ -51,5 +54,6 @@ The trick: rewrite each vector in polar form. The angle distribution is known, s
 
 Result: 3 bits per number instead of 16. Roughly 5x less memory. No finetuning, no calibration data, drops into any transformer. Long context for the price of short con…</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">Every token you send leaves a trail. That trail doesn&#x27;t shrink. It grows five times bigger. Every prompt saves two vectors per token, a key, a value. That&#x27;s the KV cash. At 32,000 tokens on Lama 70B, it&#x27;s 17 gigabytes per request. Every new token makes it bigger, so engineers quantize, squeeze the numbers down, but three bit always broke accuracy. Google&#x27;s trick rewrite each vector in polar form, radius and angle. The angles follow a known pattern so you only keep a few bits. That&#x27;s polar quant. A Johnson-Lindon Strauss rotation handles the rest with sign bits. Three bits per number instead of 16, five times less memory, no fine tuning, no calibration, drops into any transformer. Compress the cash, keep the accuracy, ship longer context.</div></details>
 </main>
 </body></html>

@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-b">B-TIER</span> <span class="pill">resource</span></div>
   <h1>Backpropagation visualized — gradients as downhill steps on the loss surface</h1>
   <div class="meta">techvrix · 2026-08-23T01:00:37.000Z · in ai8</div>
@@ -57,5 +60,6 @@ The negative gradient points in the direction of steepest descent. You can think
 
 The network repeats this process over and over, adjusting its parameters to gradually reduce error and improve…</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">We can do this efficiently by computing the slope of each of our parameters with respect to our loss, combining these slopes into a vector called the gradient, and using the gradient to make iterative updates to our weights. Let&#x27;s explore, as we did last time, how our loss varies with a single model parameter by plotting our loss as a function of m2. Our m2 parameter in our Paris neuron currently has a value of 0, resulting in a loss of 2.45. If we increase the parameter&#x27;s value to 0.1, we can recompute our outputs, and see that this increases our probability of being in Paris, according to the model, to 0.107, reducing our loss to 2.24. Now, with these two computations of our loss for different values of m2, we&#x27;ve effectively estimated the value of our slope, delta L over delta m2. This tells us that if we increase m2, our loss will go down, increasing model performance. We could theoretically do this for all six parameters in our model, and use these estimated slopes to guide the gradient descent learning process.</div></details>
 </main>
 </body></html>

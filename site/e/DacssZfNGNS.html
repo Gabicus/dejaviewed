@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-s">S-TIER</span> <span class="pill">skill</span></div>
   <h1>Blender rigid-body spaceship — motors, constraints and drivers for flight</h1>
   <div class="meta">ianhubertz · 2026-07-06T11:10:37.000Z · in ai8</div>
@@ -52,5 +55,6 @@ Also @lux.taylor.art has been documenting the whole process of making the spaces
 
 #b3d #animation #blender</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">I&#x27;m going to animate my spaceship with physics, and it turns out it wasn&#x27;t even that hard. In Blender, select the cube and hit F3, add active. It falls well through the grounding. But if we make the floor passive, it&#x27;ll stop it. You can select a few and type connect, and it creates a constraint. There&#x27;s a few options like hinge, which swings on the Z axis. That&#x27;s really useful for adding like little dangling bits and stuff, or for giving a vehicle wheels. All this is simulated. Or generic spring, which is great for like little automatic wiggling stuff. But what if you want it to drive uphill too? Let&#x27;s duplicate the constraint and turn it into a motor. Turn up the values, and it&#x27;ll work with the hinge constraint to roll off a cliff. But where it gets cool is if we make the motor&#x27;s second object something immovable, like the ground. Then a linear motor will actually push against it like a rocket. And let&#x27;s turn off gravity, because we&#x27;re in space. Now you want your thruster to be right over the object&#x27;s center of gravity, which is the yellow dot origin here, or things will get totally out of balance. Although, we could use that to turn the ship, left, right, left, right, up, down, barrel roll. But you can only control the motor you have selected. Let&#x27;s make that easier. Select the ship, and we&#x27;re going to add a new property. Call it the gas, and the juice, and the headlights. Now in the side panel, we can see these new properties. They do nothing. But if you right click copy…</div></details>
 </main>
 </body></html>

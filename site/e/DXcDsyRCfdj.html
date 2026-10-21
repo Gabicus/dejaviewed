@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">technique</span></div>
   <h1>Claude — Attention is a dot product between a query vector and a key vector. A plain dot...</h1>
   <div class="meta">adam_rosler · 2026-04-22T15:08:00.000Z · in ai6</div>
@@ -52,5 +55,6 @@ Now the dot product depends on the difference between two positions. That differ
 Position is encoded as rotation, not addition. That’s how your model knows what comes before what.
 yo…</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">You shuffled the words in your prompt and got a completely different answer. Same tokens. Different order. Different answer. Something inside the model is tracking position. Attention works like this. Every token builds two vectors, a query, and a key. The model compares them with a dot product. Big number means these two tokens are related. But a dot product has no idea which token came first. So before the comparison, both vectors get rotated by an angle proportional to their position. Token one, small rotation. Token 50, bigger rotation. Now when query and key meet, their dot product depends on the difference between their positions. That difference is how the model feels order. Position is encoded as rotation, not addition. This is called rotary position embedding. Lama uses it. GPT uses it. Gemini, Claude, deepseek, all of them. Every attention head, every layer is rotating vectors before the dot product. That is how your model knows what comes before what. Query, key, rotate.</div></details>
 </main>
 </body></html>

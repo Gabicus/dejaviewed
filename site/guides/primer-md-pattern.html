@@ -52,6 +52,151 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DVzvsgijOLT">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>primer.md — The Living Handoff Document Pattern</h1>
+<p>Attributed to: @keshavsuki (on X/Twitter), though the broader "living handoff document" lineage predates the specific primer.md naming — Yusuke Kamiyamane (@ykdojo) popularized a similar HANDOFF.md pattern, and various SESSION.md / STATE.md / CONTEXT.md variants circulate in the awesome-claude-code ecosystem. The primer.md naming and the specific "Claude rewrites it at session end" mechanic are the contribution being catalogued here.</p>
+<p>Research note: The specific @keshavsuki post was not directly recoverable through web search at the time of writing. The pattern described below is reconstructed from the broader family of handoff-document patterns it belongs to, cross-referenced with the Claude Code hook system that makes the "auto-rewrite on session end" mechanic possible. Treat specific code snippets below as reference implementations, not verbatim copies of keshavsuki's original.</p>
+<h2>What it is</h2>
+<p>primer.md is a sibling file to CLAUDE.md that serves a fundamentally different purpose:</p>
+<p>CLAUDE.md = permanent project knowledge (conventions, stack, behavioral rules). Rarely changes.</p>
+<p>primer.md = live project state (what's happening right now, what's blocked, what's next). Rewritten every session.</p>
+<p>The core mechanic: at the end of every Claude Code session, Claude rewrites primer.md with a snapshot of where the project currently stands and what the next session should do first. At the start of every session, Claude reads primer.md (via a CLAUDE.md pointer or via the additionalDirectories hook) and resumes exactly where the previous session left off — no "what were we doing again" dance, no re-reading five files to rebuild context.</p>
+<p>It is a living handoff document between Claude and its future self.</p>
+<h2>Why this pattern exists</h2>
+<p>Claude Code has no memory across sessions. Every new session starts cold. The options for rebuilding context are:</p>
+<p>Re-explain to Claude manually — slow, lossy, requires you to remember.</p>
+<p>Rely on CLAUDE.md — it holds permanent rules but not current state ("we just finished phase 2, phase 3 is blocked on the Redis migration").</p>
+<p>Use /resume — works within a single conversation thread but not across branch-switches, compactions, or new terminals.</p>
+<p>Ask Claude to write a handoff document before starting fresh — the @ykdojo pattern. Works, but requires you to remember to ask.</p>
+<p>Make the handoff document self-maintaining — the primer.md pattern. The hook handles it automatically.</p>
+<p>primer.md is option 5, and its value is that it removes the human from the loop. You never have to remember to update it.</p>
+<h2>How it works under the hood</h2>
+<p>The pattern has three parts:</p>
+<h3>1. The file itself — structured session state</h3>
+<h1>Project Primer</h1>
+<p>_Last updated: 2026-04-08 14:32 UTC (session ended)_</p>
+<h2>Current status</h2>
+<p>Phase 3 of the trading-agent-team integration. Arena wire-up is COMPLETE and green. Legion port is IN PROGRESS — we're 60% through migrating the Command tab from /finance into /unicron/command.</p>
+<h2>What changed this session</h2>
+<p>Ported ARSENAL tab component + its three sub-widgets (bot cards, metric</p>
+<p>rows, status dots). Tests green.</p>
+<p>Discovered: the old Legion Command chart code depends on Plotly 5.x;</p>
+<p>/unicron is on Plotly 6.x. Needs shim or upgrade.</p>
+<p>Added your CSS vars to src/styles/legion-theme.css.</p>
+<h2>Next up (start here)</h2>
+<p>Resolve the Plotly version mismatch — decide: shim or upgrade all of unicron.</p>
+<p>Relevant files: src/charts/LegionChart.tsx, package.json (line 42).</p>
+<p>Finish migrating RANKINGS tab (parallel structure to ARSENAL — should</p>
+<p>be ~30 min if Plotly is resolved).</p>
+<p>Run full visual-regression suite before declaring Phase 3 done.</p>
+<h2>Blockers</h2>
+<p>Plotly version decision (above). Needs your input if we go the</p>
+<p>upgrade route since it touches other tabs.</p>
+<h2>Open questions</h2>
+<p>Does the old session_state singleton in legion_command.py need to</p>
+<p>survive the port, or can we replace it with Zustand like the rest of unicron?</p>
+<h2>Don't forget</h2>
+<p>The .env in /unicron has a placeholder HL_PRIVATE_KEY — you</p>
+<p>need to set this before running live.</p>
+<p>Arena's WebSocket reconnect logic is the reference implementation for</p>
+<p>any new real-time wiring.</p>
+<p>Key sections:</p>
+<p>Current status — one paragraph, no more. Where is the project right now?</p>
+<p>What changed this session — delta from last primer. Keeps momentum visible.</p>
+<p>Next up — explicit ordered list. First item should be immediately actionable by a fresh Claude with zero other context.</p>
+<p>Blockers — things that need human input or external resolution.</p>
+<p>Open questions — uncertainties worth surfacing before the next session dives in.</p>
+<p>Don't forget — sharp edges, gotchas, state that lives outside the code (env vars, external services, half-applied migrations).</p>
+<h3>2. The CLAUDE.md anchor — tell Claude the file exists</h3>
+<p>Add this to your project CLAUDE.md:</p>
+<h2>Session continuity</h2>
+<p>At the start of every session: read primer.md first. It contains</p>
+<p>the current project state and next steps from the previous session.</p>
+<p>Follow the "Next up" list unless the user redirects.</p>
+<p>At the end of every session: rewrite primer.md from scratch.</p>
+<p>Do not append — the file is a snapshot, not a log.</p>
+<p>Structure: Current status / What changed / Next up / Blockers / Open</p>
+<p>questions / Don't forget.</p>
+<p>Keep it under 150 lines. If it's growing, something is wrong — the</p>
+<p>project has either stalled or needs a real retro.</p>
+<h3>3. The hook — automate the rewrite</h3>
+<p>Claude Code hooks (configured in .claude/settings.json) can run arbitrary commands on lifecycle events. The relevant one here is the Stop hook — fires when a session ends (user exits, or agent finishes its final turn).</p>
+<p>{ "hooks": { "Stop": [ { "matcher": "", "hooks": [ { "type": "command", "command": "claude -p 'Rewrite primer.md to reflect the current project state. Use the structure defined in CLAUDE.md under Session continuity. Do not append — replace the file entirely. Be specific about what the next session should do first.' --allowedTools Read,Write,Glob,Grep" } ] } ] } }</p>
+<p>How this works:</p>
+<p>Session ends → Stop hook fires.</p>
+<p>The hook spawns a fresh claude -p (non-interactive) subprocess.</p>
+<p>That subprocess reads the current transcript context (via the CLAUDE_TRANSCRIPT_PATH env var the hook provides), analyzes what happened, and writes a new primer.md.</p>
+<p>The subprocess is restricted to Read,Write,Glob,Grep — it can't accidentally run tests, commit, or touch anything else.</p>
+<p>Next session starts → reads primer.md per the CLAUDE.md instruction → resumes cleanly.</p>
+<p>Alternative: PreCompact hook. If your sessions are long and you rely on compaction rather than explicit exits, use the PreCompact hook instead. Same logic, fires before Claude Code compresses context rather than when the session terminates.</p>
+<p>Alternative: manual command. If you don't want automation, add a slash command:</p>
+<h1>.claude/commands/prime.md</h1>
+<p>Rewrite primer.md with the current project state per the structure in CLAUDE.md. Then summarize what you wrote in 2 sentences.</p>
+<p>Now /prime at the end of any session does the same thing without a hook.</p>
+<h2>Key mechanics</h2>
+<p>What makes primer.md different from HANDOFF.md / SESSION.md / a changelog:</p>
+<p>Snapshot, not log. It is rewritten, not appended to. This is critical — a log grows unboundedly and loses the "what matters now" signal. A snapshot stays focused.</p>
+<p>Self-maintaining via hook. The human never types it. This is what keshavsuki's contribution adds over the manual handoff pattern.</p>
+<p>Action-oriented "Next up." The first line of the first next-up item should be immediately executable. No "continue working on the thing" — specific file, specific change.</p>
+<p>Paired with CLAUDE.md, not replacing it. CLAUDE.md is permanent rules; primer.md is state. Don't conflate them.</p>
+<h2>Quick start</h2>
+<h1>1. Create the file with a starter template</h1>
+<p>cd my-project cat &gt; primer.md &lt;&lt;'EOF'</p>
+<h1>Project Primer</h1>
+<p>_Last updated: [session init]_</p>
+<h2>Current status</h2>
+<p>Project just bootstrapped. No work yet.</p>
+<h2>Next up</h2>
+<p>Define what we're actually building.</p>
+<p>EOF</p>
+<h1>2. Add the CLAUDE.md anchor</h1>
+<h1>(paste the "Session continuity" block above into CLAUDE.md)</h1>
+<h1>3. Configure the Stop hook</h1>
+<h1>Edit .claude/settings.json and paste the hook JSON above</h1>
+<h1>4. Start a session, do some work, exit</h1>
+<p>claude (work happens) exit</p>
+<h1>5. Verify primer.md was rewritten</h1>
+<p>cat primer.md</p>
+<p>If the hook didn't fire, check claude --debug output and .claude/settings.json syntax — hooks silently skip on JSON errors.</p>
+<h2>Cross-reference: how this complements your MEMORY.md system</h2>
+<p>you already run a related but distinct pattern at ~/.claude/projects/ /memory/MEMORY.md — an index of per-topic memory files covering feedback, projects, and references. It is auto-updated across conversations and provides a global knowledge substrate.</p>
+<p>The overlap:</p>
+<p>Both patterns solve the "Claude has no memory across sessions" problem.</p>
+<p>Both are markdown files that Claude reads at session start.</p>
+<p>Both get written back to by Claude, not by hand.</p>
+<p>The differences:</p>
+<p>Dimension your MEMORY.md primer.md</p>
+<p>Scope Global across all projects Single project Shape Index pointing to many sub-files Single self-contained snapshot Lifetime Permanent — entries accumulate over months Ephemeral — rewritten every session Granularity Learnings, project summaries, reference docs Active state + next steps Update trigger forge / retro / manual capture Stop hook at session end What it answers "What do I know about you and his projects?" "Where did we stop and what's next?"</p>
+<p>They are complementary, not redundant. MEMORY.md says "project_unicron.md: Arena fully wired end-to-end, Legion port pending" — the high-altitude state. A primer.md inside ~/projects/unicron/ would add "Legion port is 60% done, blocked on Plotly version mismatch, next file to touch is src/charts/LegionChart.tsx line 42."</p>
+<p>Recommendation for you: Adopt primer.md per-project for active builds (unicron, trading-agent-team, ai-catalogs). Keep MEMORY.md as the global flywheel it already is. The primer.md hook can even update MEMORY.md at project milestones — fold "session ended" into "if this was a significant milestone, also update the relevant project_.md in MEMORY.md."</p>
+<h2>Gotchas</h2>
+<p>Rewrite, don't append. The moment you start appending, primer.md becomes a changelog and loses its "next session starts here" focus. Enforce this in the CLAUDE.md anchor.</p>
+<p>The Stop hook runs a second Claude call. That's extra tokens and a few seconds of latency on exit. Worth it for important projects; overkill for throwaway scripts.</p>
+<p>Hook failures are silent by default. Test the hook with claude --debug the first time you set it up. JSON syntax errors in .claude/settings.json kill hooks without warning.</p>
+<p>Don't put secrets in primer.md. It's meant to be committable. If you need to note "set HL_PRIVATE_KEY before running," reference the variable name, never the value.</p>
+<p>Git commit it. primer.md should be in version control so team members (or your future self on a different machine) can pick up state too.</p>
+<p>Size discipline. Target ~100 lines. If it balloons past 200, the project has either stalled (too many open questions accumulating) or needs a real retrospective — not a longer primer.</p>
+<p>Don't read primer.md in CLAUDE.md twice. If you load primer.md via additionalDirectories AND reference it in CLAUDE.md, Claude sees it twice. Pick one mechanism.</p>
+<h2>What we could build with it</h2>
+<p>A primer-md skill that formalizes the rewrite discipline with a structured prompt — handles the rewrite-not-append rule, enforces the section structure, checks length budget.</p>
+<p>A /prime slash command with a PreCompact + Stop hook preset — one-command setup for any project.</p>
+<p>A primer.md → MEMORY.md bridge — if the session ended with a significant milestone, also update your global memory index.</p>
+<p>A fleet primer dashboard — scan all projects under ~/projects/, read each primer.md, render a single "status across all projects" view. Natural fit with your /flywheel and /status skills.</p>
+<p>A primer-diff alarm — alert if primer.md hasn't changed in N days (project stalled) or if the same "Next up" item has persisted for N sessions (blocked, needs human intervention).</p>
+<p>A Git-aware primer — cross-check primer.md's "What changed" section against actual git log since last rewrite, flag discrepancies (primer lies, or work that never got committed).</p>
+<h2>Sources</h2>
+<p>Claude Code Session Commands gist (Tmeister)</p>
+<p>iannuttall/claude-sessions — session tracking slash commands</p>
+<p>willseltzer/claude-handoff — handoff document automation</p>
+<p>@ykdojo — "write a handoff document before starting fresh"</p>
+<p>ykdojo/claude-code-tips — handoff skill SKILL.md</p>
+<p>Claude-Command-Suite — session/handoff-continue command</p>
+<p>Never Lose Your Flow: Smart Handoff for Claude Code</p>
+<p>Claude Code handoff skill gist (edwilde)</p>
+<p>Feature request: Auto-documentation on CLI session exit (issue #3401)</p>
+<p>Feature request: Session Handoff / Continuity Support (issue #11455)</p>
+<p>Claude Code memory docs</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># primer.md — The Living Handoff Document Pattern
 
 **Attributed to:** @keshavsuki (on X/Twitter), though the broader "living handoff document" lineage predates the specific `primer.md` naming — Yusuke Kamiyamane (@ykdojo) popularized a similar `HANDOFF.md` pattern, and various `SESSION.md` / `STATE.md` / `CONTEXT.md` variants circulate in the awesome-claude-code ecosystem. The `primer.md` naming and the specific "Claude rewrites it at session end" mechanic are the contribution being catalogued here.

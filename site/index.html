@@ -34,6 +34,14 @@
 .btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3));border-color:rgba(167,139,250,.55);color:#fff}
 .btn.primary:hover{filter:brightness(1.18);color:#fff}
 .btn .g{font-size:13px;line-height:1}
+/* Hero search — submits to search.html?q= (Pagefind) */
+.hsearch{display:flex;align-items:center;gap:8px;margin-top:14px;max-width:520px;padding:4px 4px 4px 12px;border-radius:8px;background:rgba(0,0,0,.35);border:1px solid var(--border-hi);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hsearch:focus-within{border-color:rgba(167,139,250,.6)}
+.hsearch .d{font:700 13px/1 'JetBrains Mono',monospace;color:var(--accent)}
+.hsearch input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--text);font:500 13px/1.2 'JetBrains Mono',monospace;padding:8px 0}
+.hsearch input::placeholder{color:var(--text-mute)}
+.hsearch button{min-height:34px;padding:0 14px;border-radius:6px;border:1px solid rgba(167,139,250,.45);background:rgba(167,139,250,.18);color:#fff;font:800 11px/1 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.hsearch button:hover{background:rgba(167,139,250,.3)}
 
 /* BAN grid (hero right) */
 .statwrap{padding:18px;background:rgba(18,18,26,.6);border:1px solid var(--border);border-radius:var(--radius)}
@@ -186,6 +194,11 @@ footer.site code{font-family:'JetBrains Mono',monospace;color:var(--accent)}
         <a class="btn primary" href="catalog.html"><span class="g">◉</span> Browse the catalog</a>
         <a class="btn" href="guides/"><span class="g">◆</span> Read the guides</a>
       </div>
+      <form class="hsearch" action="search.html" method="get" role="search">
+        <span class="d" aria-hidden="true">$</span>
+        <input type="search" name="q" placeholder="search saves, transcripts, guides…" aria-label="Search entries, guides and deep dives" autocomplete="off">
+        <button type="submit">Search</button>
+      </form>
     </div>
     <div class="statwrap" aria-label="Live catalog stats">
       <div class="stats" id="stats"></div>
@@ -438,7 +451,7 @@ footer.site code{font-family:'JetBrains Mono',monospace;color:var(--accent)}
       .slice(0, 8);
     const freshEl = $('fresh');
     fresh.forEach(({e, t}) => {
-      const img = el('img', { src: e.thumb_path || ('thumb/' + encodeURIComponent(e.post_id || e.id) + '.jpg'),
+      const img = el('img', { src: 'thumb/' + encodeURIComponent(String(e.post_id || e.id).replace(/\//g, '_')) + '.jpg',  // thumbs saved with '/'->'_'; catalog thumb_path keeps the raw '/'
                               alt:'', loading:'lazy', decoding:'async' });
       img.addEventListener('error', function(){ this.remove(); });
       const type = String(e.type||'').toLowerCase();

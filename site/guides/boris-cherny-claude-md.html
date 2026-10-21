@@ -52,6 +52,135 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DV6QY8QjoRW">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Boris Cherny's CLAUDE.md — The Canonical Template</h1>
+<p>Author of the pattern: Boris Cherny — Anthropic staff engineer, creator of Claude Code (originally built as a side project in his first month at Anthropic; by the time Claude Code launched publicly in May 2025, over 80% of Anthropic's engineers were using it daily).</p>
+<p>Why it matters: Boris's own CLAUDE.md and the workflow rules he published on X became the de facto template that the wider community now cargo-cults. If you've seen a CLAUDE.md with sections like "Workflow Orchestration," "Self-Improvement Loop," and "Verification Before Done," you're looking at a descendant of Boris's file. His team at Anthropic keeps a CLAUDE.md in git at roughly 2.5k tokens — the reference weight class.</p>
+<p>This guide reconstructs the template, explains why each section exists, and compares it to a real-world global CLAUDE.md setup.</p>
+<h2>What it is</h2>
+<p>CLAUDE.md is the single highest-leverage file in the Claude Code harness. Claude Code injects it into the context window at the start of every session, before the user's first message. It's the only persistent memory primitive that survives compaction, resumes, and cross-session restarts. Nothing else — not chat history, not subagent output, not tool results — is guaranteed to stick.</p>
+<p>Boris's core insight: CLAUDE.md is a compounding asset. Every correction you give Claude should be distilled into a rule in CLAUDE.md, so future sessions never make the same mistake twice. The file is not documentation for humans — it is a behavioral contract for the model.</p>
+<h2>How it works under the hood</h2>
+<p>Claude Code auto-discovers ./CLAUDE.md (project), ~/.claude/CLAUDE.md (global), and .claude/CLAUDE.md in parent dirs (walks up the tree).</p>
+<p>All discovered files are concatenated and prepended to the system prompt.</p>
+<p>/init scaffolds a starter CLAUDE.md by scanning the project (language, framework, build/test commands, style).</p>
+<p># prefix in a normal Claude message auto-appends that line to CLAUDE.md — Boris's favorite shortcut for the self-improvement loop.</p>
+<p>Target weight: under 200 lines / under 2-3k tokens. Larger files measurably reduce instruction adherence — Claude starts "forgetting" rules buried mid-file.</p>
+<h2>Key mechanics (Boris's rules, annotated)</h2>
+<p>Boris's publicly posted rules crystallize into these sections. The exact wording varies by gist (there are at least four circulating community copies), but the structure is consistent:</p>
+<h3>1. Workflow Orchestration — "Plan first, execute second"</h3>
+<h2>Workflow</h2>
+<p>For any non-trivial task (3+ steps or architectural decisions), enter plan mode first.</p>
+<p>Write the plan to disk before executing. Get explicit approval before you start editing files.</p>
+<p>Break work into phases. Each phase ends with a verification step.</p>
+<p>Never start coding without a written goal and a verification strategy.</p>
+<p>Why: Claude's default behavior is to dive in. Forcing a written plan makes the model's reasoning visible, lets the human catch bad assumptions cheaply, and creates a contract it can check itself against later. This is the pattern the Superpowers writing-plans + executing-plans chain formalizes.</p>
+<h3>2. Subagents — "Keep the main context clean"</h3>
+<h2>Subagents</h2>
+<p>Use subagents liberally. The main conversation is a precious resource.</p>
+<p>Dispatch anything exploratory (searching, reading unknown files, running tests) to a subagent.</p>
+<p>Subagents return summaries, not transcripts. You don't burn tokens on the tool noise.</p>
+<p>Parallelize independent tasks — spawn 3-5 subagents at once rather than serially.</p>
+<p>Why: The main context window is where the actual planning and decision-making happens. Every file you read, every failed test output, every grep result eats tokens that could be used for reasoning. Subagents are a context-compression mechanism.</p>
+<h3>3. Verification Before Done — "Never claim completion without proof"</h3>
+<h2>Verification</h2>
+<p>Before claiming any task is complete: run the tests, run the linter, run the type checker.</p>
+<p>If the user's request implies "it should work" — prove it works end-to-end, don't just compile.</p>
+<p>If you wrote a function, write a test. If you wrote a test, run it. If it fails, fix it.</p>
+<p>Never say "done" if you haven't verified. Say "I believe this is done pending X."</p>
+<p>Why: The single most common failure mode of LLMs is confident false completion. Boris's rule: the model must produce evidence, not assertion.</p>
+<h3>4. Self-Improvement Loop — "Every correction becomes a rule"</h3>
+<h2>Self-Improvement</h2>
+<p>When I correct you, end your response with:</p>
+<p>"Updating CLAUDE.md so I don't make this mistake again."</p>
+<p>Then actually update CLAUDE.md with a new rule that would have prevented the mistake.</p>
+<p>Ruthlessly edit CLAUDE.md over time. Delete rules that no longer apply. Merge duplicates.</p>
+<p>Why: This is the compounding mechanism. Boris's own quote: "Invest in your CLAUDE.md. After every correction, end with 'Update your CLAUDE.md so you don't make that mistake again.' Claude is effective at writing rules for itself." Over weeks, Claude's mistake rate on your codebase measurably drops.</p>
+<h3>5. Autonomous Bug Fixing — "Reproduce, then fix"</h3>
+<h2>Bugs</h2>
+<p>Before fixing: reproduce the bug with a failing test.</p>
+<p>The test must fail for the right reason (the bug), not a different reason (typo, missing import).</p>
+<p>Only then write the fix. Re-run the test. Confirm it passes. Run the full suite.</p>
+<p>If the bug is ambiguous, ask for clarification before coding.</p>
+<p>Why: Mirrors TDD discipline and cuts the "fixed something unrelated" failure mode.</p>
+<h3>6. Project context (the boilerplate head of the file)</h3>
+<h1>Project Name</h1>
+<p>Language: Python 3.12 Framework: FastAPI + SQLAlchemy Package manager: uv Tests: pytest (run with uv run pytest) Lint: ruff (run with uv run ruff check) Typecheck: mypy (strict mode)</p>
+<h2>Conventions</h2>
+<p>Prefer dataclasses over dicts for structured data.</p>
+<p>All public functions get type hints.</p>
+<p>Never use print — use the logging module.</p>
+<p>Tests live in tests/ mirroring src/ layout.</p>
+<p>Why: This is the cheap, obvious part everyone gets right. It's the behavioral rules above that distinguish Boris's template from a README.</p>
+<h2>Quick start</h2>
+<h1>In any project, scaffold a starter file</h1>
+<p>cd my-project claude /init</p>
+<h1>Then iterate — every time Claude makes a mistake, tell it:</h1>
+<p>"That was wrong. Update CLAUDE.md so you don't do it again."</p>
+<h1>Or use the # shortcut to append a rule inline</h1>
+<p># Always run uv run pytest not pytest</p>
+<h1>Keep it lean — check length regularly</h1>
+<p>wc -l CLAUDE.md # target: under 200 lines</p>
+<p>Copy-paste starter (drop into any project root):</p>
+<h1>[Project Name]</h1>
+<p>[One-line description.]</p>
+<p>Stack: [language, framework, package manager] Build: [command] Test: [command] Lint: [command]</p>
+<h2>Workflow</h2>
+<p>For any task with 3+ steps, enter plan mode. Write the plan before editing.</p>
+<p>Use subagents for exploration, searching, and reading unknown files.</p>
+<p>Never claim "done" without running tests + lint + typecheck.</p>
+<h2>Conventions</h2>
+<p>[Style rule 1]</p>
+<p>[Style rule 2]</p>
+<h2>Verification</h2>
+<p>Before shipping: [test command] &amp;&amp; [lint command] &amp;&amp; [typecheck command]</p>
+<p>All must pass. No exceptions.</p>
+<h2>Bugs</h2>
+<p>Reproduce with a failing test before fixing.</p>
+<p>Test must fail for the right reason.</p>
+<h2>Self-improvement</h2>
+<p>When corrected, update this file with a rule that would have prevented the mistake.</p>
+<p>Every rule in this file earned its place by catching a real bug.</p>
+<h2>Contrast with a global CLAUDE.md</h2>
+<p>A production global CLAUDE.md (~/.claude/CLAUDE.md) is a fundamentally different genre than Boris's per-project file. Key differences worth understanding:</p>
+<p>Dimension Boris's template Global orchestrator</p>
+<p>Scope Per-project behavioral contract Global meta-orchestrator across ALL projects Length ~200 lines, ~2.5k tokens ~250 lines but dense with tables Focus Workflow discipline (plan → execute → verify) Skill routing + knowledge base pointers Self-improvement loop Yes — "every correction becomes a rule" Implicit via forge/retro/flywheel skills Trigger mapping Not present Extensive — keyword → skill table Domain knowledge Project-specific conventions AI3 resource catalog, installed plugins/MCPs Security rules Not present Top-level CRITICAL block on secret protection</p>
+<p>What a global file does that Boris's doesn't:</p>
+<p>Maps user trigger words to specific skill invocations (Boris has no skills system at his abstraction level).</p>
+<p>Treats the knowledge flywheel (/flywheel, /forge, /inject) as default-on.</p>
+<p>Enumerates the installed plugin/MCP inventory so Claude knows what tools exist.</p>
+<p>Points to an external resource catalog (ai3-resources/) that the agent can cross-reference.</p>
+<p>What Boris's file does that a global file typically doesn't:</p>
+<p>Explicit plan-mode gating for non-trivial tasks.</p>
+<p>Explicit verification-before-done discipline (a global file may delegate this to a verification-before-completion superpower).</p>
+<p>The self-improvement loop as a first-class mechanic ("every correction becomes a rule").</p>
+<p>Lean, project-specific behavioral rules with teeth.</p>
+<p>The gap to close: A global CLAUDE.md can be excellent at orchestration but light on direct behavioral discipline — relying on the skill layer to enforce plan mode, TDD, and verification. Boris's pattern pushes that discipline directly into the file so it's enforced even in lightweight sessions where no skill was explicitly invoked. A hybrid per-project CLAUDE.md that inherits global triggers and adds a Boris-style Workflow/Verification/Self-improvement block would capture both.</p>
+<h2>Gotchas</h2>
+<p>Length creep kills adherence. Past ~300 lines, Claude starts ignoring rules in the middle of the file. Ruthlessly prune.</p>
+<p>CLAUDE.md is not documentation. Don't write prose, write rules. "The foo module does X" is dead weight; "Always use the foo module's safe_parse, never parse" is a rule with teeth.</p>
+<p>Rules without teeth are ignored. "Prefer X" is weaker than "Never Y." Boris's negative-constraint framing ("NEVER commit with --no-verify") works because it names the exact failure mode.</p>
+<p>The self-improvement loop only works if you actually run it. The discipline is: every time you correct Claude, ask it to update CLAUDE.md. If you skip that step once, the loop is broken.</p>
+<p>Global + project files concatenate. Don't repeat global rules in every project file — Claude reads both.</p>
+<p>Community gists are not canonical. There are at least four different "Boris's CLAUDE.md" gists circulating. They agree on structure but differ on wording. Treat them all as reference, not gospel.</p>
+<h2>What we could build with it</h2>
+<p>A per-project CLAUDE.md generator that fuses global orchestration rules with Boris's behavioral discipline blocks, auto-populated from project introspection (stack detection, test/lint commands).</p>
+<p>A CLAUDE.md linter that flags length creep, rule duplication, weak positive framing, and un-earned rules (rules without git blame showing a corresponding correction).</p>
+<p>A self-improvement loop hook — a PostToolUse hook that detects user corrections in the transcript and prompts Claude to propose a CLAUDE.md diff.</p>
+<p>A rule-provenance tracker — every rule in CLAUDE.md links back to the commit/conversation that introduced it, so stale rules can be pruned with evidence.</p>
+<h2>Sources</h2>
+<p>How Boris Uses Claude Code (compiled site)</p>
+<p>Boris Cherny's CLAUDE.md gist (hqman mirror)</p>
+<p>boris-team-tips.md gist (joyrexus mirror)</p>
+<p>Boris Cherny's Workflow Orchestration agent.md (gavinwright-engr)</p>
+<p>Claude Code setup from Boris Cherny (Artur-at-work)</p>
+<p>Inside the Development Workflow of Claude Code's Creator — InfoQ</p>
+<p>How the Creator of Claude Code Actually Uses Claude Code — Push to Prod</p>
+<p>Writing a good CLAUDE.md — HumanLayer blog</p>
+<p>XDA: I set up Claude Code the way its creator does</p>
+<p>Boris Cherny on Threads — "Invest in your CLAUDE.md"</p>
+<p>Claude Code memory docs</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Boris Cherny's CLAUDE.md — The Canonical Template
 
 **Author of the pattern:** Boris Cherny — Anthropic staff engineer, creator of Claude Code (originally built as a side project in his first month at Anthropic; by the time Claude Code launched publicly in May 2025, over 80% of Anthropic's engineers were using it daily).

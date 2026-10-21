@@ -109,7 +109,10 @@ def render_html(deeper: dict) -> str:
         tier_cls = f"t{e.get('tier', 'C')}"
         safe_id = e["id"].replace("/", "_")
         post_url = e.get("url", "")
+        has_thumb = (DEEPER_DIR.parent / "thumb" / f"{safe_id}.jpg").is_file()
         thumb_html = f'<a href="{_esc(post_url)}" target="_blank" rel="noopener"><img src="../thumb/{safe_id}.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display=\'none\'"></a>' if post_url else f'<img src="../thumb/{safe_id}.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display=\'none\'">'
+        if not has_thumb:  # no file on disk -> no <img> (avoids a 404 per page view)
+            thumb_html = ''
         title_html = f'<a href="{_esc(post_url)}" target="_blank" rel="noopener" class="dd-entry-title">{_esc(e.get("title", e["id"]))}</a>' if post_url else f'<div class="dd-entry-title">{_esc(e.get("title", e["id"]))}</div>'
         entries_html += f'''<div class="dd-entry">
   {thumb_html}
@@ -187,7 +190,7 @@ a.dd-entry-title:hover{{text-decoration:underline;color:var(--accent)}}
 </div>
 
 <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
-  Deeper Dive generated {deeper.get("generated_at", "")} · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+  Deeper Dive generated {deeper.get("generated_at", "")} · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
 </div>
 </main>
 </body></html>'''

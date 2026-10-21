@@ -52,6 +52,122 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DWtgbzLDgwm">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Onyx — Self-Hosted Open-Source ChatGPT / Claude Replacement</h1>
+<p>GitHub: https://github.com/onyx-dot-app/onyx Stars: ~26,100 License: MIT (Community Edition); Enterprise Edition is source-available with paid add-ons Stack: Python (~63%), TypeScript (~31%), Go (~2%) Repo path: repos/onyx/ (clone pending — sandbox blocked git clone in this session; run git clone https://github.com/onyx-dot-app/onyx.git repos/onyx manually)</p>
+<h2>What it is</h2>
+<p>Onyx (formerly Danswer) is the most mature open-source "ChatGPT for your company" you can actually self-host in a weekend. It's a full application layer on top of LLMs that ships with:</p>
+<p>A polished chat UI (multi-user, rooms, saved chats, custom personas)</p>
+<p>Agentic RAG over your own documents with hybrid vector + keyword indexing</p>
+<p>50+ first-party connectors that crawl SaaS tools (Slack, Notion, Google Drive, Confluence, Jira, Gmail, GitHub, Salesforce, etc.) and keep them synced</p>
+<p>Pluggable LLM backends — Anthropic, OpenAI, Gemini, OR fully local via Ollama / vLLM / LiteLLM</p>
+<p>Deep Research mode (ranked top on their internal leaderboard as of early 2026)</p>
+<p>Web search, code execution sandboxes, voice mode, image generation, MCP actions</p>
+<p>Custom Agents ("Assistants") with configurable instructions, tools, and knowledge scopes</p>
+<p>It's basically the piece of infrastructure you'd build yourself if you wanted a personal/team knowledge layer that indexes everything you touch and lets an LLM agent search, reason, and act across it — but someone already built it, productized it, and open-sourced the core under MIT.</p>
+<h2>How it works</h2>
+<p>Onyx is a classic modern RAG stack, but thoughtfully assembled:</p>
+<p>Ingestion layer</p>
+<p>Connectors are Python modules that pull documents from sources on a schedule</p>
+<p>Each document gets chunked, cleaned, metadata-enriched, and embedded</p>
+<p>Embeddings are stored in a Vespa-based vector + keyword hybrid index (they previously used Typesense/others; Vespa is the current default)</p>
+<p>Access-control metadata is tracked per-document so permission boundaries are respected at query time</p>
+<p>Query layer</p>
+<p>User query goes through an agentic planner (the "agent search" loop)</p>
+<p>Planner can decompose the question, run multiple sub-retrievals, chain web search + internal RAG, execute code in a sandbox, and call tools/MCP actions</p>
+<p>Retrieved chunks are reranked, filtered by permissions, and stuffed into the LLM prompt with citations</p>
+<p>The LLM backend is whatever you configure — cloud (Anthropic/OpenAI/Gemini) or local (Ollama/vLLM)</p>
+<p>Infrastructure</p>
+<p>Postgres for metadata, users, chat history</p>
+<p>Vespa (default) for the hybrid search index</p>
+<p>Redis for caching and rate limiting</p>
+<p>Celery workers for background jobs (indexing, connector syncs, reranking)</p>
+<p>MinIO (S3-compatible) for blob storage (uploaded files, attachments)</p>
+<p>Model servers — separate containers that run embedding + reranker + optional local LLM</p>
+<p>Nginx in front of the Next.js frontend and FastAPI backend</p>
+<p>There's a Lite mode that strips the heavy search stack and runs as just a chat UI with BYO LLM, fitting in under 1 GB RAM. That's the right starting point if you just want "ChatGPT UI for my local Ollama" and will add RAG later.</p>
+<h2>Connectors (highlights)</h2>
+<p>Onyx ships with 50+ connectors; the commonly useful ones for a personal/power-user setup:</p>
+<p>Knowledge &amp; docs: Notion, Confluence, Google Drive, Dropbox, Box, OneDrive, S3, local file upload, generic web crawler, sitemap</p>
+<p>Chat &amp; communication: Slack, Discord, Microsoft Teams, Gmail, Outlook</p>
+<p>Dev tools: GitHub, GitLab, Bitbucket, Jira, Linear, Asana, ClickUp, Productboard</p>
+<p>CRM / support: Salesforce, HubSpot, Zendesk, Freshdesk, Intercom, Gong</p>
+<p>Databases / BI: Airtable, Mixpanel, generic SQL, Google Sheets</p>
+<p>Media / code: YouTube transcripts, ReadTheDocs, Sharepoint, Axero</p>
+<p>Generic: Requests-based web crawler, file upload, MCP actions for everything else</p>
+<p>Each connector handles auth (OAuth, API key, service account), incremental sync, deletion propagation, and ACL metadata.</p>
+<h2>LLM backend options</h2>
+<p>Onyx doesn't lock you in:</p>
+<p>Cloud: Anthropic (Claude family), OpenAI (GPT-4/5), Google Gemini, Azure OpenAI, AWS Bedrock</p>
+<p>Self-hosted: Ollama (easy), vLLM (fast, GPU-hungry), LiteLLM proxy (universal adapter)</p>
+<p>Embeddings: Defaults to a local sentence-transformers model running in a sidecar; can swap for OpenAI/Cohere/Voyage</p>
+<p>Rerankers: Local cross-encoder or hosted (Cohere Rerank)</p>
+<p>You can mix: cheap local embeddings + Claude for final synthesis is a great config. Routing per-assistant is supported — one assistant uses Claude, another uses a local Mistral.</p>
+<h2>System requirements</h2>
+<p>Full Onyx (production / power user):</p>
+<p>Docker + Docker Compose</p>
+<p>16 GB RAM minimum (32 GB recommended once you turn on reranker + local embedding)</p>
+<p>~20 GB disk for the stack + whatever your document corpus demands</p>
+<p>GPU optional — only needed if you want a local LLM via vLLM. Embeddings are CPU-fine.</p>
+<p>Lite mode:</p>
+<p>Docker + Compose</p>
+<p>~1 GB RAM</p>
+<p>Any BYO LLM endpoint</p>
+<p>OS: Linux is the blessed path; macOS/Windows via Docker Desktop works but is heavier.</p>
+<h2>Quick start (Docker self-host)</h2>
+<p>git clone https://github.com/onyx-dot-app/onyx.git cd onyx/deployment/docker_compose</p>
+<h1>Copy and edit env vars (at minimum: set an LLM provider key</h1>
+<h1>or point GEN_AI_API_ENDPOINT at your Ollama)</h1>
+<p>cp .env.template .env $EDITOR .env</p>
+<h1>Boot the full stack</h1>
+<p>docker compose -f docker-compose.dev.yml up -d</p>
+<h1>Wait ~2 minutes for model servers and Vespa to warm up</h1>
+<h1>Then hit http://localhost:3000 and create the admin account</h1>
+<p>Key env vars to know:</p>
+<p>AUTH_TYPE — disabled / basic / google_oauth / oidc</p>
+<p>GEN_AI_MODEL_PROVIDER and matching API key — or point at a local endpoint</p>
+<p>INDEX_BATCH_SIZE — tune for your RAM</p>
+<p>POSTGRES_, VESPA_, REDIS_ — default internal containers work fine</p>
+<p>For Lite mode:</p>
+<p>cd onyx/deployment/docker_compose docker compose -f docker-compose.lite.yml up -d</p>
+<p>For Kubernetes/Helm/Terraform there are official charts in deployment/kubernetes/ and deployment/helm/ — Onyx is genuinely production-ready if you want to run it for a team.</p>
+<h2>Gotchas</h2>
+<p>Vespa is a memory hog. Budget 4-8 GB just for the index container on a real corpus. The Lite stack avoids this.</p>
+<p>First-time indexing is slow. Connectors run on a schedule; kick them manually from the admin UI the first time and go make coffee.</p>
+<p>Embeddings model download. First boot pulls the sentence-transformers model — don't panic when the model server takes 3 minutes to come up.</p>
+<p>Enterprise feature fences. Some advanced features (SSO variations, SCIM, advanced RBAC, some analytics) are gated behind the Enterprise Edition. The free MIT Community Edition is still excellent.</p>
+<p>LLM cost on cloud backends. Deep Research + agentic search can make lots of LLM calls per question. Cap it with a local model or rate limits if cost is a concern.</p>
+<p>Auth-by-default in dev. Set AUTH_TYPE=disabled for local single-user; otherwise you're creating admin accounts every reset.</p>
+<h2>How you could self-host it as a personal knowledge layer</h2>
+<p>The right use case for Onyx in your stack isn't "replace Claude Code" — it's become the permanent index and chat layer over everything that isn't code. Claude Code handles the coding loop; Onyx becomes the searchable memory of everything else.</p>
+<p>A realistic personal setup:</p>
+<p>Run Onyx full stack on the dev box or a small home server (16 GB RAM, Docker Compose). Put it behind Tailscale or Cloudflare Tunnel so it's reachable from anywhere without exposing ports.</p>
+<p>Connect the sources that matter:</p>
+<p>Local file connector pointed at ~/projects/ (all the project notes, markdown, guides, MEMORY.md files)</p>
+<p>GitHub connector on your repos (Unicron, trading-agent-team, ai-catalogs, ai3-resources)</p>
+<p>Notion / Google Drive if anything lives there</p>
+<p>Gmail if you want the chat agent to search email</p>
+<p>YouTube transcripts for channels you study</p>
+<p>LLM backend: Claude via API for the chat/reasoning, local sentence-transformers for embeddings (free, good enough). Optionally add Gemini as a second provider for the cost sensitive Deep Research mode.</p>
+<p>Create Assistants per domain:</p>
+<p>"Trading Research" — scoped to trading-agent-team + strategy repos + crypto guides</p>
+<p>"Unicron Engineer" — scoped to unicron repo + legion-command docs</p>
+<p>"Design System" — scoped to ai-catalogs + frontend-design references</p>
+<p>"Personal Memory" — scoped to MEMORY.md + session transcripts</p>
+<p>Point Claude Code at Onyx via MCP. Onyx exposes an MCP server; add it to ~/.claude/settings.json so Claude Code can query your personal knowledge base mid-coding-session. This is the real unlock: agentic RAG across your entire second brain, on tap, inside Claude Code.</p>
+<p>Schedule connector syncs so the index stays fresh without thinking about it.</p>
+<p>Onyx effectively becomes a persistent, queryable, permissioned superset of MEMORY.md and the knowledge flywheel — with a UI, multi-user support, and the ability to pull in sources way beyond what you'd manually curate.</p>
+<h2>What we could build with it</h2>
+<p>Personal research assistant that has read every one of your guides, post-mortems, trading notes, and project docs — queryable in natural language with citations</p>
+<p>Trading intelligence hub — index strategy papers, post-mortems, ensemble results, challenge-game leaderboards; ask "what did we learn about pyramiding" and get a cited answer</p>
+<p>Team/collaborator portal — if you ever onboards anyone into Unicron or the trading work, Onyx becomes the zero-effort knowledge handoff</p>
+<p>MCP bridge — expose Onyx as an MCP server to Claude Code so every session starts with full access to your second brain without manual context injection</p>
+<p>Deep Research over private data — run Onyx's agent loop on your own corpus, not the public web, for post-mortems and strategy reviews</p>
+<p>Voice-mode memory chat — use Onyx's voice UI for hands-free "what do we know about X" queries while coding</p>
+<p>Permissioned sharing — if you ever publish part of the knowledge base, ACL-aware retrieval means public and private sources can coexist in the same chat</p>
+<h2>Bottom line</h2>
+<p>Onyx is the rare self-hosted project where the docker-compose actually works, the connector list is deep, and the agent layer is genuinely modern. It's the right tool to become your persistent personal knowledge layer — indexing everything, queryable by Claude Code via MCP, surviving across sessions. The cost is 16 GB of RAM and an afternoon of setup. Very high-leverage install.</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Onyx — Self-Hosted Open-Source ChatGPT / Claude Replacement
 
 **GitHub:** https://github.com/onyx-dot-app/onyx

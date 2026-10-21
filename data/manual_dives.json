@@ -1726,6 +1726,340 @@
     "DbwH5S2hnfO"
    ],
    "created_at": "2026-10-21"
+  },
+  {
+   "id": "dd-insight-agent-mission-control",
+   "title": "Mission Control for 80 Agents — Conway's law meets game UI",
+   "class": "creative_fusion",
+   "thesis": "Once you run more than a handful of agents, the bottleneck is your attention, not tokens. Creative technologists are already prototyping the answer without naming it — Bot Crossing puts 80 agents on a tiny planet where they raise hands for help, AgentCraft runs them as Minecraft workers in isolated worktrees, a TouchDesigner sketch commands agents by gesture, a Quest 3 canvas directs them spatially. Casey Muratori's point that Conway's law now applies to agents says the interface and the agent org chart are the same design problem. Feed a Booking.com-style trace bus into a game-engine front end and you get a control room where structure is visible.",
+   "why_it_matters": "Solo operators running Founder-OS-style setups spend their day polling terminals. A spatial view that surfaces only blocked agents, and whose layout mirrors how work is partitioned, lets one person supervise ten times more agents without reading every log.",
+   "novelty": "Agent dashboards in the catalog are text panels and notch widgets; the game and gesture prototypes are mostly non-functional art. Nobody has wired real tracing into the playful front ends, and nobody has used Conway's law to decide which agents should sit next to each other.",
+   "entry_ids": [
+    "DczR-QlSMdK",
+    "DeIfDwPI_ma",
+    "DctoIMltaNN",
+    "DcNrwpyiRlh",
+    "DdY7NUbDys2",
+    "DbSjJT7sLUf",
+    "Dcl3dEJAjo0",
+    "Dd-WP0FtFA6",
+    "DbaFoAUMvnK",
+    "DW2J0eUDKHM",
+    "DVQ5o6YDfsp"
+   ],
+   "connection_map": {
+    "DczR-QlSMdK": "Front end — agents as characters that raise hands when blocked",
+    "DeIfDwPI_ma": "Orchestration model — Foreman plus isolated-worktree workers inside a game",
+    "DctoIMltaNN": "Input layer — gestures as commands, from the TouchDesigner world",
+    "DcNrwpyiRlh": "Spatial layer — directing coding agents on an XR infinite canvas",
+    "DdY7NUbDys2": "Design law — split agent work only along slow communication boundaries",
+    "DbSjJT7sLUf": "Corollary — the reverse Conway maneuver: design the org to get the architecture you want",
+    "Dcl3dEJAjo0": "Plumbing — traces normalized onto a durable bus, with PII redaction, before any UI",
+    "Dd-WP0FtFA6": "Scale case — 17 always-on agents for one person, the load this UI must carry",
+    "DbaFoAUMvnK": "Minimal baseline — a notch widget showing who is working and who is waiting",
+    "DW2J0eUDKHM": "Human role — supervision means reading plans, not pressing Y",
+    "DVQ5o6YDfsp": "Parallelism source — 3-5+ worktrees per person is already the norm"
+   },
+   "quality_rating": 3,
+   "execution_difficulty": "Experimental",
+   "value_type": "craft",
+   "action_sketch": [
+    "Emit one JSON event per agent state change (started, blocked, needs-review, done) from your harness hooks onto a local queue — Redis or a file tail is enough to start",
+    "Point Bot Crossing (or a 200-line Three.js scene) at that queue so blocked agents visibly raise hands; cluster agents by the repo/module they own to make the Conway structure visible",
+    "Run a week with dashboard versus without and log minutes-to-unblock per blocked agent",
+    "Falsifier: if minutes-to-unblock does not drop by at least a third versus a plain notification, the game layer is decoration and a notch widget wins"
+   ],
+   "prerequisites": [
+    "A multi-agent setup with hooks",
+    "Basic Three.js or TouchDesigner",
+    "Willingness to treat this as an art-tech experiment first"
+   ],
+   "suggested_by": "curated",
+   "pinned": true,
+   "lens": "agentic leverage",
+   "created_at": "2026-10-21"
+  },
+  {
+   "id": "dd-insight-one-dancer-thousand-bodies",
+   "title": "One Dancer, a Thousand Bodies — Ensemble Choreography from Herd Physics",
+   "class": "emergent_capability",
+   "thesis": "Crystal Pite's ensemble pieces make dozens of dancers move like one organism, and that takes a company and months of rehearsal. Now webcam mocap captures one dancer, text-to-motion models spin out variations, and the quant collection's Ising herding model supplies the missing rule: one temperature knob that moves a crowd from noise to sudden collective turns. That last step is a market model used here as a choreographic score.",
+   "why_it_matters": "A solo dancer or animator can compose crowd choreography with real intention — not a boids screensaver — and render it with production cloth physics. It's a new kind of score: the choreographer sets coupling and temperature, and the dancer's signature motion spreads through the crowd.",
+   "novelty": "Ensemble choreography, mocap, flocking and the Ising model sit in four different collections. The existing generative-art dive uses boids as pretty motion. Nobody uses phase transitions as a compositional device for human movement.",
+   "entry_ids": [
+    "Dagn3XLsyrW",
+    "DYAI_fCuvrY",
+    "Tencent-Hunyuan/HY-Motion-1.0",
+    "DTsn_IKE06E",
+    "DVndfhOE7A9",
+    "DdCBqmzJgbW",
+    "DYuY_-7Oqk4",
+    "DacssZfNGNS",
+    "DeuZ4BnhCqA"
+   ],
+   "connection_map": {
+    "Dagn3XLsyrW": "The target aesthetic — Pite's mass ensemble moving as a single organism",
+    "DYAI_fCuvrY": "Capture — FreeMoCap turns ordinary webcams into markerless 3D mocap of the one dancer",
+    "Tencent-Hunyuan/HY-Motion-1.0": "Variation — text-to-3D-motion fills the crowd with variants that still read as human",
+    "DTsn_IKE06E": "The score — Ising coupling and temperature give order-to-chaos transitions and symmetry breaking",
+    "DVndfhOE7A9": "Spatial layer — boids plus pressure-field herding keep bodies from colliding and let you steer the mass",
+    "DdCBqmzJgbW": "Wildcard — RL reward hacking shows how agents invent unintended movement; a source of strange gestures",
+    "DYuY_-7Oqk4": "Finish — GPU cloth solver gives a thousand costumes penetration-free fabric",
+    "DacssZfNGNS": "Live control — Blender drivers and gamepad input let you conduct temperature in real time",
+    "DeuZ4BnhCqA": "Glue — the agent writes the Blender Python that wires capture, crowd and render together"
+   },
+   "quality_rating": 3,
+   "execution_difficulty": "Experimental",
+   "value_type": "craft",
+   "action_sketch": [
+    "Capture 5 minutes of one dancer with FreeMoCap (2–3 webcams), retarget to a Blender rig, and generate 20 variants of each phrase with HY-Motion prompts",
+    "Have Claude write a Blender script: 200–1,000 instances on a lattice, each with an Ising spin (which phrase or facing to adopt) updated by neighbor coupling, plus boids spacing; expose temperature as a driver on a gamepad axis",
+    "Render a 90-second piece where you drop temperature through the critical point live, then add PPF cloth to a 50-body subset for the hero shot",
+    "Falsifier: if viewers describe it as a screensaver or particle effect rather than a crowd of people with intention, the herd score isn't carrying meaning"
+   ],
+   "prerequisites": [
+    "GPU workstation",
+    "A dancer willing to be captured",
+    "Comfort with Blender Python or an agent that is"
+   ],
+   "suggested_by": "curated",
+   "pinned": true,
+   "lens": "creative fusion",
+   "created_at": "2026-10-21"
+  },
+  {
+   "id": "dd-insight-album-as-device",
+   "title": "The Album Is a Device Again — Offline Generative Music Objects",
+   "class": "creative_fusion",
+   "thesis": "Tristan Perich already shipped a symphony as a chip in a CD case. Google's Gemma Translator shows a full speech model stack running offline on a Pi 5 with a printable case and parts list. Local voice cloning fits in 100M parameters, and memory LCDs sip power. Put those together and a song can be a small object that performs a slightly different take every time it plays — the artist's own voice and stems, recombined on device, forever, with no server.",
+   "why_it_matters": "Musicians get a physical edition that streaming can't flatten — each object unique, each play unrepeatable — at a bill of materials a small run can carry. It turns a release back into something you own instead of license.",
+   "novelty": "The catalog has the art reference (1-Bit Symphony), the hardware recipe (Pi translator, memory display, NFC triggers) and local audio models, but in separate music, creative and ai8 posts. No one in it proposes generative, on-device releases.",
+   "entry_ids": [
+    "Db22ptPy577",
+    "Db61Q1SCqtQ",
+    "Db0vxQexdJI",
+    "DcJNZeBxR2D",
+    "DZoREIHtMjL",
+    "DbwH5S2hnfO",
+    "DWEccXSDIb9",
+    "DdYbBL5IlNq",
+    "DeuZ4BnhCqA"
+   ],
+   "connection_map": {
+    "Db22ptPy577": "Precedent — a composition housed as a chip in a CD case; code as score, object as release",
+    "Db61Q1SCqtQ": "Hardware recipe — full offline model pipeline on a Pi 5 with BOM and printable STL case",
+    "Db0vxQexdJI": "Audio models — 100M-parameter local voice cloning and CPU-only model streaming",
+    "DcJNZeBxR2D": "Display — near-zero-power memory LCD for liner notes or a live score that changes per play",
+    "DZoREIHtMjL": "Interaction — NFC taps as physical triggers to pick movements or moods",
+    "DbwH5S2hnfO": "Proof that printed enclosures plus open CAD and a BOM make a credible product",
+    "DWEccXSDIb9": "Musical material — drone and free-reed textures that stay musical under recombination",
+    "DdYbBL5IlNq": "Philosophy — Gould's humming: the performance artifact becomes the signature",
+    "DeuZ4BnhCqA": "Audio and SFX generated as code, the same move applied inside the object"
+   },
+   "quality_rating": 3,
+   "execution_difficulty": "Hard",
+   "value_type": "income",
+   "action_sketch": [
+    "Prototype on a Pi Zero 2 or Pi 5: a Python player that recombines 8–12 stems of one song by seeded rules (order, mutes, tempo drift) so no two plays match; no ML yet",
+    "Add a local voice layer — Pocket TTS or a small cloned-voice model speaking or singing a variable spoken-word line — plus a memory LCD showing the play number and today's arrangement",
+    "Print 10 cases from the Gemma Translator STL as a base, price the run, and pre-sell to existing listeners",
+    "Falsifier: if listeners in a blind test prefer the fixed studio take every time, or the BOM forces a price above what 10 fans will pay, the format is a curio"
+   ],
+   "prerequisites": [
+    "A song with multitrack stems",
+    "Raspberry Pi and basic soldering",
+    "3D printer access"
+   ],
+   "suggested_by": "curated",
+   "pinned": true,
+   "lens": "creative fusion",
+   "created_at": "2026-10-21"
+  },
+  {
+   "id": "dd-insight-selling-to-agents",
+   "title": "Selling to Agents — metered data for buyers that don't have eyes",
+   "class": "arbitrage_opportunity",
+   "thesis": "Three saves describe one gap. Quality publishers block AI crawlers, so AI search cites whatever is left. AI assistants favor the sponsored option in 18 of 23 models, so they are steerable buyers. Software is going headless, so agents pick tools by speed, cost and accuracy instead of interface. x402 revives HTTP 402 so an agent can pay a stablecoin micropayment per request. A one-person owner of a clean niche dataset can sit exactly in that gap — machine-legible, crawler-reachable, and metered.",
+   "why_it_matters": "This is distribution without an audience. The buyer is an agent that never sees your landing page, so a solo builder with good data competes on structure and price, not on ads. DejaViewed's own catalog and API are the obvious first item to sell.",
+   "novelty": "The payment rail sits in stock3, the crawler blockade and headless-software argument in ai8, the agent-bias study in ai7, and llms.txt in ai4. None of these posts puts a price on a dataset for machine buyers. Everyone in the catalog is still optimizing to be cited for free.",
+   "connection_map": {
+    "DdAT0p1xg94": "x402 — HTTP 402 plus stablecoin micropayments, the toll gate",
+    "DdY6zn0hDff": "Stablecoin plumbing under the GENIUS Act — the rail is becoming bank-grade",
+    "Db4DLZIh5a3": "Quality publishers block AI crawlers, so AI search reads the leftovers — the supply gap",
+    "DYN0298n2H5": "Agents favor the sponsored option — machine buyers are steerable, so being the honest, legible cheap option wins",
+    "DeWzqDXJ3ff": "Headless software and MCP — agents choose tools on speed, cost and accuracy, not UI",
+    "DWxmSwTDFk2": "llms.txt got a local shop recommended by ChatGPT — the free discovery layer that points to the paid one",
+    "DaEH4BJMxRX": "AI Overviews can be gamed by self-assertion — the low-quality competition you are priced against",
+    "DcX_QwDjvH-": "Compact numbered page views for agents — what a machine-first response format looks like",
+    "Dd6izTYiln1": "Agents are blocked on Reddit and X without workarounds — demand for clean, permitted access is real"
+   },
+   "quality_rating": 3,
+   "execution_difficulty": "Medium",
+   "value_type": "income",
+   "action_sketch": [
+    "Expose one niche dataset you own (start with the DejaViewed catalog's api/ JSON) as a free llms.txt summary plus a richer x402-metered endpoint with structured, citation-ready records.",
+    "Wrap the same endpoint as an MCP server and list it publicly so Claude and other agents can find it; log every request, free and paid, with user agent.",
+    "Run a 60-day A/B on price per call (free, 0.1c, 1c) and track how often your records show up in Perplexity and ChatGPT answers.",
+    "falsifier: if after 60 days you see plenty of free crawls but close to zero paid calls, agents are not buying yet. The demand side doesn't exist and this is a 2027 idea, not a 2026 one."
+   ],
+   "prerequisites": [
+    "A dataset that is genuinely yours to sell",
+    "A stablecoin wallet and an x402-capable server library",
+    "Basic MCP server skills"
+   ],
+   "suggested_by": "curated",
+   "pinned": true,
+   "lens": "capital & markets",
+   "entry_ids": [
+    "DdAT0p1xg94",
+    "DdY6zn0hDff",
+    "Db4DLZIh5a3",
+    "DYN0298n2H5",
+    "DeWzqDXJ3ff",
+    "DWxmSwTDFk2",
+    "DaEH4BJMxRX",
+    "DcX_QwDjvH-",
+    "Dd6izTYiln1"
+   ],
+   "created_at": "2026-10-21"
+  },
+  {
+   "id": "dd-insight-ai-capex-credit-lens",
+   "title": "The AI Capex Stack — reading it like a credit analyst",
+   "class": "emergent_capability",
+   "thesis": "An ex-Morgan Stanley structurer explains that CoreWeave-style GPU loans have a thin tail: loan, contract and GPU useful life are nearly the same length, so the bull case rests on hourly rental prices after contracts end. Other saves price that number from the demand side: open weights flipped to about 80% of token volume in 12 weeks, DeepSeek serves near-frontier agents at $0.28 per million tokens, a 27B model runs on one gaming GPU, and a $200 subscription buys about $7,000 of API usage. Token deflation is a direct input to post-contract GPU rental rates, and nobody in the catalog connects them.",
+   "why_it_matters": "You can track the one variable the neocloud debt depends on with public price pages and a scheduled agent. Physical infrastructure with real order books, like chillers, is a different bet from GPU-hour rental, and this lens separates them.",
+   "novelty": "The catalog files these as unrelated news clips across ai8, stock3, ai5 and creative. Linking token price deflation to the residual-value risk in GPU-backed loans is the new step, and you can test it with public data.",
+   "connection_map": {
+    "DehLFj6ON6C": "The credit structure — 90-95% advance rates and a thin tail; post-contract GPU rental is the bull case",
+    "DeIOphnT7Yq": "Open-weight share flip to 80% — demand moving to cheaper tokens",
+    "DbjmqTYJfMY": "Cheap mixture-of-experts closing on frontier agent benchmarks at $0.28 per million tokens",
+    "DcCdYgnJ10h": "A 27B agentic model on one 24GB card — inference leaving the data center",
+    "DdMoE8qhnKE": "Subscriptions priced at a small fraction of API usage — the retail token price is already subsidized",
+    "DaA6cGsyQp3": "Cooling hardware with real order books — physical infrastructure as the contrasting bet",
+    "DWWUXtNDlS1": "A fund at 25x NAV — the habit of checking price against underlying value",
+    "DXFzEoeCW6S": "SaaS sell-off — markets already repricing the software layer"
+   },
+   "quality_rating": 3,
+   "execution_difficulty": "Medium",
+   "value_type": "knowledge",
+   "action_sketch": [
+    "Schedule an agent to log daily H100/B200 hourly rental prices from public marketplaces and the cheapest per-million-token price for three model tiers on OpenRouter into one table.",
+    "Pull neocloud debt and contract maturities from public filings and plot rental price against the period when large contracts roll off.",
+    "Write a monthly one-page note: is GPU-hour price falling faster than token volume is rising? Paper only, no positions.",
+    "falsifier: if GPU-hour rental prices hold flat or rise while token prices fall, usage growth (Jevons) is absorbing the deflation and the tail-risk thesis is wrong."
+   ],
+   "prerequisites": [
+    "Comfort reading public filings",
+    "A scheduled agent and a spreadsheet",
+    "Not financial advice — this is a research tracker"
+   ],
+   "suggested_by": "curated",
+   "pinned": true,
+   "lens": "capital & markets",
+   "entry_ids": [
+    "DehLFj6ON6C",
+    "DeIOphnT7Yq",
+    "DbjmqTYJfMY",
+    "DcCdYgnJ10h",
+    "DdMoE8qhnKE",
+    "DaA6cGsyQp3",
+    "DWWUXtNDlS1",
+    "DXFzEoeCW6S"
+   ],
+   "created_at": "2026-10-21"
+  },
+  {
+   "id": "dd-insight-counterparty-forensics",
+   "title": "Who's Across the Table — forensics for the system trading against you",
+   "class": "life_leverage",
+   "thesis": "Across the catalog, the systems you interact with are quietly optimizing against you: a puzzle game runs an on-device XGBoost model to time difficulty to your ad value, overnight and intraday returns run as a decades-long sawtooth, a bedroom spoofer tripped depth-reading algorithms in the 2010 Flash Crash, wash trading inflates crypto volume, and exchanges sold speed to HFTs. Agent-plus-Ghidra decompilation and cheap tick data mean one person can now audit the counterparty instead of guessing about it.",
+   "why_it_matters": "This is game theory made practical: before you look for edge, measure the edge that's already being taken from you — your fills, the hours you hold, the apps you pay. It's defensive leverage, and it often turns into an offensive idea, like simply holding overnight.",
+   "novelty": "The catalog stores these as stories and outrage clips in stock2, stock3, quant, creative and ai8. None turns them into a personal audit you can run with today's tools.",
+   "connection_map": {
+    "DecfvksvHiW": "Block Blast decompiled — on-device model tuning difficulty to ad value, the clearest 'house edge' case",
+    "DerpSl6D8pX": "REA MCP — agent-driven Ghidra decompilation with cited evidence, the audit tool (authorized use only)",
+    "DeF6WMaB-NX": "Knuteson's overnight/intraday sawtooth — a claim to replicate, not trust",
+    "DcbkTCnOxjl": "Second take on the overnight anomaly, with the retail-at-open mechanism",
+    "DYnlB8vJC56": "Spoofing and the Flash Crash — how depth-reading algorithms get gamed",
+    "DdZiaTmJdSC": "Wash trading — reported volume as the counterparty's marketing",
+    "Dc83KJvzPrC": "Direct feeds versus the SIP — who pays for speed",
+    "DWu_CQnjZjn": "Breadth-based reversal — what the fast counterparty is actually doing to your weekly losers",
+    "DXhxXHOEY7v": "Encrypted traffic still leaks activity — the general lesson that timing and volume give intent away"
+   },
+   "quality_rating": 3,
+   "execution_difficulty": "Easy",
+   "value_type": "knowledge",
+   "action_sketch": [
+    "Split two years of SPY and QQQ returns into close-to-open and open-to-close legs, then subtract realistic open-gap spreads to see whether the overnight leg survives costs.",
+    "Export your own broker fills and compare each to the NBBO at the time, so you measure the price improvement or slippage you actually got.",
+    "For one paid or free-to-play app you use, run REA MCP on your own install and list every model or rule that adapts to you (authorized analysis only).",
+    "falsifier: if the overnight leg disappears after costs and your fills match or beat the NBBO, the counterparty isn't taking much from you at your size — move your effort to the strategy-loop dive."
+   ],
+   "prerequisites": [
+    "Free daily open/close price data",
+    "Broker fill export",
+    "Ghidra and REA MCP for the app audit"
+   ],
+   "suggested_by": "curated",
+   "pinned": true,
+   "lens": "capital & markets",
+   "entry_ids": [
+    "DecfvksvHiW",
+    "DerpSl6D8pX",
+    "DeF6WMaB-NX",
+    "DcbkTCnOxjl",
+    "DYnlB8vJC56",
+    "DdZiaTmJdSC",
+    "Dc83KJvzPrC",
+    "DWu_CQnjZjn",
+    "DXhxXHOEY7v"
+   ],
+   "created_at": "2026-10-21"
+  },
+  {
+   "id": "dd-insight-mocap-as-reward",
+   "title": "Mocap as Reward — teaching cheap robots to move like you",
+   "class": "emergent_capability",
+   "thesis": "The Microduck RL demo shows the classic failure: a loose reward function makes the robot 'stand' in a way nobody intended. The catalog also holds the fix, scattered across collections. FreeMoCap turns a webcam into markerless motion capture, HY-Motion produces motion from text on robot skeletons, and Blender plus a GPU contact solver can rehearse physical contact. Use captured or generated motion as an imitation reward on a cheap open robot. The reward-design trial and error becomes 'show it what you mean'.",
+   "why_it_matters": "Hobby robotics is gated by reward engineering more than by hardware. A webcam reference clip gives an individual the motion-prior pipeline that only labs used to have, for small expressive robots, animatronics and installations.",
+   "novelty": "The robotics entries and the motion and animation entries never reference each other. HY-Motion explicitly supports robot skeletons, yet it's filed as an animation tool. Nobody in the catalog points it at Microduck's reward-hacking problem.",
+   "connection_map": {
+    "DdCBqmzJgbW": "The problem: PPO on Microduck reward-hacks a loose objective",
+    "DYAI_fCuvrY": "Reference source: webcam markerless mocap, 500+ landmarks",
+    "Tencent-Hunyuan/HY-Motion-1.0": "Reference source: text-to-motion on human and robot skeletons",
+    "DacssZfNGNS": "Rehearsal: Blender rigid bodies, motors and drivers to prototype motion physically",
+    "DYuY_-7Oqk4": "Rehearsal: GPU contact solver for soft/cloth contact cases",
+    "DXvvNRssb64": "Counterpoint: passive mechanical stability needs little AI — design the body first",
+    "C3X9J-wCQps": "Target use: animatronic sculpture that should move with intent, not just stand"
+   },
+   "quality_rating": 3,
+   "execution_difficulty": "Experimental",
+   "value_type": "capability",
+   "action_sketch": [
+    "Reproduce the Microduck standing run in its sim with 4,096 envs; confirm the reward hack.",
+    "Record a 10-second webcam clip of a 'bob and look around' motion with FreeMoCap (or generate one with HY-Motion), retarget to Microduck's joints, and add a pose-tracking imitation term to the reward.",
+    "Compare policies: reward-only vs reward + imitation, scored by a blind viewer on 'looks intentional' and by joint-tracking error; deploy the winner to hardware if you have it.",
+    "Falsifier: if retargeting human motion to a duck-scale robot body produces infeasible joint targets that the policy can't track better than the plain reward, the motion prior is the wrong shape for small robots."
+   ],
+   "prerequisites": [
+    "GPU for parallel sim (Isaac/MuJoCo)",
+    "Comfort with RL training configs",
+    "Optional: Microduck hardware build"
+   ],
+   "suggested_by": "curated",
+   "pinned": true,
+   "lens": "physical_knowledge",
+   "entry_ids": [
+    "DdCBqmzJgbW",
+    "DYAI_fCuvrY",
+    "Tencent-Hunyuan/HY-Motion-1.0",
+    "DacssZfNGNS",
+    "DYuY_-7Oqk4",
+    "DXvvNRssb64",
+    "C3X9J-wCQps"
+   ],
+   "created_at": "2026-10-21"
   }
  ],
  "classes": {

@@ -92,6 +92,7 @@ Skip phases with `--skip <phase>[,<phase>...]`. Phases (in order):
 | `transcribe` | `scripts/transcribe.py --all --local-only` | Whisper from local mp4 (GPU int8_float32 → CPU fallback) |
 | `sync` | `scripts/cms.py rebuild` | parquet → catalog.json — MUST run before enrich (lesson #50) |
 | `enrich` | `scripts/enrich_entries.py --sweep` | Heuristic tools/techniques/domains/tier/title pass |
+| `verify` | `scripts/ig_refresh_captions.py [--apply]` | Re-fetch caption/creator/date per post with page-id verification; fixes stale-page scrapes |
 | `llm` | `scripts/llm_enrich_batches.py export/merge` | Batches for enrichment agents (title/summary/tier/tags from caption+transcript+OCR); merge back |
 | `gate` | `scripts/quality_gate.py` | Hard gates: 0 bad titles, S ≤15%, every video transcribed or reason logged, every entry thumbed |
 | `curate` | `scripts/curation_export.py` | Digest for the researcher curation pass (Phase 5c) |
@@ -1057,6 +1058,8 @@ No build step required — everything is pre-rendered static files.
 49. **"video" in media_type can be a carousel.** Media-info API `media_type: 8` = carousel → OCR slides, not Whisper. Four such entries sat as "video download failures" for months.
 
 50. **`enrich_entries.py` reads `site/catalog.json`, not parquet.** Any parquet-only edit (media_type fix, user_notes, recovered transcripts) made since the last export gets overwritten by the next sweep. ALWAYS `python3 scripts/cms.py rebuild` right before `enrich_entries.py --sweep`, and re-run the quality gate after.
+
+51. **Page-text caption scrapes can read the PREVIOUS post.** The July-2026 `ab_scrape_posts.py` run attached the prior page's caption/creator to some entries ("Edited" as creator, caption contradicting the transcript). Transcripts from yt-dlp-by-URL were right. Any scrape that navigates then reads must verify the page's `instagram://media?id=` equals the shortcode-decoded pk first — `scripts/ig_refresh_captions.py` does this and prefers the media-info API; run it (`--apply`) on any collection scraped before Oct 2026 and re-enrich the entries it changes.
 
 ## Output Checklist
 

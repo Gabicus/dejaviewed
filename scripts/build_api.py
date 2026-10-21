@@ -21,6 +21,21 @@ SITE = ROOT / "site"
 API = SITE / "api"
 API.mkdir(exist_ok=True)
 
+
+def _safe_slug(rid: str) -> str:
+    """Must match render_entries.safe_slug (entry page filename)."""
+    return "".join(c if c.isalnum() or c in "-_" else "_" for c in rid)
+
+
+def _thumb_rel(e: dict) -> str:
+    """Site-relative thumb path that actually exists on disk ('' if none).
+    Thumbs are saved as thumb/<id with '/' -> '_'>.jpg (dots kept)."""
+    pid = e.get("post_id") or e.get("id") or ""
+    if not pid:
+        return ""
+    rel = f"thumb/{pid.replace('/', '_')}.jpg"
+    return rel if (SITE / rel).is_file() else ""
+
 def main():
     data = json.loads((SITE / "catalog.json").read_text(encoding="utf-8"))
     entries = data["entries"]
@@ -81,7 +96,7 @@ def main():
             "tools": e.get("tools", []), "techniques": e.get("techniques", []),
             "domains": e.get("domains", []), "medium": e.get("medium", ""),
             "style_tags": e.get("style_tags", []), "tags": e.get("tags", []),
-            "thumb": f'thumb/{e.get("post_id","")}.jpg' if e.get("post_id") else "",
+            "thumb": _thumb_rel(e),
         } for e in entries]
     }, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -121,7 +136,7 @@ def main():
     from xml.sax.saxutils import escape as _esc
     # every real top-level page, guide and deeper-dive page that exists on disk
     for page in sorted(SITE.glob("*.html")):
-        if page.name in ("index.html", "graph.html", "graph-cosmos.html", "board.html", "admin.html"):
+        if page.name in ("index.html", "graph.html", "graph-cosmos.html", "board.html", "admin.html", "rate.html"):
             continue
         sitemap.append(f'  <url><loc>https://dejaviewed.dev/{_esc(page.name)}</loc><priority>0.7</priority></url>')
     for sub, pri in (("guides", "0.9"), ("deeper", "0.8"), ("about", "0.5"), ("links", "0.4")):
@@ -140,7 +155,9 @@ def main():
         eid = e.get("id", "")
         if eid:
             from xml.sax.saxutils import escape
-            sitemap.append(f'  <url><loc>https://dejaviewed.dev/e/{escape(eid)}.html</loc><priority>0.5</priority></url>')
+            # entry pages are written under render_entries.safe_slug(id) — ids with '/' or '.'
+            # (e.g. "MoonshotAI/Kimi-K2.5") live at e/MoonshotAI_Kimi-K2_5.html
+            sitemap.append(f'  <url><loc>https://dejaviewed.dev/e/{escape(_safe_slug(eid))}.html</loc><priority>0.5</priority></url>')
     sitemap.append('</urlset>')
     (SITE / "sitemap.xml").write_text("\n".join(sitemap), encoding="utf-8")
 

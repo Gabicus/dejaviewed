@@ -168,6 +168,32 @@ def transcribe_one(row: dict, model_size: str, out_dir: Path) -> tuple[dict, str
     if row.get("transcript"):
         return row, "skipped-has"
     media_type = (row.get("media_type") or "").lower()
+    pid = row.get("post_id") or ""
+    # Carousels: transcribe every local slide video (<post_id>_slide<N>.mp4), joined in order
+    if media_type == "carousel":
+        slides = sorted((ROOT / "data" / "media").glob(f"{pid}_slide*.mp4"),
+                        key=lambda p: int(p.stem.rsplit("slide", 1)[1]))
+        if not slides:
+            return row, "skipped-no-video"
+        parts = []
+        for sl in slides:
+            probe = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries",
+                                    "stream=codec_type", "-of", "csv=p=0", str(sl)],
+                                   capture_output=True, text=True)
+            if "audio" not in probe.stdout:
+                continue  # silent slide
+            try:
+                text = transcribe_local(sl, model_size)
+            except Exception as e:  # noqa: BLE001
+                print(f"[transcribe] slide {sl.name} failed: {e}", file=sys.stderr)
+                text = None
+            if text:
+                parts.append(f"[slide {sl.stem.rsplit('slide', 1)[1]}] {text}")
+        row = dict(row)
+        row["transcript"] = "\n".join(parts) or "(no speech detected)"
+        row["transcript_source"] = "whisper_local"
+        row["transcript_at"] = datetime.now().replace(microsecond=0).isoformat(timespec="seconds")
+        return row, "ok"
     # Only attempt video-ish entries
     if media_type and media_type not in ("video", "reel", "mp4"):
         return row, "skipped-no-video"
@@ -229,13 +255,16 @@ def main(argv=None):
         targets = [
             r for r in rows
             if (args.force or not r.get("transcript"))
-            and (r.get("media_type") or "").lower() in ("video", "reel", "mp4")
+            and ((r.get("media_type") or "").lower() in ("video", "reel", "mp4")
+                 or ((r.get("media_type") or "").lower() == "carousel"
+                     and any((ROOT / "data" / "media").glob(f"{r.get('post_id','')}_slide*.mp4"))))
         ]
     else:
         print("[transcribe] specify --id <id> or --all", file=sys.stderr); return 1
 
     if args.local_only:
-        targets = [r for r in targets if (ROOT / "data" / "media" / f"{r.get('post_id','')}.mp4").exists()]
+        targets = [r for r in targets if (ROOT / "data" / "media" / f"{r.get('post_id','')}.mp4").exists()
+                   or any((ROOT / "data" / "media").glob(f"{r.get('post_id','')}_slide*.mp4"))]
     if args.limit:
         targets = targets[: args.limit]
 

@@ -17,6 +17,18 @@ Updated: 2026-10-21
 - **Skill:** Phase 0 v3, Phase 5c, phase table, lessons #45–50. Public copy synced (`skills/dejaviewed/`), overlay updated with collection ids + coverage.
 - Outreach files + dev screenshots moved out of `site/` into `outreach/`.
 
+## PAUSED mid-run (Oct 21 evening) — resume here first
+
+Caption refresh was stopped at a checkpoint (152/549 pre-October entries verified; `data/caption_refresh.json`). To resume, in order:
+1. Start CDP Chrome + attach: `bash <scratchpad>/start_cdp.sh` equivalent — see SKILL.md Phase 0 v3 (Chrome must be closed first; log into Instagram in regular Chrome if the saved page shows "Log In").
+2. `python3 scripts/ig_refresh_captions.py --codes-file <old codes>` (old codes = IG entries not in data/new_items_2026-10-21.json). Resumes from the cache. ~6 s/post.
+3. `python3 scripts/ig_refresh_captions.py --apply` → data/caption_refresh_changed.json lists entries whose caption/creator changed.
+4. Export those ids with `scripts/llm_enrich_batches.py export --ids <file>` → Opus enrichment agents (data/llm_batches/SPEC.md) → merge.
+5. Finish tier re-rate: data/llm_retier/out_01-03.json exist (merge tier-only for entries whose caption did NOT change); batches 04-06 still need an agent (first agent was stopped by a safety classifier mid-write; grade on caption where transcript mismatches).
+6. Also fix in parquet: entry DehlIB2PT4h takeaway link maths.tcd.ie (dead → Wikipedia Broom Bridge), entry repo github.com/open-multi-agent/scaffold (deleted → note).
+7. Regen chain: cms rebuild → deep_dives → deeper_dives --all-curated → build_guides → build_landing_meta → digest → cms rebuild → build_api → build_context → catalog_js → build_search.sh → quality_gate → commit → push → live check.
+Already live after the Oct 21 evening push: site search, link fixes, rate.html + instruments, dedupe/link-check scripts, carousel slide transcripts, lesson 51. NOT yet regenerated on site: the 7 promoted dives (manual_dives.json has 45; site shows 38) — step 7 picks them up.
+
 ## Next up
 
 1. ~~Landing redesign~~ DONE Oct 21 (merged 05f9bec): index.html = showcase, catalog.html = full catalog, nav Catalog·Guides·Graphs·Board·About, Admin out of nav. `build_landing_meta.py` runs after guides/deeper regen.
@@ -24,6 +36,23 @@ Updated: 2026-10-21
 3. Carousel slide videos (few) untranscribed — add to transcribe.py targets if wanted.
 4. Old collections ai2/ai4/ai7/quant S-rate 20–29% (July manual regrade) — gate warns; decide whether to re-tier with the LLM rubric.
 5. Deeper-version items not yet built: pHash dedupe, embeddings-based clustering/search (Pagefind), lychee link check, blind kappa re-rate, IG data-export reconciliation.
+
+## Next run — Victor setup items (Oct 21 aside: analytics, money, reach)
+
+**Victor does (needs dashboard/login):**
+1. Cloudflare → Web Analytics → add `dejaviewed.dev` with automatic injection for Pages. Site has NO analytics beacon today → zero page-view data.
+2. Create API token (Account Analytics: Read + Zone Analytics: Read) → save as `CLOUDFLARE_API_TOKEN=...` in `~/.config/cloudflare/dejaviewed.env` (chmod 600), never in chat. Then Fable pulls GraphQL reports: human vs bot share, which crawlers hit /api/ + llms.txt, top pages, Web Vitals.
+3. `! npx wrangler login` (token expired Oct 21) so wrangler deploy fallback works.
+4. Apply for Cloudflare **Pay Per Crawl** (private beta; HTTP 402 for Web-Bot-Auth crawlers). Pocket change at this scale, free to enable.
+5. Google Search Console + Bing Webmaster: submit sitemap.xml (957 URLs).
+
+**Fable does (queued):**
+6. OG/meta description tags on every guide/entry page (unfurls on X/LinkedIn/Discord).
+7. Social: 45 curated dives → one thread each via dejaviewed.social pipeline.
+8. Register llms.txt on llmstxt directories (llmstxt.site, directory.llmstxt.cloud).
+9. `/accessibility-audit` on index/catalog/guides — contrast on dim mono labels likely fails.
+10. RSS/Atom feed for new entries + dives.
+11. Optional: x402 Worker on /api/* (402 + stablecoin price for agents, free for humans). Demand unproven — build only as an experiment.
 
 ## Don't forget
 

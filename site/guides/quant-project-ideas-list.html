@@ -52,6 +52,160 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DTZyMVPiHM5">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Quant Project Ideas — 15 Projects Worth Building</h1>
+<p>A curated, opinionated list of quant projects — skewed toward the ones that actually teach you something and give you a tool you'll keep using. The seed for this list is a Twitter thread credited to @heidioftheeast with ideas like probability of backtest overfitting, Bayesian Black-Litterman, Ornstein-Uhlenbeck, and Kalman filters. I have expanded it with adjacent projects that round out a real quant portfolio, and ranked by build-value (difficulty × payoff × reusability across future work).</p>
+<p>Each entry: what it is → the math in one line → a canonical repo → difficulty → why build it → how it slots into your stack.</p>
+<p>Difficulty scale: 🟢 weekend · 🟡 1-2 weeks · 🟠 1 month · 🔴 multi-month</p>
+<h2>Tier 1 — Must-build infrastructure</h2>
+<p>These aren't strategies; they're the scaffolding every quant portfolio needs. Build them first, use them forever.</p>
+<h3>1. Probability of Backtest Overfitting (PBO) 🟡</h3>
+<p>What: Lopez de Prado / Bailey / Borwein's framework for estimating how much of a backtested Sharpe is spurious. Uses Combinatorially Symmetric Cross-Validation (CSCV) to compute PBO, performance degradation, and related statistics (Probabilistic Sharpe Ratio, Minimum Track Record Length, Deflated Sharpe Ratio).</p>
+<p>Math: Split your N-column return matrix of N strategy variants into S submatrices, enumerate all C(S, S/2) train/test splits, and compute the fraction of splits where the in-sample-best strategy underperforms median out-of-sample. That fraction is PBO.</p>
+<p>Repo: esvhd/pypbo — reference Python implementation with PBO, PSR, MinTRL, DSR.</p>
+<p>Difficulty: 🟡 1-2 weeks to understand and integrate.</p>
+<p>Why build it: Because every backtest you'll ever run is at risk of being overfit and you currently have no number for how much. The difference between a strategy with PBO=0.10 and PBO=0.60 is the difference between "ship it" and "throw it out" — and without this you are guessing.</p>
+<p>Plugs into your stack: Direct gate for the challenge-game tournament flow. Any ensemble that emerges from /challenge-game should pass a PBO check before promotion to paper-trading. Specifically the Phase 12 Oracle Commander finding (rolodex WR overfit) is the exact failure mode PBO detects. This is arguably the single highest-leverage tool on this whole list for you.</p>
+<h3>2. Walk-Forward + Purged K-Fold CV Harness 🟡</h3>
+<p>What: Cross-validation that respects time ordering and purges look-ahead leakage. Lopez de Prado's Purged K-Fold leaves a gap between train and test to prevent label leakage from overlapping samples.</p>
+<p>Math: Standard K-fold but with an embargo: if sample i is in the test set and sample j in train shares any information window with i, drop j. Purging removes samples whose labels span the test period.</p>
+<p>Repo: hudson-and-thames/mlfinlab — implements Purged K-Fold, Combinatorial Purged CV, and the rest of Advances in Financial Machine Learning.</p>
+<p>Difficulty: 🟡 1-2 weeks.</p>
+<p>Why build it: Regular sklearn cross-validation is subtly wrong for financial data. Purged K-Fold fixes it.</p>
+<p>Plugs into your stack: Pair with PBO in the challenge-game validation gate. Use for all ML-layer training in Oracle Commander / Rolodex.</p>
+<h3>3. Research Infrastructure: bar sampling, labeling, feature engineering 🟠</h3>
+<p>What: Dollar bars instead of time bars, triple-barrier labeling, fractional differentiation for stationarity without losing memory. All from the first chapters of Advances in Financial Machine Learning.</p>
+<p>Math: Dollar bars sample whenever cumulative traded dollar volume crosses a threshold (better sampling distribution than time bars). Triple-barrier labels each observation as +1/-1/0 depending on which horizon / SL / TP barrier hits first. Fractional differentiation: (1 − L)^d with non-integer d preserves long memory while achieving stationarity.</p>
+<p>Repo: hudson-and-thames/mlfinlab (same).</p>
+<p>Difficulty: 🟠 1 month to absorb end-to-end.</p>
+<p>Why build it: Time-bar OHLCV is what every retail trader uses and every professional abandoned a decade ago. The research gap is real.</p>
+<p>Plugs into your stack: Rebuild the trading-agent-team feature pipeline on dollar bars — the fast-cycler and graduated-TP strategies will almost certainly look different (and probably better) when fed cleaner inputs.</p>
+<h2>Tier 2 — Classical quant strategies with real math</h2>
+<h3>4. Ornstein-Uhlenbeck Pairs Trading 🟡</h3>
+<p>What: Fit an OU mean-reverting process to the spread between two cointegrated assets. Trade the spread when it deviates from its long-run mean. The classic stat-arb setup.</p>
+<p>Math: OU process dX_t = θ(μ − X_t) dt + σ dW_t. Fit θ, μ, σ via maximum likelihood on the discretized residuals of a cointegrating regression Y = α + β X + ε. Trade when residual − μ &gt; k · σ, exit at mean. Half-life of mean reversion is ln(2) / θ.</p>
+<p>Repo: david-alber/Pairs-Trading-as-application-to-the-Ornstein-Uhlenbeck-Process and cantaro86/Financial-Models-Numerical-Methods (the OU notebook is particularly clean).</p>
+<p>Difficulty: 🟡 1-2 weeks.</p>
+<p>Why build it: It's the canonical example for learning how to turn a stochastic differential equation into a trading rule. After you've done it once, half the academic literature opens up.</p>
+<p>Plugs into your stack: Crypto pairs (e.g., ETH/BTC perp spread, or HYPE/SOL correlation) are great OU candidates on Hyperliquid. Add as a new sub-strategy — uncorrelated with the directional fast-cyclers.</p>
+<h3>5. Kalman Filter Dynamic Hedge Ratio 🟡</h3>
+<p>What: Instead of fitting a fixed cointegration coefficient β from OLS, let β drift over time via a Kalman filter. Adapts pairs-trading to regime changes.</p>
+<p>Math: State-space model where β_t is the latent state with a random walk prior, observation equation y_t = β_t x_t + ε_t. Standard Kalman update gives a time-varying posterior mean of β_t that adapts on every new observation.</p>
+<p>Repo: msekatchev/kalman-filter-asset-prices and QuantConnect/Research Kalman Filter Based Pairs Trading notebook.</p>
+<p>Difficulty: 🟡 1-2 weeks.</p>
+<p>Why build it: Kalman filters are one of the few pieces of math every practitioner uses and every textbook explains badly. Pairs trading is the clearest use case to actually grok them.</p>
+<p>Plugs into your stack: Generalizes OU pairs from #4. Also useful as a smoother for any noisy signal — rolling Hawkes branching ratio, funding rate imbalance, OI momentum. The filter is a reusable primitive beyond pairs trading.</p>
+<h3>6. Bayesian Black-Litterman Portfolio Allocation 🟠</h3>
+<p>What: Black-Litterman blends market-implied equilibrium returns with the investor's subjective views into a posterior distribution of expected returns. The "Bayesian" version treats it properly as a conjugate-normal Bayesian update instead of the classical BL closed form, letting you express non-Gaussian views and uncertainty.</p>
+<p>Math: Prior: π ~ N(Π, τ Σ) where Π is reverse-optimized from market weights. Views: P μ = Q + ε, ε ~ N(0, Ω). Posterior: μ views ~ N(μ̂, Σ̂) with</p>
+<p>μ̂ = [(τΣ)⁻¹ + P' Ω⁻¹ P]⁻¹ [(τΣ)⁻¹ Π + P' Ω⁻¹ Q]</p>
+<p>PyMC version lets you specify full posteriors on views.</p>
+<p>Repos:</p>
+<p>Classical closed-form: robertmartin8/PyPortfolioOpt (cookbook notebook 4-Black-Litterman-Allocation.ipynb)</p>
+<p>QuantEcon Bayesian notebook: quantecon-notebooks-python/black_litterman.ipynb</p>
+<p>PyMC general: pymc-devs/pymc</p>
+<p>Difficulty: 🟠 1 month if you're doing the full Bayesian version in PyMC.</p>
+<p>Why build it: It's the canonical way to combine a strategy's signal ("I think BTC has +5% expected return next week") with market-neutral portfolio math. Most retail approaches ignore covariance entirely; this teaches you to respect it.</p>
+<p>Plugs into your stack: Position-sizing layer for the multi-coin trading-agent-team. Current approach is mostly equal-weight across 8 coins — BL would let each sub-strategy express its own "view" on a coin's expected return and the portfolio optimizer would blend them with the correlation matrix. Cleanest upgrade path to proper risk-parity allocation.</p>
+<h3>7. Deflated Sharpe Ratio + Probabilistic Sharpe Ratio 🟢</h3>
+<p>What: Already partially covered in #1 via pypbo, but worth doing as a standalone. PSR tells you the probability that an observed Sharpe is above a threshold; DSR corrects for multiple testing (how many strategies you tried before finding this one).</p>
+<p>Math: PSR = Φ[(SR̂ − SR) · √(T − 1) / √(1 − γ_3 · SR̂ + (γ_4 − 1)/4 · SR̂²)] where γ_3, γ_4 are skew and kurtosis of returns. DSR replaces SR with an effective threshold derived from the number of trials.</p>
+<p>Repo: esvhd/pypbo ships PSR and DSR alongside PBO.</p>
+<p>Difficulty: 🟢 weekend.</p>
+<p>Why build it: Any time you report a Sharpe ratio without its confidence interval and multiple-testing correction, you're misleading yourself and anyone you show it to.</p>
+<p>Plugs into your stack: Mandatory reporting field for every challenge-game tournament output.</p>
+<h2>Tier 3 — Market microstructure</h2>
+<h3>8. Avellaneda-Stoikov Market Maker 🟡</h3>
+<p>What: Closed-form optimal bid-ask quoting as a function of inventory, volatility, and risk aversion.</p>
+<p>Math: See avellaneda-stoikov-and-hawkes.md for the full treatment. Reservation price r = s − qγσ²(T−t), half-spread = (γσ²(T−t) + (2/γ) ln(1 + γ/k)) / 2.</p>
+<p>Repo: fedecaccia/avellaneda-stoikov — cloned to repos/avellaneda-stoikov/.</p>
+<p>Difficulty: 🟡 1-2 weeks (more to productionize).</p>
+<p>Why build it: It's the canonical market-making model. Any future conversation about liquidity provision starts from here.</p>
+<p>Plugs into your stack: Maker leg on Hyperliquid. Full integration story in avellaneda-stoikov-and-hawkes.md.</p>
+<h3>9. Hawkes Process Order Flow Model 🟠</h3>
+<p>What: Self-exciting point process fit to trade timestamps. Captures order-flow clustering, provides a regime detector via branching ratio, and gives a short-horizon intensity forecast.</p>
+<p>Math: λ(t) = μ + Σ_{t_i &lt; t} α · exp(−β (t − t_i)), stable iff α/β &lt; 1.</p>
+<p>Repo: x-datainitiative/tick for fitting, jeremymck/High-Frequency-Data---Limit-Order-Books for education.</p>
+<p>Difficulty: 🟠 1 month to do well (fitting is finicky, kernel choice matters).</p>
+<p>Why build it: Because Poisson is wrong and everyone pretends otherwise. Hawkes is the simplest upgrade that actually describes real order flow.</p>
+<p>Plugs into your stack: Regime filter + feature for the existing taker strategies. Full story in avellaneda-stoikov-and-hawkes.md.</p>
+<h3>10. Order Flow Imbalance (OFI) Signal 🟡</h3>
+<p>What: A single scalar computed from L2 order-book updates that predicts short-horizon price moves. Cont, Kukanov, Stoikov (2014) show OFI linearly predicts mid-price changes at ~1-10 second horizon with high R².</p>
+<p>Math: OFI_t = Σ (ΔBidSize_t · 1[ΔBid ≥ 0] − ΔAskSize_t · 1[ΔAsk ≤ 0]) — signed flow into bids minus flow into asks, over a short window. Aggregated at the top of book or across levels.</p>
+<p>Repo: No single canonical Python repo; the arxiv paper Forecasting high frequency order flow imbalance using Hawkes processes has reference code. Easy to write from scratch in ~50 lines.</p>
+<p>Difficulty: 🟡 1-2 weeks (including getting L2 data wired up).</p>
+<p>Why build it: Highest-R² linear predictor of short-horizon price movement that you can compute without any ML. If you build nothing else in microstructure, build this.</p>
+<p>Plugs into your stack: Direct input to Oracle Commander's coin-selection logic. Use flowsurface (in agents:repos/flowsurface/) as the L2 data source — it already speaks Hyperliquid.</p>
+<h2>Tier 4 — Machine learning meets trading</h2>
+<h3>11. Meta-labeling / Triple Barrier + Random Forest 🟠</h3>
+<p>What: Lopez de Prado's meta-labeling. A "primary" model (e.g., a simple trend signal) generates trade direction; a "secondary" ML model predicts whether to take each of those trades. The ML learns to filter false positives rather than predict price.</p>
+<p>Math: Primary gives side_t ∈ {-1, 0, +1}. Triple-barrier assigns each primary signal a binary label: did it hit TP before SL? Secondary model (random forest, xgboost) learns P(success features) and you gate trades at P &gt; threshold.</p>
+<p>Repo: hudson-and-thames/mlfinlab meta-labeling module.</p>
+<p>Difficulty: 🟠 1 month.</p>
+<p>Why build it: It's the ML approach to trading that actually works in practice, because it decouples the hard problem (direction prediction) from the easier problem (quality filtering).</p>
+<p>Plugs into your stack: Direct upgrade path for the fast-cycler strategies. Current approach is rule-based entries; meta-label them with an RF trained on order-book and funding features to filter out the losers. Preserves the deterministic execution layer per your rule (rules execute, AI advises).</p>
+<h3>12. Regime Detection via Hidden Markov Models 🟡</h3>
+<p>What: Fit a 2-4 state HMM to returns and/or volatility and use the inferred state as a regime label (risk-on / risk-off / crisis). Gate strategies on regime.</p>
+<p>Math: HMM with Gaussian emissions, Baum-Welch EM for fitting, Viterbi for state decoding. hmmlearn in Python is the standard library.</p>
+<p>Repo: hmmlearn/hmmlearn plus many tutorial notebooks.</p>
+<p>Difficulty: 🟡 1-2 weeks.</p>
+<p>Why build it: The cleanest way to express "this strategy works in some regimes and not others" — which is true for every strategy.</p>
+<p>Plugs into your stack: Meta-layer for the ensembles. Instead of running all 10 ensembles constantly, activate subsets by regime. Crisis state → halt entirely or switch to defensive.</p>
+<h3>13. CPCV + Backtest Pipeline 🟠</h3>
+<p>What: Combinatorial Purged Cross-Validation — generate many out-of-sample Sharpe paths from a single backtest and compute confidence intervals. Goes hand-in-hand with PBO.</p>
+<p>Math: Generate C(N, k) combinations of test folds from N total groups, each leaving k folds out. Purge and embargo overlapping samples. Run the strategy on each combination. Get a distribution of OOS Sharpes, not a point estimate.</p>
+<p>Repo: hudson-and-thames/mlfinlab.</p>
+<p>Difficulty: 🟠 1 month to integrate into an existing backtest framework.</p>
+<p>Why build it: Gives you honest confidence intervals on a strategy's Sharpe. A strategy with mean Sharpe 1.5 and 5th percentile -0.2 is very different from one with mean 1.5 and 5th percentile 1.1, and a single backtest run cannot tell you which you have.</p>
+<p>Plugs into your stack: Graduated-TP and Phase 12 validation: replace the single OOS split with CPCV to get a real confidence interval on the +98% uplift finding.</p>
+<h2>Tier 5 — Ambitious projects</h2>
+<h3>14. Limit Order Book Simulator + RL Agent 🔴</h3>
+<p>What: Build a high-fidelity LOB simulator driven by Hawkes-process order arrivals, then train a reinforcement learning agent (PPO or SAC) on top of it to make markets, execute optimal-execution schedules, or take directional positions.</p>
+<p>Math: LOB state as MDP: agent observes book state + inventory + time, acts by placing/canceling orders, receives PnL reward. Transition dynamics driven by Hawkes simulations (so order flow is realistic). SAC is the go-to algorithm — see im1235/ISAC for an AS+SAC implementation.</p>
+<p>Repo: sohaibelkarmi/High-Frequency-Trading-Simulator, javifalces/HFTFramework, im1235/ISAC.</p>
+<p>Difficulty: 🔴 multi-month.</p>
+<p>Why build it: It's the modern HFT research stack. Also the clearest example of "RL for trading" that doesn't immediately overfit — the simulator is synthetic and the agent can be trained to convergence.</p>
+<p>Plugs into your stack: Too big to plug in directly. Better as a pre-training environment for the maker-leg SAC agent in avellaneda-stoikov-and-hawkes.md idea #3.</p>
+<h3>15. Bitcoin On-Chain → Volatility Predictor 🔴</h3>
+<p>What: Transformer or LSTM predicting BTC realized volatility from on-chain features (exchange flows, whale wallets, miner behavior, stablecoin supply changes). Already exists as a reference project.</p>
+<p>Repo: bitcoin_synthesizer — also referenced in your agents:repos/bitcoin_synthesizer/.</p>
+<p>Difficulty: 🔴 multi-month.</p>
+<p>Why build it: If it works, it's a direct feed for volatility-based sizing on every crypto strategy you run.</p>
+<p>Plugs into your stack: Already in the trading-agent-team reference repo list. The integration is volatility-based sizing: scale down trade size when predicted vol spikes.</p>
+<h2>Suggested build order (for you specifically)</h2>
+<p>If I were you and I wanted to spend the next 90 days leveling up the trading-agent-team, this is the order I'd tackle them:</p>
+<p>PBO (#1) + PSR/DSR (#7) — 1 week. Single biggest quality gate you can add right now. Directly addresses the rolodex WR overfit finding.</p>
+<p>Purged K-Fold + CPCV (#2 + #13) — 2 weeks. Gives honest confidence intervals on every existing strategy. The challenge-game outputs become trustworthy.</p>
+<p>OFI (#10) — 1 week. Cheap win, high signal, uses data you already have via flowsurface.</p>
+<p>Kalman (#5) + OU Pairs (#4) — 3 weeks. New sub-strategy, uncorrelated PnL, gateway drug to the rest of state-space modeling.</p>
+<p>Hawkes regime filter (#9) — 3 weeks. Overlay on existing strategies. Low risk, high potential upside as a gating signal.</p>
+<p>Avellaneda-Stoikov maker (#8) — 3 weeks. First maker leg on Hyperliquid, paired with Hawkes regime from step 5.</p>
+<p>Bayesian Black-Litterman (#6) — 4 weeks. Finally unify sizing across the 8 coins and 10 ensembles under one portfolio optimizer.</p>
+<p>Meta-labeling (#11) — 4 weeks. Quality filter for fast-cycler entries.</p>
+<p>Skip or defer: the LOB simulator (#14) and on-chain volatility (#15) are both worth building eventually but neither has the payoff/complexity ratio to come first.</p>
+<h2>Meta observation</h2>
+<p>The list above is ~80% infrastructure and ~20% strategy, and that ratio is correct. Most retail quant traders build 5 strategies and 0 infrastructure, then can't tell why anything works or fails. The professional inversion is: build the validation and measurement stack first, and the strategies compose themselves on top.</p>
+<p>PBO, purged CV, CPCV, PSR/DSR, OFI, Kalman — these are primitives. You use them forever on every future project. OU pairs, AS market making, meta-labeling — these are strategies. Each one is finite and replaceable. Spend your learning budget on the primitives.</p>
+<h2>Sources</h2>
+<p>esvhd/pypbo — Probability of Backtest Overfitting in Python</p>
+<p>The Probability of Backtest Overfitting — Bailey, Borwein, Lopez de Prado, Zhu (SSRN)</p>
+<p>hudson-and-thames/mlfinlab</p>
+<p>david-alber/Pairs-Trading-OU</p>
+<p>msekatchev/kalman-filter-asset-prices</p>
+<p>QuantConnect/Research — Kalman Pairs Trading</p>
+<p>cantaro86/Financial-Models-Numerical-Methods (OU notebook)</p>
+<p>robertmartin8/PyPortfolioOpt</p>
+<p>QuantEcon Black-Litterman Notebook</p>
+<p>pymc-devs/pymc</p>
+<p>fedecaccia/avellaneda-stoikov</p>
+<p>javifalces/HFTFramework</p>
+<p>im1235/ISAC</p>
+<p>x-datainitiative/tick</p>
+<p>jeremymck/High-Frequency-Data — Limit Order Books</p>
+<p>sohaibelkarmi/High-Frequency-Trading-Simulator</p>
+<p>hmmlearn/hmmlearn</p>
+<p>Forecasting high-frequency OFI using Hawkes processes (arxiv)</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Quant Project Ideas — 15 Projects Worth Building
 
 A curated, opinionated list of quant projects — skewed toward the ones that actually teach you something and give you a tool you'll keep using. The seed for this list is a Twitter thread credited to @heidioftheeast with ideas like probability of backtest overfitting, Bayesian Black-Litterman, Ornstein-Uhlenbeck, and Kalman filters. I have expanded it with adjacent projects that round out a real quant portfolio, and ranked by build-value (difficulty × payoff × reusability across future work).

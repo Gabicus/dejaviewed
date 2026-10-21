@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">resource</span></div>
   <h1>Booking.com AI observability — Kafka buffer and PII redaction before Arize</h1>
   <div class="meta">therobertta · 2026-08-28T17:11:05.000Z · in ai8</div>
@@ -51,5 +54,6 @@ The interesting part of this diagram isn&#x27;t the vendor at the end, it&#x27;s
 
 Compliance built into the pipeline is the difference between an AI system that runs in production and a demo legal shuts down. None of the hard parts here are AI parts.</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">This is how booking.com scales AI observability with Arise to those that are interested in enterprise architectures and responsible for figuring out what is a scalable architecture to meet our AI adoption and AI native development needs going forward as a technology team. I found this to be a very interesting use case. This is a really interesting diagram to kind of ground on in terms of their architecture. So on the left you have N number of gen AI applications. They&#x27;re using an AI telemetry collector. They pull that in, they normalize it, and then they have traces going into a secure message bus. In this case, it looks like they are using a managed Kafka service, so that&#x27;s a durable buffer that absorbs spikes and decouples producers from consumers, and then they have a PII redaction service. I thought this was really interesting for anybody in enterprise software that has to deal with compliance and regulation and privacy and things like that. So they specifically call that out in their architecture that they have a service that detects and masks PII and span attributes and text fields. And then they go and export to Arise and a warehouse. Redacted traces are sent to Arise in real time and stored in the warehouse for analytics. Arise will then enrich with space, project metadata, etc. And then on the warehouse ingestion side, it looks like these persist to use for offline analytics, long term trends and backfills. And here&#x27;s another diagram for their ML prediction log…</div></details>
 </main>
 </body></html>

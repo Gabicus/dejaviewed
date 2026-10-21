@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-c">C-TIER</span> <span class="pill">technique</span></div>
   <h1>LLM text watermarking — how token-bias watermarks work</h1>
   <div class="meta">chase.h.ai · 2026-09-03T19:37:26.000Z · in creative</div>
@@ -46,5 +49,6 @@
 AI agents, API integration, statistical watermarking, token biasing</div></div>
 <div class="level"><h3>1k ft — Deep-dive / try it</h3><div class="body">Comment “agent” to get access to the watermark remover prompt</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">Fable 5.1 is the first Claude model to watermark all of its outputs and I&#x27;m gonna show you how you can get rid of them and how the watermarking system actually works. Now to understand watermarking, you need to understand how large language models work. If I ask Claude to complete the sentence, she is blank, well, it&#x27;s going to choose from a series of words based on a probability score and yes, this is an oversimplified explanation. So it might choose beautiful, stunning, gorgeous or pretty and each of these words has a probability associated with it. You will often hear the term softmax used to explain this but for the mental model, imagine all of these have the same percentage to be chosen. I have a 25% chance for all of these and so when Claude is told to finish the sentence, it just chooses one somewhat randomly and let&#x27;s say it chooses stunning and it says she is stunning. That&#x27;s how Claude normally works but it changes with the watermarking. So what the watermarking will do instead is it is going to change the weights of these scores. So now beautiful is 30%, maybe stunning is 50% and the rest of these are 10%. Now you don&#x27;t know which words have been weighted differently because of watermarking but because they&#x27;re weighted differently, the word it chooses is gonna be different. So let&#x27;s say this time it chooses beautiful and says she is beautiful because it was weighted a little more heavily than before. Over time, as you give it more and more texts and the output…</div></details>
 </main>
 </body></html>

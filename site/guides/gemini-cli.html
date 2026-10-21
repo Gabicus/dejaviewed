@@ -52,6 +52,84 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DLuiACnKWP9">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Gemini CLI — Google's Free Terminal Coding Agent</h1>
+<p>GitHub: https://github.com/google-gemini/gemini-cli Stars: ~101,000 (forks: ~13,000) License: Apache 2.0 Language: TypeScript (Node.js) Repo path: repos/gemini-cli/ (clone pending — sandbox blocked git clone in this session; run git clone https://github.com/google-gemini/gemini-cli.git repos/gemini-cli manually)</p>
+<h2>What it is</h2>
+<p>Gemini CLI is Google's official open-source terminal-first AI coding agent. It's the direct Claude Code / Codex CLI competitor from Google, built on the Gemini 2.5 family of models. Unlike most "AI in the terminal" projects, it has a genuinely usable free tier: sign in with a personal Google account and you get 60 requests per minute and 1,000 requests per day against Gemini 2.5 Pro at no cost. That alone makes it one of the highest-value free developer tools shipped in the last year.</p>
+<p>It's an interactive REPL agent with tool use — it can read files, run shell commands, edit code, fetch URLs, search Google, and call MCP servers. Same basic loop as Claude Code: you type a request, it plans, it runs tools, it edits, you review, rinse, repeat.</p>
+<p>Where Claude Code is polished and opinionated (tightly integrated with Anthropic's sandbox model), Gemini CLI is more raw and Google-flavored. It's a real, working agent — not a toy — but it leans on Google's strengths (huge context windows, cheap Flash tier, web grounding) rather than Anthropic's (tool discipline, long-horizon coherence).</p>
+<h2>How it works</h2>
+<p>At runtime Gemini CLI is a Node.js TUI that:</p>
+<p>Loads context from a GEMINI.md file in the current directory (same idea as CLAUDE.md)</p>
+<p>Builds a system prompt with tool schemas for built-in tools (read, write, shell, glob, grep, web fetch, google search, memory)</p>
+<p>Streams tokens from Gemini 2.5 Pro (default) or Flash (-m gemini-2.5-flash) via the chosen auth backend</p>
+<p>Parses tool calls, prompts you for approval on destructive actions, runs them, feeds results back</p>
+<p>Checkpoints conversations so you can resume</p>
+<p>Built-in capabilities worth calling out:</p>
+<p>Google Search grounding — free live web search baked into the agent (Claude Code has to hit WebFetch/WebSearch separately)</p>
+<p>MCP support — add servers in ~/.gemini/settings.json, same protocol as Claude Code, so your existing MCP catalog (Figma, GitHub, Playwright, Context7) works</p>
+<p>--include-directories — explicit multi-root context (gemini --include-directories ../lib,../docs)</p>
+<p>Non-interactive mode — gemini -p "prompt" --output-format json for scripting and CI, with stream-json for piping</p>
+<p>GitHub Action — official action for running Gemini CLI in CI</p>
+<h2>System requirements</h2>
+<p>Node.js 20+ (Node 22 LTS recommended)</p>
+<p>A Google account (free tier) OR a Gemini API key OR Vertex AI credentials</p>
+<p>Any OS with a terminal; works identically on macOS, Linux, WSL2, Windows</p>
+<p>Zero GPU/local model requirements — everything runs in Google's cloud</p>
+<h2>Quick start</h2>
+<p>Install via npm (simplest on a dev machine that already has Node):</p>
+<p>npm install -g @google/gemini-cli gemini</p>
+<p>Or run with zero install:</p>
+<p>npx @google/gemini-cli</p>
+<p>macOS/Linux alternates:</p>
+<p>brew install gemini-cli # Homebrew sudo port install gemini-cli # MacPorts</p>
+<p>On first run it prompts you to authenticate. Pick "Sign in with Google" for the 1K/day free tier — a browser tab opens, you sign in, token is stored in ~/.gemini/. Done.</p>
+<p>Switch models mid-session or at launch:</p>
+<p>gemini -m gemini-2.5-flash # much cheaper/faster, still strong gemini -m gemini-2.5-pro # default, best reasoning</p>
+<p>Add MCP servers by editing ~/.gemini/settings.json:</p>
+<p>{ "mcpServers": { "playwright": { "command": "npx", "args": ["-y", "@playwright/mcp"] }, "context7": { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] } } }</p>
+<p>Drop a GEMINI.md in any repo to pin project context (coding standards, architecture notes, gotchas) — it's loaded automatically, same pattern as CLAUDE.md.</p>
+<p>Non-interactive one-shot (great for scripts and hooks):</p>
+<p>gemini -p "summarize the changes in the last 5 commits" --output-format json</p>
+<h2>Gemini CLI vs Claude Code — honest comparison</h2>
+<p>Dimension Gemini CLI Claude Code</p>
+<p>Cost Free: 60 req/min, 1K/day on personal Google Paid: Pro/Max subscription or API credits Model Gemini 2.5 Pro / Flash Claude Opus / Sonnet Context window ~1M tokens (Gemini 2.5 Pro) ~200K tokens Reasoning on hard multi-step code tasks Good, sometimes loses the plot on long horizons Best-in-class; more disciplined tool use Tool approval UX Functional, less polished Tight, granular permissions Web search Built-in Google grounding (free) WebSearch tool, requires API MCP support Yes Yes Sandboxing Opt-in, less mature Mature sandbox modes Ecosystem (skills, plugins, hooks) Smaller, growing Large — AgentOps, superpowers, custom skills Non-interactive / CI Yes (-p, --output-format json, GitHub Action) Yes (Claude Code SDK) Offline No No</p>
+<p>What Gemini CLI is better at:</p>
+<p>Massive context tasks (read entire repos, summarize huge log files, refactor across dozens of files) — the 1M token window matters</p>
+<p>Free grunt work you don't want to burn Claude credits on (docs, boilerplate, commit messages, codegen from a spec)</p>
+<p>Scripted/batch automation where cost would add up</p>
+<p>Research tasks that need live web grounding without extra plumbing</p>
+<p>What Claude Code is better at:</p>
+<p>Long multi-turn agentic work (the RPI/crank flywheel, subagent-driven dev, complex debugging)</p>
+<p>Tool-heavy workflows where tight permission control matters</p>
+<p>Anything where you've already invested in skills, hooks, and the AgentOps stack</p>
+<h2>Known limitations</h2>
+<p>Free tier is personal Google only — Workspace accounts often can't use it (admin policy blocks sign-in)</p>
+<p>1K/day sounds like a lot but a single long agent session can chew through 100+ requests; heavy days hit the cap</p>
+<p>Tool discipline is weaker than Claude Code — it will sometimes run commands you didn't approve flow for, or stop and ask where Claude would have continued</p>
+<p>Less mature ecosystem: no native equivalent to the superpowers/AgentOps skill layer</p>
+<p>Model knowledge cutoff and training data bias differs — good Gemini answers on Google Cloud/Android/Flutter, relatively weaker on niche TS ecosystems where Claude shines</p>
+<h2>How to use both together</h2>
+<p>The trick isn't "which one wins" — it's routing. Claude Code stays as the primary agent for high-value multi-step work (complex refactors, platform work, anything RPI-shaped). Gemini CLI becomes the free workhorse for:</p>
+<p>Commit/PR drudgery — wire gemini -p into a git hook or the commit-commands skill to auto-draft commit bodies, PR descriptions, changelogs. Zero Claude credit burn.</p>
+<p>Large-context reads — whenever a task needs to ingest an entire repo or huge log, hand it to Gemini first for a summary, then feed the summary to Claude. The 1M window is free leverage.</p>
+<p>Research + grounded web search — /research-style tasks, documentation lookups, "what's the latest on X library" — Gemini's Google grounding is free and built-in.</p>
+<p>Codegen for throwaway scripts — one-shot shell scripts, data munging, format converters. gemini -p "write a bash script that..." → done.</p>
+<p>CI jobs — the official GitHub Action runs Gemini CLI on PRs for lint-style review, doc checks, test generation, without burning Anthropic quota.</p>
+<p>Second opinion / council member — in /council-style multi-model workflows, Gemini is a free extra vote alongside Claude and Codex.</p>
+<p>Fallback during Anthropic rate limits or outages — same terminal muscle memory, keeps you unblocked.</p>
+<p>Practical setup: install it globally, sign in with Google, add the same MCP servers you use in Claude Code so context transfers cleanly, and keep a second terminal open for Gemini-handled tasks. Treat it like the free tier of a second brain.</p>
+<h2>What we could build with it</h2>
+<p>A free commit/PR writer hook that runs gemini -p on every commit and populates the body automatically</p>
+<p>A large-repo summarizer that indexes a codebase into GEMINI.md chunks so downstream Claude sessions start with perfect context</p>
+<p>A research skill that uses Gemini's grounded search for fact-gathering, then hands structured results to Claude for synthesis</p>
+<p>A CI reviewer using the official GitHub Action to do first-pass review on every PR for free before human/Claude review</p>
+<p>A dual-agent council where Claude and Gemini both critique a plan before implementation (poor-man's /council)</p>
+<p>A terminal chatbot for docs/support that only needs to answer questions and can run fully on the free tier</p>
+<h2>Bottom line</h2>
+<p>Gemini CLI is the most valuable "free developer tool that's actually good" released recently. It doesn't replace Claude Code for real engineering work — but it makes 30-40% of what you currently spend Claude credits on essentially free. The right move is to install it alongside Claude Code and route drudgery to it by default.</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Gemini CLI — Google's Free Terminal Coding Agent
 
 **GitHub:** https://github.com/google-gemini/gemini-cli

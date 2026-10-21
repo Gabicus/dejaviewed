@@ -45,6 +45,97 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Strategy Autoresearch — the judge is the product, not the agent</h1>
+<p>Insight class: Workflow Multiplier · Difficulty: Medium · Quality: 5/5 Connected entries: 11 · Tools: Claude, Claudex, Codex, OpenAI, Python, SkillOpt</p>
+<h2>Thesis</h2>
+<p>Self-rewriting loops (Karpathy-style autoresearch, bilevel coach loops, Microsoft SkillOpt) keep any edit that beats a benchmark. Point one at trading and it becomes an industrial overfitting machine — the backtest is the benchmark, and the loop will beat it ten thousand times. The quant saves already hold the fix: probability of backtest overfitting, permutation tests, transaction costs and backtest-to-live drift. Wire those in as the loop's judge, and use the loop's own log as the exact count of trials — the number human quants never know.</p>
+<h2>Why it matters</h2>
+<p>A solo builder can run more strategy variants in a weekend than a small fund tests in a quarter. The difference between that being an edge and a casino is whether the gate deflates for every attempt. Most likely you learn you have no edge, cheaply, and that's worth money too.</p>
+<h2>The evidence — connected entries</h2>
+<h3>Microsoft SkillOpt — agent skills that rewrite themselves against benchmarks</h3>
+<p>Creator: @marc.kaz · Tier: S Tools: SkillOpt</p>
+<p>Benchmark-gated self-rewrite engine — the loop shape, with auto-reject of edits that don't win</p>
+<p>Microsoft open-sourced SkillOpt: a base model runs a task, an optimizer rewrites the skill instructions from results, successful paths are separated from failures, and edits that don't beat the benchmark are auto-rejected. Claimed to beat hand-written prompts and TextGrad and to transfer across models.</p>
+<p>View original post</p>
+<h3>Bilevel autoresearch loops — an outer coach loop rewrites the search</h3>
+<p>Creator: @raycfu · Tier: A Tools: OpenAI</p>
+<p>Outer coach loop that stops the search collapsing onto favorite ideas — and also multiplies trial count</p>
+<p>Builds on Karpathy's autoresearch loop (try change, test, keep or revert). An outer coach loop watches the inner worker and rewrites its search playbook so it stops repeating the same ideas; claimed ~5x better on Karpathy's benchmark with the same models.</p>
+<p>View original post</p>
+<h3>Self-improving trading agent — critic loop that rewrites losing strategies</h3>
+<p>Creator: @raycfu · Tier: B</p>
+<p>The naive version — a critic agent rewriting losing trades, with hard-coded risk limits outside its reach</p>
+<p>Workflow pitch: describe a strategy, an agent codes it and wires the broker API, runs a five-year backtest, and a critic agent dissects losing trades and rewrites entry/exit logic before rerunning. Hard-coded stop-loss and drawdown limits sit outside the agent's reach, and failed strategies go to a local DB the agent learns from. Guide is comment-gated.</p>
+<p>View original post</p>
+<h3>10 non-cliche quant research projects — Bayesian BL, RL factors, PBO</h3>
+<p>Creator: unknown · Tier: S</p>
+<p>Probability of backtest overfitting and Sharpe-ratio statistics — the deflating judge</p>
+<p>@heidioftheeast's 10 quant project ideas beyond Black-Scholes: probability of backtest overfitting, Bayesian Black-Litterman, survival-based risk, RL factor portfolios, Sharpe statistics, convex portfolio trading, TS vs XS factors, numeraire-invariant hedging, exotic option model risk, regime-switching factors.</p>
+<p>View original post</p>
+<h3>Monte Carlo — 25,000 shuffled BTC returns to separate edge from luck</h3>
+<p>Creator: @quant.dhawan · Tier: B Tools: Python</p>
+<p>Permutation test with 25K shuffled returns — the 'random beats you' floor</p>
+<p>Runs 25,000 Monte Carlo simulations by shuffling daily BTC-USD returns to test whether a strategy's performance is genuine edge or statistical luck. One backtest isn't enough — real quants demand statistical significance.</p>
+<p>View original post</p>
+<h3>Crypto dollar-neutral reversal — naive long/short, eaten by fees</h3>
+<p>Creator: @avi_mukesh · Tier: B</p>
+<p>Reversal strategy that dies once fees are counted — costs belong inside the judge, not after it</p>
+<p>@avi_mukesh: simple reversal strategy on crypto (short if up, long if down), dollar-neutral scaling. Looks good without costs, transaction fees kill it. Honest starter example for learning backtesting caveats.</p>
+<p>View original post</p>
+<h3>Wasserstein Distance — measuring the backtest-to-live reality gap</h3>
+<p>Creator: @quant.dhawan · Tier: S Tools: Python</p>
+<p>Wasserstein drift between backtest and live distributions — the kill switch after deployment</p>
+<p>Uses Wasserstein Distance and Sinkhorn Divergence to mathematically measure drift between backtest distributions (blue) and live market conditions (orange). Detects distribution shift that kills more strategies than bad fees.</p>
+<p>View original post</p>
+<h3>Claudex skill — Claude and GPT-6 Astra cross-audit plan and build</h3>
+<p>Creator: @nateherkai · Tier: A Tools: Claude, Claudex, Codex</p>
+<p>Cross-model audit — the model that writes the strategy never grades it</p>
+<p>A free skill that splits work between two frontier models: Claude writes the plan and GPT-6 Astra audits it until it holds, then roles swap so Astra builds and Claude audits. Runs inside Claude or Codex as a reusable skill.</p>
+<p>View original post</p>
+<h3>Claude multi-agent trading team — research, market, backtest and risk agents</h3>
+<p>Creator: @raycfu · Tier: C Tools: Claude</p>
+<p>Dedicated risk agent that audits for self-deception — the role split as a template</p>
+<p>Pitch for an unnamed free repo that spins Claude into a four-agent trading team: a research agent cleans market data, a market agent writes strategy logic, a test agent backtests for win rate and max drawdown, and a risk agent audits for self-deception. The repo is never named; the link is gated behind a comment.</p>
+<p>View original post</p>
+<h3>GPT-6 Astra stock-trading challenge — scheduled Codex tasks in one thread</h3>
+<p>Creator: @nateherkai · Tier: C Tools: Claude, Codex</p>
+<p>A one-month LLM trading 'win' — the noise this loop must refuse to reward</p>
+<p>Creator gives GPT-6 Astra $10k to trade, rerunning an earlier Claude experiment that reportedly beat the S&amp;P by 8% in a month. Six scheduled Codex tasks per day read news, open, review and manage positions, all posting into one shared thread for visibility. No results yet; setup doc gated behind a comment.</p>
+<p>View original post</p>
+<h3>Charlie Munger's inversion — solve problems by asking how to cause failure</h3>
+<p>Creator: @charliemungerhub · Tier: A</p>
+<p>Munger's inversion — define how the strategy dies before the loop starts searching</p>
+<p>Munger explains inversion with his WWII meteorologist job: ask how you'd kill pilots (icing, running out of fuel), then avoid those. Same move for any problem: list what would hurt it most and steer clear.</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Wrap a vectorized backtester (VectorBT) in a SkillOpt-style loop where Claude proposes strategy edits and every proposal is appended to a trials table with its parameters and result.</p>
+<p>Replace 'beats benchmark' with a judge that needs all four: positive after realistic fees, beats 95% of a permutation null, deflated Sharpe positive using the trials-table count, and a held-out year scored once at the end.</p>
+<p>Have a second model (Codex or GPT) audit each surviving strategy's code for look-ahead bias before it reaches paper trading; monitor live drift with Wasserstein distance and auto-retire on breach.</p>
+<p>falsifier: seed the loop with pure-noise synthetic prices. If anything passes the judge, the judge is broken — fix it before you show it a real market.</p>
+<h2>Prerequisites</h2>
+<p>Python and VectorBT or similar backtester</p>
+<p>Clean historical data with realistic cost assumptions</p>
+<p>Paper-trading account</p>
+<p>Discipline to treat 'no survivors' as a valid result</p>
+<h2>Key tools and resources</h2>
+<p>Claude</p>
+<p>Claudex</p>
+<p>Codex</p>
+<p>OpenAI</p>
+<p>Python</p>
+<p>SkillOpt</p>
+<h2>Creators to follow</h2>
+<p>@avi_mukesh</p>
+<p>@charliemungerhub</p>
+<p>@marc.kaz</p>
+<p>@nateherkai</p>
+<p>@quant.dhawan</p>
+<p>@raycfu</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-21 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Strategy Autoresearch — the judge is the product, not the agent
 
 **Insight class:** Workflow Multiplier · **Difficulty:** Medium · **Quality:** 5/5

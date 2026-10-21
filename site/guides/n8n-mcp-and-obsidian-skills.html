@@ -52,6 +52,157 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DUzg0n1jRK-">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>n8n-mcp + obsidian-skills — Two High-Leverage Claude Code Extensions</h1>
+<p>Two of the most useful community-built extensions to Claude Code as of April 2026. Both are in the same category — "expose a large, structured external system to Claude so it can reason about it natively" — but they attack very different domains: n8n-mcp (czlonkowski) unlocks workflow automation, and obsidian-skills (kepano) unlocks personal knowledge management. Covered in one guide because they're architectural siblings and often end up installed together on the same workbench.</p>
+<h2>Part 1: n8n-mcp — 1,396 n8n nodes exposed to Claude</h2>
+<p>Author: Romuald Czlonkowski (@czlonkowski) Repo: https://github.com/czlonkowski/n8n-mcp License: MIT Stars: ~17.8k (as of April 2026) — one of the most successful community MCP servers.</p>
+<h3>What it is</h3>
+<p>An MCP (Model Context Protocol) server that loads every n8n node's schema, documentation, and operation metadata into a searchable database and exposes it to Claude as tools. With it installed, Claude can natively design, validate, and (optionally) deploy n8n workflows without hallucinating node names, property shapes, or connection rules.</p>
+<p>n8n is a workflow automation platform (think Zapier, but self-hostable and massively more powerful). It has ~1,400 nodes covering every major SaaS, database, LLM, file format, and protocol. The problem: that's too much surface area for an LLM to know from training alone — Claude will cheerfully invent nodes that don't exist, miss required fields, and wire up connections that won't run. n8n-mcp fixes that by making node metadata a first-class tool Claude can query.</p>
+<h3>How it works under the hood</h3>
+<p>Database: better-sqlite3 (default, native) or sql.js fallback. Pre-built, ships with the package.</p>
+<p>Coverage (as of latest release):</p>
+<p>1,396 nodes total (812 core + 584 community)</p>
+<p>99% property coverage with detailed schemas</p>
+<p>63.6% operation coverage</p>
+<p>87% documentation coverage pulled from the official n8n docs</p>
+<p>265 AI-capable tool variants fully documented</p>
+<p>2,646 pre-extracted configurations from popular templates</p>
+<p>2,709 complete workflow templates with metadata</p>
+<p>Two modes:</p>
+<p>Documentation-only mode — no n8n instance required. Claude can search nodes, read schemas, validate workflow JSON, and generate workflow files. You copy-paste the output into n8n yourself.</p>
+<p>Full mode — give it N8N_API_URL + N8N_API_KEY and Claude can create, update, execute, and monitor workflows directly in your n8n instance.</p>
+<p>Tools exposed to Claude (selected):</p>
+<p>Search nodes by name, category, or capability</p>
+<p>Fetch a node's full property schema</p>
+<p>Validate a workflow JSON before execution</p>
+<p>Browse templates by use case</p>
+<p>Filter community nodes by verified status</p>
+<p>(Full mode) create/update/execute workflows, read execution logs</p>
+<h3>Key mechanics</h3>
+<p>Installation (5 options, ranked by likely preference):</p>
+<p>NPX (quickest local) — no install, just point Claude at the binary:</p>
+<p>npx n8n-mcp</p>
+<p>Docker — pre-built image:</p>
+<p>docker pull ghcr.io/czlonkowski/n8n-mcp:latest # ~280MB</p>
+<p>Hosted free tier at dashboard.n8n-mcp.com — 100 tool calls/day, API key signup only. Zero install.</p>
+<p>Railway one-click — if you want a persistent cloud MCP.</p>
+<p>Local dev clone — for hacking on it. Clone, npm install, npm run build, point Claude at dist/index.js.</p>
+<p>Claude Code configuration (documentation-only, safest default):</p>
+<p>Add to ~/.config/Claude/claude_desktop_config.json (Linux) or ~/.claude/settings.json for Claude Code:</p>
+<p>{ "mcpServers": { "n8n-mcp": { "command": "npx", "args": ["n8n-mcp"], "env": { "MCP_MODE": "stdio", "LOG_LEVEL": "error", "DISABLE_CONSOLE_OUTPUT": "true" } } } }</p>
+<p>The MCP_MODE: "stdio" env var is required — without it, the server writes log noise to stdout and Claude Code fails to parse the JSON-RPC stream. This is gotcha #1.</p>
+<p>Full mode (Claude can deploy workflows directly):</p>
+<p>{ "mcpServers": { "n8n-mcp": { "command": "npx", "args": ["n8n-mcp"], "env": { "MCP_MODE": "stdio", "LOG_LEVEL": "error", "DISABLE_CONSOLE_OUTPUT": "true", "N8N_API_URL": "http://localhost:5678", "N8N_API_KEY": "your-n8n-api-key-here", "WEBHOOK_SECURITY_MODE": "moderate" } } } }</p>
+<p>For Docker, swap the n8n URL to http://host.docker.internal:5678.</p>
+<p>Privacy: Telemetry is on by default. Disable with N8N_MCP_TELEMETRY_DISABLED=true.</p>
+<h3>Quick start</h3>
+<h1>1. Install the MCP in Claude Code config (see above)</h1>
+<h1>2. Restart Claude Code so it picks up the new MCP server</h1>
+<h1>3. In any conversation, just ask:</h1>
+<p>Build me an n8n workflow that watches a Gmail inbox for invoices, extracts the PDF attachment, runs it through the OpenAI node to pull out vendor/amount/date, appends to a Google Sheet, and posts a summary to Slack.</p>
+<h1>Claude will:</h1>
+<h1>- query n8n-mcp for the Gmail, PDF Extract, OpenAI, Sheets, Slack nodes</h1>
+<h1>- read their actual schemas (not hallucinate)</h1>
+<h1>- validate the workflow JSON against the MCP's validator</h1>
+<h1>- return a complete workflow.json you can import into n8n</h1>
+<h1>- (full mode) deploy it directly to your n8n instance</h1>
+<h3>Gotchas</h3>
+<p>Never point full-mode MCP at your production n8n. The docs are emphatic: always work on a dev instance. The MCP has no undo and Claude can edit any workflow it can see.</p>
+<p>MCP_MODE: "stdio" is mandatory for Claude Code. Omit it and you get opaque JSON parsing errors.</p>
+<p>Memory footprint: better-sqlite3 uses ~100-120MB; sql.js fallback ~150-200MB. Fine on a dev machine, worth knowing on a resource-constrained server.</p>
+<p>Webhook security: Default "strict" blocks localhost webhooks. For local dev, set WEBHOOK_SECURITY_MODE=moderate.</p>
+<p>Coverage isn't 100%. Operation coverage is 63.6% — rarer nodes may have incomplete action metadata. Claude will tell you when it's extrapolating vs. reading from the DB.</p>
+<h3>What we could build with it</h3>
+<p>Automated n8n workflow generator from natural language — the obvious one, and the headline feature.</p>
+<p>Workflow audit / simplification pipeline — feed a messy existing n8n export to Claude, let it use the MCP to rewrite it cleaner.</p>
+<p>n8n + trading integration — for you's trading agent team, n8n could orchestrate off-chain triggers (news sentiment, social signals, funding rate webhooks) feeding into the Legion Command decision layer. n8n-mcp lets Claude design those pipelines fluently.</p>
+<p>Self-editing workflows — pair n8n-mcp with a scheduled Claude job (via the schedule skill) that reviews the previous day's executions and proposes workflow improvements.</p>
+<p>Template gallery search — with 2,709 templates in the MCP database, Claude becomes a natural-language template browser.</p>
+<h2>Part 2: obsidian-skills — Kepano's Obsidian toolkit for Claude</h2>
+<p>Author: Stephan Ango (@kepano) — CEO of Obsidian, well-known in the PKM/note-taking community. Repo: https://github.com/kepano/obsidian-skills License: Check repo Status: Active, following the emerging "Agent Skills" specification.</p>
+<h3>What it is</h3>
+<p>A collection of five agent skills built to the open Agent Skills specification, designed to let any skills-compatible agent (Claude Code, Codex CLI, OpenCode, etc.) work directly with Obsidian vaults. The skills handle Obsidian's specific flavors of markdown, its Bases feature (database views over notes), JSON Canvas files, and vault CLI operations.</p>
+<p>The point: Obsidian is the dominant markdown PKM system. Claude Code is the dominant coding agent. Until obsidian-skills, there was no clean way for Claude to read, write, or manipulate an Obsidian vault while respecting Obsidian's conventions (wikilinks, properties, callouts, templates, Bases formulas). Kepano — literally the CEO of Obsidian — shipped the reference implementation.</p>
+<h3>The five skills</h3>
+<p>obsidian-markdown — Create and edit Obsidian Flavored Markdown. Handles:</p>
+<p>Wikilinks ([[Note Name]], [[Note Name alias]])</p>
+<p>Embeds (![[Note Name]], ![[image.png]])</p>
+<p>Callouts (&gt; [!note], &gt; [!warning])</p>
+<p>Properties (YAML frontmatter with Obsidian-specific types: tags, aliases, date types)</p>
+<p>Block references ([[Note Name#^block-id]])</p>
+<p>obsidian-bases — Create and manipulate Obsidian Bases (the database-view-over-notes feature introduced in 2025). Handles views, filters, formulas, summaries. This is the only tool outside Obsidian itself that understands Bases syntax.</p>
+<p>json-canvas — Work with JSON Canvas files (the open spec Obsidian uses for its infinite canvas feature). Create nodes, edges, groups, connections — perfect for agent-generated mind maps or visual plans.</p>
+<p>obsidian-cli — Shell-level interaction with Obsidian vaults. Useful for plugin developers, theme developers, and bulk vault operations.</p>
+<p>defuddle — Extract clean markdown from web pages using the Defuddle tool (kepano's readability/clipper engine). This is the "web → vault" ingestion step.</p>
+<h3>Installation</h3>
+<p>Five install methods depending on your agent:</p>
+<h1>Claude Code — per-vault install (most common)</h1>
+<p>cd ~/vaults/my-vault mkdir -p .claude cd .claude</p>
+<h1>Copy the skill directories from the repo into here</h1>
+<h1>(or git clone the repo and symlink the skill subdirs)</h1>
+<h1>Codex CLI</h1>
+<p>cp -r obsidian-skills/ ~/.codex/skills/</p>
+<h1>OpenCode</h1>
+<p>git clone https://github.com/kepano/obsidian-skills ~/.opencode/skills/</p>
+<p>Per the repo's instructions: "Add the contents of this repo to a /.claude folder in the root of your Obsidian vault." That makes them available whenever Claude Code is launched inside that vault.</p>
+<h3>Key mechanics</h3>
+<p>Skills follow the Agent Skills spec — they're portable across any skills-compatible agent, not locked to Claude.</p>
+<p>Each skill is a single SKILL.md file (plus optional reference files) — lightweight, inspectable, editable.</p>
+<p>The skills teach Claude Obsidian's syntax and semantics, not just the file format. Claude learns that [[Note]] creates a link, ![[Note]] embeds content, frontmatter tags: uses Obsidian's tag index, etc.</p>
+<p>Vault-local install is the intended pattern — different vaults can have different skills installed, and the skills travel with the vault if it's synced.</p>
+<h3>Quick start</h3>
+<h1>1. Clone or copy obsidian-skills into your vault's .claude folder</h1>
+<p>cd ~/Documents/ObsidianVault git clone https://github.com/kepano/obsidian-skills .claude/obsidian-skills</p>
+<h1>2. Launch Claude Code from inside the vault</h1>
+<p>cd ~/Documents/ObsidianVault claude</p>
+<h1>3. Ask it to do Obsidian-native things:</h1>
+<p>Read all notes tagged #project/active, summarize each, and create a new note "Active Projects Dashboard" with links and 2-line summaries.</p>
+<p>Clip this URL into a new note with proper frontmatter and tags: https://www.example.com/article</p>
+<p>Build a JSON Canvas visualizing how my notes in the "Claude Code" folder link to each other.</p>
+<p>Create an Obsidian Base that shows all notes with status="in-progress" sorted by last modified, with formulas for days-since-touched.</p>
+<h3>Gotchas</h3>
+<p>Vault path assumptions. The skills expect to be run from inside the vault root. Running from a subfolder can confuse relative path resolution.</p>
+<p>Obsidian sync conflicts. If Obsidian Sync / iCloud / Syncthing is running on the vault, Claude's writes can race with the sync layer. Close/pause sync during heavy edits.</p>
+<p>Bases is new. The obsidian-bases skill tracks Obsidian's Bases feature, which is still evolving. If your Obsidian version predates Bases, that skill is a no-op.</p>
+<p>Wikilink targets aren't validated. Claude will happily create [[Broken Link]] pointing to a non-existent note. Use Obsidian's graph view or an "unresolved links" plugin to catch these.</p>
+<p>Don't mix with MCP servers that also touch the vault. If you have an Obsidian MCP AND obsidian-skills, decide which one is authoritative — otherwise Claude will sometimes use one and sometimes the other with inconsistent conventions.</p>
+<h3>What we could build with it</h3>
+<p>Auto-journaling agent — every evening, Claude reads the day's git commits, calendar, and browser history and writes a dated journal note with wikilinks to relevant project notes.</p>
+<p>PR review → Obsidian knowledge base — fold every PR review into a permanent note with links to the relevant code areas, trade-offs considered, and decisions made. Builds an org-specific engineering knowledge graph over time.</p>
+<p>Research clipper pipeline — point Claude at a list of URLs, let it use defuddle to pull clean markdown, tag via LLM, and file into the vault under the right folder.</p>
+<p>Meeting note orchestration — given a transcript, Claude creates a properly-tagged meeting note, extracts action items as - [ ] tasks with due dates, and links them to relevant project notes.</p>
+<p>Canvas-based project planning — use json-canvas to let Claude visualize project dependencies as a real Obsidian canvas you can open and rearrange by hand.</p>
+<p>Knowledge base hygiene agent — scheduled Claude job that finds duplicate notes, stale tags, orphaned links, and proposes cleanups.</p>
+<h2>Why these two together</h2>
+<p>n8n-mcp and obsidian-skills are the same idea at different altitudes:</p>
+<p>n8n-mcp obsidian-skills</p>
+<p>Domain Workflow automation Personal knowledge management Shape MCP server (tool endpoints) Agent skills (markdown instructions) Knowledge substrate SQLite DB of node schemas Obsidian syntax + file conventions Coverage 1,396 nodes 5 skill domains Typical user Developer automating systems Knowledge worker managing notes Claude gains Ability to design valid workflows Ability to manipulate vaults natively</p>
+<p>Together they cover "automate the world" + "remember the world." A Claude Code workbench with both installed can:</p>
+<p>Use obsidian-skills to turn a brainstorm into a structured set of notes + canvas.</p>
+<p>Use n8n-mcp to translate any of those notes into a live automation.</p>
+<p>Use obsidian-skills again to write the results back into the vault as a closed loop.</p>
+<p>This is the PKM-meets-automation pattern and it's genuinely new in early 2026.</p>
+<h2>Install recommendation for you</h2>
+<p>You may already have 5 MCP servers (Figma, Playwright, Context7, GitHub, Ruflo) and 13 custom skills. Adding these:</p>
+<p>n8n-mcp: HIGH value if you want off-chain automation wiring for the trading agent team (news triggers, funding-rate webhooks, Discord bot orchestration). Documentation-only mode is zero-risk — install it now. Full mode only once there's an actual n8n instance worth targeting.</p>
+<p>obsidian-skills: HIGH value if you use Obsidian (unclear from CLAUDE.md whether he does). If yes, install in the vault. If no, skip — this is a domain-specific toolkit, not a general-purpose one.</p>
+<h2>Repos</h2>
+<p>Both repos were attempted to be cloned to ~/projects/ai-catalogs/repos/ during research but the sandboxed environment declined bash cloning. Manual clone recommended:</p>
+<p>cd ~/projects/ai-catalogs/repos/ git clone https://github.com/czlonkowski/n8n-mcp.git git clone https://github.com/kepano/obsidian-skills.git</p>
+<p>Both are worth keeping — n8n-mcp for the pre-built SQLite schema database (useful reference even without running the server), obsidian-skills for the SKILL.md files (useful templates for your own skill authoring, plus ready to drop into any vault).</p>
+<h2>Sources</h2>
+<p>czlonkowski/n8n-mcp on GitHub</p>
+<p>kepano/obsidian-skills on GitHub</p>
+<p>n8n-mcp hosted dashboard</p>
+<p>n8n workflow automation platform</p>
+<p>Obsidian</p>
+<p>JSON Canvas spec</p>
+<p>Defuddle (kepano's readability engine)</p>
+<p>Agent Skills specification</p>
+<p>Model Context Protocol spec</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># n8n-mcp + obsidian-skills — Two High-Leverage Claude Code Extensions
 
 Two of the most useful community-built extensions to Claude Code as of April 2026. Both are in the same category — *"expose a large, structured external system to Claude so it can reason about it natively"* — but they attack very different domains: **n8n-mcp** (czlonkowski) unlocks workflow automation, and **obsidian-skills** (kepano) unlocks personal knowledge management. Covered in one guide because they're architectural siblings and often end up installed together on the same workbench.

@@ -23,13 +23,16 @@
   .pill { display: inline-block; padding: 2px 8px; border-radius: 999px;
           background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
           font-size: 11px; }
+  details.level summary { cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+              text-transform: uppercase; color: var(--muted); }
+  details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entry">
-  <a class="back" href="index.html">← all entries</a>
+<main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-b">B-TIER</span> <span class="pill">technique</span></div>
   <h1>Shell sort — gap-based insertion sort that moves items far early</h1>
   <div class="meta">algo.andre · 2026-07-02T13:10:27.000Z · in ai8</div>
@@ -46,5 +49,6 @@
 insertion sort, shell sort</div></div>
 <div class="level"><h3>1k ft — Deep-dive / try it</h3><div class="body">Shell sort solves insertion sort’s biggest problem #code #algorithms</div></div>
   </section>
+  <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">Shell Sort is an optimized version of Insertion Sort, and what makes it faster is a pretty clever change. Insertion Sort works by scanning the list, comparing each number to the one before it. If it&#x27;s smaller, it slides backwards until it hits a number smaller than itself. But when a small number starts near the end of the list, it can only move back one step at a time, which makes Insertion Sort slow on large unsorted arrays. Shell Sort fixes this by comparing numbers that are separated by a gap. It runs Insertion Sort on these spaced-out subsequences, allowing small numbers to move large distances across the list much earlier. The gap is reduced with each pass until it reaches one. By then, the list is already mostly sorted, so a final Insertion Sort pass quickly finishes the job. So by introducing gaps...</div></details>
 </main>
 </body></html>

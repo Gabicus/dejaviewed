@@ -52,6 +52,122 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div id="guide-body"></div>
 </article>
 <footer class="site"><div class="wrap"><a href="../catalog.html#post-DUytAorCGE_">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Avellaneda-Stoikov + Hawkes Processes — Market Making and Order-Flow Alpha</h1>
+<p>The two canonical building blocks of academic HFT: a closed-form model for where to quote (Avellaneda-Stoikov) and a statistical model for when trades cluster (Hawkes). Together they describe the two halves of a market maker's problem — price the quotes, then time the quotes.</p>
+<p>Cloned repo: repos/avellaneda-stoikov/ (from https://github.com/fedecaccia/avellaneda-stoikov)</p>
+<h2>1. Avellaneda-Stoikov — the canonical market-making model</h2>
+<h3>What it is</h3>
+<p>A 2008 paper by Marco Avellaneda and Sasha Stoikov, "High Frequency Trading in a Limit Order Book," that solves a specific problem: a market maker holds inventory q, faces a mid-price s that diffuses as Brownian motion, and must choose bid/ask quotes continuously. Where should they post to maximize terminal utility while controlling inventory risk?</p>
+<p>The answer is two formulas — the reservation price and the optimal spread — and those two formulas are the foundation for essentially every serious MM model that followed.</p>
+<h3>How it works</h3>
+<p>The maker has a utility function (exponential, risk-averse with parameter γ). They post quotes symmetrically around a reservation price that is shifted away from mid based on current inventory. If you're long, you skew quotes lower to encourage sells. If you're short, you skew higher. The spread itself widens with volatility, time-to-horizon, and risk aversion.</p>
+<h3>Key mechanics — the two formulas</h3>
+<p>Reservation price (your private indifference price given inventory):</p>
+<p>r(s, q, t) = s − q · γ · σ² · (T − t)</p>
+<p>s — current mid</p>
+<p>q — signed inventory (positive = long)</p>
+<p>γ — risk aversion (higher = more skew)</p>
+<p>σ² — variance of mid-price</p>
+<p>(T − t) — time remaining until horizon</p>
+<p>Optimal bid-ask spread:</p>
+<p>δ_ask + δ_bid = γ · σ² · (T − t) + (2/γ) · ln(1 + γ/k)</p>
+<p>k — order-book liquidity parameter (intensity decay of the limit-order arrival function λ(δ) = A · exp(−k·δ))</p>
+<p>A — base arrival intensity</p>
+<p>Then you post:</p>
+<p>Bid at r − (spread / 2)</p>
+<p>Ask at r + (spread / 2)</p>
+<p>The first term of the spread is the inventory term (widens with risk). The second is the adverse selection term (widens when order flow is thin). This is the whole engine.</p>
+<h3>The repo — fedecaccia/avellaneda-stoikov</h3>
+<p>Cloned to repos/avellaneda-stoikov/. Minimal Python implementation, ~200 lines. Core loop from src/main.py:</p>
+<h1>Risk aversion</h1>
+<p>gamma = 0.1</p>
+<h1>Liquidity parameter (exponential decay of fill intensity)</h1>
+<p>k = 1.5</p>
+<h1>Mid-price follows Brownian motion</h1>
+<p>sigma = 2</p>
+<p>for i in range(N):</p>
+<h1>Reservation price — skews away from inventory</h1>
+<p>r[i] = s[i] - q[i] gamma (sigma2) (T - t[i])</p>
+<h1>Optimal half-spread</h1>
+<p>r_spread = gamma (sigma2) (T - t[i]) + (2/gamma) math.log(1 + gamma/k)</p>
+<h1>Quotes</h1>
+<p>r_ask = r[i] + r_spread / 2 r_bid = r[i] - r_spread / 2</p>
+<h1>Simulate Poisson fills with intensity Aexp(-kdelta)</h1>
+<p>...</p>
+<p>The repo includes a doc/ folder with the original paper and follow-ups (Guéant-Lehalle-Tapia closed-form extension, mean-reversion variants). Good starting point, but known limitations: Brownian mid is unrealistic, k and A need live calibration, no queue-position model.</p>
+<h3>Quick start</h3>
+<p>cd ~/projects/ai-catalogs/repos/avellaneda-stoikov/ pip install numpy matplotlib python src/main.py</p>
+<p>Runs 100 simulated sessions and plots PnL distribution. Tweak gamma, k, sigma and watch how the spread and skew react.</p>
+<h3>Known limitations (and what the follow-ups fix)</h3>
+<p>Brownian mid — real prices jump. Fix: use a jump-diffusion or Hawkes-modulated mid.</p>
+<p>Fixed k — real liquidity is regime-dependent. Fix: rolling calibration from trade flow.</p>
+<p>Symmetric fills — adverse selection makes them asymmetric. Fix: asymmetric k_bid, k_ask.</p>
+<p>No queue model — AS assumes you fill instantly at the quoted price. Fix: queue-position aware extensions (Guéant-Lehalle).</p>
+<p>Single asset — multi-asset version requires solving a coupled HJB. Fix: Guéant 2017.</p>
+<p>For a modern RL extension, see javifalces/HFTFramework — reinforcement learning on top of AS for dynamic γ and k.</p>
+<h2>2. Hawkes processes — order flow is self-exciting</h2>
+<h3>What it is</h3>
+<p>A Hawkes process is a point process where the arrival of an event temporarily increases the probability of more events. Classic example: earthquakes (a big one triggers aftershocks). In markets: a trade begets more trades. Order flow is demonstrably self-exciting — if you watch BTC-PERP on Hyperliquid for 10 seconds, you see this with your own eyes. Buys cluster. Sells cluster. Quiet periods are quiet.</p>
+<p>Avellaneda-Stoikov assumes trades arrive as a plain Poisson process (constant intensity A). That assumption is wrong at HFT timescales. Replacing it with a Hawkes intensity is the single biggest realism upgrade.</p>
+<h3>How it works — the math</h3>
+<p>A univariate Hawkes process has a conditional intensity:</p>
+<p>λ(t) = μ + Σ_{t_i &lt; t} α · exp(−β (t − t_i))</p>
+<p>μ — baseline intensity (exogenous flow)</p>
+<p>α — jump in intensity per event (self-excitation strength)</p>
+<p>β — decay rate (how fast excitement dies)</p>
+<p>Branching ratio n = α/β must be &lt; 1 for stability. n near 1 means the process is critical — heavy clustering, close to explosive.</p>
+<p>For order flow, you want a bivariate or multivariate Hawkes with buy and sell streams that excite each other asymmetrically. The 4-dimensional version (bid market orders, ask market orders, bid limit orders, ask limit orders) is the standard for LOB research.</p>
+<h3>Key intuition</h3>
+<p>Self-excitation captures momentum at the micro scale — a large buy market order raises the probability of more buy market orders over the next ~100ms.</p>
+<p>Cross-excitation captures the order-book reaction — a market buy raises the probability of a cancellation on the ask and a new limit ask higher up.</p>
+<p>Branching ratio is a regime detector. n ≈ 0.9+ = critical, clustered, dangerous to provide liquidity. n ≈ 0.5 = calm.</p>
+<p>Fitted μ, α, β give you an instantaneous order-flow imbalance forecast — the true signal every MM and taker wants.</p>
+<h3>Repos worth pulling</h3>
+<p>x-datainitiative/tick — production-grade Python library for Hawkes fitting. Handles MLE, EM, and sum-of-exponentials kernels. The go-to for serious work.</p>
+<p>jeremymck/High-Frequency-Data---Limit-Order-Books — pedagogical notebooks covering LOB simulation + Hawkes estimation end-to-end.</p>
+<p>sohaibelkarmi/High-Frequency-Trading-Simulator — C++ LOB with Hawkes-driven order flow, Python bindings.</p>
+<h3>Quick start with tick</h3>
+<p>from tick.hawkes import HawkesExpKern, SimuHawkesExpKernels import numpy as np</p>
+<h1>Fit a 2D Hawkes (buys, sells) on your trade timestamps</h1>
+<h1>timestamps = [np.array([buy_times]), np.array([sell_times])]</h1>
+<p>decays = np.array([[5.0, 5.0], [5.0, 5.0]]) # β per pair learner = HawkesExpKern(decays, penalty='l2', C=1e3) learner.fit(timestamps)</p>
+<h1>adjacency[i][j] = α from stream j exciting stream i</h1>
+<p>print("Branching matrix:\n", learner.adjacency) print("Baseline:", learner.baseline) print("Spectral radius (stability):", np.max(np.abs(np.linalg.eigvals(learner.adjacency))))</p>
+<p>Roll this on 1-minute windows and you have a live order-flow-clustering monitor.</p>
+<h2>3. Putting them together — the modern MM stack</h2>
+<p>The research consensus for the last ~8 years has been: replace Avellaneda-Stoikov's constant A, k with Hawkes-derived, regime-aware estimates.</p>
+<p>The combined loop:</p>
+<p>Maintain a rolling Hawkes fit on trade timestamps (fit every N seconds).</p>
+<p>Convert the fitted intensity into a live forecast λ̂(t) for the next fill window.</p>
+<p>Feed λ̂ into AS as a time-varying A. Also use branching ratio to modulate γ — get more risk-averse when n → 1.</p>
+<p>Skew quotes with the AS reservation price, sized with AS spread, but gated by the Hawkes regime (don't quote when n is critical unless spread compensates).</p>
+<p>(Optional) Train an RL agent to choose γ dynamically — that's what javifalces/HFTFramework and im1235/ISAC (Soft Actor-Critic on AS) do.</p>
+<h2>4. How this plugs into your trading-agent-team</h2>
+<p>The current trading-agent-team at ~/projects/agents/trading-agent-team/ is built around taker strategies — fast cyclers, graduated TP, ensembles across 8 coins. AS + Hawkes opens a second leg of the strategy: a maker leg that generates uncorrelated PnL from spread capture rather than directional alpha.</p>
+<p>Concrete integration ideas:</p>
+<p>Hawkes as a regime filter for the existing taker strategies. Fit a bivariate Hawkes on trade tape per coin. When branching ratio spikes above ~0.9, the fast-cycler TP logic should tighten because reversals become more likely. This is a pure overlay — no new strategy, just a kill switch / sizing knob. Lowest-risk way to start.</p>
+<p>Order-flow imbalance as a feature for the Oracle Commander / Rolodex selector. Add the ratio of buy-excited to sell-excited intensity as a short-horizon feature. Should add signal to coin rotation decisions at 1-5 minute horizons.</p>
+<p>Hyperliquid maker leg. Hyperliquid pays maker rebates. A disciplined AS quoter on a liquid pair (HYPE, SOL) sized small could produce steady edge and double as inventory for the taker strategies — when the maker leg accumulates a long, the taker leg can ride it out instead of fighting it. This is the pattern HL-Delta uses in agents:repos/HL-Delta/.</p>
+<p>Challenge-game parameter sweep. AS has exactly the shape that /challenge-game was built for: 3 numeric parameters (γ, k, horizon_T), a clear fitness function (Sharpe of simulated PnL), and fast evaluation. Run a tournament against replayed Hyperliquid L2 data.</p>
+<p>Watchdog layer for Unicron. The Hawkes branching ratio is a clean scalar "how crazy is order flow right now" number. Pipe it into the Unicron oversight watchdog (project_unicron_oversight_spec.md) as an auto-pause trigger when it crosses a threshold.</p>
+<p>Data requirement: All of this needs trade-level tape, not OHLCV. Hyperliquid's WebSocket gives trade ticks for free — that's the data path. For order-book state (needed for full Hawkes LOB models) you need L2 snapshots, which flowsurface in agents:repos/flowsurface/ already handles in Rust.</p>
+<h2>5. Further reading</h2>
+<p>Avellaneda &amp; Stoikov (2008) — the original paper, in repos/avellaneda-stoikov/doc/.</p>
+<p>Guéant, Lehalle, Fernandez-Tapia (2013) — closed-form extension with inventory bounds.</p>
+<p>Bacry, Mastromatteo, Muzy (2015) — "Hawkes processes in finance," the definitive survey.</p>
+<p>Bacry &amp; Muzy (2014) — Hawkes estimation of market impact.</p>
+<p>Cartea, Jaimungal, Penalva — Algorithmic and High-Frequency Trading (textbook). The chapter on AS is the clearest exposition out there.</p>
+<p>Deep Hawkes process for high-frequency market making — Journal of Banking and Financial Technology, 2024 (neural extension).</p>
+<h2>Sources</h2>
+<p>https://github.com/fedecaccia/avellaneda-stoikov</p>
+<p>https://github.com/javifalces/HFTFramework</p>
+<p>https://github.com/im1235/ISAC</p>
+<p>https://github.com/x-datainitiative/tick</p>
+<p>https://github.com/jeremymck/High-Frequency-Data---Limit-Order-Books</p>
+<p>https://jheusser.github.io/2013/09/08/hawkes.html</p>
+<p>https://link.springer.com/article/10.1007/s42786-024-00049-8</p>
+</div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Avellaneda-Stoikov + Hawkes Processes — Market Making and Order-Flow Alpha
 
 The two canonical building blocks of academic HFT: a closed-form model for where to quote (Avellaneda-Stoikov) and a statistical model for when trades cluster (Hawkes). Together they describe the two halves of a market maker's problem — *price* the quotes, then *time* the quotes.
