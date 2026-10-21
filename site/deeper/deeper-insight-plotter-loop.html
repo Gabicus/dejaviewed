@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Anything With Geometry — Ink on Paper: the Pen-Plotter Loop — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">creative_fusion</div>
+  <h1>Anything With Geometry — Ink on Paper: the Pen-Plotter Loop</h1>
+  <div class="thesis">Fogleman's ln turns any 3D scene into hidden-line vector paths, and vpype makes those paths plotter-ready. Everything else in the catalog that produces geometry — a phone scan, a ripped PS1 level, a ray-marched fractal, a strange attractor, the phase-space shape of BTC volatility, a Blender scene an agent wrote in Python — becomes a source for that one pipe. The output is a physical ink original, and in a market drowning in free pixels that is the scarce thing.</div>
+  <div class="tools"><span class='tool-pill'>After Effects</span> · <span class='tool-pill'>Artist Grant</span> · <span class='tool-pill'>Blender</span> · <span class='tool-pill'>Claude</span> · <span class='tool-pill'>DuckStation</span> · <span class='tool-pill'>FFmpeg</span> · <span class='tool-pill'>Fine Art America</span> · <span class='tool-pill'>Gelato</span> · <span class='tool-pill'>Mandelbulber</span> · <span class='tool-pill'>Orbiter</span> · <span class='tool-pill'>Printful</span> · <span class='tool-pill'>Python</span> · <span class='tool-pill'>Raspberry Pi</span> · <span class='tool-pill'>ln</span> · <span class='tool-pill'>vpype</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Week 1: install ln (Go) and vpype; have Claude Code write a script that loads an OBJ (start with a DuckStation PS1 rip or a phone scan) into ln, sets camera and texture paths, and exports SVG; run vpype linemerge/linesort and preview, Week 2: add two math sources — a Thomas attractor and a 3-lag phase-space embedding of a year of BTC daily volatility — emitted as 3D polylines straight into ln; make a 6-print series titled by date range, Week 3: plot the series on an A3 pen plotter (AxiDraw-class or a DIY drawing machine) with two pen weights, photograph per the print-on-demand guide, list originals plus POD reproductions, and submit to one grant, Falsifier: if scanned or ripped meshes produce unreadable line mush unless you hand-pick every path, or if plotted originals cannot sell above the POD print price, the loop is a toy, not a practice</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> Pen plotter or a DIY drawing machine, Go toolchain for ln, Python for vpype, Basic Blender for mesh cleanup</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (14)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dd9Uvy9ByCE/" target="_blank" rel="noopener"><img src="../thumb/Dd9Uvy9ByCE.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dd9Uvy9ByCE/" target="_blank" rel="noopener" class="dd-entry-title">ln + vpype — 3D scenes to hidden-line vector art for pen plotters</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> repo · @index.opensource</div>
+    <div class="dd-entry-summary">Michael Fogleman's ln (Go) renders 3D scenes as 2D vector paths by ray-testing each path segment for visibility, supporting CSG, math surfaces and procedural cities. vpype then merges and sorts paths for plotting, cutting pen-up travel 86% in this example. Both MIT licensed, output straight to SVG.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DeuZ4BnhCqA/" target="_blank" rel="noopener"><img src="../thumb/DeuZ4BnhCqA.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DeuZ4BnhCqA/" target="_blank" rel="noopener" class="dd-entry-title">Claude Opus 5.5 to Blender — 3D animation built entirely as code</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @nateherkai</div>
+    <div class="dd-entry-summary">Claude Opus 5.5 wrote everything: a web mock of the After Effects UI, a Python script that builds the Blender scene, the character animation, plus the music and sound effects. Blender rendered 360 frames on GPU in about 15 minutes and FFmpeg stitched the video. Full prompt is comment-gated.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbqLB-zMoJR/" target="_blank" rel="noopener"><img src="../thumb/DbqLB-zMoJR.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbqLB-zMoJR/" target="_blank" rel="noopener" class="dd-entry-title">DuckStation 3D screenshot — rip any PS1 scene to OBJ for Blender</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @rosamichael.digital</div>
+    <div class="dd-entry-summary">A DuckStation fork with a 3D-screenshot feature dumps the current PS1 scene as an OBJ with positions intact, ready to drag into Blender. More reliable than the older Avocado emulator route, which had vertex and texture bugs. The creator turns rips into papercraft models.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbcEatOsXG2/" target="_blank" rel="noopener"><img src="../thumb/DbcEatOsXG2.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbcEatOsXG2/" target="_blank" rel="noopener" class="dd-entry-title">Orbiter — open-source smartphone 3D scanner for print-ready parts</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @rawmechatronics</div>
+    <div class="dd-entry-summary">Orbiter is an open-source rig and workflow from Raw Mechatronics for accurate 3D digitization with a smartphone camera. Scan an object, design around it and print a part that fits the first time.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbU9ysVITFS/" target="_blank" rel="noopener"><img src="../thumb/DbU9ysVITFS.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbU9ysVITFS/" target="_blank" rel="noopener" class="dd-entry-title">Peppa Cam — DIY Raspberry Pi handheld LiDAR scanner</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> demo · @peppes_ghost</div>
+    <div class="dd-entry-summary">A homemade handheld LiDAR scanner from a Raspberry Pi, a LiDAR sensor and a 3D-printed housing, mapping buildings, caves, gardens and trees without proprietary software. Build plan with wiring, code and CAD is comment-gated.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DehlIB2PT4h/" target="_blank" rel="noopener"><img src="../thumb/DehlIB2PT4h.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DehlIB2PT4h/" target="_blank" rel="noopener" class="dd-entry-title">Mandelbulb — ray-marching a 3D fractal from z⁸ + c</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> art · @elemental.math</div>
+    <div class="dd-entry-summary">Explains the Mandelbulb: Daniel White's spherical-coordinate trick for 3D 'multiplication', raised to power 8 by Paul Nylander, rendered by ray marching with the distance estimate d = ½·r·log r/dr. Code is ported line by line from Mandelbulber's GPL-3.0 source, with the Hamilton 'multiply triplets' history as a bonus.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYsSz2rvWGI/" target="_blank" rel="noopener"><img src="../thumb/DYsSz2rvWGI.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYsSz2rvWGI/" target="_blank" rel="noopener" class="dd-entry-title">A gorgeous strange attractor known as Thomas' cyclically sym — Rendered via 3D Gaussian splatting.</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> skill · @kaustav.py</div>
+    <div class="dd-entry-summary">A gorgeous strange attractor known as Thomas' cyclically symmetric attractor — @kaustav.py.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DTLkCVXE7O6/" target="_blank" rel="noopener"><img src="../thumb/DTLkCVXE7O6.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DTLkCVXE7O6/" target="_blank" rel="noopener" class="dd-entry-title">Phase Space Reconstruction — unfolding hidden BTC volatility dynamics</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> technique · @quant.dhawan</div>
+    <div class="dd-entry-summary">Uses Phase Space Reconstruction (PSR) with time delay tau=3 to unfold BTCUSD volatility into a multi-dimensional manifold. Reveals whether market is in stable regime or chaotic transition. Key for quantitative regime detection.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/C3dFjq4LbiP/" target="_blank" rel="noopener"><img src="../thumb/C3dFjq4LbiP.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/C3dFjq4LbiP/" target="_blank" rel="noopener" class="dd-entry-title">The big REVEAL. This is not quite finished yet, but the #drawingmachine ...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> art · @madsencycles</div>
+    <div class="dd-entry-summary">The big REVEAL. This is not quite finished yet, but the #drawingmachine #kineticsculpture will be done in time for th... — @madsencycles.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DcTt5_eoGFO/" target="_blank" rel="noopener"><img src="../thumb/DcTt5_eoGFO.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DcTt5_eoGFO/" target="_blank" rel="noopener" class="dd-entry-title">Print-on-demand art prints — sell paintings with no stock or upfront cost</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> guide · @creativeflairhq</div>
+    <div class="dd-entry-summary">Upload photos to Printful, Gelato or Fine Art America, set a price, and they print, pack and ship while you keep the margin. The real work is the photo: flat, window daylight, no flash, straight on, cropped to the canvas, and list at least ten pieces.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbtF9bVBGPg/" target="_blank" rel="noopener"><img src="../thumb/DbtF9bVBGPg.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbtF9bVBGPg/" target="_blank" rel="noopener" class="dd-entry-title">Artist Grant — $1,200 unrestricted grant with no proposal</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> resource · @creativeflairhq</div>
+    <div class="dd-entry-summary">Artist Grant awards $1,200 unrestricted to one visual artist three times a year since 2017. Apply by email with a website link or 3-5 images plus a short bio; $30 fee, visual arts only, open worldwide to 18+, past winners ineligible.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DEXGqLdqvPN/" target="_blank" rel="noopener"><img src="../thumb/DEXGqLdqvPN.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DEXGqLdqvPN/" target="_blank" rel="noopener" class="dd-entry-title">@reubenmargolin builds his hypnotic kinetic sculptures with creative and...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> art · @avant.arte</div>
+    <div class="dd-entry-summary">@reubenmargolin builds his hypnotic kinetic sculptures with creative and intricate mechanics. — @avant.arte.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Db22ptPy577/" target="_blank" rel="noopener"><img src="../thumb/Db22ptPy577.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Db22ptPy577/" target="_blank" rel="noopener" class="dd-entry-title">Tristan Perich's 1-Bit Symphony — music from on/off pulses on a chip</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> art · @egapmada</div>
+    <div class="dd-entry-summary">1-Bit Symphony is a composition housed in a CD case: a microchip running assembly code that outputs 1-bit on/off pulses as sound. A 695-page companion book prints the processor's cycles for the first hundredth of a second.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DR6kWKTDJ1T/" target="_blank" rel="noopener"><img src="../thumb/DR6kWKTDJ1T.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DR6kWKTDJ1T/" target="_blank" rel="noopener" class="dd-entry-title">The art market just stopped gatekeeping, and most artists ha — For decades you made the work and waited to be picked....</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> skill · @creativeflairhq</div>
+    <div class="dd-entry-summary">The art market just stopped gatekeeping, and most artists have not noticed. — @creativeflairhq.</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-10-21T18:20:58.213917 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+</div>
+</main>
+</body></html>

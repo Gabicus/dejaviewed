@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Buying Dead Apps — the one-person AI-native rollup — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">arbitrage_opportunity</div>
+  <h1>Buying Dead Apps — the one-person AI-native rollup</h1>
+  <div class="thesis">Bending Spoons went from $40k to an $18B IPO by buying stagnant software, rebuilding only what customers use, and compounding the margin. Public SaaS multiples just got cut in half. Meanwhile the catalog holds the full toolchain for agent-driven rebuilds — repo comprehension, reverse engineering, orchestrator/executor loops with earned autonomy, and checklists for the legal and performance gaps vibe-coded apps leave. Scale the playbook down: small cash-flowing apps sell for a few times annual profit, and the rebuild cost is the variable AI just crushed.</div>
+  <div class="tools"><span class='tool-pill'>Anthropic</span> · <span class='tool-pill'>ChatGPT</span> · <span class='tool-pill'>Claude</span> · <span class='tool-pill'>Claude Code</span> · <span class='tool-pill'>Codex</span> · <span class='tool-pill'>DeepWiki</span> · <span class='tool-pill'>GitDiagram</span> · <span class='tool-pill'>GitMCP</span> · <span class='tool-pill'>Gitingest</span> · <span class='tool-pill'>PostHog</span> · <span class='tool-pill'>Reverse Engineer Anything</span> · <span class='tool-pill'>VS Code</span> · <span class='tool-pill'>cron</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Scrape listings on micro-acquisition marketplaces (Acquire.com, Flippa) under $50k and have Claude score each on revenue stability, stack age, and how much of the code you could replace., For the top three, request repo access under NDA, run gitingest plus deepwiki, and have an orchestrator agent produce a rebuild spec, a cost estimate in hours and the compliance gap list., Buy one, ship PostHog first, then rebuild only the top-used flows with an orchestrator/executor loop and daily regression tests, and track churn monthly., falsifier: if the rebuild plus migration costs more than six months of the app's profit, or churn after migration goes above 10%, the AI discount isn't real at this size.</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> Capital for one small acquisition, Basic M&amp;A hygiene: escrow, asset purchase agreement, Comfort owning customer support</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (11)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DclyX25u9Sf/" target="_blank" rel="noopener"><img src="../thumb/DclyX25u9Sf.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DclyX25u9Sf/" target="_blank" rel="noopener" class="dd-entry-title">Bending Spoons playbook — AI-native acquisitions of stagnant SaaS</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> news · @tom__shipley</div>
+    <div class="dd-entry-summary">Bending Spoons grew from $40k to an $18B IPO by buying stagnating platforms (Evernote, Vimeo, Meetup, WeTransfer) cheaply, rebuilding only the core features customers use with a lean elite engineering team, cutting cost base and compounding margin into the next deal. Argues AI-native acquirers, not vendors, are the new playbook PE/VC is funding.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DXFzEoeCW6S/" target="_blank" rel="noopener"><img src="../thumb/DXFzEoeCW6S.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DXFzEoeCW6S/" target="_blank" rel="noopener" class="dd-entry-title">Public SaaS is getting destroyed. Atlassian -63%. HubSpot -48%. Workday ...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> demo · @atlasberry008</div>
+    <div class="dd-entry-summary">Public SaaS is getting destroyed. Atlassian -63%. HubSpot -48%. Workday -47%. — @atlasberry008; uses Anthropic.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DX4VJO6zMzL/" target="_blank" rel="noopener"><img src="../thumb/DX4VJO6zMzL.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DX4VJO6zMzL/" target="_blank" rel="noopener" class="dd-entry-title">Claude — Stop selling software. Sell the finished work.</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> resource · @tpadumke</div>
+    <div class="dd-entry-summary">YC’s #2 request for startups: AI-Native Service Companies. — @Edited; uses Claude; demonstrates MCP.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DdeoJI9KGtq/" target="_blank" rel="noopener"><img src="../thumb/DdeoJI9KGtq.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DdeoJI9KGtq/" target="_blank" rel="noopener" class="dd-entry-title">GitHub URL swaps — gitdiagram, gitingest, deepwiki and gitmcp for any repo</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> resource · @ariacodez</div>
+    <div class="dd-entry-summary">Swap github.com in a repo URL for gitdiagram.com to get an architecture diagram, gitingest.com for an LLM-readable dump, deepwiki.com for generated docs, or gitmcp.io to let your agent query the repo live over MCP. Pressing the period key on a GitHub repo opens it in browser VS Code.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DeV2n53gLgf/" target="_blank" rel="noopener"><img src="../thumb/DeV2n53gLgf.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DeV2n53gLgf/" target="_blank" rel="noopener" class="dd-entry-title">Reverse Engineer Anything — trending repo that explains how any app works</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @theericmichaud</div>
+    <div class="dd-entry-summary">The week's top trending GitHub repo, about 70k stars: point Claude Code or Codex at an app and it explains how the feature is built so you can rebuild it. Users have revived old hardware, e.g. a Logitech keypad on Linux in 15 minutes, plus scanners and sound cards that lost drivers.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Da1hOm7scjR/" target="_blank" rel="noopener"><img src="../thumb/Da1hOm7scjR.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Da1hOm7scjR/" target="_blank" rel="noopener" class="dd-entry-title">Fable orchestrates, Opus executes — cutting frontier-model token spend</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @thomas.lentine</div>
+    <div class="dd-entry-summary">Brain-dump your task list to Fable, have it write specs and spawn cheaper Opus subagents (in parallel worktrees) to execute, then Fable reviews and sends fixes back in a loop until it's good enough. You get top-model judgment without burning usage limits on implementation.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DamEcWuPvX0/" target="_blank" rel="noopener"><img src="../thumb/DamEcWuPvX0.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DamEcWuPvX0/" target="_blank" rel="noopener" class="dd-entry-title">Agentic OS on Claude Fable 5 — cron loop with earned autonomy</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @raycfu</div>
+    <div class="dd-entry-summary">Blueprint: a cron-run loop.sh where a cheap model triages changes, Fable 5 plans as manager, Sonnet executes and a fresh Fable reviews. Tasks earn autonomy after 20 passes at 95% and lose it below 90%, refusals come back as HTTP 200 so scripts must check stop_reason, and a goals directory reruns regression tests daily.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Db9Br3XBTPj/" target="_blank" rel="noopener"><img src="../thumb/Db9Br3XBTPj.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Db9Br3XBTPj/" target="_blank" rel="noopener" class="dd-entry-title">Vibe-coded app legal risks — ten compliance gaps that get you sued</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> resource · @murphmaxxing</div>
+    <div class="dd-entry-summary">Ten liability traps for indie apps with rough per-user fines: missing or incomplete privacy policy (data collection, AI use, third parties), undeleted uploads, public storage buckets, fake testimonials, hard-to-cancel subscriptions, silent trial auto-charges, and chatbots without self-harm handling.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZ3PQxzoUEr/" target="_blank" rel="noopener"><img src="../thumb/DZ3PQxzoUEr.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZ3PQxzoUEr/" target="_blank" rel="noopener" class="dd-entry-title">Vibe-coded app performance — five fixes Claude usually skips</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @haydenschmitty</div>
+    <div class="dd-entry-summary">Five backend/frontend performance gaps in AI-written apps: uncompressed JSON responses, row-by-row database inserts, a single dependency bottleneck in round-trip latency, no optimistic UI updates, and server re-rendering HTML for every visitor instead of caching.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DdHJn-ZRpbd/" target="_blank" rel="noopener"><img src="../thumb/DdHJn-ZRpbd.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DdHJn-ZRpbd/" target="_blank" rel="noopener" class="dd-entry-title">PostHog interest-segmented landing pages — personalize by visitor behavior</a>
+    <div class="dd-entry-meta"><span class="tier-badge tC">C</span> technique · @angus.sewell</div>
+    <div class="dd-entry-summary">Sponsored PostHog post: install PostHog, let two weeks of visitor sessions accumulate, then prompt an AI to cluster visitors into interest groups (e.g. sales vs. support features) and generate a landing-page variant per group that returning visitors see. Also argues flashy animated landing templates convert poorly.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dap2gsCRhs0/" target="_blank" rel="noopener"><img src="../thumb/Dap2gsCRhs0.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dap2gsCRhs0/" target="_blank" rel="noopener" class="dd-entry-title">DIY fractional CFO — finance API sync plus AI analysis skills</a>
+    <div class="dd-entry-meta"><span class="tier-badge tC">C</span> technique · @angus.sewell</div>
+    <div class="dd-entry-summary">Sync transactions from a finance API into your own tables, then run agent prompts that categorize income and expenses, flag waste and spot under-investment, refining each into a reusable skill. Pitched as a replacement for a $15k fractional CFO.</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-10-21T18:20:58.219675 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+</div>
+</main>
+</body></html>

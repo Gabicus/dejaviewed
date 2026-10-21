@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Own the Thermometer — $100 sensors as prediction-market edge — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">arbitrage_opportunity</div>
+  <h1>Own the Thermometer — $100 sensors as prediction-market edge</h1>
+  <div class="thesis">A student cleared $100K+ on Polymarket weather contracts with a dorm-built weather station, and a separate trader harvests contracts already sitting at 99c. Put those next to free real-time feeds (NASA EONET, SDR-received weather satellite images, public EIA/HIFLD infrastructure data, live plane and ship layers) and the pattern is clear — the edge on event contracts is not a smarter model, it is a faster or closer read of the exact source the contract settles on. Cheap sensors plus an agent that watches the order book in the final hours turn that into a repeatable process. A student cleared $100K+ on Polymarket weather contracts with a dorm-built weather station.</div>
+  <div class="tools"><span class='tool-pill'>Apple Shortcuts</span> · <span class='tool-pill'>Claude</span> · <span class='tool-pill'>Flash MoE</span> · <span class='tool-pill'>God's Eye View</span> · <span class='tool-pill'>Kalshi</span> · <span class='tool-pill'>LiquidTrade</span> · <span class='tool-pill'>NASA EONET</span> · <span class='tool-pill'>Next.js</span> · <span class='tool-pill'>Polymarket</span> · <span class='tool-pill'>Python</span> · <span class='tool-pill'>QuiverQuant</span> · <span class='tool-pill'>Raspberry Pi</span> · <span class='tool-pill'>RuView</span> · <span class='tool-pill'>TypeScript</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Pull every open weather and event contract on Kalshi and Polymarket, and have Claude extract the settlement source and timing rule from each contract's rules into one table — which station, which report, what time., Pick the three contracts whose settlement station you can get physically near or read faster than its official report; log a Raspberry Pi sensor plus the public 5-minute station feed side by side for two weeks., Paper-trade only the final six hours before resolution, with a scheduled agent comparing your live reading to the market's implied probability and to the 99c harvest opportunities in the same window., falsifier: if the official station's public intra-hour feed already moves the price as fast as your sensor does, your sensor adds nothing — the edge was always the dorm student's local microclimate, not a method.</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> Check that the venue is legal in your jurisdiction (Kalshi is US-regulated; Polymarket access varies), Raspberry Pi and a basic weather sensor, Python for the order-book watcher, Never trade on non-public information about people — sensor data only</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (12)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DWzz7T9Ddex/" target="_blank" rel="noopener"><img src="../thumb/DWzz7T9Ddex.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DWzz7T9Ddex/" target="_blank" rel="noopener" class="dd-entry-title">Polymarket weather edge — dorm weather station, $100K+ traded</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> inspiration · @flockblocked</div>
+    <div class="dd-entry-summary">@insidesteal profile of a student generating $100K+ on Polymarket weather contracts using a dorm-built weather station and localized data asymmetry. Reference for prediction-market quant plays built on proprietary data.</div>
+    <a href="../guides/polymarket-weather-trading.html" class="dd-entry-guide">Read Guide →</a>
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DWEfIS9jRgI/" target="_blank" rel="noopener"><img src="../thumb/DWEfIS9jRgI.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DWEfIS9jRgI/" target="_blank" rel="noopener" class="dd-entry-title">Polymarket 99c limit-order edge — 75 automated trades/hour</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> technique · @beinginvested</div>
+    <div class="dd-entry-summary">@beinginvested on a Polymarket trader placing limit orders on outcomes already closing at 99c, automated at 75 trades/hour, 4 months to crack it. Teaser with DM-gated full breakdown; worth remembering the pattern.</div>
+    <a href="../guides/polymarket-99c-limit-arbitrage.html" class="dd-entry-guide">Read Guide →</a>
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DWrQKaskWlZ/" target="_blank" rel="noopener"><img src="../thumb/DWrQKaskWlZ.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DWrQKaskWlZ/" target="_blank" rel="noopener" class="dd-entry-title">NASA EONET — free real-time weather/event data API</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> tool · @softwarewithnick</div>
+    <div class="dd-entry-summary">@softwarewithnick points at NASA's free real-time natural events data feed (EONET-style): wildfires, earthquakes, storms via satellite. Useful open data source for mapping/alerting projects.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dd6W2q5gZJ-/" target="_blank" rel="noopener"><img src="../thumb/Dd6W2q5gZJ-.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dd6W2q5gZJ-/" target="_blank" rel="noopener" class="dd-entry-title">Five fringe GitHub repos — WiFi sensing, offline 400B LLM, satellite capture</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> repo · @cracked.artificial</div>
+    <div class="dd-entry-summary">A hype-framed listicle of open-source projects: RuView turns WiFi into a through-wall person sensor, Flash MoE runs a 400B model on an iPhone offline, a walk-through camera tool builds 3D replicas of buildings, an app detects nearby camera glasses, and a cheap dish plus SDR pulls live weather-satellite images. Repo links are comment-gated.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DW6Ny_zkqSY/" target="_blank" rel="noopener"><img src="../thumb/DW6Ny_zkqSY.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DW6Ny_zkqSY/" target="_blank" rel="noopener" class="dd-entry-title">One person pulled together public government data from the E — Every power line, substation, data center, and solar f...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> demo · @ohmo.ai</div>
+    <div class="dd-entry-summary">One person pulled together public government data from the EIA, HIFLD, and EPA—and turned it into a free, interactive... — @Edited.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DccLLkoPCT1/" target="_blank" rel="noopener"><img src="../thumb/DccLLkoPCT1.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DccLLkoPCT1/" target="_blank" rel="noopener" class="dd-entry-title">God's Eye View — open-source 3D geospatial OSINT globe with voice agent</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @bilawal.ai</div>
+    <div class="dd-entry-summary">Bilawal Sidhu open-sourced God's Eye View V1 (MIT): a browser 3D globe tracking real-time planes, ships, satellites, traffic cameras and infrastructure, with FLIR-style modes, a voice agent you can ask what's happening, annotations, and cockpit views. Extend it with new data layers.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DUrQ187EvI4/" target="_blank" rel="noopener"><img src="../thumb/DUrQ187EvI4.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DUrQ187EvI4/" target="_blank" rel="noopener" class="dd-entry-title">Polymarket insider detection — websocket + data-feed signals</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @carsoncantcode</div>
+    <div class="dd-entry-summary">@carsoncantcode on using Polymarket websockets and data feeds to identify insider-trade patterns (referencing a recent arrest). Technique pointer for prediction-market forensics.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dd4Ca8oiiyB/" target="_blank" rel="noopener"><img src="../thumb/Dd4Ca8oiiyB.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dd4Ca8oiiyB/" target="_blank" rel="noopener" class="dd-entry-title">Claude trading watcher — LiquidTrade + QuiverQuant for insider-trade alerts</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @nateherkai</div>
+    <div class="dd-entry-summary">Connect Claude to LiquidTrade for brokerage access across stocks, crypto, forex and prediction markets, and QuiverQuant for insider, politician and institutional trade data. Then give it a rule like tracking an investor's disclosures, compare against your portfolio, run it as a recurring routine, and paper trade first.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZoREIHtMjL/" target="_blank" rel="noopener"><img src="../thumb/DZoREIHtMjL.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZoREIHtMjL/" target="_blank" rel="noopener" class="dd-entry-title">NFC stickers + vibe-coded web app — physical taps that log real-life habits</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> demo · @byjackprice</div>
+    <div class="dd-entry-summary">Programmable NFC stickers on a water bottle trigger an Apple Shortcut that logs each finished bottle to a tiny Next.js/TypeScript web app, surfaced as a home-screen widget. Part two of an IRL vibe-coding series; next step is a Raspberry Pi force sensor to log automatically.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DWxNZMrjqY9/" target="_blank" rel="noopener"><img src="../thumb/DWxNZMrjqY9.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DWxNZMrjqY9/" target="_blank" rel="noopener" class="dd-entry-title">Quantum reservoir computing — nine atoms forecasting weather</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> news · @gigaqian</div>
+    <div class="dd-entry-summary">USTC researchers in Hefei built a quantum reservoir computer from nine interacting atoms that beat classical baselines on weather prediction. The reservoir needs no training, only the readout is trained, and quantum noise is used as the fading memory that time-series forecasting needs.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DUoiJH_EiqP/" target="_blank" rel="noopener"><img src="../thumb/DUoiJH_EiqP.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DUoiJH_EiqP/" target="_blank" rel="noopener" class="dd-entry-title">Polymarket/Kalshi prediction-market repo — @carsoncantcode</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> repo · @carsoncantcode</div>
+    <div class="dd-entry-summary">@carsoncantcode flags a must-have GitHub repo for prediction-market traders and developers (Polymarket, Kalshi). Repo link via comment 'ANALYSIS'. Subject is concrete even though repo unnamed.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DUx9t_FE0CY/" target="_blank" rel="noopener"><img src="../thumb/DUx9t_FE0CY.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DUx9t_FE0CY/" target="_blank" rel="noopener" class="dd-entry-title">Wasserstein Distance — measuring the backtest-to-live reality gap</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> technique · @quant.dhawan</div>
+    <div class="dd-entry-summary">Uses Wasserstein Distance and Sinkhorn Divergence to mathematically measure drift between backtest distributions (blue) and live market conditions (orange). Detects distribution shift that kills more strategies than bad fees.</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-10-21T18:20:58.219149 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+</div>
+</main>
+</body></html>

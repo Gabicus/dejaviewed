@@ -108,30 +108,46 @@ def main():
 
     sitemap = ['<?xml version="1.0" encoding="UTF-8"?>',
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-               '  <url><loc>https://dejaviewed.com/</loc><priority>1.0</priority></url>',
-               '  <url><loc>https://dejaviewed.com/graph.html</loc><priority>0.8</priority></url>',
-               '  <url><loc>https://dejaviewed.com/graph-cosmos.html</loc><priority>0.8</priority></url>',
-               '  <url><loc>https://dejaviewed.com/board.html</loc><priority>0.7</priority></url>',
-               '  <url><loc>https://dejaviewed.com/admin.html</loc><priority>0.3</priority></url>',
-               '  <url><loc>https://dejaviewed.com/api/catalog.json</loc><priority>0.9</priority></url>',
-               '  <url><loc>https://dejaviewed.com/api/creators.json</loc><priority>0.7</priority></url>',
-               '  <url><loc>https://dejaviewed.com/api/tools.json</loc><priority>0.7</priority></url>',
-               '  <url><loc>https://dejaviewed.com/api/collections.json</loc><priority>0.7</priority></url>',
-               '  <url><loc>https://dejaviewed.com/api/deep_dives.json</loc><priority>0.8</priority></url>']
-    for coll in ["ai1", "ai2", "ai3", "ai4", "ai5", "quant", "art-i-like", "art-inspiration"]:
-        sitemap.append(f'  <url><loc>https://dejaviewed.com/{coll}.html</loc><priority>0.7</priority></url>')
-    sitemap.append('  <url><loc>https://dejaviewed.com/llms.txt</loc><priority>0.6</priority></url>')
-    sitemap.append('  <url><loc>https://dejaviewed.com/llms-full.txt</loc><priority>0.6</priority></url>')
+               '  <url><loc>https://dejaviewed.dev/</loc><priority>1.0</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/graph.html</loc><priority>0.8</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/graph-cosmos.html</loc><priority>0.8</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/board.html</loc><priority>0.7</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/admin.html</loc><priority>0.3</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/api/catalog.json</loc><priority>0.9</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/api/creators.json</loc><priority>0.7</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/api/tools.json</loc><priority>0.7</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/api/collections.json</loc><priority>0.7</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/api/deep_dives.json</loc><priority>0.8</priority></url>']
+    from xml.sax.saxutils import escape as _esc
+    # every real top-level page, guide and deeper-dive page that exists on disk
+    for page in sorted(SITE.glob("*.html")):
+        if page.name in ("index.html", "graph.html", "graph-cosmos.html", "board.html", "admin.html"):
+            continue
+        sitemap.append(f'  <url><loc>https://dejaviewed.dev/{_esc(page.name)}</loc><priority>0.7</priority></url>')
+    for sub, pri in (("guides", "0.9"), ("deeper", "0.8"), ("about", "0.5"), ("links", "0.4")):
+        d = SITE / sub
+        if not d.is_dir():
+            continue
+        if (d / "index.html").exists():
+            sitemap.append(f'  <url><loc>https://dejaviewed.dev/{sub}/</loc><priority>{pri}</priority></url>')
+        for page in sorted(d.glob("*.html")):
+            if page.name == "index.html":
+                continue
+            sitemap.append(f'  <url><loc>https://dejaviewed.dev/{sub}/{_esc(page.name)}</loc><priority>{pri}</priority></url>')
+    sitemap.append('  <url><loc>https://dejaviewed.dev/llms.txt</loc><priority>0.6</priority></url>')
+    sitemap.append('  <url><loc>https://dejaviewed.dev/llms-full.txt</loc><priority>0.6</priority></url>')
     for e in entries:
         eid = e.get("id", "")
         if eid:
             from xml.sax.saxutils import escape
-            sitemap.append(f'  <url><loc>https://dejaviewed.com/e/{escape(eid)}.html</loc><priority>0.5</priority></url>')
+            sitemap.append(f'  <url><loc>https://dejaviewed.dev/e/{escape(eid)}.html</loc><priority>0.5</priority></url>')
     sitemap.append('</urlset>')
     (SITE / "sitemap.xml").write_text("\n".join(sitemap), encoding="utf-8")
 
     # llms-full.txt — complete catalog dump for LLM agents
-    lines = [f"# DejaViewed — Full Catalog ({len(entries)} entries)", ""]
+    n_colls = len({e.get("collection", "") for e in entries} - {""})
+    lines = [f"# DejaViewed — Full Catalog ({len(entries)} entries, {n_colls} collections)",
+             f"Updated: {datetime.now().strftime('%Y-%m-%d')}", ""]
     for e in entries:
         lines.append(f"## {e.get('title', 'Untitled')}")
         lines.append(f"- Creator: @{e.get('creator', '')} | Type: {e.get('type', '')} | Tier: {e.get('tier', '')} | Collection: {e.get('collection', '')}")

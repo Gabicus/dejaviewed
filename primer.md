@@ -1,83 +1,37 @@
 # DejaViewed · primer
 
-Updated: 2026-07-13
+Updated: 2026-10-21
 
 ## Current status
 
-581 entries across 15 collections. ~146K crosslinks. 150 deep dives (21 curated, 1 featured). 31 guide pages. 21 deeper dive pages. CMS parquet is source of truth. Site live at dejaviewed.dev via Cloudflare Pages (auto-deploy from main).
+846 entries · 18 collections · 310K crosslinks · 203 deep dives (38 curated) · 57 guide pages · 38 deeper pages. Site live at dejaviewed.dev (Cloudflare Pages, auto-deploy from main). Quality gate passes. Everything from the Oct 21 pull is captioned, Whisper-transcribed (medium, GPU), thumbed, LLM-enriched and indexed (api/, sitemap 957 URLs, llms.txt, context.md all live-computed).
 
-### Coverage (post July 8-13 enrichment push)
-- Captions: 546/581 (5 IG failures, 30 non-IG URLs — expected gaps)
-- Transcripts: 510/581 (13 video failures, 58 images with no audio — expected)
-- Thumbnails: 570/581 (4 no og:image, 7 other)
-- Tiers (post-audit, honest): S 84 · A 179 · B 264 · C 54
-
-### Collections (15)
-ai1, ai2, ai3, ai4, ai5, ai6, ai7, quant, stock2, music, creative, prompts, game-theory, art-inspiration, art-i-like
-
-### Repos
-- `~/Desktop/Projects/dejaviewed-plugin/` — main project (github.com/Gabicus/dejaviewed, PUBLIC)
-- `~/.claude/` — private config repo (github.com/Gabicus/claude-config, PRIVATE) — holds Operator skill install
-- `~/Desktop/Projects/dejaviewed.social/` — PRIVATE social pipeline
-- graph-node / graph-cosmos — separate generic graph engine repos
-
-## Skill architecture (v2, July 13) — IMPORTANT
-
-ONE generic SKILL.md, TWO modes, keyed off `references/site-deployment.md` presence:
-- **Operator Mode** (Victor's install at `~/.claude/skills/dejaviewed/`): private overlay file holds hosting, domain, collections, coverage, deploy workflow. Deploys to dejaviewed.dev.
-- **Public Mode** (GitHub installs): no overlay → builds user's OWN local site, offers hosting options, NEVER touches dejaviewed.dev. Ships `site-deployment.example.md` template.
-- Overlay is gitignored in the public repo. It leaked once (fixed in 6edbc40) — never commit it.
-- After editing local skill: `cp ~/.claude/skills/dejaviewed/SKILL.md skills/dejaviewed/SKILL.md`, commit both repos.
-- 44 numbered lessons in SKILL.md. Key new ones: #43 bait-caption title poisoning, #44 instance facts stay in overlay.
-
-## What changed (July 8-13)
-
-- **July 8:** 161 captions scraped (`ab_scrape_posts.py --missing-captions` — new flag), 146 Whisper transcripts (`transcribe.py --all --model small`), full re-enrich, 150 dives regenerated, crosslinks 131K→146K. Deployed.
-- **July 13 (Fable 5 review):** Public/Operator skill split; personal overlay removed from public repo + gitignored; fixed skill contradictions (deprecated profile-copy/Playwright prereqs, stale ingest/thumb sections); repaired 22 junk titles from bait captions; regraded S-tier 92→84; wrote session-log.md with digest + recommendations R1-R6.
+### Oct 21 pull (what changed)
+- **New pipeline path (Phase 0 v3):** Instagram collection-feed API via agent-browser attached to real Chrome over CDP. Scroll-scrape was lossy (quant showed 12 of 31). 340 items pulled, 265 unique new entries ingested with caption/creator/date/media already filled (`ig_collection_api.py` → `ig_download_media.py` → `ingest_api.py`).
+- **Whisper:** 263 new videos + 3 recovered old ones, local mp4 → CUDA int8_float32 (GTX 1050 has no fp16). Model cached, `--local-only` flag.
+- **Carousels:** 6 posts vision-read into `data/slides_ocr.json`. Four old "video failures" were carousels.
+- **LLM enrichment:** 269 entries titled/summarized/tiered/tagged by Opus agents from caption+transcript+OCR (`llm_enrich_batches.py`, spec in `data/llm_batches/SPEC.md`). 7 drops → tier C with note.
+- **Data bugs fixed:** 48 entries had creator "Edited" (scrape artifact) → true creators via media-info API; 7 of those also had captions from the wrong post → corrected + re-enriched. 10 "tutorial" types → "skill".
+- **Researcher curation pass (Phase 5c):** 4 Opus lenses (creative fusion, agentic leverage, capital & markets, physical+knowledge) read all 846 entries → 26 proposals → 17 kept (rated ≥4), 2 merged dupes, 7 parked (`data/curation/parked_q3_2026-10-21.json`). Spec: `data/curation/RESEARCHER_SPEC.md` (also in skill references).
+- **New scripts:** `ig_collection_api.py`, `ig_download_media.py`, `ingest_api.py`, `llm_enrich_batches.py`, `quality_gate.py`, `curation_export.py`, `build_guides.py`; `rebuild.sh` rewritten to the real phase list; `build_context.py` fixed (reads catalog.json, live counts); sitemap now covers guides/deeper/about/links; domain typo dejaviewed.com → .dev.
+- **Skill:** Phase 0 v3, Phase 5c, phase table, lessons #45–50. Public copy synced (`skills/dejaviewed/`), overlay updated with collection ids + coverage.
+- Outreach files + dev screenshots moved out of `site/` into `outreach/`.
 
 ## Next up
 
-### High priority
-- **R1 — Catalog→Claude recall loop:** Fix `build_context.py` (reads legacy `catalog.jsonl`, predates parquet CMS — currently broken, context.md stale from April). Then wire `site/api/catalog.json` querying into session starts so 84 S-tier entries prime related work.
-- **R2 — Harness merge:** Fold Claude Harness Pattern dive findings (9 entries) into `~/.claude/cognitive_scaffolding.md`. ~30 min.
-- **Skill on site:** Ensure dejaviewed.dev advertises the skill + install instructions.
-
-### Medium
-- **R3 — Enrichment quality gate:** Add assert to `enrich_entries.py --sweep`: titles <14 chars must be 0, S-rate <15%/collection. Bait captions title from TRANSCRIPT.
-- **R4 — Monthly ingestion flywheel:** proven pipeline: pull → captions → whisper → enrich → audit gate → dives → push. agent-browser login is the one manual step.
-- **Claude Mastery guide maintenance:** living doc — update with new models/features.
-
-### Ideas
-- **R5 — Dive-to-skill converter:** quality-5 dives (thesis/prereqs/action sketch) → SKILL.md scaffolds.
-- R6 (rejected): RSS, keyword-engine integration, per-entry page redesign — low value.
-
-## Scraping workflow (agent-browser)
-
-```bash
-npx agent-browser close
-npx agent-browser --profile Default --headed open "<collection_url>"   # Chrome must be CLOSED
-bash scripts/ab_extract_urls.sh <name> "<url>"                          # or ab_extract_cumulative.py
-python3 scripts/ingest.py --urls-file data/<name>_urls.json --collection <name> --non-interactive
-python3 scripts/ab_scrape_posts.py --missing-captions                   # captions BEFORE whisper
-python3 scripts/transcribe.py --all --model small                       # Chrome closed (cookies)
-python3 scripts/enrich_entries.py --sweep                               # then audit titles/tiers
-python3 scripts/deep_dives.py && python3 scripts/deeper_dives.py --all-curated
-python3 scripts/cms.py rebuild
-git add -A && git commit && git push                                    # push = deploy
-```
+1. **Landing / showcase page redesign** (Victor: "smoother, cooler display page for what this site does, can do, and holds"). Inventory done (see session-log.md Oct 21): index.html is the catalog itself, no hero; nav lacks About/Links/deeper; Admin exposed in public nav. Use DESIGN.md + frontend-design skill; live stats from catalog.json; feature the 38 curated dives.
+2. Parked q3 proposals: revisit after Victor reads the 17 new dives.
+3. Carousel slide videos (few) untranscribed — add to transcribe.py targets if wanted.
+4. Old collections ai2/ai4/ai7/quant S-rate 20–29% (July manual regrade) — gate warns; decide whether to re-tier with the LLM rubric.
+5. Deeper-version items not yet built: pHash dedupe, embeddings-based clustering/search (Pagefind), lychee link check, blind kappa re-rate, IG data-export reconciliation.
 
 ## Don't forget
 
-- Run captions BEFORE Whisper — caption scrape corrects media_type; otherwise videos tagged "image" get skipped
-- After bulk enrichment: audit `title.len<14`==0 and S-rate <15%/collection (bait captions poison titles)
-- NEVER commit `references/site-deployment.md` to the public repo (gitignored, stay vigilant)
-- NEVER change shared.css breakpoints for single-page issues
-- ALWAYS push before destructive operations
-- DESIGN.md is UI authority; agent-browser needs Chrome closed
-- Collection pills dynamic — no HTML changes for new collections
-- "tutorial" merged into "skill" — don't re-add
-- Verify entry IDs before writing manual_dives.json
-- Guide/deeper pages call `DV.mountHeader()`; guide↔deeper cross-links via inline div
-- [NEEDS ENRICHMENT] bug: 3-layer defense in cms.py
-- Enrichment deletes parquet before internal migrate to avoid stale title merge
-- `~/.claude/CLAUDE.md` + `settings.json` have uncommitted changes predating July 13 — left alone deliberately
+- `cms.py rebuild` BEFORE `enrich_entries.py --sweep` (enrich reads catalog.json, clobbers parquet-only edits) — lesson #50
+- Don't write parquet while transcribe.py runs — lesson #48
+- pkill/pgrep -f patterns match your own tool shell → use helper scripts (exit 144 ×5 this session)
+- Media-info API throttles after ~75 calls; per-post page nav gives stale pk unless you verify returned `code`
+- agent-browser bundled Chromium can't decrypt Chrome ≥136 cookies → CDP attach (Phase 0 v3)
+- Signed CDN URLs expire in hours → download media right after the pull
+- NEVER commit `references/site-deployment.md`; `data/media/` and `data/*.bak*` are gitignored
+- Chrome window driven over CDP keeps playing whatever post was last opened — park it on about:blank

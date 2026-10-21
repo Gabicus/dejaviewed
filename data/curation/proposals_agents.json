@@ -1,0 +1,308 @@
+[
+  {
+    "id": "dd-insight-agent-injection-ci",
+    "title": "Red-Team Your Own Agent — prompt-injection CI from the jailbreak corpus",
+    "class": "emergent_capability",
+    "thesis": "The catalog holds both halves of a loop nobody has closed. On one side sit offense corpora and autonomous attackers — L1B3RT4S still landing on GPT-5, an agent that goes from one sentence to a verified exploit, scanners hunting exposed AI servers. On the other sit the pipes that pour untrusted text into your agent — Agent Reach reading Reddit and X, 90k-skill hubs, one-command skill installers. Point the attacker inward and you get prompt-injection CI — every skill install and harness change gets replayed against a jailbreak-and-hijack suite before it touches your keys.",
+    "why_it_matters": "Solo builders now run agents with real API keys, inboxes and broker access, and Noma's research shows most automations hand data to anyone who simply asks. Whoever ships a cheap, repeatable injection test owns the trust layer for every one-person agent shop — and sleeps through their own cron jobs.",
+    "novelty": "Standard practice is a static .env and hope. The catalog shows security posts (exposed OpenAI keys, secrets pasted into chat history) and agent-skill posts from entirely different creators who never reference each other — no one treats the skill supply chain as the attack surface or tests it continuously.",
+    "entry_ids": [
+      "DOPqBfyDMHG",
+      "DdKKSaANJm7",
+      "DaGEbyAAHOo",
+      "Dd6izTYiln1",
+      "Db0vxQexdJI",
+      "DXcWjL0jLsd",
+      "DYX_M8yx6r4",
+      "DX4qpEHxY7g",
+      "Dcy39JTRctd",
+      "DcQ0dv-hG23",
+      "DYN0298n2H5"
+    ],
+    "connection_map": {
+      "DOPqBfyDMHG": "Attack corpus — ready-made jailbreak payloads to seed the test suite",
+      "DdKKSaANJm7": "Threat model — workflows leak data when an attacker just asks, because nothing checks identity",
+      "DaGEbyAAHOo": "Attacker template — the autonomous pentest loop you repoint at your own harness",
+      "Dd6izTYiln1": "Ingress pipe — a skill that pulls arbitrary social text straight into agent context",
+      "Db0vxQexdJI": "Supply-chain scale — Hermes Skills Hub's 90k skills means unreviewed instructions by default",
+      "DXcWjL0jLsd": "Install path — find-skills makes pulling a stranger's skill a one-liner",
+      "DYX_M8yx6r4": "Blast radius — thousands of live API keys sitting in public repos",
+      "DX4qpEHxY7g": "Blast radius — secrets living in chat history that agents can read back",
+      "Dcy39JTRctd": "Defense pattern — capability sandboxing that assumes the agent is already compromised",
+      "DcQ0dv-hG23": "External view — scanners that already index exposed agents from the outside",
+      "DYN0298n2H5": "Soft injection — 18 of 23 assistants obey a sponsored nudge, so preference hijack belongs in the suite"
+    },
+    "quality_rating": 5,
+    "execution_difficulty": "Medium",
+    "value_type": "capability",
+    "action_sketch": [
+      "Build a 50-case suite this week — 20 L1B3RT4S-style jailbreaks, 20 Noma-style 'just ask for the data' hijacks planted in fake Reddit/X posts fetched via Agent Reach, 10 sponsored-option nudges — and run it against your harness with a canary secret in the environment",
+      "Wire it as a pre-install hook: any new skill from find-skills or a skills hub gets diffed, then the suite reruns with that skill loaded; fail the install if the canary leaks or a tool call goes outside the allowlist",
+      "Add the sandboxing layer from the portfolio-projects post — per-skill capability manifests (network, filesystem, secrets) — and measure how many suite cases each manifest blocks",
+      "Falsifier: if a plain allowlist on outbound tool calls blocks ≥95% of the suite with no skill-level testing, the CI layer is overkill and a static policy file is the whole answer"
+    ],
+    "prerequisites": [
+      "An agent harness with hooks (Claude Code or similar)",
+      "A throwaway canary secret and a disposable test account",
+      "Test only harnesses, accounts and keys you own"
+    ],
+    "suggested_by": "curated",
+    "pinned": true,
+    "lens": "agentic leverage"
+  },
+  {
+    "id": "dd-insight-eval-gated-skill-evolution",
+    "title": "Skills That Earn Their Lines — benchmark-gated self-editing plus subtraction",
+    "class": "workflow_multiplier",
+    "thesis": "Successor to the harness and second-brain dives. Those stop at 'append a lesson after every mistake'. The catalog now holds the missing machinery — Microsoft SkillOpt rewrites skills only when a benchmark improves, bilevel autoresearch adds a coach loop over the worker, Prime Agent rewrites its own harness to 95.5% on ARC-AGI-3 — and, crucially, evidence that subtraction matters as much as addition: Boris Cherny's simple mode and the setup-purge post show stale rules make newer models dumber. Combine them into a ratchet that both adds and deletes rules, keeping only edits that beat a held-out eval.",
+    "why_it_matters": "Every power user's CLAUDE.md grows monotonically until it is a tax on every call. A two-way, eval-gated ratchet turns rule accretion into measured improvement, and the winning traces become fine-tuning data you can push into a small local model with Soup.",
+    "novelty": "Standard practice is lessons.md that only grows. The catalog's self-improvement posts (SkillOpt, autoresearch, issue-logging skills) all optimize by adding; the ablation posts (simple mode, purge) never connect to an automated loop. Nobody runs ablation as a gated step.",
+    "entry_ids": [
+      "DbEK3bustQ7",
+      "DbjLy_tormR",
+      "DbtJytsumrO",
+      "Dcgr7YiIXD9",
+      "DZnY2vaxWRF",
+      "Dd1cWobxn7n",
+      "DcMSk7Rxcdu",
+      "Dbhuaw7Pk4u",
+      "DaocklrJPJC",
+      "DcvIZ7cT4_P",
+      "DeNnxp5v_Fu"
+    ],
+    "connection_map": {
+      "DbEK3bustQ7": "Core mechanism — skill rewrites accepted only when a benchmark improves",
+      "DbjLy_tormR": "Outer loop — a coach that rewrites the search playbook, not just the answer",
+      "DbtJytsumrO": "Proof of ceiling — a self-rewriting harness beats the bare frontier model",
+      "Dcgr7YiIXD9": "Signal source — skills log their own failures into a table as they run",
+      "DZnY2vaxWRF": "Scheduler — DB-driven cron loops that prompt the agent instead of you",
+      "Dd1cWobxn7n": "Eval mining — your exported chat history becomes the held-out test set",
+      "DcMSk7Rxcdu": "Subtraction evidence — stripping the system prompt makes the model smarter",
+      "Dbhuaw7Pk4u": "Subtraction practice — rules written for old models now hold new ones back",
+      "DaocklrJPJC": "Failure-specific training — target the exact loop token, a template for targeted fixes",
+      "DcvIZ7cT4_P": "Distill step — fine-tune a small local model on winning traces with a 4GB GPU",
+      "DeNnxp5v_Fu": "Cross-domain instance — a critic loop rewriting losing trading strategies, same shape"
+    },
+    "quality_rating": 5,
+    "execution_difficulty": "Medium",
+    "value_type": "leverage",
+    "action_sketch": [
+      "Export your last 3 months of Claude history, have a small model tag 40 representative tasks with pass/fail criteria — that is your held-out eval",
+      "Run an ablation sweep: drop each CLAUDE.md rule and skill one at a time, rerun the eval, delete anything whose removal does not hurt the score",
+      "Add the SkillOpt loop on a nightly cron — skills log issues, an optimizer proposes edits, only score-improving edits merge; export passing traces for a Soup fine-tune later",
+      "Falsifier: if eval scores vary more between two identical runs than between best and worst rule sets, your eval is too noisy and the whole ratchet is optimizing noise"
+    ],
+    "prerequisites": [
+      "A CLAUDE.md and skills folder with some history",
+      "Exported chat logs",
+      "A cheap model for grading (Haiku-class or local)"
+    ],
+    "suggested_by": "curated",
+    "pinned": true,
+    "lens": "agentic leverage"
+  },
+  {
+    "id": "dd-insight-earned-autonomy-router",
+    "title": "Earned Autonomy — a three-tier router that demotes work to your own GPU",
+    "class": "arbitrage_opportunity",
+    "thesis": "Three trends in the catalog point at one design. Orchestrator-worker splits (Fable plans, Opus or GPT-5.6 executes) cut frontier spend. A 27B Qwen now fits a single 24GB card and posts agentic benchmarks that were frontier-only a year ago, while open-token share flipped to 80/20 in twelve weeks. And vendors can change the deal overnight — Anthropic killed subscription tokens in third-party tools. The agentic OS blueprint's 'earned autonomy' is the missing link: let each task class graduate down the stack — frontier, mid-tier, local — as its review pass rate proves it can.",
+    "why_it_matters": "You stop paying frontier prices for work a local model already passes, and you hedge against any single vendor's terms. The router doubles as a measurement instrument — it tells you, per task class, exactly where the open models have caught up.",
+    "novelty": "Existing routing posts hard-code the split (big model plans, smaller one builds). None let the split move based on observed pass rates, and none include a local tier as a first-class worker. The local-model posts and routing posts come from different creators and never cite each other.",
+    "entry_ids": [
+      "Da1hOm7scjR",
+      "DamEcWuPvX0",
+      "DaojVuSNKno",
+      "DeW79CbCkO3",
+      "DcCdYgnJ10h",
+      "DbjmqTYJfMY",
+      "DeIOphnT7Yq",
+      "DVKJlJYEsmm",
+      "DdMoE8qhnKE",
+      "DcX_QwDjvH-",
+      "DWqV5eAD7TR",
+      "Dcez--ApG8i"
+    ],
+    "connection_map": {
+      "Da1hOm7scjR": "Baseline pattern — frontier orchestrates and reviews, cheaper model executes",
+      "DamEcWuPvX0": "The key idea — tasks earn autonomy after a streak of passing reviews",
+      "DaojVuSNKno": "Cross-vendor routing — a /route skill sending execution to a different lab",
+      "DeW79CbCkO3": "Cross-audit — two vendors check each other, a reviewer for the promotion gate",
+      "DcCdYgnJ10h": "Local tier — a 27B agentic model on one consumer GPU",
+      "DbjmqTYJfMY": "Moving floor — post-training alone lifts open agentic scores 20+ points",
+      "DeIOphnT7Yq": "Market signal — open token share flipped in 12 weeks",
+      "DVKJlJYEsmm": "Vendor risk — one ToS change multiplied effective cost overnight",
+      "DdMoE8qhnKE": "Price map — subscription vs API-equivalent value differs 30x across vendors",
+      "DcX_QwDjvH-": "Token diet — compact page views that let a small local model browse",
+      "DWqV5eAD7TR": "Zero tier — run deterministic commands directly, no model at all",
+      "Dcez--ApG8i": "Hardware trend — 80GB unified-memory boxes make the local tier bigger every quarter"
+    },
+    "quality_rating": 4,
+    "execution_difficulty": "Medium",
+    "value_type": "leverage",
+    "action_sketch": [
+      "Log every delegated task for two weeks with a class label (rename, test-writing, data cleanup, UI tweak) and the reviewer's pass/fail",
+      "Stand up Qwen 27B via llama.cpp or Ollama behind the same subagent interface; route one low-stakes class to it in shadow mode and grade it with the same frontier reviewer",
+      "Add the promotion rule: 20 consecutive passes moves a class one tier down, any fail moves it back up; track dollars saved per class",
+      "Falsifier: if after a month no task class sustains a 90%+ pass rate on the local tier, the local floor is not there yet for your work — stay two-tier"
+    ],
+    "prerequisites": [
+      "A 24GB GPU or a unified-memory machine",
+      "An existing orchestrator-worker setup",
+      "A reviewer step you already trust"
+    ],
+    "suggested_by": "curated",
+    "pinned": true,
+    "lens": "agentic leverage"
+  },
+  {
+    "id": "dd-insight-headless-everything",
+    "title": "Every App Is Headless Now — agents that build their own control surface",
+    "class": "arbitrage_opportunity",
+    "thesis": "Chamath's claim that software IP stops being a moat once agents call services via MCP assumes the service ships an MCP. The catalog quietly shows you no longer need its permission. 'Build yourself a CLI for this program' covers apps with no API, Reverse Engineer Anything and the Ghidra-backed REA MCP explain closed binaries, and Claude Code already strips a smart TV over WiFi. Put these together and any legacy or closed tool becomes agent-drivable — and Bending Spoons' acquire-and-rebuild playbook shows what that is worth when the software is stagnant.",
+    "why_it_matters": "The long tail of MCP-less software — dental scheduling suites, MLS portals, ancient ERPs — is where small businesses lose hours. Whoever can wrap one in a reliable agent-built CLI sells the finished work rather than the software, which is exactly the AI-native-service model YC is asking for.",
+    "novelty": "Standard practice waits for vendors to publish MCP servers. The reverse-engineering posts sit in security and gaming contexts, the 'build a CLI' tip in agent tips, and the headless-software thesis in business news — no entry connects RE tooling to wrapping SMB software as a service.",
+    "entry_ids": [
+      "Db1P-TOSkZl",
+      "DeV2n53gLgf",
+      "DerpSl6D8pX",
+      "DesVu_EJZZK",
+      "DWiCWyZj1rc",
+      "DeWzqDXJ3ff",
+      "DdeoJI9KGtq",
+      "DclyX25u9Sf",
+      "Dcw7PqeRrI4",
+      "Ddg3yiFRtMg",
+      "DeSEkPfjvDA"
+    ],
+    "connection_map": {
+      "Db1P-TOSkZl": "Core move — tell the agent to build its own CLI for a program with no MCP",
+      "DeV2n53gLgf": "Understanding layer — point an agent at an app and get how each feature works",
+      "DerpSl6D8pX": "Binary layer — Ghidra decompilation driven over MCP for stripped native apps",
+      "DesVu_EJZZK": "Proof on devices — an agent reconfiguring a closed smart TV over the local network",
+      "DWiCWyZj1rc": "Demand signal — workflows over legacy business software called a 'huge unlock'",
+      "DeWzqDXJ3ff": "Market thesis — headless services plus MCP erase software moats",
+      "DdeoJI9KGtq": "Speed tool — gitmcp and gitingest turn any open repo into agent context instantly",
+      "DclyX25u9Sf": "Business model — buy or wrap stagnant software, rebuild only the core",
+      "Dcw7PqeRrI4": "Worked example — bypassing a consumer portal by going to the underlying data API",
+      "Ddg3yiFRtMg": "Mobile reach — ARTEMIS drives phone apps from prompts over MCP",
+      "DeSEkPfjvDA": "Guardrail — which reconstruction methods stay legal, so the service survives contact with lawyers"
+    },
+    "quality_rating": 4,
+    "execution_difficulty": "Hard",
+    "value_type": "income",
+    "action_sketch": [
+      "Pick one MCP-less desktop tool you or a local business already uses; prompt the agent to 'build yourself a CLI' covering its top 5 actions and log how many need UI automation versus file/DB access",
+      "For the stubborn actions, run Reverse Engineer Anything (or REA MCP for native binaries) to find the underlying file formats or local endpoints, and replace UI clicks with direct calls",
+      "Wrap the CLI as an MCP server, run a week of real tasks through it, and price the result as a monthly 'we run it for you' service",
+      "Falsifier: if the wrapper breaks on more than one vendor update per month, the maintenance cost eats the margin and this is a consulting gig, not an arbitrage"
+    ],
+    "prerequisites": [
+      "Comfort with reverse-engineering legality in your jurisdiction",
+      "Access to the target software you are licensed to use",
+      "An agent with shell and MCP support"
+    ],
+    "suggested_by": "curated",
+    "pinned": true,
+    "lens": "agentic leverage"
+  },
+  {
+    "id": "dd-insight-agent-mission-control",
+    "title": "Mission Control for 80 Agents — Conway's law meets game UI",
+    "class": "creative_fusion",
+    "thesis": "Once you run more than a handful of agents, the bottleneck is your attention, not tokens. Creative technologists are already prototyping the answer without naming it — Bot Crossing puts 80 agents on a tiny planet where they raise hands for help, AgentCraft runs them as Minecraft workers in isolated worktrees, a TouchDesigner sketch commands agents by gesture, a Quest 3 canvas directs them spatially. Casey Muratori's point that Conway's law now applies to agents says the interface and the agent org chart are the same design problem. Feed a Booking.com-style trace bus into a game-engine front end and you get a control room where structure is visible.",
+    "why_it_matters": "Solo operators running Founder-OS-style setups spend their day polling terminals. A spatial view that surfaces only blocked agents, and whose layout mirrors how work is partitioned, lets one person supervise ten times more agents without reading every log.",
+    "novelty": "Agent dashboards in the catalog are text panels and notch widgets; the game and gesture prototypes are mostly non-functional art. Nobody has wired real tracing into the playful front ends, and nobody has used Conway's law to decide which agents should sit next to each other.",
+    "entry_ids": [
+      "DczR-QlSMdK",
+      "DeIfDwPI_ma",
+      "DctoIMltaNN",
+      "DcNrwpyiRlh",
+      "DdY7NUbDys2",
+      "DbSjJT7sLUf",
+      "Dcl3dEJAjo0",
+      "Dd-WP0FtFA6",
+      "DbaFoAUMvnK",
+      "DW2J0eUDKHM",
+      "DVQ5o6YDfsp"
+    ],
+    "connection_map": {
+      "DczR-QlSMdK": "Front end — agents as characters that raise hands when blocked",
+      "DeIfDwPI_ma": "Orchestration model — Foreman plus isolated-worktree workers inside a game",
+      "DctoIMltaNN": "Input layer — gestures as commands, from the TouchDesigner world",
+      "DcNrwpyiRlh": "Spatial layer — directing coding agents on an XR infinite canvas",
+      "DdY7NUbDys2": "Design law — split agent work only along slow communication boundaries",
+      "DbSjJT7sLUf": "Corollary — the reverse Conway maneuver: design the org to get the architecture you want",
+      "Dcl3dEJAjo0": "Plumbing — traces normalized onto a durable bus, with PII redaction, before any UI",
+      "Dd-WP0FtFA6": "Scale case — 17 always-on agents for one person, the load this UI must carry",
+      "DbaFoAUMvnK": "Minimal baseline — a notch widget showing who is working and who is waiting",
+      "DW2J0eUDKHM": "Human role — supervision means reading plans, not pressing Y",
+      "DVQ5o6YDfsp": "Parallelism source — 3-5+ worktrees per person is already the norm"
+    },
+    "quality_rating": 3,
+    "execution_difficulty": "Experimental",
+    "value_type": "craft",
+    "action_sketch": [
+      "Emit one JSON event per agent state change (started, blocked, needs-review, done) from your harness hooks onto a local queue — Redis or a file tail is enough to start",
+      "Point Bot Crossing (or a 200-line Three.js scene) at that queue so blocked agents visibly raise hands; cluster agents by the repo/module they own to make the Conway structure visible",
+      "Run a week with dashboard versus without and log minutes-to-unblock per blocked agent",
+      "Falsifier: if minutes-to-unblock does not drop by at least a third versus a plain notification, the game layer is decoration and a notch widget wins"
+    ],
+    "prerequisites": [
+      "A multi-agent setup with hooks",
+      "Basic Three.js or TouchDesigner",
+      "Willingness to treat this as an art-tech experiment first"
+    ],
+    "suggested_by": "curated",
+    "pinned": true,
+    "lens": "agentic leverage"
+  },
+  {
+    "id": "dd-insight-self-osint-sentinel",
+    "title": "Dox Yourself First — a scheduled agent that runs the OSINT kit on you",
+    "class": "life_leverage",
+    "thesis": "The catalog saved a full attacker toolkit — Sherlock and Alien's Eye for usernames, email-to-account mappers, deleted-Reddit recovery, GeoSpy geolocating photos from plants and shadows — next to the defense: a de-dox checklist written after Meta AI inferred a creator's home from old posts, a data-broker opt-out game, the Flock plate-search transparency site. An agent with a weekly cron can run the offense against you and file the defense automatically. The same tools that took a security team now fit in one scheduled skill.",
+    "why_it_matters": "Anyone posting publicly — creators, small founders, people leaving bad situations — is now one multimodal model away from being located. A self-run sentinel turns a one-time checklist into continuous monitoring, and the opt-out drafting is exactly the tedious work agents are good at.",
+    "novelty": "The OSINT posts frame themselves as offense or curiosity; the privacy posts frame themselves as a manual checklist. None combine them into a recurring, agent-run loop, and none use the photo-geolocation tools defensively on your own feed.",
+    "entry_ids": [
+      "Dc9172rFZuS",
+      "Db3ZNRcRhzW",
+      "Dce2O2Did0E",
+      "Db9ExYzq_3e",
+      "DdFecuaD-ql",
+      "DNS0YG0NrLt",
+      "DdKLjDHlG0c",
+      "Db-9QiOxxPe",
+      "Dd84xuVhSuZ",
+      "DZnY2vaxWRF"
+    ],
+    "connection_map": {
+      "Dc9172rFZuS": "Defense spec — the de-dox checklist the agent automates",
+      "Db3ZNRcRhzW": "Probe — username enumeration across hundreds of sites",
+      "Dce2O2Did0E": "Probe — second username engine to cross-check coverage",
+      "Db9ExYzq_3e": "Probe — email-to-account and breach mapping",
+      "DdFecuaD-ql": "Probe — deleted posts still recoverable from archives",
+      "DNS0YG0NrLt": "Probe — photo geolocation run against your own recent posts before an attacker does",
+      "DdKLjDHlG0c": "Remediation — data-broker opt-outs as a repeatable task list",
+      "Db-9QiOxxPe": "Audit — checking which agencies searched your plate",
+      "Dd84xuVhSuZ": "Countermeasure — image cloaking and plate-reader confusion for what you must keep public",
+      "DZnY2vaxWRF": "Scheduler — DB-and-cron loop pattern so the audit reruns weekly with a diff"
+    },
+    "quality_rating": 4,
+    "execution_difficulty": "Easy",
+    "value_type": "capability",
+    "action_sketch": [
+      "Write one skill that runs Sherlock (via uv) and an email-enumeration tool against your own handles and addresses, storing results in a table keyed by date",
+      "Add a photo pass: send your last 20 public images to a geolocation model and flag any that resolve within a few km of home",
+      "Schedule it weekly, diff against last run, and have the agent draft data-broker opt-out requests from the checklist for each new hit",
+      "Falsifier: if three consecutive weekly runs surface nothing new and the opt-outs stick, a quarterly manual checklist is enough and the agent is overhead"
+    ],
+    "prerequisites": [
+      "Only run against identities you own",
+      "A machine that can run Python CLIs on a schedule",
+      "Patience for opt-out forms that need a human signature"
+    ],
+    "suggested_by": "curated",
+    "pinned": true,
+    "lens": "agentic leverage"
+  }
+]

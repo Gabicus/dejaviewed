@@ -1,0 +1,330 @@
+[
+ {
+  "id": "dd-insight-own-the-thermometer",
+  "title": "Own the Thermometer — $100 sensors as prediction-market edge",
+  "class": "arbitrage_opportunity",
+  "thesis": "A student cleared $100K+ on Polymarket weather contracts with a dorm-built weather station. The catalog also holds the rest of that kit, but in other collections: a cheap dish plus SDR that pulls live weather-satellite images, NASA's free event feed, and the websocket and order tooling the Polymarket automators use. Put first-party physical sensing in front of an automated limit-order bot and you get an edge that better math can't copy, because the input data is yours alone.",
+  "why_it_matters": "Prediction markets now list contracts on physical outcomes like temperature, rainfall, wildfires and grid events. These contracts settle on a slow official reading. Whoever measures the same thing sooner and closer gets minutes of lead time, and that lead time is the whole trade.",
+  "novelty": "The quant entries chase alpha in models like Kalman filters, the Ising model and Hawkes processes, while the hardware entries never mention markets. Only one creator in 846 entries crosses the line, and the catalog's own takeaway says it plainly: 'real edge = exclusive real-time data source, not better ML'.",
+  "connection_map": {
+   "DWzz7T9Ddex": "Proof of concept: dorm weather station turned into $100K+ of Polymarket weather volume",
+   "Dd6W2q5gZJ-": "Sensor kit: cheap dish + SDR receives live weather-satellite imagery; WiFi CSI sensing shows how far DIY sensing reaches",
+   "DWrQKaskWlZ": "Free baseline feed (NASA EONET) you must beat, and a cross-check for event contracts",
+   "DW6Ny_zkqSY": "Public EIA/HIFLD grid data mapped by one person: the static layer for grid and energy event contracts",
+   "DWEfIS9jRgI": "Execution pattern: automated limit orders near resolution, 75 trades/hour",
+   "DUrQ187EvI4": "Market-side sensing: Polymarket websockets show when someone else already knows",
+   "DUoiJH_EiqP": "Polymarket/Kalshi developer repo to wire orders",
+   "DccLLkoPCT1": "MIT layer-architecture globe for fusing your sensor with public feeds on one dashboard",
+   "DUx9t_FE0CY": "Wasserstein drift check: catches the day your sensor's edge versus the official station quietly disappears"
+  },
+  "quality_rating": 4,
+  "execution_difficulty": "Medium",
+  "value_type": "income",
+  "action_sketch": [
+   "Pick ONE contract family whose resolution source you can physically sit near (e.g. daily high temp at a named airport ASOS station). Read the exact settlement rule before buying hardware.",
+   "Put up a calibrated station (Ecowitt/Davis + Raspberry Pi logger) plus NOAA METAR polling, and log your reading vs the official one minute-by-minute for 30 days. Paper-trade only.",
+   "Wire a Polymarket websocket listener + limit-order bot (from the Polymarket/Kalshi repo) that fires only when your sensor and the order book disagree past a threshold; size tiny.",
+   "Falsifier: if your sensor's lead over the official reading is under the time it takes the book to reprice (check the websocket timestamps), or the error between your sensor and the station is wider than the contract buckets, there is no edge — stop."
+  ],
+  "prerequisites": [
+   "Jurisdiction where Polymarket/Kalshi use is legal for you",
+   "Basic Python + websockets",
+   "Physical access near a settlement station",
+   "Small risk capital"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "physical_knowledge",
+  "entry_ids": [
+   "DWzz7T9Ddex",
+   "Dd6W2q5gZJ-",
+   "DWrQKaskWlZ",
+   "DW6Ny_zkqSY",
+   "DWEfIS9jRgI",
+   "DUrQ187EvI4",
+   "DUoiJH_EiqP",
+   "DccLLkoPCT1",
+   "DUx9t_FE0CY"
+  ]
+ },
+ {
+  "id": "dd-insight-scan-fit-print",
+  "title": "Scan, Fit, Print — agents that design parts around real objects",
+  "class": "emergent_capability",
+  "thesis": "Open-source scanners (a smartphone Orbiter rig, a Raspberry Pi handheld LiDAR, LingBot-Map's video-to-3D) now produce a usable mesh of the thing you need to fit. LLMs already write Blender Python, and they can build a CLI for any app that has no MCP. Point the agent at the scan, have it write parametric CAD that references the scanned surfaces, and you get a custom-fit part on the first print. That is the step generative 3D can't do yet.",
+  "why_it_matters": "Makers, repair people and small product designers spend most of their CAD time measuring and re-printing. Tolerance-aware agent CAD collapses the loop from 'calipers, sketch, print, fail, repeat' into 'scan, describe, print'. Y-Pan and Gemma Translator show that whole working devices ship as STL plus a bill of materials.",
+  "novelty": "Every 3D entry in the catalog, from Hunyuan3D and Tripo to text-to-CAD sites, produces visually plausible meshes with no dimensions. The existing natural-language 3D dive is about scenes for screens. Nobody here closes scan, then parametric agent CAD, then a print that fits.",
+  "connection_map": {
+   "DbcEatOsXG2": "Capture: open smartphone scanning rig explicitly aimed at print-that-fits-first-time",
+   "DbU9ysVITFS": "Capture at room scale: DIY Pi LiDAR with open formats",
+   "DXVhsG7DWMI": "Capture without hardware: LingBot-Map real-time 3D from plain video",
+   "DeuZ4BnhCqA": "Proof LLMs emit working Blender Python end-to-end, not just prompts",
+   "Db1P-TOSkZl": "'Build yourself a CLI for X' — how the agent drives FreeCAD/slicers lacking MCP",
+   "DZMoG2mMM1t": "FreeCAD as the open parametric backend",
+   "DV0wil8gKqk": "Text-to-CAD sites: the dimension-blind baseline to beat",
+   "DbwH5S2hnfO": "Output proof: printed mechanisms good enough for a working film camera (~$100 vs $5k)",
+   "Db61Q1SCqtQ": "Output proof: a whole device shipped as code + BOM + printable STL"
+  },
+  "quality_rating": 4,
+  "execution_difficulty": "Medium",
+  "value_type": "capability",
+  "action_sketch": [
+   "Scan three awkward real objects (a tool handle, a bike mount point, a phone in its case) with the Orbiter workflow or photogrammetry; export clean meshes.",
+   "Have Claude Code write a CadQuery/FreeCAD script that imports the mesh, fits planes/cylinders to the contact surfaces, and builds a mount with a stated clearance (e.g. 0.3 mm); prompt it to build its own CLI for the slicer.",
+   "Print, test fit, feed caliper measurements back as corrections; log iterations-to-fit for agent vs your hand CAD.",
+   "Falsifier: if agent CAD needs more print iterations than your own hand CAD on 3 of 3 objects, the scan-to-parametric step isn't ready — the fitting step, not the scanner, is the bottleneck."
+  ],
+  "prerequisites": [
+   "FDM printer",
+   "Phone camera or Pi + LiDAR module",
+   "Calipers",
+   "Claude Code or similar coding agent"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "physical_knowledge",
+  "entry_ids": [
+   "DbcEatOsXG2",
+   "DbU9ysVITFS",
+   "DXVhsG7DWMI",
+   "DeuZ4BnhCqA",
+   "Db1P-TOSkZl",
+   "DZMoG2mMM1t",
+   "DV0wil8gKqk",
+   "DbwH5S2hnfO",
+   "Db61Q1SCqtQ"
+  ]
+ },
+ {
+  "id": "dd-insight-plotted-originals",
+  "title": "Plotted Originals — generative scenes drawn by machine as scarce physical art",
+  "class": "creative_fusion",
+  "thesis": "ln turns any 3D scene into hidden-line vector paths, and vpype cuts pen-up travel enough to make long plots practical. LLMs now write the Blender/Python scenes that feed it, and a DuckStation fork rips any PS1 level into OBJ. Pair that with the drawing machines and kinetic sculptures in the art collections and you get a pipeline from AI-generated scene to a one-off ink original. That is a physical answer to the flood of free AI images.",
+  "why_it_matters": "When images cost nothing, the scarce thing is the physical, signed, slightly imperfect object. Generative artists who move their output onto paper through a plotter, or into motion through a drawing machine, can sell originals through the direct channels the art-market entries describe. Those channels have no gatekeepers.",
+  "novelty": "The existing generative art dive stays on screens, and the art market dive is about distribution. The pen-plotter entry (S tier) sits in an AI collection, while the drawing machines and kinetic sculptures sit unlabeled in art-i-like. No creator here connects scene generation to machine-drawn editions.",
+  "connection_map": {
+   "Dd9Uvy9ByCE": "Core engine: 3D scene to hidden-line SVG (ln) + plot optimization (vpype)",
+   "DeuZ4BnhCqA": "Scene source: LLM writes the whole Blender scene as Python",
+   "DbqLB-zMoJR": "Scene source: rip nostalgic PS1 levels to OBJ (already used for papercraft)",
+   "C3dFjq4LbiP": "Physical output: kinetic drawing machine as the artwork itself",
+   "DEXGqLdqvPN": "Mechanical vocabulary: Reuben Margolin's kinetic sculptures for motion-as-drawing",
+   "Db22ptPy577": "Precedent: code housed as a physical object (1-Bit Symphony) — the artifact is the work",
+   "DR6kWKTDJ1T": "Distribution: art market without gatekeepers",
+   "DcTt5_eoGFO": "Distribution contrast: print-on-demand for editions; plotted originals as the premium tier"
+  },
+  "quality_rating": 4,
+  "execution_difficulty": "Easy",
+  "value_type": "craft",
+  "action_sketch": [
+   "Install ln + vpype; have Claude write three procedural scenes (math surface, procedural city, a PS1 rip via DuckStation 3D screenshot) and render each to SVG.",
+   "Plot on an AxiDraw or a used plotter (or a DIY GRBL pen plotter) on archival paper; shoot each in window daylight like the print-on-demand guide says.",
+   "List 10 numbered originals plus cheaper POD giclée of the same designs; track which sells.",
+   "Falsifier: if plotted originals don't sell at a premium over POD prints of the same image after ~20 listings, buyers aren't valuing the physical original and the thesis fails."
+  ],
+  "prerequisites": [
+   "Pen plotter (~$300-800) or DIY build",
+   "Archival paper/pens",
+   "Go + Python environment"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "physical_knowledge",
+  "entry_ids": [
+   "Dd9Uvy9ByCE",
+   "DeuZ4BnhCqA",
+   "DbqLB-zMoJR",
+   "C3dFjq4LbiP",
+   "DEXGqLdqvPN",
+   "Db22ptPy577",
+   "DR6kWKTDJ1T",
+   "DcTt5_eoGFO"
+  ]
+ },
+ {
+  "id": "dd-insight-ambient-executive-function",
+  "title": "Ambient Executive Function — glanceable hardware for agents and attention",
+  "class": "life_leverage",
+  "thesis": "OpenAI built a $230 hardware controller for babysitting coding agents. Someone answered with a MacBook-notch status app, and Bot Crossing turned 80 agents into characters who raise their hands. Separately, NFC stickers make logging a habit a one-tap physical act, and Sharp memory LCDs stay on for days at e-paper power. Combine them into a small always-on desk object that shows what needs you, both agents waiting for approval and your own NOW list, and takes physical taps as input. That turns 'out of sight, out of mind' from a willpower problem into an environment.",
+  "why_it_matters": "For people with ADHD or executive-function friction, the failure is rarely missing information. The information is hidden in a terminal or app they have to remember to open. A glanceable surface with one-tap input removes the remembering step, which is the step that fails.",
+  "novelty": "The agent-monitor entries treat this as developer convenience, and the habit and self-observation entries treat it as personal productivity. No one in the catalog notices that agent supervision and attention scaffolding are the same interface problem, and that the parts already exist.",
+  "connection_map": {
+   "DbIxSSaEtGd": "Market signal: OpenAI ships a $230 physical agent controller",
+   "DbaFoAUMvnK": "Software version: notch indicator for working / needs-attention / done",
+   "DczR-QlSMdK": "Interaction model: hand-raise signals replace polling terminals",
+   "DcJNZeBxR2D": "Display: per-pixel memory LCD — always-on, sunlight readable, battery-friendly",
+   "DZoREIHtMjL": "Input: NFC sticker tap → Shortcut → web endpoint logs a real-world action",
+   "DctoIMltaNN": "Gesture vocabulary for agent verbs (run, ideate, delegate)",
+   "DWBEMihjWp7": "Mechanism: self-observation changes behavior (Hawthorne) — make the state visible",
+   "DdKLjDHlG0c": "Design rule: gamifying beats avoidance paralysis",
+   "DdDT0X0KC64": "Content: fixed daily checkpoints (8am/noon/5pm) feed what the display shows",
+   "Db7Vx2Hhf9c": "Data source: a NOW.md short-term memory file the device can render"
+  },
+  "quality_rating": 5,
+  "execution_difficulty": "Easy",
+  "value_type": "leverage",
+  "action_sketch": [
+   "Build an ESP32 + 2.7in Sharp memory LCD in a printed stand; it polls a tiny endpoint serving (a) top 3 lines of NOW.md, (b) count of agent sessions awaiting approval via a Claude Code Notification/Stop hook.",
+   "Stick NFC tags on desk, water bottle and door: tap = 'done/started/leaving', logged by an iOS Shortcut to the same endpoint; the display updates within seconds.",
+   "Run 14 days logging glance-triggered actions (taps within 2 min of a display change) and agent wait time before/after.",
+   "Falsifier: if glance-triggered actions fall to near zero by week two (habituation) and agent wait time doesn't drop, ambient display isn't beating a phone notification."
+  ],
+  "prerequisites": [
+   "ESP32 + Sharp memory LCD (~$40)",
+   "NFC stickers",
+   "iOS Shortcuts or Android Tasker",
+   "Claude Code hooks"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "physical_knowledge",
+  "entry_ids": [
+   "DbIxSSaEtGd",
+   "DbaFoAUMvnK",
+   "DczR-QlSMdK",
+   "DcJNZeBxR2D",
+   "DZoREIHtMjL",
+   "DctoIMltaNN",
+   "DWBEMihjWp7",
+   "DdKLjDHlG0c",
+   "DdDT0X0KC64",
+   "Db7Vx2Hhf9c"
+  ]
+ },
+ {
+  "id": "dd-insight-benchmark-your-brain",
+  "title": "Benchmark Your Brain — the skill-optimizer loop, pointed at the human",
+  "class": "workflow_multiplier",
+  "thesis": "The agent world now rewrites skills against benchmarks: SkillOpt rejects any edit that doesn't beat the eval, Karpathy-style autoresearch adds an outer coach loop, and skills log their own failures for batch rewrites. Meanwhile the catalog's learning entries stop at 'turn saves into quizzes'. Run the same loop on yourself. Your saves are the training set, auto-generated quizzes are the eval set, and an outer coach rewrites your study playbook whenever your scores plateau.",
+  "why_it_matters": "Most people's save folders are graveyards, and this catalog is one. Closing the loop turns passive saving into measured skill gain, and it reports which topics never stick, so you can drop or re-approach them. The same harness already works for agents, so the build is small.",
+  "novelty": "The existing second-brain and harness dives are about making the AI remember. Nothing in the catalog benchmarks the human. The quiz-generation entry and the SkillOpt entry sit in the same collection without referencing each other.",
+  "connection_map": {
+   "Db3u0hAPCHV": "Input loop: saves table → agent groups by topic → study guides + quizzes",
+   "DbEK3bustQ7": "Core rule: every playbook rewrite must beat the benchmark or is rejected",
+   "DbjLy_tormR": "Outer coach loop that stops the inner learner repeating the same failing approach",
+   "Dcgr7YiIXD9": "Failure logging: each session writes issues for batch rewrites",
+   "Dd1cWobxn7n": "Second data source: mine your AI chat history for where you keep asking the same thing",
+   "DdUNm6sx_x1": "Curriculum selection: what's worth learning vs automating, at task level",
+   "Db03wymJ1OI": "Format: learning as a game where the real skill is choosing the right question",
+   "DdYbBL5IlNq": "Target state: build an inner model away from the instrument (Gould), not recall trivia",
+   "C9HMGeJy_2u": "Prompt seeds: Pareto learning, 30-day skill plan"
+  },
+  "quality_rating": 4,
+  "execution_difficulty": "Easy",
+  "value_type": "knowledge",
+  "action_sketch": [
+   "Export the last 60 days of saves (DejaViewed parquet works) into a table; a weekly Claude skill clusters them into 3 topics and writes 15 retrieval questions each, held out from the study notes.",
+   "Quiz yourself cold, log scores per topic; the coach skill rewrites the study playbook (spacing, format: explain-back, build-a-thing, game) only if next week's held-out score beats the last.",
+   "Add chat-history mining monthly: questions you re-asked the AI become forced quiz items.",
+   "Falsifier: if held-out scores after 6 weeks are no better than a no-coach control topic studied with plain flashcards, the outer loop adds overhead not learning."
+  ],
+  "prerequisites": [
+   "A saves export (this catalog qualifies)",
+   "Claude/agent with scheduled skills",
+   "~20 min/week of honest self-quizzing"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "physical_knowledge",
+  "entry_ids": [
+   "Db3u0hAPCHV",
+   "DbEK3bustQ7",
+   "DbjLy_tormR",
+   "Dcgr7YiIXD9",
+   "Dd1cWobxn7n",
+   "DdUNm6sx_x1",
+   "Db03wymJ1OI",
+   "DdYbBL5IlNq",
+   "C9HMGeJy_2u"
+  ]
+ },
+ {
+  "id": "dd-insight-offline-ai-appliances",
+  "title": "Offline AI Appliances — one job, one box, no cloud",
+  "class": "emergent_capability",
+  "thesis": "Gemma Translator puts speech recognition, translation and TTS on a Raspberry Pi 5, and it ships with a bill of materials and a printable case. Around it, the catalog holds a 100M-parameter local voice cloner, a 3B OCR model that reads 100-page PDFs in one pass, local video search over dashcam footage, 4GB-GPU fine-tuning, and 27B agent models on one 24GB card. Together these are a parts bin for single-purpose AI appliances: a box you hand to someone that does one job, works offline, and never sends their data anywhere.",
+  "why_it_matters": "The people who most need AI help, like elderly relatives, field workers and privacy-sensitive small businesses, are the least able to manage cloud accounts and the least willing to upload their lives. A purpose-built offline box sidesteps both problems, and a maker with a printer can build it in a weekend.",
+  "novelty": "Every local-model entry frames the model as something to run on your desktop, and only Gemma Translator ships as an object. Nobody connects the OCR, search, TTS and fine-tune releases into an appliance pattern with an enclosure and a bill of materials.",
+  "connection_map": {
+   "Db61Q1SCqtQ": "Template: full offline speech-to-speech appliance with BOM + STL case",
+   "DbWZwciSP4l": "Module: local 3B OCR for a 'scan my mail/paperwork' box",
+   "ssrajadh/sentrysearch": "Module: local natural-language video search (dashcam, home footage)",
+   "Db0vxQexdJI": "Module: Pocket TTS local voice + MoE experts streamed from disk",
+   "DcvIZ7cT4_P": "Personalization: fine-tune a small model on 4GB VRAM for one domain",
+   "DcCdYgnJ10h": "Upper bound: a 27B agent brain on one 24GB GPU for heavier boxes",
+   "Dcez--ApG8i": "Where it goes next: 80GB unified-memory consumer AI cubes",
+   "DcJNZeBxR2D": "Display choice for battery appliances",
+   "DbwH5S2hnfO": "Enclosure proof: printed housings and mechanisms are good enough"
+  },
+  "quality_rating": 4,
+  "execution_difficulty": "Medium",
+  "value_type": "capability",
+  "action_sketch": [
+   "Build Gemma Translator from its repo exactly as published to learn the deployment script and thermal limits of a Pi 5.",
+   "Fork it into a 'paperwork reader': Pi 5 (or a Jetson Orin Nano) + camera + Baidu Unlimited OCR + a small summarizer + Pocket TTS that reads letters aloud and flags bills; print the case.",
+   "Give it to one non-technical person for two weeks; log what they actually use.",
+   "Falsifier: if latency on the Pi is over ~10s per page or the person reverts to a phone app within a week, the appliance form factor isn't earning its keep at today's edge compute."
+  ],
+  "prerequisites": [
+   "Raspberry Pi 5 or Jetson-class board",
+   "3D printer",
+   "Comfort with Linux deployment"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "physical_knowledge",
+  "entry_ids": [
+   "Db61Q1SCqtQ",
+   "DbWZwciSP4l",
+   "ssrajadh/sentrysearch",
+   "Db0vxQexdJI",
+   "DcvIZ7cT4_P",
+   "DcCdYgnJ10h",
+   "Dcez--ApG8i",
+   "DcJNZeBxR2D",
+   "DbwH5S2hnfO"
+  ]
+ },
+ {
+  "id": "dd-insight-mocap-as-reward",
+  "title": "Mocap as Reward — teaching cheap robots to move like you",
+  "class": "emergent_capability",
+  "thesis": "The Microduck RL demo shows the classic failure: a loose reward function makes the robot 'stand' in a way nobody intended. The catalog also holds the fix, scattered across collections. FreeMoCap turns a webcam into markerless motion capture, HY-Motion produces motion from text on robot skeletons, and Blender plus a GPU contact solver can rehearse physical contact. Use captured or generated motion as an imitation reward on a cheap open robot. The reward-design trial and error becomes 'show it what you mean'.",
+  "why_it_matters": "Hobby robotics is gated by reward engineering more than by hardware. A webcam reference clip gives an individual the motion-prior pipeline that only labs used to have, for small expressive robots, animatronics and installations.",
+  "novelty": "The robotics entries and the motion and animation entries never reference each other. HY-Motion explicitly supports robot skeletons, yet it's filed as an animation tool. Nobody in the catalog points it at Microduck's reward-hacking problem.",
+  "connection_map": {
+   "DdCBqmzJgbW": "The problem: PPO on Microduck reward-hacks a loose objective",
+   "DYAI_fCuvrY": "Reference source: webcam markerless mocap, 500+ landmarks",
+   "Tencent-Hunyuan/HY-Motion-1.0": "Reference source: text-to-motion on human and robot skeletons",
+   "DacssZfNGNS": "Rehearsal: Blender rigid bodies, motors and drivers to prototype motion physically",
+   "DYuY_-7Oqk4": "Rehearsal: GPU contact solver for soft/cloth contact cases",
+   "DXvvNRssb64": "Counterpoint: passive mechanical stability needs little AI — design the body first",
+   "C3X9J-wCQps": "Target use: animatronic sculpture that should move with intent, not just stand"
+  },
+  "quality_rating": 3,
+  "execution_difficulty": "Experimental",
+  "value_type": "capability",
+  "action_sketch": [
+   "Reproduce the Microduck standing run in its sim with 4,096 envs; confirm the reward hack.",
+   "Record a 10-second webcam clip of a 'bob and look around' motion with FreeMoCap (or generate one with HY-Motion), retarget to Microduck's joints, and add a pose-tracking imitation term to the reward.",
+   "Compare policies: reward-only vs reward + imitation, scored by a blind viewer on 'looks intentional' and by joint-tracking error; deploy the winner to hardware if you have it.",
+   "Falsifier: if retargeting human motion to a duck-scale robot body produces infeasible joint targets that the policy can't track better than the plain reward, the motion prior is the wrong shape for small robots."
+  ],
+  "prerequisites": [
+   "GPU for parallel sim (Isaac/MuJoCo)",
+   "Comfort with RL training configs",
+   "Optional: Microduck hardware build"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "physical_knowledge",
+  "entry_ids": [
+   "DdCBqmzJgbW",
+   "DYAI_fCuvrY",
+   "Tencent-Hunyuan/HY-Motion-1.0",
+   "DacssZfNGNS",
+   "DYuY_-7Oqk4",
+   "DXvvNRssb64",
+   "C3X9J-wCQps"
+  ]
+ }
+]

@@ -293,7 +293,16 @@ def main():
     # Persist to CMS parquet
     try:
         from cms import write_deep_dives
-        write_deep_dives(all_dives)
+        # parquet schema stores action_sketch/prerequisites as strings; curated dives carry lists
+        pq_rows = []
+        for d in all_dives:
+            r = dict(d)
+            for k in ("action_sketch", "prerequisites", "why_it_matters", "novelty", "lens"):
+                v = r.get(k)
+                if isinstance(v, (list, tuple)):
+                    r[k] = "\n".join(str(x) for x in v)
+            pq_rows.append(r)
+        write_deep_dives(pq_rows)
     except Exception as e:
         print(f"  (parquet write skipped: {e})")
 

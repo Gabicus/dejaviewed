@@ -1,0 +1,248 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Earned Autonomy — a three-tier router that demotes work to your own GPU · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-earned-autonomy-router.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Earned Autonomy — a three-tier router that demotes work to your own GPU →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Earned Autonomy — a three-tier router that demotes work to your own GPU
+
+**Insight class:** Arbitrage Opportunity · **Difficulty:** Medium · **Quality:** 4/5
+**Connected entries:** 12 · **Tools:** Anthropic, ChatGPT, Claude, Claude Code, Claude Max, Claudex, Codex, DeepSeek, GPT-4o, Gemini, Grokbot, Llama, Notion, Open Claw, OpenAI, Qwen, Unsloth, Xiaomi AI Cube, cron, oc
+
+---
+
+## Thesis
+
+Three trends in the catalog point at one design. Orchestrator-worker splits (Fable plans, Opus or GPT-5.6 executes) cut frontier spend. A 27B Qwen now fits a single 24GB card and posts agentic benchmarks that were frontier-only a year ago, while open-token share flipped to 80/20 in twelve weeks. And vendors can change the deal overnight — Anthropic killed subscription tokens in third-party tools. The agentic OS blueprint's 'earned autonomy' is the missing link: let each task class graduate down the stack — frontier, mid-tier, local — as its review pass rate proves it can.
+
+---
+
+## Why it matters
+
+You stop paying frontier prices for work a local model already passes, and you hedge against any single vendor's terms. The router doubles as a measurement instrument — it tells you, per task class, exactly where the open models have caught up.
+
+---
+
+## The evidence — connected entries
+
+### Fable orchestrates, Opus executes — cutting frontier-model token spend
+**Creator:** [@thomas.lentine](https://instagram.com/thomas.lentine) · **Tier:** A
+**Tools:** Claude Code
+
+> Baseline pattern — frontier orchestrates and reviews, cheaper model executes
+
+Brain-dump your task list to Fable, have it write specs and spawn cheaper Opus subagents (in parallel worktrees) to execute, then Fable reviews and sends fixes back in a loop until it's good enough. You get top-model judgment without burning usage limits on implementation.
+
+[View original post](https://www.instagram.com/p/Da1hOm7scjR/)
+### Agentic OS on Claude Fable 5 — cron loop with earned autonomy
+**Creator:** [@raycfu](https://instagram.com/raycfu) · **Tier:** A
+**Tools:** Claude Code, cron
+
+> The key idea — tasks earn autonomy after a streak of passing reviews
+
+Blueprint: a cron-run loop.sh where a cheap model triages changes, Fable 5 plans as manager, Sonnet executes and a fresh Fable reviews. Tasks earn autonomy after 20 passes at 95% and lose it below 90%, refusals come back as HTTP 200 so scripts must check stop_reason, and a goals directory reruns regression tests daily.
+
+[View original post](https://www.instagram.com/p/DamEcWuPvX0/)
+### Fable 5 plus GPT-5.6 routing — Codex plugin inside Claude Code
+**Creator:** [@cooper.simson](https://instagram.com/cooper.simson) · **Tier:** B
+**Tools:** ChatGPT, Claude, Claude Code, Codex, OpenAI
+
+> Cross-vendor routing — a /route skill sending execution to a different lab
+
+Install Codex and the Codex plugin for Claude Code, then build a /route skill: Fable 5 interviews you and plans, GPT-5.6 executes, Fable reviews and loops until done. Splits usage across two subscriptions.
+
+[View original post](https://www.instagram.com/p/DaojVuSNKno/)
+### Claudex skill — Claude and GPT-6 Astra cross-audit plan and build
+**Creator:** [@nateherkai](https://instagram.com/nateherkai) · **Tier:** A
+**Tools:** Claude, Claudex, Codex
+
+> Cross-audit — two vendors check each other, a reviewer for the promotion gate
+
+A free skill that splits work between two frontier models: Claude writes the plan and GPT-6 Astra audits it until it holds, then roles swap so Astra builds and Claude audits. Runs inside Claude or Codex as a reusable skill.
+
+[View original post](https://www.instagram.com/p/DeW79CbCkO3/)
+### Qwen 3.8 27B — local agentic model that fits on one 24GB GPU
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** A
+**Tools:** Anthropic, Qwen, Unsloth
+
+> Local tier — a 27B agentic model on one consumer GPU
+
+Alibaba's Qwen 3.8 27B quantizes to ~17GB at 4-bit, running on a single RTX 3090/4090, and Qwen's own benchmarks claim 84.3 on OSWorld plus wins on SWE-Bench Pro. Gated DeltaNet layers keep a compact running memory instead of full attention, and it preserves reasoning across tool-call steps, so pair it with an agent harness rather than chatting.
+
+[View original post](https://www.instagram.com/p/DcCdYgnJ10h/)
+### DeepSeek V4 Flash re-post-training — big agentic gains, same model size
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** A
+**Tools:** Claude, DeepSeek
+
+> Moving floor — post-training alone lifts open agentic scores 20+ points
+
+DeepSeek re-post-trained V4 Flash (284B MoE, ~13B active) with no size or architecture change, jumping Terminal Bench 2.1 from 61.8 to 82.7, past the V4 Pro preview and near Claude Opus 4.8, at $0.28 per million output tokens. V4's original recipe distilled 10+ specialist teacher models; V4 Pro (rumored 1.6T, 49B active) is next.
+
+[View original post](https://www.instagram.com/p/DbjmqTYJfMY/)
+### Open vs closed token share — Friedberg on the 12-week flip and Anthropic risk
+**Creator:** [@techno.optimist.prime](https://instagram.com/techno.optimist.prime) · **Tier:** B
+**Tools:** Anthropic
+
+> Market signal — open token share flipped in 12 weeks
+
+David Friedberg on All-In says token usage flipped from 80/20 closed-to-open to 80/20 open-to-closed in 12 weeks, calling it Anthropic's biggest risk factor ahead of S-1s. He expects a bifurcated market: open weights for most use, premium models for hard engineering, math and biology work.
+
+[View original post](https://www.instagram.com/p/DeIOphnT7Yq/)
+### Anthropic blocks Claude Max subscription tokens in 3rd-party tools
+**Creator:** [@tech.unicorn](https://instagram.com/tech.unicorn) · **Tier:** A
+**Tools:** Anthropic, Claude, Claude Max, DeepSeek, GPT-4o, Gemini, Llama, Notion, Open Claw
+
+> Vendor risk — one ToS change multiplied effective cost overnight
+
+@tech.unicorn on Anthropic killing subscription-token access in third-party tools (Jan 9 ToS change), spiking effective cost from $200/mo to $500-$2000/mo on API. Suggests multi-model routers (DeepSeek/Gemini/Llama/GPT-4o) as the mitigation.
+
+[View original post](https://www.instagram.com/p/DVKJlJYEsmm/)
+### Subscription token arbitrage — Claude Max vs Grok Ultra API-equivalent usage
+**Creator:** [@duck.tate](https://instagram.com/duck.tate) · **Tier:** B
+**Tools:** Claude, Codex, Grokbot
+
+> Price map — subscription vs API-equivalent value differs 30x across vendors
+
+Compares plan value: Claude's $200 Max is worth over $7,000/month in API usage, while Grok Ultra at $300 is claimed at over $12,000. The creator plans to switch from Claude as brain plus Codex as hands to Fable as brain plus Grokbot as hands.
+
+[View original post](https://www.instagram.com/p/DdMoE8qhnKE/)
+### only-cli/oc — browse websites as a compact numbered CLI for agents
+**Creator:** [@githubsignals](https://instagram.com/githubsignals) · **Tier:** A
+**Tools:** oc
+
+> Token diet — compact page views that let a small local model browse
+
+Open-source tool that fetches a page and returns a tidy numbered text view so agents can read, follow links and search for hundreds of tokens instead of tens of thousands of raw HTML; mimics a real browser to slip basic blocks. Spotted on Hacker News.
+
+[View original post](https://www.instagram.com/p/DcX_QwDjvH-/)
+### PromptOps Smart Action Detector — save tokens, run commands locally
+**Creator:** [@shellonback](https://instagram.com/shellonback) · **Tier:** B
+
+> Zero tier — run deterministic commands directly, no model at all
+
+@shellonback on PromptOps' new detector: when a sub-agent is about to run a directly-executable command (npm run deploy/build/test), it suggests running in the terminal instead of sending to the LLM. Concrete anti-token-waste pattern.
+
+[View original post](https://www.instagram.com/p/DWqV5eAD7TR/)
+### Xiaomi AI Cube — 80GB unified-memory box running 120B models locally
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** B
+**Tools:** Xiaomi AI Cube
+
+> Hardware trend — 80GB unified-memory boxes make the local tier bigger every quarter
+
+Xiaomi showed a prototype AI Cube with 80GB unified memory running 3B and 120B models on-device, built on three in-house chips: XRING O3 (mobile), O100 AI accelerator (claimed 1.22 TB/s near-memory bandwidth) and D100 3nm driving chip. No price, release date or independent benchmarks yet.
+
+[View original post](https://www.instagram.com/p/Dcez--ApG8i/)
+
+---
+
+## Action sketch — how to implement this
+
+- Log every delegated task for two weeks with a class label (rename, test-writing, data cleanup, UI tweak) and the reviewer's pass/fail
+- Stand up Qwen 27B via llama.cpp or Ollama behind the same subagent interface; route one low-stakes class to it in shadow mode and grade it with the same frontier reviewer
+- Add the promotion rule: 20 consecutive passes moves a class one tier down, any fail moves it back up; track dollars saved per class
+- Falsifier: if after a month no task class sustains a 90%+ pass rate on the local tier, the local floor is not there yet for your work — stay two-tier
+
+---
+
+## Prerequisites
+
+- A 24GB GPU or a unified-memory machine
+- An existing orchestrator-worker setup
+- A reviewer step you already trust
+
+---
+
+## Key tools and resources
+
+- **Anthropic**
+- **ChatGPT**
+- **Claude**
+- **Claude Code**
+- **Claude Max**
+- **Claudex**
+- **Codex**
+- **DeepSeek**
+- **GPT-4o**
+- **Gemini**
+- **Grokbot**
+- **Llama**
+- **Notion**
+- **Open Claw**
+- **OpenAI**
+- **Qwen**
+- **Unsloth**
+- **Xiaomi AI Cube**
+- **cron**
+- **oc**
+
+## Creators to follow
+
+- [@cooper.simson](https://instagram.com/cooper.simson)
+- [@duck.tate](https://instagram.com/duck.tate)
+- [@gigaqian](https://instagram.com/gigaqian)
+- [@githubsignals](https://instagram.com/githubsignals)
+- [@nateherkai](https://instagram.com/nateherkai)
+- [@raycfu](https://instagram.com/raycfu)
+- [@shellonback](https://instagram.com/shellonback)
+- [@tech.unicorn](https://instagram.com/tech.unicorn)
+- [@techno.optimist.prime](https://instagram.com/techno.optimist.prime)
+- [@thomas.lentine](https://instagram.com/thomas.lentine)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../index.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

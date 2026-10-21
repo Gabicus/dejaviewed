@@ -1,0 +1,227 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Skills That Earn Their Lines — benchmark-gated self-editing plus subtraction · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-eval-gated-skill-evolution.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Skills That Earn Their Lines — benchmark-gated self-editing plus subtraction →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Skills That Earn Their Lines — benchmark-gated self-editing plus subtraction
+
+**Insight class:** Workflow Multiplier · **Difficulty:** Medium · **Quality:** 5/5
+**Connected entries:** 11 · **Tools:** Anthropic, Antidoom, ChatGPT, Claude, Claude Code, Grokbot, OpenAI, Prime Agent, SkillOpt, Soup
+
+---
+
+## Thesis
+
+Successor to the harness and second-brain dives. Those stop at 'append a lesson after every mistake'. The catalog now holds the missing machinery — Microsoft SkillOpt rewrites skills only when a benchmark improves, bilevel autoresearch adds a coach loop over the worker, Prime Agent rewrites its own harness to 95.5% on ARC-AGI-3 — and, crucially, evidence that subtraction matters as much as addition: Boris Cherny's simple mode and the setup-purge post show stale rules make newer models dumber. Combine them into a ratchet that both adds and deletes rules, keeping only edits that beat a held-out eval.
+
+---
+
+## Why it matters
+
+Every power user's CLAUDE.md grows monotonically until it is a tax on every call. A two-way, eval-gated ratchet turns rule accretion into measured improvement, and the winning traces become fine-tuning data you can push into a small local model with Soup.
+
+---
+
+## The evidence — connected entries
+
+### Microsoft SkillOpt — agent skills that rewrite themselves against benchmarks
+**Creator:** [@marc.kaz](https://instagram.com/marc.kaz) · **Tier:** S
+**Tools:** SkillOpt
+
+> Core mechanism — skill rewrites accepted only when a benchmark improves
+
+Microsoft open-sourced SkillOpt: a base model runs a task, an optimizer rewrites the skill instructions from results, successful paths are separated from failures, and edits that don't beat the benchmark are auto-rejected. Claimed to beat hand-written prompts and TextGrad and to transfer across models.
+
+[View original post](https://www.instagram.com/p/DbEK3bustQ7/)
+### Bilevel autoresearch loops — an outer coach loop rewrites the search
+**Creator:** [@raycfu](https://instagram.com/raycfu) · **Tier:** A
+**Tools:** OpenAI
+
+> Outer loop — a coach that rewrites the search playbook, not just the answer
+
+Builds on Karpathy's autoresearch loop (try change, test, keep or revert). An outer coach loop watches the inner worker and rewrites its search playbook so it stops repeating the same ideas; claimed ~5x better on Karpathy's benchmark with the same models.
+
+[View original post](https://www.instagram.com/p/DbjLy_tormR/)
+### Prime Agent — self-rewriting harness lifts Opus 5 to 95.5% on ARC-AGI-3
+**Creator:** [@wassimyounes_](https://instagram.com/wassimyounes_) · **Tier:** A
+**Tools:** Prime Agent
+
+> Proof of ceiling — a self-rewriting harness beats the bare frontier model
+
+Prime Intellect released Prime Agent, an open-source coding harness built on a Recursive Language Model (RLM) framework that rewrites its own prompts, memory, tasks and scaffolding at runtime based on failures. Opus 5 alone scores 30% on ARC-AGI-3; with the harness, 95.5%, a hair over the 95.4% human baseline. The real story is test-time compute and self-modifying scaffolding.
+
+[View original post](https://www.instagram.com/p/DbtJytsumrO/)
+### Self-improving skills vs AI teammates — log issues, rewrite skills
+**Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** B
+**Tools:** Grokbot
+
+> Signal source — skills log their own failures into a table as they run
+
+Argues personified 'AI teammates' are static while skills are adaptable: keep every skill in a database table, have each skill log issues about itself when used into a second table, then periodically run a prompt that reads the accumulated issues and rewrites the skill. Specific workflows with clear end states beat persona prompts.
+
+[View original post](https://www.instagram.com/p/Dcgr7YiIXD9/)
+### Systems that prompt your AI — DB-driven loops with skills and cron
+**Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** B
+**Tools:** Claude, Claude Code
+
+> Scheduler — DB-driven cron loops that prompt the agent instead of you
+
+Riffs on Boris Cherny's advice to build loops that prompt Claude instead of prompting it yourself: connect the AI to a database with work and issues tables, use cron jobs to detect pending changes, and run skills for scoping, implementing, testing and repeating until the human goal is met. Counterpoint: for go-to-market work the human is still the bottleneck and must stay in the loop.
+
+[View original post](https://www.instagram.com/p/DZnY2vaxWRF/)
+### Chat-history mining — derive better custom instructions from your AI logs
+**Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** B
+**Tools:** ChatGPT, Claude
+
+> Eval mining — your exported chat history becomes the held-out test set
+
+Export your full ChatGPT or Claude history, have a small model like Jev tag every conversation for mistakes and usage patterns, then feed the analysis to your main assistant to write new custom instructions. A cheaper alternative to building a full personal 'Jarvis' agent.
+
+[View original post](https://www.instagram.com/p/Dd1cWobxn7n/)
+### Claude Code simple mode — ablating system prompts makes the model smarter
+**Creator:** [@foundedceo](https://instagram.com/foundedceo) · **Tier:** S
+**Tools:** Anthropic, Claude, Claude Code
+
+> Subtraction evidence — stripping the system prompt makes the model smarter
+
+Boris Cherny at YC Startup School: Claude Code accepts --system-prompt for a custom system prompt, and an undocumented simple mode (env var CLAUDE_CODE_SIMPLE=1) deletes all system and tool prompts. Anthropic uses it as an ablation and finds the model is slightly more intelligent without them, though product prompts still help it behave as users expect.
+
+[View original post](https://www.instagram.com/p/DcMSk7Rxcdu/)
+### Claude setup purge — audit stale CLAUDE.md rules for newer models
+**Creator:** [@cooper.simson](https://instagram.com/cooper.simson) · **Tier:** B
+**Tools:** Anthropic, Claude, Claude Code
+
+> Subtraction practice — rules written for old models now hold new ones back
+
+Argues rules and skills written for older Claude models now hold newer ones back, citing Anthropic cutting much of its system prompt after Opus 5. Recommends a prompt that audits every CLAUDE.md rule and skill, deletes dead weight and rebuilds a lean setup; the prompt itself is comment-gated.
+
+[View original post](https://www.instagram.com/p/Dbhuaw7Pk4u/)
+### Liquid AI Antidoom — FTPO training to kill reasoning doom loops
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** A
+**Tools:** Antidoom, Claude
+
+> Failure-specific training — target the exact loop token, a template for targeted fixes
+
+Antidoom is Liquid AI's open-source pipeline that finds the exact token restarting a repetition loop, marks it rejected, picks up to 20 alternatives, and trains with Final Token Preference Optimization (FTPO) plus a KL-like regularizer in logit space so reasoning isn't damaged.
+
+[View original post](https://www.instagram.com/p/DaocklrJPJC/)
+### Soup — fine-tune LLMs on a 4GB laptop GPU with one command
+**Creator:** [@martintrainhard](https://instagram.com/martintrainhard) · **Tier:** A
+**Tools:** ChatGPT, Claude, Soup
+
+> Distill step — fine-tune a small local model on winning traces with a 4GB GPU
+
+Soup, built by a 17-year-old solo founder from Kazakhstan, wraps LLM fine-tuning into a simple flow: describe the goal, point at your data, run `soup train`, and it auto-picks batch size and memory settings. Claimed 85k users training medical assistants and reasoning models on consumer GPUs. Link gated; verify the claims.
+
+[View original post](https://www.instagram.com/p/DcvIZ7cT4_P/)
+### Self-improving trading agent — critic loop that rewrites losing strategies
+**Creator:** [@raycfu](https://instagram.com/raycfu) · **Tier:** B
+
+> Cross-domain instance — a critic loop rewriting losing trading strategies, same shape
+
+Workflow pitch: describe a strategy, an agent codes it and wires the broker API, runs a five-year backtest, and a critic agent dissects losing trades and rewrites entry/exit logic before rerunning. Hard-coded stop-loss and drawdown limits sit outside the agent's reach, and failed strategies go to a local DB the agent learns from. Guide is comment-gated.
+
+[View original post](https://www.instagram.com/p/DeNnxp5v_Fu/)
+
+---
+
+## Action sketch — how to implement this
+
+- Export your last 3 months of Claude history, have a small model tag 40 representative tasks with pass/fail criteria — that is your held-out eval
+- Run an ablation sweep: drop each CLAUDE.md rule and skill one at a time, rerun the eval, delete anything whose removal does not hurt the score
+- Add the SkillOpt loop on a nightly cron — skills log issues, an optimizer proposes edits, only score-improving edits merge; export passing traces for a Soup fine-tune later
+- Falsifier: if eval scores vary more between two identical runs than between best and worst rule sets, your eval is too noisy and the whole ratchet is optimizing noise
+
+---
+
+## Prerequisites
+
+- A CLAUDE.md and skills folder with some history
+- Exported chat logs
+- A cheap model for grading (Haiku-class or local)
+
+---
+
+## Key tools and resources
+
+- **Anthropic**
+- **Antidoom**
+- **ChatGPT**
+- **Claude**
+- **Claude Code**
+- **Grokbot**
+- **OpenAI**
+- **Prime Agent**
+- **SkillOpt**
+- **Soup**
+
+## Creators to follow
+
+- [@angus.sewell](https://instagram.com/angus.sewell)
+- [@cooper.simson](https://instagram.com/cooper.simson)
+- [@foundedceo](https://instagram.com/foundedceo)
+- [@gigaqian](https://instagram.com/gigaqian)
+- [@marc.kaz](https://instagram.com/marc.kaz)
+- [@martintrainhard](https://instagram.com/martintrainhard)
+- [@raycfu](https://instagram.com/raycfu)
+- [@wassimyounes_](https://instagram.com/wassimyounes_)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../index.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

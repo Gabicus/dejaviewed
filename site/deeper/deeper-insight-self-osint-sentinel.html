@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Dox Yourself First — a scheduled agent that runs the OSINT kit on you — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">life_leverage</div>
+  <h1>Dox Yourself First — a scheduled agent that runs the OSINT kit on you</h1>
+  <div class="thesis">The catalog saved a full attacker toolkit — Sherlock and Alien's Eye for usernames, email-to-account mappers, deleted-Reddit recovery, GeoSpy geolocating photos from plants and shadows — next to the defense: a de-dox checklist written after Meta AI inferred a creator's home from old posts, a data-broker opt-out game, the Flock plate-search transparency site. An agent with a weekly cron can run the offense against you and file the defense automatically. The same tools that took a security team now fit in one scheduled skill.</div>
+  <div class="tools"><span class='tool-pill'>Alien's Eye</span> · <span class='tool-pill'>Claude</span> · <span class='tool-pill'>Claude Code</span> · <span class='tool-pill'>Flock Safety</span> · <span class='tool-pill'>GeoSpy</span> · <span class='tool-pill'>Meta AI</span> · <span class='tool-pill'>Sherlock</span> · <span class='tool-pill'>uv</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Write one skill that runs Sherlock (via uv) and an email-enumeration tool against your own handles and addresses, storing results in a table keyed by date, Add a photo pass: send your last 20 public images to a geolocation model and flag any that resolve within a few km of home, Schedule it weekly, diff against last run, and have the agent draft data-broker opt-out requests from the checklist for each new hit, Falsifier: if three consecutive weekly runs surface nothing new and the opt-outs stick, a quarterly manual checklist is enough and the agent is overhead</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> Only run against identities you own, A machine that can run Python CLIs on a schedule, Patience for opt-out forms that need a human signature</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (10)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dc9172rFZuS/" target="_blank" rel="noopener"><img src="../thumb/Dc9172rFZuS.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dc9172rFZuS/" target="_blank" rel="noopener" class="dd-entry-title">Stay-secure privacy checklist — de-dox yourself from AI and data brokers</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> guide · @lizthedeveloper</div>
+    <div class="dd-entry-summary">After Meta AI pieced together a creator's home location from old posts, this free browser-only checklist walks you through mapping your accounts, auditing what's public, opting out of data brokers and ad trackers, credit freezes, recovery codes, tracking who holds your ID, and identity-theft recovery.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Db3ZNRcRhzW/" target="_blank" rel="noopener"><img src="../thumb/Db3ZNRcRhzW.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Db3ZNRcRhzW/" target="_blank" rel="noopener" class="dd-entry-title">Sherlock — install and run the top username OSINT tool with uv</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> skill · @carterperez.dev</div>
+    <div class="dd-entry-summary">Install Sherlock in three commands: create and activate a venv with uv, then uv pip install sherlock-project; run sherlock followed by one or more usernames to find matching accounts across the web.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dce2O2Did0E/" target="_blank" rel="noopener"><img src="../thumb/Dce2O2Did0E.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dce2O2Did0E/" target="_blank" rel="noopener" class="dd-entry-title">Alien's Eye — username OSINT search across social platforms</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> tool · @declan.middleton</div>
+    <div class="dd-entry-summary">Alien's Eye searches a username across many social and web platforms (even Khan Academy, Google Classroom) and lists matching profile links, pitched as better than Sherlock. Use it on your own handles to find forgotten accounts.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Db9ExYzq_3e/" target="_blank" rel="noopener"><img src="../thumb/Db9ExYzq_3e.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Db9ExYzq_3e/" target="_blank" rel="noopener" class="dd-entry-title">Three OSINT tools — email account discovery, onion crawler, lookup suite</a>
+    <div class="dd-entry-meta"><span class="tier-badge tC">C</span> resource · @carterperez.dev</div>
+    <div class="dd-entry-summary">Teaser for three OSINT tools: one maps an email to every account it signed up for with name, photo and breach data; one crawls every site linked from an onion address into a searchable file; one bundles 20 terminal lookups (phone, Wi-Fi location, crypto wallet tracing, Sherlock). Names gated.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DdFecuaD-ql/" target="_blank" rel="noopener"><img src="../thumb/DdFecuaD-ql.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DdFecuaD-ql/" target="_blank" rel="noopener" class="dd-entry-title">Reddit OSINT tool — recover deleted posts and comments by username</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> tool · @declan.middleton</div>
+    <div class="dd-entry-summary">A Reddit OSINT search tool surfaces posts and comments tied to a username, including ones deleted years ago, by drawing on archived data. Demo is light and ends with a community pitch. Use responsibly and lawfully.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DNS0YG0NrLt/" target="_blank" rel="noopener"><img src="../thumb/DNS0YG0NrLt.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DNS0YG0NrLt/" target="_blank" rel="noopener" class="dd-entry-title">GeoSpy.ai — geolocate any photo from buildings, plants, shadows</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> tool · @innovation</div>
+    <div class="dd-entry-summary">GeoSpy.ai infers photo location from architectural, botanical and lighting cues against a geotagged image database. Link: https://geospy.ai/ . OSINT/geolocation tool worth bookmarking.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DdKLjDHlG0c/" target="_blank" rel="noopener"><img src="../thumb/DdKLjDHlG0c.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DdKLjDHlG0c/" target="_blank" rel="noopener" class="dd-entry-title">Data reclamation game — gamifying opt-outs from data brokers</a>
+    <div class="dd-entry-meta"><span class="tier-badge tC">C</span> demo · @lizthedeveloper</div>
+    <div class="dd-entry-summary">A developer built a game to make reclaiming your personal data from corporations and data brokers as engaging as signing up was, countering dark-pattern cancellation flows. Mostly framing, few specifics on which opt-outs it covers.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Db-9QiOxxPe/" target="_blank" rel="noopener"><img src="../thumb/Db-9QiOxxPe.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Db-9QiOxxPe/" target="_blank" rel="noopener" class="dd-entry-title">Flock plate-search transparency site — see which police searched you and why</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> resource · @carterperez.dev</div>
+    <div class="dd-entry-summary">A public website lets you enter a license plate and see which police departments ran Flock ALPR searches on it, browse a department's full search history, and read stated reasons (protest, theft, speeding). Flock reportedly sought a takedown that Cloudflare refused. Link gated behind a comment.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dd84xuVhSuZ/" target="_blank" rel="noopener"><img src="../thumb/Dd84xuVhSuZ.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dd84xuVhSuZ/" target="_blank" rel="noopener" class="dd-entry-title">Anti-surveillance OPSEC tools — plate-reader confusion and photo poisoning</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> resource · @carterperez.dev</div>
+    <div class="dd-entry-summary">Three privacy tools: license-plate marks that make Flock and ALPR cameras misread your plate, an image cloaking tool that poisons photos against face models and deepfakes, and a list of 78 ranked ways to evade AI surveillance. Links are comment-gated. Note that altering plates is illegal in many places.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZnY2vaxWRF/" target="_blank" rel="noopener"><img src="../thumb/DZnY2vaxWRF.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZnY2vaxWRF/" target="_blank" rel="noopener" class="dd-entry-title">Systems that prompt your AI — DB-driven loops with skills and cron</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> technique · @angus.sewell</div>
+    <div class="dd-entry-summary">Riffs on Boris Cherny's advice to build loops that prompt Claude instead of prompting it yourself: connect the AI to a database with work and issues tables, use cron jobs to detect pending changes, and run skills for scoping, implementing, testing and repeating until the human goal is met. Counterpoint: for go-to-market work the human is still the bottleneck and must stay in the loop.</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-10-21T18:20:58.218041 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+</div>
+</main>
+</body></html>

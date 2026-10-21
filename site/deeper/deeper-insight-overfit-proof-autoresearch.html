@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Strategy Autoresearch — the judge is the product, not the agent — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">workflow_multiplier</div>
+  <h1>Strategy Autoresearch — the judge is the product, not the agent</h1>
+  <div class="thesis">Self-rewriting loops (Karpathy-style autoresearch, bilevel coach loops, Microsoft SkillOpt) keep any edit that beats a benchmark. Point one at trading and it becomes an industrial overfitting machine — the backtest is the benchmark, and the loop will beat it ten thousand times. The quant saves already hold the fix: probability of backtest overfitting, permutation tests, transaction costs and backtest-to-live drift. Wire those in as the loop's judge, and use the loop's own log as the exact count of trials — the number human quants never know.</div>
+  <div class="tools"><span class='tool-pill'>Claude</span> · <span class='tool-pill'>Claudex</span> · <span class='tool-pill'>Codex</span> · <span class='tool-pill'>OpenAI</span> · <span class='tool-pill'>Python</span> · <span class='tool-pill'>SkillOpt</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Wrap a vectorized backtester (VectorBT) in a SkillOpt-style loop where Claude proposes strategy edits and every proposal is appended to a trials table with its parameters and result., Replace 'beats benchmark' with a judge that needs all four: positive after realistic fees, beats 95% of a permutation null, deflated Sharpe positive using the trials-table count, and a held-out year scored once at the end., Have a second model (Codex or GPT) audit each surviving strategy's code for look-ahead bias before it reaches paper trading; monitor live drift with Wasserstein distance and auto-retire on breach., falsifier: seed the loop with pure-noise synthetic prices. If anything passes the judge, the judge is broken — fix it before you show it a real market.</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> Python and VectorBT or similar backtester, Clean historical data with realistic cost assumptions, Paper-trading account, Discipline to treat 'no survivors' as a valid result</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (11)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbEK3bustQ7/" target="_blank" rel="noopener"><img src="../thumb/DbEK3bustQ7.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbEK3bustQ7/" target="_blank" rel="noopener" class="dd-entry-title">Microsoft SkillOpt — agent skills that rewrite themselves against benchmarks</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> repo · @marc.kaz</div>
+    <div class="dd-entry-summary">Microsoft open-sourced SkillOpt: a base model runs a task, an optimizer rewrites the skill instructions from results, successful paths are separated from failures, and edits that don't beat the benchmark are auto-rejected. Claimed to beat hand-written prompts and TextGrad and to transfer across models.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbjLy_tormR/" target="_blank" rel="noopener"><img src="../thumb/DbjLy_tormR.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbjLy_tormR/" target="_blank" rel="noopener" class="dd-entry-title">Bilevel autoresearch loops — an outer coach loop rewrites the search</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @raycfu</div>
+    <div class="dd-entry-summary">Builds on Karpathy's autoresearch loop (try change, test, keep or revert). An outer coach loop watches the inner worker and rewrites its search playbook so it stops repeating the same ideas; claimed ~5x better on Karpathy's benchmark with the same models.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DeNnxp5v_Fu/" target="_blank" rel="noopener"><img src="../thumb/DeNnxp5v_Fu.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DeNnxp5v_Fu/" target="_blank" rel="noopener" class="dd-entry-title">Self-improving trading agent — critic loop that rewrites losing strategies</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> technique · @raycfu</div>
+    <div class="dd-entry-summary">Workflow pitch: describe a strategy, an agent codes it and wires the broker API, runs a five-year backtest, and a critic agent dissects losing trades and rewrites entry/exit logic before rerunning. Hard-coded stop-loss and drawdown limits sit outside the agent's reach, and failed strategies go to a local DB the agent learns from. Guide is comment-gated.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DTZyMVPiHM5/" target="_blank" rel="noopener"><img src="../thumb/DTZyMVPiHM5.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DTZyMVPiHM5/" target="_blank" rel="noopener" class="dd-entry-title">10 non-cliche quant research projects — Bayesian BL, RL factors, PBO</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> tutorial · @</div>
+    <div class="dd-entry-summary">@heidioftheeast's 10 quant project ideas beyond Black-Scholes: probability of backtest overfitting, Bayesian Black-Litterman, survival-based risk, RL factor portfolios, Sharpe statistics, convex portfolio trading, TS vs XS factors, numeraire-invariant hedging, exotic option model risk, regime-switching factors.</div>
+    <a href="../guides/quant-project-ideas-list.html" class="dd-entry-guide">Read Guide →</a>
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DT8BX8vEzHm/" target="_blank" rel="noopener"><img src="../thumb/DT8BX8vEzHm.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DT8BX8vEzHm/" target="_blank" rel="noopener" class="dd-entry-title">Monte Carlo — 25,000 shuffled BTC returns to separate edge from luck</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> technique · @quant.dhawan</div>
+    <div class="dd-entry-summary">Runs 25,000 Monte Carlo simulations by shuffling daily BTC-USD returns to test whether a strategy's performance is genuine edge or statistical luck. One backtest isn't enough — real quants demand statistical significance.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DWjr0x3Deom/" target="_blank" rel="noopener"><img src="../thumb/DWjr0x3Deom.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DWjr0x3Deom/" target="_blank" rel="noopener" class="dd-entry-title">Crypto dollar-neutral reversal — naive long/short, eaten by fees</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> technique · @avi_mukesh</div>
+    <div class="dd-entry-summary">@avi_mukesh: simple reversal strategy on crypto (short if up, long if down), dollar-neutral scaling. Looks good without costs, transaction fees kill it. Honest starter example for learning backtesting caveats.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DUx9t_FE0CY/" target="_blank" rel="noopener"><img src="../thumb/DUx9t_FE0CY.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DUx9t_FE0CY/" target="_blank" rel="noopener" class="dd-entry-title">Wasserstein Distance — measuring the backtest-to-live reality gap</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> technique · @quant.dhawan</div>
+    <div class="dd-entry-summary">Uses Wasserstein Distance and Sinkhorn Divergence to mathematically measure drift between backtest distributions (blue) and live market conditions (orange). Detects distribution shift that kills more strategies than bad fees.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DeW79CbCkO3/" target="_blank" rel="noopener"><img src="../thumb/DeW79CbCkO3.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DeW79CbCkO3/" target="_blank" rel="noopener" class="dd-entry-title">Claudex skill — Claude and GPT-6 Astra cross-audit plan and build</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> skill · @nateherkai</div>
+    <div class="dd-entry-summary">A free skill that splits work between two frontier models: Claude writes the plan and GPT-6 Astra audits it until it holds, then roles swap so Astra builds and Claude audits. Runs inside Claude or Codex as a reusable skill.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dcztzw6PyP4/" target="_blank" rel="noopener"><img src="../thumb/Dcztzw6PyP4.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dcztzw6PyP4/" target="_blank" rel="noopener" class="dd-entry-title">Claude multi-agent trading team — research, market, backtest and risk agents</a>
+    <div class="dd-entry-meta"><span class="tier-badge tC">C</span> repo · @raycfu</div>
+    <div class="dd-entry-summary">Pitch for an unnamed free repo that spins Claude into a four-agent trading team: a research agent cleans market data, a market agent writes strategy logic, a test agent backtests for win rate and max drawdown, and a risk agent audits for self-deception. The repo is never named; the link is gated behind a comment.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dc_qXENuDi4/" target="_blank" rel="noopener"><img src="../thumb/Dc_qXENuDi4.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dc_qXENuDi4/" target="_blank" rel="noopener" class="dd-entry-title">GPT-6 Astra stock-trading challenge — scheduled Codex tasks in one thread</a>
+    <div class="dd-entry-meta"><span class="tier-badge tC">C</span> demo · @nateherkai</div>
+    <div class="dd-entry-summary">Creator gives GPT-6 Astra $10k to trade, rerunning an earlier Claude experiment that reportedly beat the S&amp;P by 8% in a month. Six scheduled Codex tasks per day read news, open, review and manage positions, all posting into one shared thread for visibility. No results yet; setup doc gated behind a comment.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbYp-bgTBBA/" target="_blank" rel="noopener"><img src="../thumb/DbYp-bgTBBA.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbYp-bgTBBA/" target="_blank" rel="noopener" class="dd-entry-title">Charlie Munger's inversion — solve problems by asking how to cause failure</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @charliemungerhub</div>
+    <div class="dd-entry-summary">Munger explains inversion with his WWII meteorologist job: ask how you'd kill pilots (icing, running out of fuel), then avoid those. Same move for any problem: list what would hurt it most and steer clear.</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-10-21T18:20:58.214238 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+</div>
+</main>
+</body></html>

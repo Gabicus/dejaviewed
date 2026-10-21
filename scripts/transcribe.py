@@ -113,10 +113,13 @@ def _convert_to_wav(audio: Path) -> Path | None:
             return None
     try:
         subprocess.run([ffmpeg, "-i", str(audio), "-ar", "16000", "-ac", "1", "-y", str(wav)],
-                       capture_output=True, timeout=60)
+                       capture_output=True, timeout=600)
         return wav if wav.exists() else None
     except Exception:
         return None
+
+
+_MODEL_CACHE: dict = {}
 
 
 def transcribe_local(audio: Path, model_size: str = "small") -> str | None:
@@ -129,7 +132,15 @@ def transcribe_local(audio: Path, model_size: str = "small") -> str | None:
         try:
             from faster_whisper import WhisperModel  # type: ignore
             print(f"[transcribe] faster-whisper({model_size}) on {audio.name}")
-            model = WhisperModel(model_size, device="cpu", compute_type="int8")
+            model = _MODEL_CACHE.get(model_size)
+            if model is None:
+                try:
+                    model = WhisperModel(model_size, device="cuda", compute_type="int8_float32")
+                    print("[transcribe] using CUDA int8_float32", file=sys.stderr)
+                except Exception as e:
+                    print(f"[transcribe] CUDA unavailable ({e}); falling back to CPU int8", file=sys.stderr)
+                    model = WhisperModel(model_size, device="cpu", compute_type="int8")
+                _MODEL_CACHE[model_size] = model
             segments, _info = model.transcribe(str(audio), vad_filter=True)
             return " ".join(s.text.strip() for s in segments).strip()
         except Exception as e:
@@ -165,7 +176,15 @@ def transcribe_one(row: dict, model_size: str, out_dir: Path) -> tuple[dict, str
     if not url:
         return row, "skipped-no-video"
 
-    audio = download_audio(url, out_dir)
+    # Prefer a locally downloaded media file (data/media/<post_id>.mp4) — avoids
+    # yt-dlp + browser-cookie dependency entirely.
+    audio = None
+    pid = row.get("post_id") or ""
+    local = ROOT / "data" / "media" / f"{pid}.mp4"
+    if pid and local.exists():
+        audio = local
+    else:
+        audio = download_audio(url, out_dir)
     if not audio:
         return row, "failed"
 
@@ -187,6 +206,7 @@ def main(argv=None):
     p.add_argument("--limit", type=int, default=0, help="cap number of entries")
     p.add_argument("--model", default="small", help="whisper model size (tiny/base/small/medium/large)")
     p.add_argument("--force", action="store_true", help="overwrite existing transcripts")
+    p.add_argument("--local-only", action="store_true", help="only entries with data/media/<post_id>.mp4 present")
     args = p.parse_args(argv)
 
     if not _has_ffmpeg():
@@ -214,6 +234,8 @@ def main(argv=None):
     else:
         print("[transcribe] specify --id <id> or --all", file=sys.stderr); return 1
 
+    if args.local_only:
+        targets = [r for r in targets if (ROOT / "data" / "media" / f"{r.get('post_id','')}.mp4").exists()]
     if args.limit:
         targets = targets[: args.limit]
 

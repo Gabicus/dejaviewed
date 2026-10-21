@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Red-Team Your Own Agent — prompt-injection CI from the jailbreak corpus — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">emergent_capability</div>
+  <h1>Red-Team Your Own Agent — prompt-injection CI from the jailbreak corpus</h1>
+  <div class="thesis">The catalog holds both halves of a loop nobody has closed. On one side sit offense corpora and autonomous attackers — L1B3RT4S still landing on GPT-5, an agent that goes from one sentence to a verified exploit, scanners hunting exposed AI servers. On the other sit the pipes that pour untrusted text into your agent — Agent Reach reading Reddit and X, 90k-skill hubs, one-command skill installers. Point the attacker inward and you get prompt-injection CI — every skill install and harness change gets replayed against a jailbreak-and-hijack suite before it touches your keys.</div>
+  <div class="tools"><span class='tool-pill'>Agent Reach</span> · <span class='tool-pill'>Anthropic</span> · <span class='tool-pill'>ChatGPT</span> · <span class='tool-pill'>Claude</span> · <span class='tool-pill'>Claude Code</span> · <span class='tool-pill'>GPT-5</span> · <span class='tool-pill'>GitHub Actions</span> · <span class='tool-pill'>Grok Imagine</span> · <span class='tool-pill'>Hermes Skills Hub</span> · <span class='tool-pill'>Kimi</span> · <span class='tool-pill'>Llama</span> · <span class='tool-pill'>Muse Code</span> · <span class='tool-pill'>OpenAI</span> · <span class='tool-pill'>Pocket TTS</span> · <span class='tool-pill'>Vercel</span> · <span class='tool-pill'>elder-plinius/L1B3RT4S</span> · <span class='tool-pill'>kimi-k3-in-c</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Build a 50-case suite this week — 20 L1B3RT4S-style jailbreaks, 20 Noma-style 'just ask for the data' hijacks planted in fake Reddit/X posts fetched via Agent Reach, 10 sponsored-option nudges — and run it against your harness with a canary secret in the environment, Wire it as a pre-install hook: any new skill from find-skills or a skills hub gets diffed, then the suite reruns with that skill loaded; fail the install if the canary leaks or a tool call goes outside the allowlist, Add the sandboxing layer from the portfolio-projects post — per-skill capability manifests (network, filesystem, secrets) — and measure how many suite cases each manifest blocks, Falsifier: if a plain allowlist on outbound tool calls blocks ≥95% of the suite with no skill-level testing, the CI layer is overkill and a static policy file is the whole answer</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> An agent harness with hooks (Claude Code or similar), A throwaway canary secret and a disposable test account, Test only harnesses, accounts and keys you own</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (11)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DOPqBfyDMHG/" target="_blank" rel="noopener"><img src="../thumb/DOPqBfyDMHG.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DOPqBfyDMHG/" target="_blank" rel="noopener" class="dd-entry-title">L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> repo · @_dbrogle</div>
+    <div class="dd-entry-summary">@_dbrogle tests elder-plinius's L1B3RT4S jailbreak repo (github.com/elder-plinius/L1B3RT4S) against GPT-5 and it still works despite tighter safety. Worth revisiting for red-team prompt libraries.</div>
+    <a href="../guides/l1b3rt4s-jailbreak-repo.html" class="dd-entry-guide">Read Guide →</a>
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DdKKSaANJm7/" target="_blank" rel="noopener"><img src="../thumb/DdKKSaANJm7.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DdKKSaANJm7/" target="_blank" rel="noopener" class="dd-entry-title">Workflow hijacking — Noma research on AI automations with no authorization</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> news · @mattjayy</div>
+    <div class="dd-entry-summary">Noma Labs research shows AI workflows (email auto-responders, GitHub Actions, Google email flows) leak data when an attacker simply asks, because nothing checks whether the requester is authorized. Not prompt injection, the model is doing what it's told. The fix is bringing identity and authorization into agent workflows.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DaGEbyAAHOo/" target="_blank" rel="noopener"><img src="../thumb/DaGEbyAAHOo.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DaGEbyAAHOo/" target="_blank" rel="noopener" class="dd-entry-title">Autonomous AI pentest agent — plain-English prompt to verified exploit</a>
+    <div class="dd-entry-meta"><span class="tier-badge tC">C</span> repo · @evenedsteven</div>
+    <div class="dd-entry-summary">An unnamed ~600-star GitHub repo where you describe a target in one sentence and an agent finds a vulnerability, runs the exploit and writes the report, across 13 AI providers. Every claimed finding is verified against real tool output. Authorized targets only.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dd6izTYiln1/" target="_blank" rel="noopener"><img src="../thumb/Dd6izTYiln1.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dd6izTYiln1/" target="_blank" rel="noopener" class="dd-entry-title">Agent Reach — open-source skill letting agents read Reddit and X</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @itstundeanthony</div>
+    <div class="dd-entry-summary">An open-source repo installed as a Claude skill that gives agents access to 13 platforms without API costs. The demo shows Claude failing to fetch a Reddit post and an X thread, then succeeding with comments once Agent Reach is installed.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Db0vxQexdJI/" target="_blank" rel="noopener"><img src="../thumb/Db0vxQexdJI.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Db0vxQexdJI/" target="_blank" rel="noopener" class="dd-entry-title">AI weekly roundup — Pocket TTS, Hermes Skills Hub, Kimi K3 in pure C</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> news · @drcintas</div>
+    <div class="dd-entry-summary">Six releases: Kyutai Pocket TTS (100M-param local voice cloning, 6x real-time), Nous Research Hermes Skills Hub (90k agent skills), Grok Imagine Image 2.0 regional editing, Meta Muse Code terminal agent with parallel worktrees, Qwen3.8-Max (2.4T MoE, 1M context), and kimi-k3-in-c, a 176KB C99 engine streaming experts from disk to run a 2T model with no GPU.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DXcWjL0jLsd/" target="_blank" rel="noopener"><img src="../thumb/DXcWjL0jLsd.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DXcWjL0jLsd/" target="_blank" rel="noopener" class="dd-entry-title">Anthropic — Se llama find-skills (de vercel-labs). La instalas, le preguntas en lenguaje...</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @pabloinpublic</div>
+    <div class="dd-entry-summary">Un dev japonés encontró el truco definitivo de Claude Code antes que nadie. — @pabloinpublic; uses Anthropic, Claude, Claude Code.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYX_M8yx6r4/" target="_blank" rel="noopener"><img src="../thumb/DYX_M8yx6r4.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYX_M8yx6r4/" target="_blank" rel="noopener" class="dd-entry-title">OpenAI — you can literally search for them</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> tool · @deonnahodges</div>
+    <div class="dd-entry-summary">there are 8,000 exposed openai api keys on github right now — @deonnahodges; uses OpenAI; demonstrates API integration.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DX4qpEHxY7g/" target="_blank" rel="noopener"><img src="../thumb/DX4qpEHxY7g.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DX4qpEHxY7g/" target="_blank" rel="noopener" class="dd-entry-title">Claude — thesavedsalesman</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @eddynthings</div>
+    <div class="dd-entry-summary">Time to lock in! You are keeping your api secrets in your ai chat history and you are going to be your own worst enem... — @eddynthings; uses Claude; demonstrates API integration.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dcy39JTRctd/" target="_blank" rel="noopener"><img src="../thumb/Dcy39JTRctd.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dcy39JTRctd/" target="_blank" rel="noopener" class="dd-entry-title">Three cybersecurity portfolio projects — fuzzing, agent sandboxing, YARA scanning</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> resource · @carterperez.dev</div>
+    <div class="dd-entry-summary">Portfolio ideas that signal real skill: a fuzzer that hammers C libraries with malformed files to find memory-corruption crashes; an AI agent guard that assumes prompt injection will succeed and limits what the agent may do; and a static binary scanner that matches detection rules and explains each hit. Source links gated behind a comment.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DcQ0dv-hG23/" target="_blank" rel="noopener"><img src="../thumb/DcQ0dv-hG23.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DcQ0dv-hG23/" target="_blank" rel="noopener" class="dd-entry-title">Three OSINT tools — face-matched username search, exposed agents, world map</a>
+    <div class="dd-entry-meta"><span class="tier-badge tC">C</span> resource · @carterperez.dev</div>
+    <div class="dd-entry-summary">Teaser for three OSINT tools: a username search across 840 sites that also matches profile pictures to find accounts under other names, a scanner for AI agents companies left exposed online (and whether they touch company data), and a browser-based global intelligence live map you can self-host. Names gated behind a comment.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DYN0298n2H5/" target="_blank" rel="noopener"><img src="../thumb/DYN0298n2H5.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DYN0298n2H5/" target="_blank" rel="noopener" class="dd-entry-title">Princeton sponsored-ads study — 18 of 23 AI assistants push the paid option</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> news · @forgoodcode</div>
+    <div class="dd-entry-summary">Carousel on a Princeton study that gave 23 models a sponsored option and a cheaper better one across flights, loans and shopping. 18 of 23 favored the sponsored pick, GPT-5.1 surfaced it 94% of the time, and a 'serve the customer only' system prompt barely moved it. Note the creator's caveat: it measures susceptibility in a hypothetical deployment, not real paid placement.</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-10-21T18:20:58.213282 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+</div>
+</main>
+</body></html>

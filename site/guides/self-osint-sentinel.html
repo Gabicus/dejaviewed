@@ -1,0 +1,211 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dox Yourself First — a scheduled agent that runs the OSINT kit on you · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-self-osint-sentinel.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Dox Yourself First — a scheduled agent that runs the OSINT kit on you →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Dox Yourself First — a scheduled agent that runs the OSINT kit on you
+
+**Insight class:** Life Leverage · **Difficulty:** Easy · **Quality:** 4/5
+**Connected entries:** 10 · **Tools:** Alien's Eye, Claude, Claude Code, Flock Safety, GeoSpy, Meta AI, Sherlock, uv
+
+---
+
+## Thesis
+
+The catalog saved a full attacker toolkit — Sherlock and Alien's Eye for usernames, email-to-account mappers, deleted-Reddit recovery, GeoSpy geolocating photos from plants and shadows — next to the defense: a de-dox checklist written after Meta AI inferred a creator's home from old posts, a data-broker opt-out game, the Flock plate-search transparency site. An agent with a weekly cron can run the offense against you and file the defense automatically. The same tools that took a security team now fit in one scheduled skill.
+
+---
+
+## Why it matters
+
+Anyone posting publicly — creators, small founders, people leaving bad situations — is now one multimodal model away from being located. A self-run sentinel turns a one-time checklist into continuous monitoring, and the opt-out drafting is exactly the tedious work agents are good at.
+
+---
+
+## The evidence — connected entries
+
+### Stay-secure privacy checklist — de-dox yourself from AI and data brokers
+**Creator:** [@lizthedeveloper](https://instagram.com/lizthedeveloper) · **Tier:** S
+**Tools:** Meta AI
+
+> Defense spec — the de-dox checklist the agent automates
+
+After Meta AI pieced together a creator's home location from old posts, this free browser-only checklist walks you through mapping your accounts, auditing what's public, opting out of data brokers and ad trackers, credit freezes, recovery codes, tracking who holds your ID, and identity-theft recovery.
+
+[View original post](https://www.instagram.com/p/Dc9172rFZuS/)
+### Sherlock — install and run the top username OSINT tool with uv
+**Creator:** [@carterperez.dev](https://instagram.com/carterperez.dev) · **Tier:** B
+**Tools:** Sherlock, uv
+
+> Probe — username enumeration across hundreds of sites
+
+Install Sherlock in three commands: create and activate a venv with uv, then uv pip install sherlock-project; run sherlock followed by one or more usernames to find matching accounts across the web.
+
+[View original post](https://www.instagram.com/p/Db3ZNRcRhzW/)
+### Alien's Eye — username OSINT search across social platforms
+**Creator:** [@declan.middleton](https://instagram.com/declan.middleton) · **Tier:** B
+**Tools:** Alien's Eye, Sherlock
+
+> Probe — second username engine to cross-check coverage
+
+Alien's Eye searches a username across many social and web platforms (even Khan Academy, Google Classroom) and lists matching profile links, pitched as better than Sherlock. Use it on your own handles to find forgotten accounts.
+
+[View original post](https://www.instagram.com/p/Dce2O2Did0E/)
+### Three OSINT tools — email account discovery, onion crawler, lookup suite
+**Creator:** [@carterperez.dev](https://instagram.com/carterperez.dev) · **Tier:** C
+**Tools:** Sherlock
+
+> Probe — email-to-account and breach mapping
+
+Teaser for three OSINT tools: one maps an email to every account it signed up for with name, photo and breach data; one crawls every site linked from an onion address into a searchable file; one bundles 20 terminal lookups (phone, Wi-Fi location, crypto wallet tracing, Sherlock). Names gated.
+
+[View original post](https://www.instagram.com/p/Db9ExYzq_3e/)
+### Reddit OSINT tool — recover deleted posts and comments by username
+**Creator:** [@declan.middleton](https://instagram.com/declan.middleton) · **Tier:** B
+
+> Probe — deleted posts still recoverable from archives
+
+A Reddit OSINT search tool surfaces posts and comments tied to a username, including ones deleted years ago, by drawing on archived data. Demo is light and ends with a community pitch. Use responsibly and lawfully.
+
+[View original post](https://www.instagram.com/p/DdFecuaD-ql/)
+### GeoSpy.ai — geolocate any photo from buildings, plants, shadows
+**Creator:** [@innovation](https://instagram.com/innovation) · **Tier:** A
+**Tools:** GeoSpy
+
+> Probe — photo geolocation run against your own recent posts before an attacker does
+
+GeoSpy.ai infers photo location from architectural, botanical and lighting cues against a geotagged image database. Link: https://geospy.ai/ . OSINT/geolocation tool worth bookmarking.
+
+[View original post](https://www.instagram.com/p/DNS0YG0NrLt/)
+### Data reclamation game — gamifying opt-outs from data brokers
+**Creator:** [@lizthedeveloper](https://instagram.com/lizthedeveloper) · **Tier:** C
+
+> Remediation — data-broker opt-outs as a repeatable task list
+
+A developer built a game to make reclaiming your personal data from corporations and data brokers as engaging as signing up was, countering dark-pattern cancellation flows. Mostly framing, few specifics on which opt-outs it covers.
+
+[View original post](https://www.instagram.com/p/DdKLjDHlG0c/)
+### Flock plate-search transparency site — see which police searched you and why
+**Creator:** [@carterperez.dev](https://instagram.com/carterperez.dev) · **Tier:** B
+**Tools:** Flock Safety
+
+> Audit — checking which agencies searched your plate
+
+A public website lets you enter a license plate and see which police departments ran Flock ALPR searches on it, browse a department's full search history, and read stated reasons (protest, theft, speeding). Flock reportedly sought a takedown that Cloudflare refused. Link gated behind a comment.
+
+[View original post](https://www.instagram.com/p/Db-9QiOxxPe/)
+### Anti-surveillance OPSEC tools — plate-reader confusion and photo poisoning
+**Creator:** [@carterperez.dev](https://instagram.com/carterperez.dev) · **Tier:** B
+
+> Countermeasure — image cloaking and plate-reader confusion for what you must keep public
+
+Three privacy tools: license-plate marks that make Flock and ALPR cameras misread your plate, an image cloaking tool that poisons photos against face models and deepfakes, and a list of 78 ranked ways to evade AI surveillance. Links are comment-gated. Note that altering plates is illegal in many places.
+
+[View original post](https://www.instagram.com/p/Dd84xuVhSuZ/)
+### Systems that prompt your AI — DB-driven loops with skills and cron
+**Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** B
+**Tools:** Claude, Claude Code
+
+> Scheduler — DB-and-cron loop pattern so the audit reruns weekly with a diff
+
+Riffs on Boris Cherny's advice to build loops that prompt Claude instead of prompting it yourself: connect the AI to a database with work and issues tables, use cron jobs to detect pending changes, and run skills for scoping, implementing, testing and repeating until the human goal is met. Counterpoint: for go-to-market work the human is still the bottleneck and must stay in the loop.
+
+[View original post](https://www.instagram.com/p/DZnY2vaxWRF/)
+
+---
+
+## Action sketch — how to implement this
+
+- Write one skill that runs Sherlock (via uv) and an email-enumeration tool against your own handles and addresses, storing results in a table keyed by date
+- Add a photo pass: send your last 20 public images to a geolocation model and flag any that resolve within a few km of home
+- Schedule it weekly, diff against last run, and have the agent draft data-broker opt-out requests from the checklist for each new hit
+- Falsifier: if three consecutive weekly runs surface nothing new and the opt-outs stick, a quarterly manual checklist is enough and the agent is overhead
+
+---
+
+## Prerequisites
+
+- Only run against identities you own
+- A machine that can run Python CLIs on a schedule
+- Patience for opt-out forms that need a human signature
+
+---
+
+## Key tools and resources
+
+- **Alien's Eye**
+- **Claude**
+- **Claude Code**
+- **Flock Safety**
+- **GeoSpy**
+- **Meta AI**
+- **Sherlock**
+- **uv**
+
+## Creators to follow
+
+- [@angus.sewell](https://instagram.com/angus.sewell)
+- [@carterperez.dev](https://instagram.com/carterperez.dev)
+- [@declan.middleton](https://instagram.com/declan.middleton)
+- [@innovation](https://instagram.com/innovation)
+- [@lizthedeveloper](https://instagram.com/lizthedeveloper)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../index.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

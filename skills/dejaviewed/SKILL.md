@@ -79,32 +79,34 @@ The user provides one or more saved collection URLs. Claude does everything else
 ### One-Call Rebuild (end-to-end)
 
 ```bash
-scripts/rebuild.sh \
-  --collections mycollection1=<url> mycollection2=<url> mycollection3=<url>
+scripts/rebuild.sh --collections ai8=2012637673459860 creative=18530277145076636   # name=<collection_id>
 ```
 
 Skip phases with `--skip <phase>[,<phase>...]`. Phases (in order):
 
 | Phase | Script | What it does |
 |-------|--------|--------------|
-| `scrape` | `scripts/ab_extract_cumulative.py` | Extract URLs from saved collections (cumulative scroll) |
-| `captions` | `scripts/ab_scrape_posts.py` | Scrape captions/metadata from posts via agent-browser |
-| `process` | `scripts/process_raw.py` | Convert raw scraped JSON into catalog entries |
-| `migrate` | `scripts/cms.py migrate` | Seed/update parquet from catalog.json |
-| `enrich` | `scripts/enrich_entries.py --sweep` | Classify, tier, extract metadata, generate titles |
-| `transcribe` | `scripts/transcribe.py --all` | Whisper transcription for all video entries |
-| `dives` | `scripts/deep_dives.py` | Auto-detect + merge curated deep dive clusters |
-| `deeper` | `scripts/deeper_dives.py --all-curated` | Generate narrative deeper dive pages |
-| `guides` | Guide page generator | Full guide pages for all curated dives |
-| `thumbs` | `scripts/ab_download_thumbs.py` | Download thumbnails via agent-browser og:image |
-| `digest` | `scripts/digest.py` | Cluster + rank into summaries + recommendations |
-| `rebuild` | `scripts/cms.py rebuild` | Recompute crosslinks + refresh exports |
-| `context` | `build_context.py` | Agent context layer (context.md, llms.txt) |
-| `api` | `scripts/build_api.py` | API JSON files + per-entry pages + sitemap |
-| `render` | `scripts/render_template.py` | Refresh collection page HTML |
-| `js` | `scripts/catalog_js.py` | JS wrappers for file:// previews |
+| `pull` | `scripts/ig_collection_api.py` | Collection-feed API → `data/<name>_api.json` (captions, creator, date, media URLs) |
+| `media` | `scripts/ig_download_media.py` | Thumbs → `site/thumb/`, videos + carousel slides → `data/media/` (URLs expire in hours) |
+| `ingest` | `scripts/ingest_api.py` | Upsert rows with caption/creator/date/media_type already filled; dedupe by shortcode |
+| `transcribe` | `scripts/transcribe.py --all --local-only` | Whisper from local mp4 (GPU int8_float32 → CPU fallback) |
+| `sync` | `scripts/cms.py rebuild` | parquet → catalog.json — MUST run before enrich (lesson #50) |
+| `enrich` | `scripts/enrich_entries.py --sweep` | Heuristic tools/techniques/domains/tier/title pass |
+| `llm` | `scripts/llm_enrich_batches.py export/merge` | Batches for enrichment agents (title/summary/tier/tags from caption+transcript+OCR); merge back |
+| `gate` | `scripts/quality_gate.py` | Hard gates: 0 bad titles, S ≤15%, every video transcribed or reason logged, every entry thumbed |
+| `curate` | `scripts/curation_export.py` | Digest for the researcher curation pass (Phase 5c) |
+| `dives` | `scripts/deep_dives.py` | Auto-detect + merge curated dives |
+| `deeper` | `scripts/deeper_dives.py --all-curated` | Narrative deeper-dive pages |
+| `guides` | `scripts/build_guides.py` | Full guide pages + `guides/index.html` |
+| `digest` | `scripts/digest.py` | summaries.json / recommendations.json |
+| `rebuild` | `scripts/cms.py rebuild` | Crosslinks + exports |
+| `api` | `scripts/build_api.py` | `site/api/*.json`, per-entry pages, sitemap.xml |
+| `context` | `build_context.py` | context.md, llms.txt, llms-full.txt, ai-plugin.json (counts computed live) |
+| `render` | `scripts/render_template.py` | Collection page HTML |
+| `js` | `scripts/catalog_js.py` | `window.__CATALOG` wrappers for file:// previews |
 
-Missing scripts are skipped with a warning — the pipeline degrades gracefully.
+`llm` and `curate` stop the script with instructions — they need agents in the loop. Legacy phases
+(`scrape`/`captions`/`process`/`migrate`/`thumbs`) still exist as scripts for the v2 fallback path.
 
 **The user should NEVER need to:**
 - Open DevTools or run console scripts
@@ -246,7 +248,80 @@ mkdir -p <project>/data <project>/guides <project>/site/thumb <project>/site/gui
 
 ---
 
-## Phase 0: URL Extraction via agent-browser
+
+## Phase 0 (v3, preferred): Collection-Feed API via CDP-attached Chrome
+
+**Use this instead of scroll-scraping.** Found 2026-10-21: scroll extraction stalls at 12 posts on
+small collections and silently loses posts on large ones; Instagram's internal collection-feed API
+returns everything, paginated, with caption, creator, date, media type, thumbnail URL and video URL
+in one call — no per-post caption scrape needed.
+
+### Why agent-browser's own Chromium can't see your login (Chrome ≥ 136)
+agent-browser launches its bundled Chromium with `--password-store=basic --use-mock-keychain`, so it
+cannot decrypt cookies from a real Chrome profile (KDE wallet / GNOME keyring encrypted). `--profile
+Default` therefore shows a logged-out Instagram even though `sessionid` exists. Fix: drive the REAL
+Chrome over CDP.
+
+```bash
+# 1. Quit Chrome completely (pgrep -c chrome must be 0)
+# 2. Copy the profile essentials to a scratch user-data-dir (Chrome ≥136 refuses --remote-debugging-port on the default dir)
+D=$SCRATCH/chrome-cdp; mkdir -p $D/Default; cp ~/.config/google-chrome/"Local State" $D/
+for f in Cookies Network Preferences "Secure Preferences" "Login Data" "Web Data"; do cp -r ~/.config/google-chrome/Default/"$f" $D/Default/; done
+# 3. Launch real Chrome with a debug port (setsid so the tool shell can return)
+setsid nohup /opt/google/chrome/chrome --remote-debugging-port=9222 --user-data-dir=$D --no-first-run "https://www.instagram.com/<user>/saved/" >/dev/null 2>&1 < /dev/null & disown
+# 4. Attach
+npx agent-browser connect 9222
+npx agent-browser get text "main"     # must show "Edit profile" + collection names, not "Log In"
+```
+If the saved page shows "Log In": log into Instagram in regular Chrome first, quit Chrome, redo steps 2-4.
+
+### Discover collections + ids
+```bash
+npx agent-browser eval 'JSON.stringify([...document.querySelectorAll("a[href*=\"/saved/\"]")].map(a=>a.getAttribute("href")).filter(h=>!h.includes("?hl=")))'
+# -> "/<user>/saved/<name>/<collection_id>/"
+```
+
+### Pull every post in a collection (paginated API, run from page context)
+```bash
+python3 scripts/ig_collection_api.py ai8 2012637673459860 creative 18530277145076636 ...
+# -> data/<name>_api.json  {items:[{code, pk, taken_at, media_type(1 img|2 video|8 carousel), creator,
+#    caption, like/comment/play counts, video_duration, thumb_url, video_url, carousel:[{img,vid}], ...}]}
+```
+Endpoint: `/api/v1/feed/collection/<id>/posts/?max_id=<next_max_id>` with headers
+`x-ig-app-id: 936619743392459`, `x-csrftoken` from cookie. 12 items/page.
+
+### Download media IMMEDIATELY (signed CDN URLs expire in hours)
+thumbs → `site/thumb/<code>.jpg`; videos → `data/media/<code>.mp4` (gitignored); carousel slides →
+`data/media/<code>_slide<N>.jpg|mp4`. Plain `requests` with a browser UA + instagram Referer works.
+
+### Ingest with fields already populated
+```bash
+python3 scripts/ingest_api.py data/<name>_api.json --collection <name>
+# or a merged list with per-item "collection" keys
+```
+Dedupe is by shortcode: new IG URLs look like `/<creator>/reel/<code>/`; parquet stores `/p/<code>/`.
+Same post saved in two collections → one row, `collections` merged.
+
+### Transcribe from local files on the GPU
+`transcribe.py` now prefers `data/media/<post_id>.mp4` (no yt-dlp, no cookies), caches the model,
+and tries CUDA `int8_float32` (fp16 is NOT supported on Pascal cards like GTX 1050) before CPU int8.
+`--local-only` skips entries whose mp4 isn't downloaded yet. `medium` model ≈ 5× realtime on a 1050.
+Run it detached (`setsid nohup ... &`) — it saves to parquet after every file.
+
+**Parquet write race:** transcribe.py holds its own row list and writes the full set after each file.
+Do NOT run anything else that writes `entries.parquet` (ingest, enrich, media_type fixes) while it runs —
+the next transcribe save will clobber your change. Queue those edits until the loop ends.
+
+### Old posts that are no longer in any collection
+Open the post page, read `instagram://media?id=<pk>` from the HTML, then
+`/api/v1/media/<pk>/info/` gives video_url / carousel_media. Posts returning `media_type: 8` that the
+catalog tagged "video" are carousels — fix `media_type` and OCR the slides instead of Whisper.
+
+### Carousel / image posts: read the slides
+No audio → no Whisper. Download slides, then have a vision-capable agent Read each image and write
+verbatim text to `data/slides_ocr.json` (`{code: text}`); `llm_enrich_batches.py export` picks it up.
+
+## Phase 0 (v2, fallback): URL Extraction via agent-browser
 
 **THIS IS THE CRITICAL AUTOMATION STEP. NEVER SKIP IT. NEVER ASK THE USER TO DO THIS MANUALLY.**
 
@@ -516,6 +591,37 @@ HTML shell: shared.css + shared.js + inline guide styles
 - Guide index page at `site/guides/index.html` lists all guides with filters
 - Nav link "Guides" in shared.js DV.nav links to `guides/`
 - Index.html deep dive detail panel shows "Full Guide →" for curated dives
+
+
+### Phase 5c: Researcher Curation Pass (REQUIRED before every publish)
+
+Auto-detected dives cluster by shared tags. That is filing, not insight. Before publishing, run a
+**researcher pass** that reads across *every* entry and looks for novel ideas that live *between*
+the technologies — combinations of captured capabilities that let one person create or pioneer
+something not possible (or not obvious) before.
+
+1. Export a compact digest of the whole catalog + the existing curated dives:
+   ```bash
+   python3 scripts/curation_export.py        # -> data/curation/catalog_digest.json, existing_dives.json
+   ```
+2. Spawn 2–4 researcher agents (strong model), each with a different **lens** and the same spec
+   `data/curation/RESEARCHER_SPEC.md` (ships with the skill as `references/RESEARCHER_SPEC.md`).
+   Suggested lenses: *creative fusion* (art × code × music × 3D), *agentic leverage* (agents ×
+   harnesses × local models), *capital & markets* (finance × AI × data), *physical world*
+   (hardware × robotics × fabrication × AI), *knowledge systems* (second brain × skills × memory).
+   Each returns `data/curation/proposals_<lens>.json` with 4–7 proposals in the manual_dives schema
+   plus a `novelty` field and a falsifier in the action sketch.
+3. **Review as the lead** (adversarial): drop proposals that are categories in disguise, merge
+   overlaps, verify every entry_id exists, demand cross-collection reach, cap at ~8 new dives per
+   pass. Append survivors to `data/manual_dives.json` (`pinned: true`, `suggested_by: "curated"`).
+4. Regenerate everything that renders dives: `deep_dives.py` → `deeper_dives.py --all-curated` →
+   `build_guides.py` → `cms.py rebuild` → `build_api.py` (sitemap) → `build_context.py`. Confirm the
+   new dives appear on index.html cards, guides/index.html, site/deeper/, api/deep_dives.json and
+   sitemap.xml before pushing.
+
+Why: a Jul-2026 review found the auto dives were tag buckets ("art", "agents") while the real value in
+the saves was in intersections nobody had written down. Victor: "pretend you're an advanced researcher
+looking across the spectrum… for novel ideas that exist between the technologies."
 
 ### 6 Insight Classes
 
@@ -941,6 +1047,14 @@ No build step required — everything is pre-rendered static files.
 44. **Keep instance facts out of SKILL.md.** Entry counts, coverage stats, domains belong in `references/site-deployment.md` (Operator Mode overlay) — SKILL.md text goes stale and confuses public users.
 
 ---
+
+45. **Scroll-scraping saved collections is lossy.** Stalls at 12 on small collections, drops posts on big ones. Use the collection-feed API (Phase 0 v3). Reconcile: API count vs parquet count per collection.
+46. **agent-browser's bundled Chromium can't decrypt real Chrome cookies** (`--password-store=basic`). Attach to real Chrome via CDP on a scratch user-data-dir copy instead.
+47. **`pkill -f` / `pgrep -f` in a tool shell kills the tool shell** when the pattern appears anywhere in the same command. Put restart/status logic in helper scripts and invoke them by path.
+48. **Don't write parquet while transcribe.py runs.** It rewrites the whole row set after each file and clobbers concurrent edits.
+49. **"video" in media_type can be a carousel.** Media-info API `media_type: 8` = carousel → OCR slides, not Whisper. Four such entries sat as "video download failures" for months.
+
+50. **`enrich_entries.py` reads `site/catalog.json`, not parquet.** Any parquet-only edit (media_type fix, user_notes, recovered transcripts) made since the last export gets overwritten by the next sweep. ALWAYS `python3 scripts/cms.py rebuild` right before `enrich_entries.py --sweep`, and re-run the quality gate after.
 
 ## Output Checklist
 

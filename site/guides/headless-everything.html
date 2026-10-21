@@ -1,0 +1,236 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Every App Is Headless Now — agents that build their own control surface · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-headless-everything.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Every App Is Headless Now — agents that build their own control surface →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Every App Is Headless Now — agents that build their own control surface
+
+**Insight class:** Arbitrage Opportunity · **Difficulty:** Hard · **Quality:** 4/5
+**Connected entries:** 11 · **Tools:** ARTEMIS, Antigravity, Claude, Claude Code, Codex, DeepWiki, Ghidra, GitDiagram, GitMCP, Gitingest, Google Colab, Grok, OpenViking, Pizza Bot, REA, Reverse Engineer Anything, Salesforce, Ubuntu, Unsloth Studio, VS Code
+
+---
+
+## Thesis
+
+Chamath's claim that software IP stops being a moat once agents call services via MCP assumes the service ships an MCP. The catalog quietly shows you no longer need its permission. 'Build yourself a CLI for this program' covers apps with no API, Reverse Engineer Anything and the Ghidra-backed REA MCP explain closed binaries, and Claude Code already strips a smart TV over WiFi. Put these together and any legacy or closed tool becomes agent-drivable — and Bending Spoons' acquire-and-rebuild playbook shows what that is worth when the software is stagnant.
+
+---
+
+## Why it matters
+
+The long tail of MCP-less software — dental scheduling suites, MLS portals, ancient ERPs — is where small businesses lose hours. Whoever can wrap one in a reliable agent-built CLI sells the finished work rather than the software, which is exactly the AI-native-service model YC is asking for.
+
+---
+
+## The evidence — connected entries
+
+### Build-your-own CLI for agents — control apps that lack an MCP
+**Creator:** [@catlabs](https://instagram.com/catlabs) · **Tier:** A
+
+> Core move — tell the agent to build its own CLI for a program with no MCP
+
+When a program has no MCP server or the MCP misses controls you need, tell the agent 'Build yourself a CLI tool to interact with [program]', even down to every button of a DAW. MCP stays best for auth, discovery and distribution; a custom CLI wins for bespoke complex workflows and uses fewer tokens. Expect security flags.
+
+[View original post](https://www.instagram.com/p/Db1P-TOSkZl/)
+### Reverse Engineer Anything — trending repo that explains how any app works
+**Creator:** [@theericmichaud](https://instagram.com/theericmichaud) · **Tier:** A
+**Tools:** Claude Code, Codex, Reverse Engineer Anything
+
+> Understanding layer — point an agent at an app and get how each feature works
+
+The week's top trending GitHub repo, about 70k stars: point Claude Code or Codex at an app and it explains how the feature is built so you can rebuild it. Users have revived old hardware, e.g. a Logitech keypad on Linux in 15 minutes, plus scanners and sound cards that lost drivers.
+
+[View original post](https://www.instagram.com/p/DeV2n53gLgf/)
+### REA MCP — agent-driven reverse engineering with a Ghidra backend
+**Creator:** [@backsla.sh](https://instagram.com/backsla.sh) · **Tier:** A
+**Tools:** Ghidra, REA, Ubuntu
+
+> Binary layer — Ghidra decompilation driven over MCP for stripped native apps
+
+REA is an MCP server that lets an AI agent reverse engineer apps and stripped native binaries, with Ghidra doing the decompilation while the agent drives and cites evidence per call. The creator decompiled a closed-source program in three to four minutes on Ubuntu. Setup is deferred to a follow-up video.
+
+[View original post](https://www.instagram.com/p/DerpSl6D8pX/)
+### Claude Code vs smart TV — stripping bloatware over local WiFi
+**Creator:** [@chase.h.ai](https://instagram.com/chase.h.ai) · **Tier:** B
+**Tools:** Claude, Claude Code
+
+> Proof on devices — an agent reconfiguring a closed smart TV over the local network
+
+Short clip on pointing Claude Code at a smart TV on the same WiFi network to remove bloatware and customize it, with before/after speed comparisons. The prompt is shown but no device specifics or method details are given.
+
+[View original post](https://www.instagram.com/p/DesVu_EJZZK/)
+### Building workflows around legacy software — @zchangd
+**Creator:** [@zchangd](https://instagram.com/zchangd) · **Tier:** A
+
+> Demand signal — workflows over legacy business software called a 'huge unlock'
+
+@zchangd flags a 'huge unlock' for automating workflows over old/legacy business software. No tool named but concrete use case.
+
+[View original post](https://www.instagram.com/p/DWiCWyZj1rc/)
+### Headless software + MCP — Chamath on why software IP stops being a moat
+**Creator:** [@atlasberry008](https://instagram.com/atlasberry008) · **Tier:** B
+**Tools:** Grok, Salesforce
+
+> Market thesis — headless services plus MCP erase software moats
+
+Breaks down Chamath's All-In claim that software IP is worthless once services go headless and agents call them via MCP. With Salesforce and xAI's Grok exposing headless engines, agents pick tools on speed, cost or accuracy, so the interface stops being the moat.
+
+[View original post](https://www.instagram.com/p/DeWzqDXJ3ff/)
+### GitHub URL swaps — gitdiagram, gitingest, deepwiki and gitmcp for any repo
+**Creator:** [@ariacodez](https://instagram.com/ariacodez) · **Tier:** S
+**Tools:** DeepWiki, GitDiagram, GitMCP, Gitingest, VS Code
+
+> Speed tool — gitmcp and gitingest turn any open repo into agent context instantly
+
+Swap github.com in a repo URL for gitdiagram.com to get an architecture diagram, gitingest.com for an LLM-readable dump, deepwiki.com for generated docs, or gitmcp.io to let your agent query the repo live over MCP. Pressing the period key on a GitHub repo opens it in browser VS Code.
+
+[View original post](https://www.instagram.com/p/DdeoJI9KGtq/)
+### Bending Spoons playbook — AI-native acquisitions of stagnant SaaS
+**Creator:** [@tom__shipley](https://instagram.com/tom__shipley) · **Tier:** B
+
+> Business model — buy or wrap stagnant software, rebuild only the core
+
+Bending Spoons grew from $40k to an $18B IPO by buying stagnating platforms (Evernote, Vimeo, Meetup, WeTransfer) cheaply, rebuilding only the core features customers use with a lean elite engineering team, cutting cost base and compounding margin into the next deal. Argues AI-native acquirers, not vendors, are the new playbook PE/VC is funding.
+
+[View original post](https://www.instagram.com/p/DclyX25u9Sf/)
+### MLS API rental finder — bypass Zillow with your own listings pipeline
+**Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** B
+
+> Worked example — bypassing a consumer portal by going to the underlying data API
+
+Get MLS data via API by registering as a vendor sponsored by a realtor friend, then prompt an AI to build a workflow that pulls listings matching your filters into your own database and emails each listing agent to express interest. Idea credited to another builder.
+
+[View original post](https://www.instagram.com/p/Dcw7PqeRrI4/)
+### Open-source AI week — OpenViking, ARTEMIS, GLM-5.3 FlashX, Unsloth Studio
+**Creator:** [@drcintas](https://instagram.com/drcintas) · **Tier:** A
+**Tools:** ARTEMIS, Antigravity, Claude, Claude Code, Codex, Google Colab, OpenViking, Pizza Bot, Unsloth Studio
+
+> Mobile reach — ARTEMIS drives phone apps from prompts over MCP
+
+Six releases in 60 seconds: OpenViking (context database for agent memory), Google's ARTEMIS (prompt-to-phone automation over MCP for Codex, Claude Code and Antigravity), PrismML Ternary Bonsai 2 (27B ternary reasoning model, 262k context), AWS Pizza Bot (email-style inbox for background agents), Z.ai GLM-5.3 FlashX (320B multimodal, 1M context, local), and Unsloth Studio no-code fine-tuning of 500+ models in free Colab.
+
+[View original post](https://www.instagram.com/p/Ddg3yiFRtMg/)
+### Game decompilation with AI — which reconstruction methods stay legal
+**Creator:** [@lizthedeveloper](https://instagram.com/lizthedeveloper) · **Tier:** B
+
+> Guardrail — which reconstruction methods stay legal, so the service survives contact with lawyers
+
+Covers five decompilation approaches (matching decompilation, functional reconstruction, static recompilation, engine re-implementation, porting recovered source) and argues engine re-implementation and functional reconstruction are the legal paths. AI fits because the original game's GPU pixel output is a verifiable oracle for rewriting the engine in a new language.
+
+[View original post](https://www.instagram.com/p/DeSEkPfjvDA/)
+
+---
+
+## Action sketch — how to implement this
+
+- Pick one MCP-less desktop tool you or a local business already uses; prompt the agent to 'build yourself a CLI' covering its top 5 actions and log how many need UI automation versus file/DB access
+- For the stubborn actions, run Reverse Engineer Anything (or REA MCP for native binaries) to find the underlying file formats or local endpoints, and replace UI clicks with direct calls
+- Wrap the CLI as an MCP server, run a week of real tasks through it, and price the result as a monthly 'we run it for you' service
+- Falsifier: if the wrapper breaks on more than one vendor update per month, the maintenance cost eats the margin and this is a consulting gig, not an arbitrage
+
+---
+
+## Prerequisites
+
+- Comfort with reverse-engineering legality in your jurisdiction
+- Access to the target software you are licensed to use
+- An agent with shell and MCP support
+
+---
+
+## Key tools and resources
+
+- **ARTEMIS**
+- **Antigravity**
+- **Claude**
+- **Claude Code**
+- **Codex**
+- **DeepWiki**
+- **Ghidra**
+- **GitDiagram**
+- **GitMCP**
+- **Gitingest**
+- **Google Colab**
+- **Grok**
+- **OpenViking**
+- **Pizza Bot**
+- **REA**
+- **Reverse Engineer Anything**
+- **Salesforce**
+- **Ubuntu**
+- **Unsloth Studio**
+- **VS Code**
+
+## Creators to follow
+
+- [@angus.sewell](https://instagram.com/angus.sewell)
+- [@ariacodez](https://instagram.com/ariacodez)
+- [@atlasberry008](https://instagram.com/atlasberry008)
+- [@backsla.sh](https://instagram.com/backsla.sh)
+- [@catlabs](https://instagram.com/catlabs)
+- [@chase.h.ai](https://instagram.com/chase.h.ai)
+- [@drcintas](https://instagram.com/drcintas)
+- [@lizthedeveloper](https://instagram.com/lizthedeveloper)
+- [@theericmichaud](https://instagram.com/theericmichaud)
+- [@tom__shipley](https://instagram.com/tom__shipley)
+- [@zchangd](https://instagram.com/zchangd)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../index.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

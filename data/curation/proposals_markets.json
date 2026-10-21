@@ -1,0 +1,341 @@
+[
+ {
+  "id": "dd-insight-sensor-settled-contracts",
+  "title": "Event Contracts — own the sensor that settles them",
+  "class": "arbitrage_opportunity",
+  "thesis": "A student cleared $100K+ on Polymarket weather contracts with a dorm-built weather station, and a separate trader harvests contracts already sitting at 99c. Put those next to free real-time feeds (NASA EONET, SDR-received weather satellite images, public EIA/HIFLD infrastructure data, live plane and ship layers) and the pattern is clear — the edge on event contracts is not a smarter model, it is a faster or closer read of the exact source the contract settles on. Cheap sensors plus an agent that watches the order book in the final hours turn that into a repeatable process.",
+  "why_it_matters": "One person with a Raspberry Pi, a cheap sensor and an agent can compete on data latency in markets where the crowd is reading the same delayed public report. The 99c harvest and the sensor edge live in the same window — the last hours before resolution — so one rig serves both.",
+  "novelty": "The catalog saves the dorm-station story, the 99c harvester, the data feeds and the sensor builds as unrelated posts across four collections. Nobody in it maps contract rules to their settlement source and then puts a sensor or feed next to that source.",
+  "connection_map": {
+   "DWzz7T9Ddex": "Proof case — proprietary local weather data beat the crowd on Polymarket weather contracts",
+   "DWEfIS9jRgI": "The end-of-life harvest — automated limit orders on outcomes already near 99c, same final-hours window",
+   "DWrQKaskWlZ": "Free real-time natural-event feed (wildfires, storms, quakes) for contracts that settle on disasters",
+   "Dd6W2q5gZJ-": "Cheap dish plus software-defined radio pulls live weather-satellite images — a sensor nobody else in the market is reading",
+   "DW6Ny_zkqSY": "Public EIA/HIFLD/EPA grid and data-center data — settlement inputs for energy and outage contracts",
+   "DccLLkoPCT1": "MIT-licensed live geospatial globe (planes, ships, cameras) — the dashboard shell for an event desk",
+   "DUrQ187EvI4": "Websocket order-flow monitoring — tells you when someone else already has the information",
+   "Dd4Ca8oiiyB": "Agent brokerage connector that covers prediction markets, run as a scheduled routine and paper-traded first",
+   "DZoREIHtMjL": "Sensor-to-endpoint plumbing — a physical trigger logging to a tiny web app, upgraded to a Pi sensor",
+   "DWxNZMrjqY9": "Reservoir computing for short-horizon weather — only the readout is trained, cheap enough for a nowcast"
+  },
+  "quality_rating": 4,
+  "execution_difficulty": "Medium",
+  "value_type": "income",
+  "action_sketch": [
+   "Pull every open weather and event contract on Kalshi and Polymarket, and have Claude extract the settlement source and timing rule from each contract's rules into one table — which station, which report, what time.",
+   "Pick the three contracts whose settlement station you can get physically near or read faster than its official report; log a Raspberry Pi sensor plus the public 5-minute station feed side by side for two weeks.",
+   "Paper-trade only the final six hours before resolution, with a scheduled agent comparing your live reading to the market's implied probability and to the 99c harvest opportunities in the same window.",
+   "falsifier: if the official station's public intra-hour feed already moves the price as fast as your sensor does, your sensor adds nothing — the edge was always the dorm student's local microclimate, not a method."
+  ],
+  "prerequisites": [
+   "Check that the venue is legal in your jurisdiction (Kalshi is US-regulated; Polymarket access varies)",
+   "Raspberry Pi and a basic weather sensor",
+   "Python for the order-book watcher",
+   "Never trade on non-public information about people — sensor data only"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "capital & markets",
+  "entry_ids": [
+   "DWzz7T9Ddex",
+   "DWEfIS9jRgI",
+   "DWrQKaskWlZ",
+   "Dd6W2q5gZJ-",
+   "DW6Ny_zkqSY",
+   "DccLLkoPCT1",
+   "DUrQ187EvI4",
+   "Dd4Ca8oiiyB",
+   "DZoREIHtMjL",
+   "DWxNZMrjqY9"
+  ]
+ },
+ {
+  "id": "dd-insight-overfit-proof-autoresearch",
+  "title": "Strategy Autoresearch — the judge is the product, not the agent",
+  "class": "workflow_multiplier",
+  "thesis": "Self-rewriting loops (Karpathy-style autoresearch, bilevel coach loops, Microsoft SkillOpt) keep any edit that beats a benchmark. Point one at trading and it becomes an industrial overfitting machine — the backtest is the benchmark, and the loop will beat it ten thousand times. The quant saves already hold the fix: probability of backtest overfitting, permutation tests, transaction costs and backtest-to-live drift. Wire those in as the loop's judge, and use the loop's own log as the exact count of trials — the number human quants never know.",
+  "why_it_matters": "A solo builder can run more strategy variants in a weekend than a small fund tests in a quarter. The difference between that being an edge and a casino is whether the gate deflates for every attempt. Most likely you learn you have no edge, cheaply, and that's worth money too.",
+  "novelty": "This is a successor to the 25-agents trading dive, which covered multi-agent debate but not evaluation. The catalog's trading-agent pitches mention overfitting as a caveat in one line. None treats the trial counter as the input that makes the deflated statistics exact.",
+  "connection_map": {
+   "DbEK3bustQ7": "Benchmark-gated self-rewrite engine — the loop shape, with auto-reject of edits that don't win",
+   "DbjLy_tormR": "Outer coach loop that stops the search collapsing onto favorite ideas — and also multiplies trial count",
+   "DeNnxp5v_Fu": "The naive version — a critic agent rewriting losing trades, with hard-coded risk limits outside its reach",
+   "DTZyMVPiHM5": "Probability of backtest overfitting and Sharpe-ratio statistics — the deflating judge",
+   "DT8BX8vEzHm": "Permutation test with 25K shuffled returns — the 'random beats you' floor",
+   "DWjr0x3Deom": "Reversal strategy that dies once fees are counted — costs belong inside the judge, not after it",
+   "DUx9t_FE0CY": "Wasserstein drift between backtest and live distributions — the kill switch after deployment",
+   "DeW79CbCkO3": "Cross-model audit — the model that writes the strategy never grades it",
+   "Dcztzw6PyP4": "Dedicated risk agent that audits for self-deception — the role split as a template",
+   "Dc_qXENuDi4": "A one-month LLM trading 'win' — the noise this loop must refuse to reward",
+   "DbYp-bgTBBA": "Munger's inversion — define how the strategy dies before the loop starts searching"
+  },
+  "quality_rating": 5,
+  "execution_difficulty": "Medium",
+  "value_type": "capability",
+  "action_sketch": [
+   "Wrap a vectorized backtester (VectorBT) in a SkillOpt-style loop where Claude proposes strategy edits and every proposal is appended to a trials table with its parameters and result.",
+   "Replace 'beats benchmark' with a judge that needs all four: positive after realistic fees, beats 95% of a permutation null, deflated Sharpe positive using the trials-table count, and a held-out year scored once at the end.",
+   "Have a second model (Codex or GPT) audit each surviving strategy's code for look-ahead bias before it reaches paper trading; monitor live drift with Wasserstein distance and auto-retire on breach.",
+   "falsifier: seed the loop with pure-noise synthetic prices. If anything passes the judge, the judge is broken — fix it before you show it a real market."
+  ],
+  "prerequisites": [
+   "Python and VectorBT or similar backtester",
+   "Clean historical data with realistic cost assumptions",
+   "Paper-trading account",
+   "Discipline to treat 'no survivors' as a valid result"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "capital & markets",
+  "entry_ids": [
+   "DbEK3bustQ7",
+   "DbjLy_tormR",
+   "DeNnxp5v_Fu",
+   "DTZyMVPiHM5",
+   "DT8BX8vEzHm",
+   "DWjr0x3Deom",
+   "DUx9t_FE0CY",
+   "DeW79CbCkO3",
+   "Dcztzw6PyP4",
+   "Dc_qXENuDi4",
+   "DbYp-bgTBBA"
+  ]
+ },
+ {
+  "id": "dd-insight-predict-predictability",
+  "title": "Forecast the Weather, Not the Price — gating models by tradeability",
+  "class": "emergent_capability",
+  "thesis": "Open candlestick foundation models like Kronos give you a forecast on every bar, and a hedge-fund stress test says it fails on many levels. A separate save shows the better question: a small logistic regression that predicts tomorrow's efficiency ratio (trend versus chop) and skips the choppy days lifted almost every metric over two years out of sample. Physics-flavored measures in the quant collection — Lempel-Ziv compressibility, Hurst exponent, Lyapunov exponent, hidden Markov regimes — are all measures of the same thing: is this market forecastable right now? Use them as a confidence gate on the foundation model, not as signals.",
+  "why_it_matters": "You stop asking a model to be right everywhere and only ask it to be right where structure exists. That turns a free open model plus a few cheap statistics into something you can actually size positions with.",
+  "novelty": "This is a successor to the physics-to-markets dive, which imported these models as signals. Here they become a meta-layer deciding when to trust any signal. The catalog has Kronos and the complexity measures in different collections and never runs one through the other.",
+  "connection_map": {
+   "DeF5_5yPtDb": "Proof of concept — forecasting regime instead of direction, used as a trade filter, held out of sample",
+   "DWz7VPXjr5V": "Kronos — the open, domain-pretrained forecaster to be gated",
+   "DW7thNGDrPJ": "How Kronos tokenizes candles and uses attention — what it can and can't see",
+   "DW-TOhIDgjh": "Stress test where Kronos failed — the baseline the gate has to improve on",
+   "DUTQPorEwuP": "Lempel-Ziv complexity — low compressibility means noise, high means repeating structure",
+   "DTPrgWIk4Ns": "Hurst exponent surface — memory varies by timeframe, so the gate must be timeframe-aware",
+   "DTiLFogE4KT": "Lyapunov exponent on tick data — chaos measured where candles hide it",
+   "DW1kTMcExSj": "Hidden Markov regimes — the discrete version of the same gate",
+   "DTnQ72fk2fm": "Tick versus candle data — the gate's inputs are richer below the bar level"
+  },
+  "quality_rating": 4,
+  "execution_difficulty": "Medium",
+  "value_type": "knowledge",
+  "action_sketch": [
+   "Run Kronos zero-shot on two years of hourly BTC and QQQ and log every forecast with its realized error.",
+   "Compute rolling efficiency ratio, Lempel-Ziv complexity and Hurst for each bar, bucket bars into tradeability quintiles, and plot Kronos error per quintile.",
+   "If error falls across quintiles, fit the efficiency-ratio-style logistic model to predict next-period tradeability and paper-trade Kronos only in the top bucket.",
+   "falsifier: if Kronos error is flat across tradeability quintiles, the complexity measures say nothing about this model's skill and the gate is decoration."
+  ],
+  "prerequisites": [
+   "Python, Hugging Face access to the Kronos weights",
+   "GPU or patient CPU",
+   "Hourly or finer price history"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "capital & markets",
+  "entry_ids": [
+   "DeF5_5yPtDb",
+   "DWz7VPXjr5V",
+   "DW7thNGDrPJ",
+   "DW-TOhIDgjh",
+   "DUTQPorEwuP",
+   "DTPrgWIk4Ns",
+   "DTiLFogE4KT",
+   "DW1kTMcExSj",
+   "DTnQ72fk2fm"
+  ]
+ },
+ {
+  "id": "dd-insight-selling-to-agents",
+  "title": "Selling to Agents — metered data for buyers that don't have eyes",
+  "class": "arbitrage_opportunity",
+  "thesis": "Three saves describe one gap. Quality publishers block AI crawlers, so AI search cites whatever is left. AI assistants favor the sponsored option in 18 of 23 models, so they are steerable buyers. Software is going headless, so agents pick tools by speed, cost and accuracy instead of interface. x402 revives HTTP 402 so an agent can pay a stablecoin micropayment per request. A one-person owner of a clean niche dataset can sit exactly in that gap — machine-legible, crawler-reachable, and metered.",
+  "why_it_matters": "This is distribution without an audience. The buyer is an agent that never sees your landing page, so a solo builder with good data competes on structure and price, not on ads. DejaViewed's own catalog and API are the obvious first item to sell.",
+  "novelty": "The payment rail sits in stock3, the crawler blockade and headless-software argument in ai8, the agent-bias study in ai7, and llms.txt in ai4. None of these posts puts a price on a dataset for machine buyers. Everyone in the catalog is still optimizing to be cited for free.",
+  "connection_map": {
+   "DdAT0p1xg94": "x402 — HTTP 402 plus stablecoin micropayments, the toll gate",
+   "DdY6zn0hDff": "Stablecoin plumbing under the GENIUS Act — the rail is becoming bank-grade",
+   "Db4DLZIh5a3": "Quality publishers block AI crawlers, so AI search reads the leftovers — the supply gap",
+   "DYN0298n2H5": "Agents favor the sponsored option — machine buyers are steerable, so being the honest, legible cheap option wins",
+   "DeWzqDXJ3ff": "Headless software and MCP — agents choose tools on speed, cost and accuracy, not UI",
+   "DWxmSwTDFk2": "llms.txt got a local shop recommended by ChatGPT — the free discovery layer that points to the paid one",
+   "DaEH4BJMxRX": "AI Overviews can be gamed by self-assertion — the low-quality competition you are priced against",
+   "DcX_QwDjvH-": "Compact numbered page views for agents — what a machine-first response format looks like",
+   "Dd6izTYiln1": "Agents are blocked on Reddit and X without workarounds — demand for clean, permitted access is real"
+  },
+  "quality_rating": 3,
+  "execution_difficulty": "Medium",
+  "value_type": "income",
+  "action_sketch": [
+   "Expose one niche dataset you own (start with the DejaViewed catalog's api/ JSON) as a free llms.txt summary plus a richer x402-metered endpoint with structured, citation-ready records.",
+   "Wrap the same endpoint as an MCP server and list it publicly so Claude and other agents can find it; log every request, free and paid, with user agent.",
+   "Run a 60-day A/B on price per call (free, 0.1c, 1c) and track how often your records show up in Perplexity and ChatGPT answers.",
+   "falsifier: if after 60 days you see plenty of free crawls but close to zero paid calls, agents are not buying yet. The demand side doesn't exist and this is a 2027 idea, not a 2026 one."
+  ],
+  "prerequisites": [
+   "A dataset that is genuinely yours to sell",
+   "A stablecoin wallet and an x402-capable server library",
+   "Basic MCP server skills"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "capital & markets",
+  "entry_ids": [
+   "DdAT0p1xg94",
+   "DdY6zn0hDff",
+   "Db4DLZIh5a3",
+   "DYN0298n2H5",
+   "DeWzqDXJ3ff",
+   "DWxmSwTDFk2",
+   "DaEH4BJMxRX",
+   "DcX_QwDjvH-",
+   "Dd6izTYiln1"
+  ]
+ },
+ {
+  "id": "dd-insight-micro-bending-spoons",
+  "title": "Buying Dead Apps — the one-person AI-native rollup",
+  "class": "arbitrage_opportunity",
+  "thesis": "Bending Spoons went from $40k to an $18B IPO by buying stagnant software, rebuilding only what customers use, and compounding the margin. Public SaaS multiples just got cut in half. Meanwhile the catalog holds the full toolchain for agent-driven rebuilds — repo comprehension, reverse engineering, orchestrator/executor loops with earned autonomy, and checklists for the legal and performance gaps vibe-coded apps leave. Scale the playbook down: small cash-flowing apps sell for a few times annual profit, and the rebuild cost is the variable AI just crushed.",
+  "why_it_matters": "Building new means a cold start on distribution. Buying old means you inherit customers and search rank, and the agent stack turns the costly part — understanding and modernizing someone else's code — into days instead of months.",
+  "novelty": "The catalog treats Bending Spoons as news about a $18B company and treats the rebuild tools as developer tips. Nobody connects them at the sub-$100k deal size where a single operator can run the play.",
+  "connection_map": {
+   "DclyX25u9Sf": "The playbook — buy stagnant, rebuild the used core lean, margin is the strategy",
+   "DXFzEoeCW6S": "SaaS multiples collapsing — sellers' prices are falling",
+   "DX4VJO6zMzL": "YC's AI-native service companies — sell finished outcomes on top of what you acquire",
+   "DdeoJI9KGtq": "gitingest, deepwiki and gitmcp — read an unfamiliar codebase in an hour during diligence",
+   "DeV2n53gLgf": "Reverse Engineer Anything — recover how a feature works when the docs are gone",
+   "Da1hOm7scjR": "Fable plans, Opus executes — top-model judgment on the rebuild without burning budget",
+   "DamEcWuPvX0": "Cron loop with earned autonomy and daily regression tests — keeps an acquired app alive unattended",
+   "Db9Br3XBTPj": "Ten compliance gaps that get indie apps sued — the legal diligence checklist",
+   "DZ3PQxzoUEr": "Five performance gaps in AI-written code — the post-rebuild hardening checklist",
+   "DdHJn-ZRpbd": "PostHog behavior clustering — find which features customers actually use before you cut",
+   "Dap2gsCRhs0": "Agent-run finance tables — verify the seller's unit economics yourself"
+  },
+  "quality_rating": 4,
+  "execution_difficulty": "Hard",
+  "value_type": "income",
+  "action_sketch": [
+   "Scrape listings on micro-acquisition marketplaces (Acquire.com, Flippa) under $50k and have Claude score each on revenue stability, stack age, and how much of the code you could replace.",
+   "For the top three, request repo access under NDA, run gitingest plus deepwiki, and have an orchestrator agent produce a rebuild spec, a cost estimate in hours and the compliance gap list.",
+   "Buy one, ship PostHog first, then rebuild only the top-used flows with an orchestrator/executor loop and daily regression tests, and track churn monthly.",
+   "falsifier: if the rebuild plus migration costs more than six months of the app's profit, or churn after migration goes above 10%, the AI discount isn't real at this size."
+  ],
+  "prerequisites": [
+   "Capital for one small acquisition",
+   "Basic M&A hygiene: escrow, asset purchase agreement",
+   "Comfort owning customer support"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "capital & markets",
+  "entry_ids": [
+   "DclyX25u9Sf",
+   "DXFzEoeCW6S",
+   "DX4VJO6zMzL",
+   "DdeoJI9KGtq",
+   "DeV2n53gLgf",
+   "Da1hOm7scjR",
+   "DamEcWuPvX0",
+   "Db9Br3XBTPj",
+   "DZ3PQxzoUEr",
+   "DdHJn-ZRpbd",
+   "Dap2gsCRhs0"
+  ]
+ },
+ {
+  "id": "dd-insight-ai-capex-credit-lens",
+  "title": "The AI Capex Stack — reading it like a credit analyst",
+  "class": "emergent_capability",
+  "thesis": "An ex-Morgan Stanley structurer explains that CoreWeave-style GPU loans have a thin tail: loan, contract and GPU useful life are nearly the same length, so the bull case rests on hourly rental prices after contracts end. Other saves price that number from the demand side: open weights flipped to about 80% of token volume in 12 weeks, DeepSeek serves near-frontier agents at $0.28 per million tokens, a 27B model runs on one gaming GPU, and a $200 subscription buys about $7,000 of API usage. Token deflation is a direct input to post-contract GPU rental rates, and nobody in the catalog connects them.",
+  "why_it_matters": "You can track the one variable the neocloud debt depends on with public price pages and a scheduled agent. Physical infrastructure with real order books, like chillers, is a different bet from GPU-hour rental, and this lens separates them.",
+  "novelty": "The catalog files these as unrelated news clips across ai8, stock3, ai5 and creative. Linking token price deflation to the residual-value risk in GPU-backed loans is the new step, and you can test it with public data.",
+  "connection_map": {
+   "DehLFj6ON6C": "The credit structure — 90-95% advance rates and a thin tail; post-contract GPU rental is the bull case",
+   "DeIOphnT7Yq": "Open-weight share flip to 80% — demand moving to cheaper tokens",
+   "DbjmqTYJfMY": "Cheap mixture-of-experts closing on frontier agent benchmarks at $0.28 per million tokens",
+   "DcCdYgnJ10h": "A 27B agentic model on one 24GB card — inference leaving the data center",
+   "DdMoE8qhnKE": "Subscriptions priced at a small fraction of API usage — the retail token price is already subsidized",
+   "DaA6cGsyQp3": "Cooling hardware with real order books — physical infrastructure as the contrasting bet",
+   "DWWUXtNDlS1": "A fund at 25x NAV — the habit of checking price against underlying value",
+   "DXFzEoeCW6S": "SaaS sell-off — markets already repricing the software layer"
+  },
+  "quality_rating": 3,
+  "execution_difficulty": "Medium",
+  "value_type": "knowledge",
+  "action_sketch": [
+   "Schedule an agent to log daily H100/B200 hourly rental prices from public marketplaces and the cheapest per-million-token price for three model tiers on OpenRouter into one table.",
+   "Pull neocloud debt and contract maturities from public filings and plot rental price against the period when large contracts roll off.",
+   "Write a monthly one-page note: is GPU-hour price falling faster than token volume is rising? Paper only, no positions.",
+   "falsifier: if GPU-hour rental prices hold flat or rise while token prices fall, usage growth (Jevons) is absorbing the deflation and the tail-risk thesis is wrong."
+  ],
+  "prerequisites": [
+   "Comfort reading public filings",
+   "A scheduled agent and a spreadsheet",
+   "Not financial advice — this is a research tracker"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "capital & markets",
+  "entry_ids": [
+   "DehLFj6ON6C",
+   "DeIOphnT7Yq",
+   "DbjmqTYJfMY",
+   "DcCdYgnJ10h",
+   "DdMoE8qhnKE",
+   "DaA6cGsyQp3",
+   "DWWUXtNDlS1",
+   "DXFzEoeCW6S"
+  ]
+ },
+ {
+  "id": "dd-insight-counterparty-forensics",
+  "title": "Who's Across the Table — forensics for the system trading against you",
+  "class": "life_leverage",
+  "thesis": "Across the catalog, the systems you interact with are quietly optimizing against you: a puzzle game runs an on-device XGBoost model to time difficulty to your ad value, overnight and intraday returns run as a decades-long sawtooth, a bedroom spoofer tripped depth-reading algorithms in the 2010 Flash Crash, wash trading inflates crypto volume, and exchanges sold speed to HFTs. Agent-plus-Ghidra decompilation and cheap tick data mean one person can now audit the counterparty instead of guessing about it.",
+  "why_it_matters": "This is game theory made practical: before you look for edge, measure the edge that's already being taken from you — your fills, the hours you hold, the apps you pay. It's defensive leverage, and it often turns into an offensive idea, like simply holding overnight.",
+  "novelty": "The catalog stores these as stories and outrage clips in stock2, stock3, quant, creative and ai8. None turns them into a personal audit you can run with today's tools.",
+  "connection_map": {
+   "DecfvksvHiW": "Block Blast decompiled — on-device model tuning difficulty to ad value, the clearest 'house edge' case",
+   "DerpSl6D8pX": "REA MCP — agent-driven Ghidra decompilation with cited evidence, the audit tool (authorized use only)",
+   "DeF6WMaB-NX": "Knuteson's overnight/intraday sawtooth — a claim to replicate, not trust",
+   "DcbkTCnOxjl": "Second take on the overnight anomaly, with the retail-at-open mechanism",
+   "DYnlB8vJC56": "Spoofing and the Flash Crash — how depth-reading algorithms get gamed",
+   "DdZiaTmJdSC": "Wash trading — reported volume as the counterparty's marketing",
+   "Dc83KJvzPrC": "Direct feeds versus the SIP — who pays for speed",
+   "DWu_CQnjZjn": "Breadth-based reversal — what the fast counterparty is actually doing to your weekly losers",
+   "DXhxXHOEY7v": "Encrypted traffic still leaks activity — the general lesson that timing and volume give intent away"
+  },
+  "quality_rating": 3,
+  "execution_difficulty": "Easy",
+  "value_type": "knowledge",
+  "action_sketch": [
+   "Split two years of SPY and QQQ returns into close-to-open and open-to-close legs, then subtract realistic open-gap spreads to see whether the overnight leg survives costs.",
+   "Export your own broker fills and compare each to the NBBO at the time, so you measure the price improvement or slippage you actually got.",
+   "For one paid or free-to-play app you use, run REA MCP on your own install and list every model or rule that adapts to you (authorized analysis only).",
+   "falsifier: if the overnight leg disappears after costs and your fills match or beat the NBBO, the counterparty isn't taking much from you at your size — move your effort to the strategy-loop dive."
+  ],
+  "prerequisites": [
+   "Free daily open/close price data",
+   "Broker fill export",
+   "Ghidra and REA MCP for the app audit"
+  ],
+  "suggested_by": "curated",
+  "pinned": true,
+  "lens": "capital & markets",
+  "entry_ids": [
+   "DecfvksvHiW",
+   "DerpSl6D8pX",
+   "DeF6WMaB-NX",
+   "DcbkTCnOxjl",
+   "DYnlB8vJC56",
+   "DdZiaTmJdSC",
+   "Dc83KJvzPrC",
+   "DWu_CQnjZjn",
+   "DXhxXHOEY7v"
+  ]
+ }
+]

@@ -1,0 +1,233 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Red-Team Your Own Agent — prompt-injection CI from the jailbreak corpus · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-agent-injection-ci.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Red-Team Your Own Agent — prompt-injection CI from the jailbreak corpus →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Red-Team Your Own Agent — prompt-injection CI from the jailbreak corpus
+
+**Insight class:** Emergent Capability · **Difficulty:** Medium · **Quality:** 5/5
+**Connected entries:** 11 · **Tools:** Agent Reach, Anthropic, ChatGPT, Claude, Claude Code, GPT-5, GitHub Actions, Grok Imagine, Hermes Skills Hub, Kimi, Llama, Muse Code, OpenAI, Pocket TTS, Vercel, elder-plinius/L1B3RT4S, kimi-k3-in-c
+
+---
+
+## Thesis
+
+The catalog holds both halves of a loop nobody has closed. On one side sit offense corpora and autonomous attackers — L1B3RT4S still landing on GPT-5, an agent that goes from one sentence to a verified exploit, scanners hunting exposed AI servers. On the other sit the pipes that pour untrusted text into your agent — Agent Reach reading Reddit and X, 90k-skill hubs, one-command skill installers. Point the attacker inward and you get prompt-injection CI — every skill install and harness change gets replayed against a jailbreak-and-hijack suite before it touches your keys.
+
+---
+
+## Why it matters
+
+Solo builders now run agents with real API keys, inboxes and broker access, and Noma's research shows most automations hand data to anyone who simply asks. Whoever ships a cheap, repeatable injection test owns the trust layer for every one-person agent shop — and sleeps through their own cron jobs.
+
+---
+
+## The evidence — connected entries
+
+### L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5
+**Creator:** [@_dbrogle](https://instagram.com/_dbrogle) · **Tier:** S
+**Tools:** Anthropic, ChatGPT, GPT-5, elder-plinius/L1B3RT4S
+
+> Attack corpus — ready-made jailbreak payloads to seed the test suite
+
+@_dbrogle tests elder-plinius's L1B3RT4S jailbreak repo (github.com/elder-plinius/L1B3RT4S) against GPT-5 and it still works despite tighter safety. Worth revisiting for red-team prompt libraries.
+
+[View original post](https://www.instagram.com/p/DOPqBfyDMHG/)
+### Workflow hijacking — Noma research on AI automations with no authorization
+**Creator:** [@mattjayy](https://instagram.com/mattjayy) · **Tier:** A
+**Tools:** GitHub Actions
+
+> Threat model — workflows leak data when an attacker just asks, because nothing checks identity
+
+Noma Labs research shows AI workflows (email auto-responders, GitHub Actions, Google email flows) leak data when an attacker simply asks, because nothing checks whether the requester is authorized. Not prompt injection, the model is doing what it's told. The fix is bringing identity and authorization into agent workflows.
+
+[View original post](https://www.instagram.com/p/DdKKSaANJm7/)
+### Autonomous AI pentest agent — plain-English prompt to verified exploit
+**Creator:** [@evenedsteven](https://instagram.com/evenedsteven) · **Tier:** C
+
+> Attacker template — the autonomous pentest loop you repoint at your own harness
+
+An unnamed ~600-star GitHub repo where you describe a target in one sentence and an agent finds a vulnerability, runs the exploit and writes the report, across 13 AI providers. Every claimed finding is verified against real tool output. Authorized targets only.
+
+[View original post](https://www.instagram.com/p/DaGEbyAAHOo/)
+### Agent Reach — open-source skill letting agents read Reddit and X
+**Creator:** [@itstundeanthony](https://instagram.com/itstundeanthony) · **Tier:** A
+**Tools:** Agent Reach, Claude
+
+> Ingress pipe — a skill that pulls arbitrary social text straight into agent context
+
+An open-source repo installed as a Claude skill that gives agents access to 13 platforms without API costs. The demo shows Claude failing to fetch a Reddit post and an X thread, then succeeding with comments once Agent Reach is installed.
+
+[View original post](https://www.instagram.com/p/Dd6izTYiln1/)
+### AI weekly roundup — Pocket TTS, Hermes Skills Hub, Kimi K3 in pure C
+**Creator:** [@drcintas](https://instagram.com/drcintas) · **Tier:** A
+**Tools:** Anthropic, Grok Imagine, Hermes Skills Hub, Kimi, Muse Code, OpenAI, Pocket TTS, kimi-k3-in-c
+
+> Supply-chain scale — Hermes Skills Hub's 90k skills means unreviewed instructions by default
+
+Six releases: Kyutai Pocket TTS (100M-param local voice cloning, 6x real-time), Nous Research Hermes Skills Hub (90k agent skills), Grok Imagine Image 2.0 regional editing, Meta Muse Code terminal agent with parallel worktrees, Qwen3.8-Max (2.4T MoE, 1M context), and kimi-k3-in-c, a 176KB C99 engine streaming experts from disk to run a 2T model with no GPU.
+
+[View original post](https://www.instagram.com/p/Db0vxQexdJI/)
+### Anthropic — Se llama find-skills (de vercel-labs). La instalas, le preguntas en lenguaje...
+**Creator:** [@pabloinpublic](https://instagram.com/pabloinpublic) · **Tier:** A
+**Tools:** Anthropic, Claude, Claude Code, Llama, Vercel
+
+> Install path — find-skills makes pulling a stranger's skill a one-liner
+
+Un dev japonés encontró el truco definitivo de Claude Code antes que nadie. — @pabloinpublic; uses Anthropic, Claude, Claude Code.
+
+[View original post](https://www.instagram.com/p/DXcWjL0jLsd/)
+### OpenAI — you can literally search for them
+**Creator:** [@deonnahodges](https://instagram.com/deonnahodges) · **Tier:** S
+**Tools:** OpenAI
+
+> Blast radius — thousands of live API keys sitting in public repos
+
+there are 8,000 exposed openai api keys on github right now — @deonnahodges; uses OpenAI; demonstrates API integration.
+
+[View original post](https://www.instagram.com/p/DYX_M8yx6r4/)
+### Claude — thesavedsalesman
+**Creator:** [@eddynthings](https://instagram.com/eddynthings) · **Tier:** S
+**Tools:** Claude
+
+> Blast radius — secrets living in chat history that agents can read back
+
+Time to lock in! You are keeping your api secrets in your ai chat history and you are going to be your own worst enem... — @eddynthings; uses Claude; demonstrates API integration.
+
+[View original post](https://www.instagram.com/p/DX4qpEHxY7g/)
+### Three cybersecurity portfolio projects — fuzzing, agent sandboxing, YARA scanning
+**Creator:** [@carterperez.dev](https://instagram.com/carterperez.dev) · **Tier:** B
+
+> Defense pattern — capability sandboxing that assumes the agent is already compromised
+
+Portfolio ideas that signal real skill: a fuzzer that hammers C libraries with malformed files to find memory-corruption crashes; an AI agent guard that assumes prompt injection will succeed and limits what the agent may do; and a static binary scanner that matches detection rules and explains each hit. Source links gated behind a comment.
+
+[View original post](https://www.instagram.com/p/Dcy39JTRctd/)
+### Three OSINT tools — face-matched username search, exposed agents, world map
+**Creator:** [@carterperez.dev](https://instagram.com/carterperez.dev) · **Tier:** C
+
+> External view — scanners that already index exposed agents from the outside
+
+Teaser for three OSINT tools: a username search across 840 sites that also matches profile pictures to find accounts under other names, a scanner for AI agents companies left exposed online (and whether they touch company data), and a browser-based global intelligence live map you can self-host. Names gated behind a comment.
+
+[View original post](https://www.instagram.com/p/DcQ0dv-hG23/)
+### Princeton sponsored-ads study — 18 of 23 AI assistants push the paid option
+**Creator:** [@forgoodcode](https://instagram.com/forgoodcode) · **Tier:** A
+
+> Soft injection — 18 of 23 assistants obey a sponsored nudge, so preference hijack belongs in the suite
+
+Carousel on a Princeton study that gave 23 models a sponsored option and a cheaper better one across flights, loans and shopping. 18 of 23 favored the sponsored pick, GPT-5.1 surfaced it 94% of the time, and a 'serve the customer only' system prompt barely moved it. Note the creator's caveat: it measures susceptibility in a hypothetical deployment, not real paid placement.
+
+[View original post](https://www.instagram.com/p/DYN0298n2H5/)
+
+---
+
+## Action sketch — how to implement this
+
+- Build a 50-case suite this week — 20 L1B3RT4S-style jailbreaks, 20 Noma-style 'just ask for the data' hijacks planted in fake Reddit/X posts fetched via Agent Reach, 10 sponsored-option nudges — and run it against your harness with a canary secret in the environment
+- Wire it as a pre-install hook: any new skill from find-skills or a skills hub gets diffed, then the suite reruns with that skill loaded; fail the install if the canary leaks or a tool call goes outside the allowlist
+- Add the sandboxing layer from the portfolio-projects post — per-skill capability manifests (network, filesystem, secrets) — and measure how many suite cases each manifest blocks
+- Falsifier: if a plain allowlist on outbound tool calls blocks ≥95% of the suite with no skill-level testing, the CI layer is overkill and a static policy file is the whole answer
+
+---
+
+## Prerequisites
+
+- An agent harness with hooks (Claude Code or similar)
+- A throwaway canary secret and a disposable test account
+- Test only harnesses, accounts and keys you own
+
+---
+
+## Key tools and resources
+
+- **Agent Reach**
+- **Anthropic**
+- **ChatGPT**
+- **Claude**
+- **Claude Code**
+- **GPT-5**
+- **GitHub Actions**
+- **Grok Imagine**
+- **Hermes Skills Hub**
+- **Kimi**
+- **Llama**
+- **Muse Code**
+- **OpenAI**
+- **Pocket TTS**
+- **Vercel**
+- **elder-plinius/L1B3RT4S**
+- **kimi-k3-in-c**
+
+## Creators to follow
+
+- [@_dbrogle](https://instagram.com/_dbrogle)
+- [@carterperez.dev](https://instagram.com/carterperez.dev)
+- [@deonnahodges](https://instagram.com/deonnahodges)
+- [@drcintas](https://instagram.com/drcintas)
+- [@eddynthings](https://instagram.com/eddynthings)
+- [@evenedsteven](https://instagram.com/evenedsteven)
+- [@forgoodcode](https://instagram.com/forgoodcode)
+- [@itstundeanthony](https://instagram.com/itstundeanthony)
+- [@mattjayy](https://instagram.com/mattjayy)
+- [@pabloinpublic](https://instagram.com/pabloinpublic)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../index.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

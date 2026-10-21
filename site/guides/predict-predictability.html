@@ -1,0 +1,197 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forecast the Weather, Not the Price — gating models by tradeability · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-predict-predictability.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Forecast the Weather, Not the Price — gating models by tradeability →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Forecast the Weather, Not the Price — gating models by tradeability
+
+**Insight class:** Emergent Capability · **Difficulty:** Medium · **Quality:** 4/5
+**Connected entries:** 9 · **Tools:** Claude, Hugging Face, Kronos, Python
+
+---
+
+## Thesis
+
+Open candlestick foundation models like Kronos give you a forecast on every bar, and a hedge-fund stress test says it fails on many levels. A separate save shows the better question: a small logistic regression that predicts tomorrow's efficiency ratio (trend versus chop) and skips the choppy days lifted almost every metric over two years out of sample. Physics-flavored measures in the quant collection — Lempel-Ziv compressibility, Hurst exponent, Lyapunov exponent, hidden Markov regimes — are all measures of the same thing: is this market forecastable right now? Use them as a confidence gate on the foundation model, not as signals.
+
+---
+
+## Why it matters
+
+You stop asking a model to be right everywhere and only ask it to be right where structure exists. That turns a free open model plus a few cheap statistics into something you can actually size positions with.
+
+---
+
+## The evidence — connected entries
+
+### Efficiency-ratio forecaster — skip choppy days to lift a strategy's metrics
+**Creator:** [@telonicstrading](https://instagram.com/telonicstrading) · **Tier:** A
+
+> Proof of concept — forecasting regime instead of direction, used as a trade filter, held out of sample
+
+Instead of predicting direction, a logistic regression on 15 price features forecasts the next day's Kaufman efficiency ratio (trendiness versus chop). Trades on predicted low-efficiency days made about a third of the money, so gating them out improved nearly every metric and held on two years of out-of-sample data.
+
+[View original post](https://www.instagram.com/p/DeF5_5yPtDb/)
+### Kronos — open-source foundation model trained on 12B candlesticks
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** S
+**Tools:** Hugging Face
+
+> Kronos — the open, domain-pretrained forecaster to be gated
+
+Survey of zero-shot time-series foundation models (Google TimesFM 2.5, Amazon Chronos, Salesforce Moirai, IBM Tiny Time Mixers) that mostly fail at stock prediction, then Kronos: an open-source model pre-trained on about 12 billion K-lines from crypto and other markets that beats prior models on financial forecasting. Code on GitHub and Hugging Face from shiyu-coder.
+
+[View original post](https://www.instagram.com/p/DWz7VPXjr5V/)
+### Kronos — transformer that reads candlesticks as a language (part 3)
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** A
+**Tools:** Kronos
+
+> How Kronos tokenizes candles and uses attention — what it can and can't see
+
+Final part of a Kronos explainer: after binary spherical quantization and hierarchical encoding turn candles into tokens, a transformer uses self-attention (query/key/value per candle) to weight relevant bars like a volume spike over chop, and an autoregressive decoder predicts the next tokens, i.e. future price action. Contrasts with sequential LSTMs.
+
+[View original post](https://www.instagram.com/p/DW7thNGDrPJ/)
+### Claude — I had my hedge fund team stress test Kronos. It failed on many levels.
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** S
+**Tools:** Claude, Hugging Face
+
+> Stress test where Kronos failed — the baseline the gate has to improve on
+
+This video is designed to make it so absolutely anyone can build their own automated AI system with Kronos integratio... — @gigaqian; uses Claude, Hugging Face; demonstrates code generation.
+
+[View original post](https://www.instagram.com/p/DW-TOhIDgjh/)
+### Lempel-Ziv Complexity — compression algorithms to detect market predictability
+**Creator:** [@quant.dhawan](https://instagram.com/quant.dhawan) · **Tier:** A
+**Tools:** Python
+
+> Lempel-Ziv complexity — low compressibility means noise, high means repeating structure
+
+Applies the LZ compression algorithm (behind .zip files) to financial time series. When LZ complexity is low, patterns repeat and the market is more predictable. When high, it's random noise. Novel cross-domain application.
+
+[View original post](https://www.instagram.com/p/DUTQPorEwuP/)
+### Hurst Exponent — 3D surface of BTC memory and mean-reversion zones
+**Creator:** [@quant.dhawan](https://instagram.com/quant.dhawan) · **Tier:** A
+
+> Hurst exponent surface — memory varies by timeframe, so the gate must be timeframe-aware
+
+Plots the Hurst Exponent of BTC-USD as a 3D surface. H>0.5 = trending (momentum), H<0.5 = mean-reverting, H=0.5 = random walk. Shows how market 'memory' varies across timeframes. Basis for adaptive strategy selection.
+
+[View original post](https://www.instagram.com/p/DTPrgWIk4Ns/)
+### Lyapunov Exponent — measuring chaos in BTC tick-level microstructure
+**Creator:** [@quant.dhawan](https://instagram.com/quant.dhawan) · **Tier:** A
+**Tools:** Python
+
+> Lyapunov exponent on tick data — chaos measured where candles hide it
+
+Visualizes the Lyapunov Exponent of BTC-USD microstructure data. Positive exponent = chaotic/unpredictable, negative = deterministic. Reveals that what looks random on 5-min charts has measurable chaotic structure at tick level.
+
+[View original post](https://www.instagram.com/p/DTiLFogE4KT/)
+### Hidden Markov Models — detecting market regime shifts automatically
+**Creator:** [@quant.dhawan](https://instagram.com/quant.dhawan) · **Tier:** S
+**Tools:** Python
+
+> Hidden Markov regimes — the discrete version of the same gate
+
+Uses HMMs to mathematically deduce hidden market states from observable returns and volatility. Identifies low-vol bull, high-vol bear, and recovery regimes. Better than lagging indicators for strategy selection.
+
+[View original post](https://www.instagram.com/p/DW1kTMcExSj/)
+### Tick Data vs OHLC — you're trading on 0.002% of available data
+**Creator:** [@quant.dhawan](https://instagram.com/quant.dhawan) · **Tier:** B
+**Tools:** Python
+
+> Tick versus candle data — the gate's inputs are richer below the bar level
+
+Daily OHLC candles compress ~86,400 seconds of market data into 4 numbers — throwing away 99.998% of information. Makes the case for tick-level and limit order book analysis over candle-based trading.
+
+[View original post](https://www.instagram.com/p/DTnQ72fk2fm/)
+
+---
+
+## Action sketch — how to implement this
+
+- Run Kronos zero-shot on two years of hourly BTC and QQQ and log every forecast with its realized error.
+- Compute rolling efficiency ratio, Lempel-Ziv complexity and Hurst for each bar, bucket bars into tradeability quintiles, and plot Kronos error per quintile.
+- If error falls across quintiles, fit the efficiency-ratio-style logistic model to predict next-period tradeability and paper-trade Kronos only in the top bucket.
+- falsifier: if Kronos error is flat across tradeability quintiles, the complexity measures say nothing about this model's skill and the gate is decoration.
+
+---
+
+## Prerequisites
+
+- Python, Hugging Face access to the Kronos weights
+- GPU or patient CPU
+- Hourly or finer price history
+
+---
+
+## Key tools and resources
+
+- **Claude**
+- **Hugging Face**
+- **Kronos**
+- **Python**
+
+## Creators to follow
+
+- [@gigaqian](https://instagram.com/gigaqian)
+- [@quant.dhawan](https://instagram.com/quant.dhawan)
+- [@telonicstrading](https://instagram.com/telonicstrading)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../index.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

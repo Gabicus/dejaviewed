@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Forecast the Weather, Not the Price — gating models by tradeability — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">emergent_capability</div>
+  <h1>Forecast the Weather, Not the Price — gating models by tradeability</h1>
+  <div class="thesis">Open candlestick foundation models like Kronos give you a forecast on every bar, and a hedge-fund stress test says it fails on many levels. A separate save shows the better question: a small logistic regression that predicts tomorrow's efficiency ratio (trend versus chop) and skips the choppy days lifted almost every metric over two years out of sample. Physics-flavored measures in the quant collection — Lempel-Ziv compressibility, Hurst exponent, Lyapunov exponent, hidden Markov regimes — are all measures of the same thing: is this market forecastable right now? Use them as a confidence gate on the foundation model, not as signals.</div>
+  <div class="tools"><span class='tool-pill'>Claude</span> · <span class='tool-pill'>Hugging Face</span> · <span class='tool-pill'>Kronos</span> · <span class='tool-pill'>Python</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Run Kronos zero-shot on two years of hourly BTC and QQQ and log every forecast with its realized error., Compute rolling efficiency ratio, Lempel-Ziv complexity and Hurst for each bar, bucket bars into tradeability quintiles, and plot Kronos error per quintile., If error falls across quintiles, fit the efficiency-ratio-style logistic model to predict next-period tradeability and paper-trade Kronos only in the top bucket., falsifier: if Kronos error is flat across tradeability quintiles, the complexity measures say nothing about this model's skill and the gate is decoration.</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> Python, Hugging Face access to the Kronos weights, GPU or patient CPU, Hourly or finer price history</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (9)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DeF5_5yPtDb/" target="_blank" rel="noopener"><img src="../thumb/DeF5_5yPtDb.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DeF5_5yPtDb/" target="_blank" rel="noopener" class="dd-entry-title">Efficiency-ratio forecaster — skip choppy days to lift a strategy's metrics</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @telonicstrading</div>
+    <div class="dd-entry-summary">Instead of predicting direction, a logistic regression on 15 price features forecasts the next day's Kaufman efficiency ratio (trendiness versus chop). Trades on predicted low-efficiency days made about a third of the money, so gating them out improved nearly every metric and held on two years of out-of-sample data.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DWz7VPXjr5V/" target="_blank" rel="noopener"><img src="../thumb/DWz7VPXjr5V.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DWz7VPXjr5V/" target="_blank" rel="noopener" class="dd-entry-title">Kronos — open-source foundation model trained on 12B candlesticks</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> repo · @gigaqian</div>
+    <div class="dd-entry-summary">Survey of zero-shot time-series foundation models (Google TimesFM 2.5, Amazon Chronos, Salesforce Moirai, IBM Tiny Time Mixers) that mostly fail at stock prediction, then Kronos: an open-source model pre-trained on about 12 billion K-lines from crypto and other markets that beats prior models on financial forecasting. Code on GitHub and Hugging Face from shiyu-coder.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DW7thNGDrPJ/" target="_blank" rel="noopener"><img src="../thumb/DW7thNGDrPJ.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DW7thNGDrPJ/" target="_blank" rel="noopener" class="dd-entry-title">Kronos — transformer that reads candlesticks as a language (part 3)</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> resource · @gigaqian</div>
+    <div class="dd-entry-summary">Final part of a Kronos explainer: after binary spherical quantization and hierarchical encoding turn candles into tokens, a transformer uses self-attention (query/key/value per candle) to weight relevant bars like a volume spike over chop, and an autoregressive decoder predicts the next tokens, i.e. future price action. Contrasts with sequential LSTMs.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DW-TOhIDgjh/" target="_blank" rel="noopener"><img src="../thumb/DW-TOhIDgjh.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DW-TOhIDgjh/" target="_blank" rel="noopener" class="dd-entry-title">Claude — I had my hedge fund team stress test Kronos. It failed on many levels.</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> skill · @gigaqian</div>
+    <div class="dd-entry-summary">This video is designed to make it so absolutely anyone can build their own automated AI system with Kronos integratio... — @gigaqian; uses Claude, Hugging Face; demonstrates code generation.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DUTQPorEwuP/" target="_blank" rel="noopener"><img src="../thumb/DUTQPorEwuP.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DUTQPorEwuP/" target="_blank" rel="noopener" class="dd-entry-title">Lempel-Ziv Complexity — compression algorithms to detect market predictability</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @quant.dhawan</div>
+    <div class="dd-entry-summary">Applies the LZ compression algorithm (behind .zip files) to financial time series. When LZ complexity is low, patterns repeat and the market is more predictable. When high, it's random noise. Novel cross-domain application.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DTPrgWIk4Ns/" target="_blank" rel="noopener"><img src="../thumb/DTPrgWIk4Ns.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DTPrgWIk4Ns/" target="_blank" rel="noopener" class="dd-entry-title">Hurst Exponent — 3D surface of BTC memory and mean-reversion zones</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @quant.dhawan</div>
+    <div class="dd-entry-summary">Plots the Hurst Exponent of BTC-USD as a 3D surface. H&gt;0.5 = trending (momentum), H&lt;0.5 = mean-reverting, H=0.5 = random walk. Shows how market 'memory' varies across timeframes. Basis for adaptive strategy selection.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DTiLFogE4KT/" target="_blank" rel="noopener"><img src="../thumb/DTiLFogE4KT.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DTiLFogE4KT/" target="_blank" rel="noopener" class="dd-entry-title">Lyapunov Exponent — measuring chaos in BTC tick-level microstructure</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @quant.dhawan</div>
+    <div class="dd-entry-summary">Visualizes the Lyapunov Exponent of BTC-USD microstructure data. Positive exponent = chaotic/unpredictable, negative = deterministic. Reveals that what looks random on 5-min charts has measurable chaotic structure at tick level.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DW1kTMcExSj/" target="_blank" rel="noopener"><img src="../thumb/DW1kTMcExSj.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DW1kTMcExSj/" target="_blank" rel="noopener" class="dd-entry-title">Hidden Markov Models — detecting market regime shifts automatically</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> technique · @quant.dhawan</div>
+    <div class="dd-entry-summary">Uses HMMs to mathematically deduce hidden market states from observable returns and volatility. Identifies low-vol bull, high-vol bear, and recovery regimes. Better than lagging indicators for strategy selection.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DTnQ72fk2fm/" target="_blank" rel="noopener"><img src="../thumb/DTnQ72fk2fm.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DTnQ72fk2fm/" target="_blank" rel="noopener" class="dd-entry-title">Tick Data vs OHLC — you're trading on 0.002% of available data</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> inspiration · @quant.dhawan</div>
+    <div class="dd-entry-summary">Daily OHLC candles compress ~86,400 seconds of market data into 4 numbers — throwing away 99.998% of information. Makes the case for tick-level and limit order book analysis over candle-based trading.</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-10-21T18:20:58.219431 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+</div>
+</main>
+</body></html>

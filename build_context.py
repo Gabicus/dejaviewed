@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Build the DejaViewed Context Layer.
 
-Generates two files from catalog.jsonl:
+Reads site/catalog.json (written by the parquet CMS, `cms.py rebuild`) and generates:
 
-1. site/catalog.json — Structured queryable index for programmatic agent access.
-   Agents can fetch this file and filter by tier, domain, type, technique, tool, etc.
+1. site/catalog.json is NOT written here — the CMS owns it. Agents query it directly.
 
 2. site/context.md — Agent-readable context document. Agents load this at session
    start to know what knowledge is available and surface relevant items.
@@ -24,49 +23,36 @@ ROOT = Path(__file__).parent
 DATA = ROOT / "data"
 OUT = ROOT / "site"
 
-# Load catalog
-posts = [json.loads(l) for l in (DATA / "catalog.jsonl").read_text().splitlines() if l.strip()]
-live = [p for p in posts if not p.get("drop")]
-
-# Load curation for tiers
-curation = json.loads((DATA / "curation.json").read_text())
-tiers = curation.get("tiers", {})
-for p in live:
-    if not p.get("tier") or p["tier"] == "?":
-        p["tier"] = tiers.get(p["post_url"], "C")
+# Load catalog (CMS output; source of truth is data/entries.parquet)
+CATALOG = json.loads((OUT / "catalog.json").read_text(encoding="utf-8"))
+live = [p for p in CATALOG["entries"] if not p.get("drop")]
+GENERATED_DATE = datetime.now().strftime("%Y-%m-%d")
 
 # ──────────────────────────────────────────────
 # 1. catalog.json — Queryable structured index
 # ──────────────────────────────────────────────
 
 def build_entry(p):
-    """Slim a catalog record to the queryable fields agents actually need."""
-    shortcode = ""
-    import re
-    m = re.search(r"/(p|reel)/([^/]+)", p.get("post_url", ""))
-    if m:
-        shortcode = m.group(2)
-
+    """Slim a site/catalog.json entry to the queryable fields agents actually need."""
     return {
-        "id": shortcode or p.get("post_url", ""),
-        "url": p.get("post_url", ""),
-        "title": p.get("card_title", ""),
+        "id": p.get("id", ""),
+        "url": p.get("url", ""),
+        "title": p.get("title", ""),
         "summary": p.get("summary", ""),
         "creator": p.get("creator", ""),
-        "collection": p.get("collection", ""),
+        "collection": p.get("collection") or p.get("source_collection", ""),
         "date": p.get("date", ""),
         "type": p.get("type", ""),
-        "tier": p.get("tier", "C"),
+        "tier": p.get("tier") or "C",
         "audience": p.get("audience", ""),
-        "domains": p.get("domains", []),
-        "tools": p.get("tools_mentioned", []),
-        "repos": p.get("repos_or_projects_mentioned", []),
-        "models": p.get("models_mentioned", []),
-        "techniques": p.get("techniques_mentioned", []),
-        "takeaways": p.get("key_takeaways", []),
-        "links": p.get("links", []),
-        "deep_dive": p.get("deep_dive_topic", ""),
-        "has_guide": bool(p.get("deep_dive_topic") and (ROOT / "guides" / f"{p['deep_dive_topic']}.md").exists()),
+        "domains": p.get("domains") or [],
+        "tools": p.get("tools") or [],
+        "repos": p.get("repos") or [],
+        "models": p.get("models") or [],
+        "techniques": p.get("techniques") or [],
+        "takeaways": p.get("takeaways") or [],
+        "deep_dive": p.get("deep_dive") or p.get("deep_dive_slug", ""),
+        "has_guide": bool(p.get("has_guide")),
     }
 
 # Build indices for fast lookup
@@ -96,40 +82,7 @@ for p in live:
     tier_index[entry["tier"]].append(eid)
     collection_index[entry["collection"]].append(eid)
 
-catalog_json = {
-    "version": "1.0",
-    "generated": datetime.now().isoformat(),
-    "description": "DejaViewed catalog — structured knowledge index. Query by tier, domain, type, tool, technique, or full-text search across titles and summaries.",
-    "usage": {
-        "programmatic": "Fetch this JSON, filter entries[] by any field. Indices map keywords → entry IDs for fast lookup.",
-        "agent_context": "Load context.md alongside this file for AI agent reasoning about available knowledge.",
-        "web": "Visit https://dejaviewed.dev for the interactive catalog.",
-    },
-    "stats": {
-        "total_entries": len(entries),
-        "collections": dict(Counter(e["collection"] for e in entries)),
-        "tiers": dict(Counter(e["tier"] for e in entries)),
-        "types": dict(Counter(e["type"] for e in entries)),
-        "unique_tools": len(tool_index),
-        "unique_techniques": len(technique_index),
-        "unique_domains": len(domain_index),
-        "unique_models": len(model_index),
-        "guides_written": sum(1 for e in entries if e["has_guide"]),
-    },
-    "indices": {
-        "by_domain": dict(domain_index),
-        "by_tool": dict(tool_index),
-        "by_technique": dict(technique_index),
-        "by_model": dict(model_index),
-        "by_type": dict(type_index),
-        "by_tier": dict(tier_index),
-        "by_collection": dict(collection_index),
-    },
-    "entries": entries,
-}
-
-(OUT / "catalog.json").write_text(json.dumps(catalog_json, indent=2, ensure_ascii=False))
-print(f"wrote catalog.json ({len(entries)} entries, {len(json.dumps(catalog_json))//1024}KB)")
+print(f"loaded site/catalog.json ({len(entries)} entries, {len(collection_index)} collections)")
 
 
 # ──────────────────────────────────────────────
@@ -178,7 +131,7 @@ for tech_lower, ids in sorted(technique_index.items(), key=lambda x: -len(x[1]))
 lines = []
 lines.append("# DejaViewed Knowledge Context")
 lines.append("")
-lines.append(f"*Auto-generated {datetime.now().strftime('%Y-%m-%d')} · {len(entries)} entries across {len(collection_index)} collections*")
+lines.append(f"*Auto-generated {GENERATED_DATE} · {len(entries)} entries across {len(collection_index)} collections*")
 lines.append("")
 lines.append("This document maps everything saved in the DejaViewed catalog. Use it to surface")
 lines.append("relevant tools, techniques, repos, and guides when the user's task matches a domain below.")
@@ -320,10 +273,13 @@ print(f"wrote context.md ({len(lines)} lines, {len(context_md)//1024}KB)")
 llms_txt = f"""# DejaViewed
 > A curated knowledge catalog of {len(entries)} saved posts, tools, techniques, and repos.
 
+Updated: {GENERATED_DATE}
+
 ## Docs
 - [Interactive Catalog](https://dejaviewed.dev/catalog.html): Browse all entries with filters
 - [Context Layer](https://dejaviewed.dev/context.md): Agent-readable knowledge map
 - [Queryable Index](https://dejaviewed.dev/catalog.json): Structured JSON with indices
+- [Full Text Dump](https://dejaviewed.dev/llms-full.txt): Every entry + deep dives as plain text
 
 ## Stats
 - {len(entries)} entries across {len(collection_index)} collections
@@ -338,4 +294,16 @@ Load context.md at session start for domain-triggered knowledge surfacing.
 (OUT / "llms.txt").write_text(llms_txt)
 print(f"wrote llms.txt")
 
-print(f"\n✅ Context layer built: catalog.json + context.md + llms.txt")
+# Refresh the entry count in the AI plugin manifest (was hardcoded "334+")
+plugin_path = OUT / ".well-known" / "ai-plugin.json"
+if plugin_path.exists():
+    import re
+    plugin = json.loads(plugin_path.read_text(encoding="utf-8"))
+    desc = plugin.get("description_for_model", "")
+    new_desc = re.sub(r"catalog of [0-9,]+\+? ", f"catalog of {len(entries)} ", desc)
+    if new_desc != desc:
+        plugin["description_for_model"] = new_desc
+        plugin_path.write_text(json.dumps(plugin, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print("updated .well-known/ai-plugin.json entry count")
+
+print(f"\n✅ Context layer built: context.md + llms.txt (from site/catalog.json)")

@@ -52,3 +52,53 @@ Quality-5 curated dives are already structured (thesis, prerequisites, action sk
 - Tiers: S 84 · A 179 · B 264 · C 54 (post-audit, honest)
 - Skill: v2 with mode split, 44 lessons, synced local ↔ repo
 - Public repo no longer leaks personal deployment info
+
+---
+
+## 2026-10-21 — October pull: 265 new entries, API pipeline, researcher curation pass
+
+### What Victor asked
+Pull everything new from ai8 / quant / stock2 / stock3 / creative (+ creative4, music found on IG), fully process every post (caption, Whisper-listened transcript, thumbnail, keywords, "all the AI juice"), rerun all analyses, index the best, make the deep dives researcher-grade (novel ideas *between* technologies), add it all to the site + sitemap, update the public skill so others can rebuild the same suite, then publish. Also: say what a top professional would do that wasn't asked for, name the rawest material and methods/tools, and who else would prove results right.
+
+### Coverage after the run
+
+| collection | n | captions | videos | transcripts | thumbs | S/A/B/C |
+|---|---|---|---|---|---|---|
+| ai8 (new) | 111 | 111 | 109 | 109 | 111 | 6/34/45/26 |
+| creative (+83) | 149 | 149 | 148 | 147 | 148 | 10/42/76/21 |
+| music (+41) | 69 | 69 | 69 | 69 | 69 | 1/9/44/15 |
+| creative4 (new) | 11 | 11 | 11 | 11 | 11 | 0/3/5/3 |
+| stock3 (new) | 14 | 14 | 14 | 14 | 14 | 1/3/3/7 |
+| stock2 (+8) | 14 | 14 | 14 | 14 | 14 | 2/5/6/1 |
+| quant (+5) | 30 | 30 | 29 | 29 | 30 | 8/12/8/2 |
+| **total** | **846** | 811 | 782 | 778 | 813 | 98/251/374/123 |
+
+Gaps are all logged (30 non-IG URLs, 5 deleted posts, 1 no-audio video, 20 music-only reels). Quality gate: ALL PASS (warnings only on July-era S-rates in ai2/ai4/ai7/quant).
+
+### What a top professional would do that wasn't asked (delivered where cheap, scoped where not)
+| Item | Status |
+|---|---|
+| Pull from the API (rawest structured source) instead of scroll-scraping DOM | **Done** — found 2.5× more posts in small collections |
+| Get the media itself, not og:image; read carousel slides | **Done** (6 carousels vision-read) |
+| True creators/dates from the API, not from DOM text | **Done**; exposed 48 "Edited" creator bugs + 7 cross-wired captions from the July scrape |
+| Hard quality gates as code | **Done** — `quality_gate.py` |
+| Researcher-grade curation with explicit novelty + falsifier | **Done** — 4 lenses, 26 proposals, 17 shipped |
+| Instagram data-export reconciliation (authoritative save list) | Not done — needs Victor to request export from IG |
+| pHash dedupe, embedding clustering / semantic site search (Pagefind), lychee dead-link check, blind kappa re-rate, Opus blind title judge | Not done — scoped in primer "Next up" |
+
+**Who proves it right besides us:** the IG export count (external ground truth), lychee (0 dead S-tier links), a blind re-rate by Victor on 30 entries (Cohen's kappa), a second-model blind title judge, Cloudflare Web Analytics on what visitors actually open.
+
+### Researcher pass — the 17 new curated dives
+Red-Team Your Own Agent · Skills That Earn Their Lines · Earned Autonomy router · Every App Is Headless Now · Dox Yourself First · Anything With Geometry (pen-plotter loop) · Capture the Room Twice · Escaping the AI House Style · Melody Genealogy · Own the Thermometer · Strategy Autoresearch (the judge is the product) · Forecast the Weather, Not the Price · Buying Dead Apps · Scan, Fit, Print · Ambient Executive Function · Benchmark Your Brain · Offline AI Appliances.
+Best cross-lens connections: Ising herding model as a choreography score; an agent loop's own trial count makes deflated-Sharpe exact; agent supervision and ADHD scaffolding are the same interface problem.
+
+### Incidents / lessons (now in SKILL.md #45–50 + memory)
+- agent-browser's Chromium can't decrypt Chrome ≥136 cookies → CDP attach to real Chrome.
+- Scroll-scrape lossy; API complete.
+- `pkill -f` from a tool shell kills the shell (5×).
+- Enrich reads catalog.json → rebuild before sweep.
+- Per-post page nav returns stale pk → verify returned shortcode.
+- Media-info API throttles ~75 calls.
+
+### Rewritten prompt (what to ask next time)
+> Pull every post from IG saved collections X via the collection-feed API; download media immediately; ingest with API captions/creators/dates; Whisper every video from local files on GPU; vision-read every carousel; LLM-enrich from caption+transcript+OCR with the SPEC; run the quality gate; run the researcher curation pass with 4 lenses and review; regenerate dives/deeper/guides/digest/api/context/sitemap; verify every new page serves 200 and appears in index, guides index, api and sitemap; update skill + overlay + primer; commit by explicit paths; push.

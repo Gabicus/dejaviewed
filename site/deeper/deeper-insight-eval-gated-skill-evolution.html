@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Skills That Earn Their Lines — benchmark-gated self-editing plus subtraction — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">workflow_multiplier</div>
+  <h1>Skills That Earn Their Lines — benchmark-gated self-editing plus subtraction</h1>
+  <div class="thesis">Successor to the harness and second-brain dives. Those stop at 'append a lesson after every mistake'. The catalog now holds the missing machinery — Microsoft SkillOpt rewrites skills only when a benchmark improves, bilevel autoresearch adds a coach loop over the worker, Prime Agent rewrites its own harness to 95.5% on ARC-AGI-3 — and, crucially, evidence that subtraction matters as much as addition: Boris Cherny's simple mode and the setup-purge post show stale rules make newer models dumber. Combine them into a ratchet that both adds and deletes rules, keeping only edits that beat a held-out eval.</div>
+  <div class="tools"><span class='tool-pill'>Anthropic</span> · <span class='tool-pill'>Antidoom</span> · <span class='tool-pill'>ChatGPT</span> · <span class='tool-pill'>Claude</span> · <span class='tool-pill'>Claude Code</span> · <span class='tool-pill'>Grokbot</span> · <span class='tool-pill'>OpenAI</span> · <span class='tool-pill'>Prime Agent</span> · <span class='tool-pill'>SkillOpt</span> · <span class='tool-pill'>Soup</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Export your last 3 months of Claude history, have a small model tag 40 representative tasks with pass/fail criteria — that is your held-out eval, Run an ablation sweep: drop each CLAUDE.md rule and skill one at a time, rerun the eval, delete anything whose removal does not hurt the score, Add the SkillOpt loop on a nightly cron — skills log issues, an optimizer proposes edits, only score-improving edits merge; export passing traces for a Soup fine-tune later, Falsifier: if eval scores vary more between two identical runs than between best and worst rule sets, your eval is too noisy and the whole ratchet is optimizing noise</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> A CLAUDE.md and skills folder with some history, Exported chat logs, A cheap model for grading (Haiku-class or local)</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (11)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbEK3bustQ7/" target="_blank" rel="noopener"><img src="../thumb/DbEK3bustQ7.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbEK3bustQ7/" target="_blank" rel="noopener" class="dd-entry-title">Microsoft SkillOpt — agent skills that rewrite themselves against benchmarks</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> repo · @marc.kaz</div>
+    <div class="dd-entry-summary">Microsoft open-sourced SkillOpt: a base model runs a task, an optimizer rewrites the skill instructions from results, successful paths are separated from failures, and edits that don't beat the benchmark are auto-rejected. Claimed to beat hand-written prompts and TextGrad and to transfer across models.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbjLy_tormR/" target="_blank" rel="noopener"><img src="../thumb/DbjLy_tormR.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbjLy_tormR/" target="_blank" rel="noopener" class="dd-entry-title">Bilevel autoresearch loops — an outer coach loop rewrites the search</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @raycfu</div>
+    <div class="dd-entry-summary">Builds on Karpathy's autoresearch loop (try change, test, keep or revert). An outer coach loop watches the inner worker and rewrites its search playbook so it stops repeating the same ideas; claimed ~5x better on Karpathy's benchmark with the same models.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbtJytsumrO/" target="_blank" rel="noopener"><img src="../thumb/DbtJytsumrO.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbtJytsumrO/" target="_blank" rel="noopener" class="dd-entry-title">Prime Agent — self-rewriting harness lifts Opus 5 to 95.5% on ARC-AGI-3</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @wassimyounes_</div>
+    <div class="dd-entry-summary">Prime Intellect released Prime Agent, an open-source coding harness built on a Recursive Language Model (RLM) framework that rewrites its own prompts, memory, tasks and scaffolding at runtime based on failures. Opus 5 alone scores 30% on ARC-AGI-3; with the harness, 95.5%, a hair over the 95.4% human baseline. The real story is test-time compute and self-modifying scaffolding.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dcgr7YiIXD9/" target="_blank" rel="noopener"><img src="../thumb/Dcgr7YiIXD9.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dcgr7YiIXD9/" target="_blank" rel="noopener" class="dd-entry-title">Self-improving skills vs AI teammates — log issues, rewrite skills</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> technique · @angus.sewell</div>
+    <div class="dd-entry-summary">Argues personified 'AI teammates' are static while skills are adaptable: keep every skill in a database table, have each skill log issues about itself when used into a second table, then periodically run a prompt that reads the accumulated issues and rewrites the skill. Specific workflows with clear end states beat persona prompts.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DZnY2vaxWRF/" target="_blank" rel="noopener"><img src="../thumb/DZnY2vaxWRF.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DZnY2vaxWRF/" target="_blank" rel="noopener" class="dd-entry-title">Systems that prompt your AI — DB-driven loops with skills and cron</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> technique · @angus.sewell</div>
+    <div class="dd-entry-summary">Riffs on Boris Cherny's advice to build loops that prompt Claude instead of prompting it yourself: connect the AI to a database with work and issues tables, use cron jobs to detect pending changes, and run skills for scoping, implementing, testing and repeating until the human goal is met. Counterpoint: for go-to-market work the human is still the bottleneck and must stay in the loop.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dd1cWobxn7n/" target="_blank" rel="noopener"><img src="../thumb/Dd1cWobxn7n.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dd1cWobxn7n/" target="_blank" rel="noopener" class="dd-entry-title">Chat-history mining — derive better custom instructions from your AI logs</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> technique · @angus.sewell</div>
+    <div class="dd-entry-summary">Export your full ChatGPT or Claude history, have a small model like Jev tag every conversation for mistakes and usage patterns, then feed the analysis to your main assistant to write new custom instructions. A cheaper alternative to building a full personal 'Jarvis' agent.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DcMSk7Rxcdu/" target="_blank" rel="noopener"><img src="../thumb/DcMSk7Rxcdu.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DcMSk7Rxcdu/" target="_blank" rel="noopener" class="dd-entry-title">Claude Code simple mode — ablating system prompts makes the model smarter</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> technique · @foundedceo</div>
+    <div class="dd-entry-summary">Boris Cherny at YC Startup School: Claude Code accepts --system-prompt for a custom system prompt, and an undocumented simple mode (env var CLAUDE_CODE_SIMPLE=1) deletes all system and tool prompts. Anthropic uses it as an ablation and finds the model is slightly more intelligent without them, though product prompts still help it behave as users expect.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dbhuaw7Pk4u/" target="_blank" rel="noopener"><img src="../thumb/Dbhuaw7Pk4u.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dbhuaw7Pk4u/" target="_blank" rel="noopener" class="dd-entry-title">Claude setup purge — audit stale CLAUDE.md rules for newer models</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> technique · @cooper.simson</div>
+    <div class="dd-entry-summary">Argues rules and skills written for older Claude models now hold newer ones back, citing Anthropic cutting much of its system prompt after Opus 5. Recommends a prompt that audits every CLAUDE.md rule and skill, deletes dead weight and rebuilds a lean setup; the prompt itself is comment-gated.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DaocklrJPJC/" target="_blank" rel="noopener"><img src="../thumb/DaocklrJPJC.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DaocklrJPJC/" target="_blank" rel="noopener" class="dd-entry-title">Liquid AI Antidoom — FTPO training to kill reasoning doom loops</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> technique · @gigaqian</div>
+    <div class="dd-entry-summary">Antidoom is Liquid AI's open-source pipeline that finds the exact token restarting a repetition loop, marks it rejected, picks up to 20 alternatives, and trains with Final Token Preference Optimization (FTPO) plus a KL-like regularizer in logit space so reasoning isn't damaged.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DcvIZ7cT4_P/" target="_blank" rel="noopener"><img src="../thumb/DcvIZ7cT4_P.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DcvIZ7cT4_P/" target="_blank" rel="noopener" class="dd-entry-title">Soup — fine-tune LLMs on a 4GB laptop GPU with one command</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> tool · @martintrainhard</div>
+    <div class="dd-entry-summary">Soup, built by a 17-year-old solo founder from Kazakhstan, wraps LLM fine-tuning into a simple flow: describe the goal, point at your data, run `soup train`, and it auto-picks batch size and memory settings. Claimed 85k users training medical assistants and reasoning models on consumer GPUs. Link gated; verify the claims.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DeNnxp5v_Fu/" target="_blank" rel="noopener"><img src="../thumb/DeNnxp5v_Fu.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DeNnxp5v_Fu/" target="_blank" rel="noopener" class="dd-entry-title">Self-improving trading agent — critic loop that rewrites losing strategies</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> technique · @raycfu</div>
+    <div class="dd-entry-summary">Workflow pitch: describe a strategy, an agent codes it and wires the broker API, runs a five-year backtest, and a critic agent dissects losing trades and rewrites entry/exit logic before rerunning. Hard-coded stop-loss and drawdown limits sit outside the agent's reach, and failed strategies go to a local DB the agent learns from. Guide is comment-gated.</div>
+    
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-10-21T18:20:58.213612 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.com" style="color:var(--accent)">dejaviewed.com</a>
+</div>
+</main>
+</body></html>
