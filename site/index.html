@@ -1,0 +1,493 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DejaViewed — You've saved this before.</title>
+<meta name="description" content="Every save from your feeds — read, transcribed, tiered S through C, cross-linked into graphs, and turned into guides you can act on. A Claude Code skill and the catalog it built.">
+<meta property="og:title" content="DejaViewed — You've saved this before.">
+<meta property="og:description" content="A curated catalog of saved posts, tools, techniques and repos — tiered, transcribed, graphed, and turned into deep-dive guides. Agent-readable, too.">
+<meta property="og:type" content="website">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Ccircle cx=%228%22 cy=%228%22 r=%226%22 fill=%22%23a78bfa%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
+<style>
+/* ── Showcase landing — page-local. Tokens + breakpoints come from shared.css / DESIGN.md. ── */
+.lp{max-width:1280px;margin:0 auto;padding:28px 22px 60px;overflow-x:hidden}
+.lp *{min-width:0}
+.mono{font-family:'JetBrains Mono',Menlo,monospace}
+.eyebrow{font:700 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.label{font:800 11px/1 'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-mute)}
+
+/* Hero */
+.hero2{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:36px;align-items:center;padding:28px 0 8px}
+.hero2 .kicker{max-width:100%;flex-wrap:wrap;line-height:1.4!important;display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:8px;background:rgba(0,0,0,.45);border:1px solid var(--border);font:500 12px/1 'JetBrains Mono',monospace;color:var(--accent);margin-bottom:18px}
+.hero2 .kicker .d{color:var(--text-mute)}
+.hero2 h1{margin:0;font:900 clamp(40px,6vw,72px)/1 'Inter',sans-serif;letter-spacing:-.035em;background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent-2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:4px}
+.hero2 .tag{margin:12px 0 0;font:800 clamp(18px,2.2vw,24px)/1.2 'Inter',sans-serif;letter-spacing:-.015em;color:#fff}
+.hero2 p.lede{margin:14px 0 0;font-size:15px;line-height:1.65;color:var(--text-dim);max-width:58ch}
+.hero2 p.lede b{color:var(--text);font-weight:700}
+.ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:10px 16px;border-radius:8px;font:800 11px/1 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--border-hi);background:var(--panel);color:var(--text);transition:filter .15s ease,background .15s ease,border-color .15s ease}
+.btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3));border-color:rgba(167,139,250,.55);color:#fff}
+.btn.primary:hover{filter:brightness(1.18);color:#fff}
+.btn .g{font-size:13px;line-height:1}
+
+/* BAN grid (hero right) */
+.statwrap{padding:18px;background:rgba(18,18,26,.6);border:1px solid var(--border);border-radius:var(--radius)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.stat{padding:14px 14px 12px;background:var(--panel);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;gap:6px;transition:border-color .15s ease,background .15s ease}
+a.stat:hover{border-color:var(--border-hi);background:var(--panel-2)}
+.stat .v{font:900 26px/1 'Inter',sans-serif;color:#fff;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .l{font:700 10.5px/1.2 'Inter',sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--text-mute)}
+.stat.big{grid-column:span 2}
+.stat.big .v{font-size:40px}
+.stat.s .v{color:var(--c-entry-s)}
+.tierbar{margin-top:14px}
+.tierbar .bar{display:flex;height:8px;border-radius:999px;overflow:hidden;background:var(--panel);border:1px solid var(--border)}
+.tierbar .bar i{display:block;height:100%}
+.tierbar .key{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font:600 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.04em;color:var(--text-mute)}
+.tierbar .key span{display:inline-flex;align-items:center;gap:6px}
+.tierbar .key i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.tierbar .key b{color:var(--text-dim);font-weight:700}
+
+/* Section scaffolding */
+.sec{margin:56px 0 0}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.sec-head .t{display:flex;flex-direction:column;gap:8px}
+.sec-head h2{margin:0;font:900 24px/1.15 'Inter',sans-serif;letter-spacing:-.015em;color:#fff}
+.sec-head p{margin:0;color:var(--text-dim);font-size:13.5px;max-width:70ch}
+.sec-head .more{font:700 11px/1 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);padding:8px 0}
+.sec-head .more:hover{color:#fff}
+
+/* Shared card base */
+.tile{position:relative;display:flex;flex-direction:column;gap:8px;padding:18px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);overflow:hidden;transition:background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.tile::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent-3));opacity:.35}
+a.tile:hover,.tile.hov:hover{background:var(--panel-2);border-color:var(--border-hi);transform:translateY(-2px);box-shadow:var(--shadow-1);color:var(--text)}
+
+/* Destinations */
+.dest{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.dest .tile{min-height:132px}
+.dest .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.dest .glyph{width:34px;height:34px;flex:none;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:16px;line-height:1;background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--accent)}
+.dest .num{font:900 22px/1 'Inter',sans-serif;color:#fff;font-variant-numeric:tabular-nums;text-align:right}
+.dest .num small{display:block;margin-top:4px;font:700 9.5px/1 'Inter',sans-serif;letter-spacing:.09em;text-transform:uppercase;color:var(--text-mute)}
+.dest h3{margin:4px 0 0;font:800 14px/1.3 'Inter',sans-serif;letter-spacing:-.005em;color:#fff}
+.dest p{margin:0;font-size:12.5px;line-height:1.6;color:var(--text-dim)}
+.dest .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.chip{display:inline-flex;align-items:center;min-height:28px;padding:6px 9px;border-radius:6px;background:rgba(0,0,0,.45);border:1px solid var(--border);font:500 11.5px/1 'JetBrains Mono',monospace;color:var(--accent);transition:border-color .15s ease,color .15s ease}
+.chip:hover{border-color:rgba(167,139,250,.5);color:#fff}
+.dest .g-blue{color:var(--accent-3)} .dest .g-pink{color:var(--accent-2)} .dest .g-gold{color:var(--c-entry-s)} .dest .g-ok{color:var(--ok)}
+
+/* Insight dives */
+.dives{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.dive .eb{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dive .eb .eyebrow{font-size:10px;letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dive .stars{font-size:11px;letter-spacing:1px;color:var(--c-entry-s);white-space:nowrap}
+.dive .stars .off{color:var(--text-mute);opacity:.5}
+.dive h3{margin:2px 0 0;font:800 14px/1.35 'Inter',sans-serif;letter-spacing:-.005em;color:#fff}
+.dive p{margin:0;font-size:12.5px;line-height:1.6;color:var(--text-dim)}
+.dive .meta{margin-top:auto;padding-top:10px;border-top:1px dashed var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;font:600 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.04em;color:var(--text-mute)}
+.dive .meta a{color:var(--text-dim)} .dive .meta a:hover{color:var(--accent-2)}
+.dive .meta .go{color:var(--accent)}
+.dive .cover{position:absolute;inset:0;z-index:0}
+.dive > *:not(.cover){position:relative;z-index:1;pointer-events:none}
+.dive .meta a{pointer-events:auto}
+.showall{display:flex;justify-content:center;margin-top:16px}
+
+/* Freshest saves */
+.fresh{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.save{padding:0;gap:0}
+.save .th{aspect-ratio:5/2;overflow:hidden;background:radial-gradient(ellipse 80% 90% at 30% 20%,rgba(167,139,250,.22),transparent),radial-gradient(ellipse 70% 80% at 85% 90%,rgba(244,114,182,.16),transparent),var(--surface);border-bottom:1px solid var(--border)}
+.save .th img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s ease}
+.save:hover .th img{transform:scale(1.04)}
+.save .bd{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.save .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.save h3{margin:0;font:800 13px/1.35 'Inter',sans-serif;color:#fff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.save .meta{margin-top:auto;font:600 10.5px/1.3 'JetBrains Mono',monospace;letter-spacing:.04em;color:var(--text-mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.save.cat{border-left:3px solid var(--cat,var(--border))}
+.lp .chiptier{flex:none;display:inline-block;padding:3px 7px;border-radius:5px;font:900 9px/1 'Inter',sans-serif;letter-spacing:.08em;margin:0;cursor:default}
+.lp .chiptier.tier-s{color:var(--c-entry-s);background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.4)}
+.lp .chiptier.tier-a{color:var(--c-entry-a);background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.4)}
+.lp .chiptier.tier-b{color:var(--c-entry-b);background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.4)}
+.lp .chiptier.tier-c{color:var(--text-dim);background:rgba(106,106,128,.12);border:1px solid rgba(106,106,128,.4)}
+
+/* How it's made */
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);overflow:hidden}
+.step{padding:16px 16px 18px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+.step:last-child{border-right:0}
+.step .n{font:700 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:var(--text-mute)}
+.step .n b{color:var(--accent);font-weight:700}
+.step h3{margin:2px 0 0;font:900 13px/1 'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#fff}
+.step p{margin:0;font-size:12px;line-height:1.55;color:var(--text-dim)}
+.step .live{margin-top:auto;padding-top:6px;font:600 10.5px/1.3 'JetBrains Mono',monospace;color:var(--ok)}
+.install{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:14px;margin-top:14px;align-items:start}
+.install .box{padding:18px;background:rgba(18,18,26,.6);border:1px solid var(--border);border-radius:var(--radius)}
+.install h3{margin:0 0 8px;font:800 11px/1 'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--text-mute)}
+.install p{margin:0;font-size:13px;line-height:1.6;color:var(--text-dim)}
+.install p code{background:rgba(0,0,0,.45);border:1px solid var(--border);padding:2px 7px;border-radius:6px;color:var(--accent);font:500 12px/1 'JetBrains Mono',monospace}
+.cmd{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;margin-top:8px;background:rgba(0,0,0,.55);border:1px solid var(--border);border-radius:8px;font:500 12px/1.55 'JetBrains Mono',monospace;color:var(--text)}
+.cmd:first-of-type{margin-top:0}
+.cmd .p{color:var(--text-mute);flex:none;user-select:none}
+.cmd code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--c-repo)}
+.cmd .w{flex:none;font:700 9.5px/1.9 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute)}
+
+footer.site code{font-family:'JetBrains Mono',monospace;color:var(--accent)}
+.err{padding:14px;border:1px dashed var(--border-hi);border-radius:10px;color:var(--text-dim);font-size:12.5px}
+
+/* ── Breakpoints (DESIGN.md §8: 900 / 640 / 400) ── */
+@media(max-width:1100px){.fresh{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:900px){
+  .hero2{grid-template-columns:1fr;gap:24px;padding-top:12px}
+  .dest,.dives{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fresh{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step{border-bottom:1px solid var(--border)}
+  .step:nth-child(2n){border-right:0}
+  .step:last-child{grid-column:span 2;border-bottom:0}
+  .install{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .lp{padding:20px 16px 40px}
+  .hero2 h1{font-size:44px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat.big .v{font-size:32px}
+  .statwrap{padding:12px}
+  .tile{padding:14px}
+  .save{padding:0}
+  .dives{grid-template-columns:1fr}
+  .sec{margin-top:44px}
+  .sec-head h2{font-size:21px}
+  .cmd{flex-wrap:wrap}
+  .cmd .w{width:100%;order:-1;line-height:1}
+}
+@media(max-width:400px){
+  .dest,.fresh{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .step{border-right:0}
+  .step:last-child{grid-column:auto}
+  .hero2 h1{font-size:38px}
+}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+
+<main class="lp" id="lp">
+
+  <!-- ── Hero ─────────────────────────────────────────────── -->
+  <section class="hero2" aria-labelledby="h-hero">
+    <div>
+      <div class="kicker"><span class="d">$</span> /dejaviewed <span class="d">— your saved tab, finally read</span></div>
+      <h1 id="h-hero">DejaViewed</h1>
+      <div class="tag">You&rsquo;ve saved this before.</div>
+      <p class="lede">You scroll, you tap save, you swear you&rsquo;ll come back. You don&rsquo;t. So every save gets <b>read</b>, the videos get <b>transcribed</b>, each one gets <b>tiered</b> S through C, they get <b>connected</b> by creator, tool and technique &mdash; and the threads worth pulling get <b>turned into guides</b> you can actually act on.</p>
+      <div class="ctas">
+        <a class="btn primary" href="catalog.html"><span class="g">◉</span> Browse the catalog</a>
+        <a class="btn" href="guides/"><span class="g">◆</span> Read the guides</a>
+      </div>
+    </div>
+    <div class="statwrap" aria-label="Live catalog stats">
+      <div class="stats" id="stats"></div>
+      <div class="tierbar" id="tierbar"></div>
+    </div>
+  </section>
+
+  <!-- ── What's inside ─────────────────────────────────────── -->
+  <section class="sec" aria-labelledby="h-inside">
+    <div class="sec-head"><div class="t">
+      <span class="eyebrow">▪ What&rsquo;s inside</span>
+      <h2 id="h-inside">Nine ways into the pile</h2>
+      <p>Same saves, different lenses &mdash; a filterable catalog, long-form guides, two graphs, a thought board, and a layer your agents can read without scraping.</p>
+    </div></div>
+    <div class="dest" id="dest"></div>
+  </section>
+
+  <!-- ── Insight dives ─────────────────────────────────────── -->
+  <section class="sec" id="insight-dives" aria-labelledby="h-dives">
+    <div class="sec-head">
+      <div class="t">
+        <span class="eyebrow">◆ Read these guides</span>
+        <h2 id="h-dives">Insight dives</h2>
+        <p id="dives-sub">Hand-picked threads that only show up when you read a few hundred saves side by side &mdash; each one stitched from the entries that prove it.</p>
+      </div>
+      <a class="more" href="guides/">All guides →</a>
+    </div>
+    <div class="dives" id="dives"></div>
+    <div class="showall" id="showall"></div>
+  </section>
+
+  <!-- ── Freshest saves ────────────────────────────────────── -->
+  <section class="sec" aria-labelledby="h-fresh">
+    <div class="sec-head">
+      <div class="t">
+        <span class="eyebrow">⬤ Freshest saves</span>
+        <h2 id="h-fresh">What just landed</h2>
+        <p>The newest additions, straight from the source &mdash; already tiered.</p>
+      </div>
+      <a class="more" href="catalog.html">Full catalog →</a>
+    </div>
+    <div class="fresh" id="fresh"></div>
+  </section>
+
+  <!-- ── How it's made ─────────────────────────────────────── -->
+  <section class="sec" aria-labelledby="h-how">
+    <div class="sec-head"><div class="t">
+      <span class="eyebrow">⬡ How it&rsquo;s made</span>
+      <h2 id="h-how">Five passes, one skill</h2>
+      <p>It&rsquo;s a Claude Code skill. Point it at your saves and it runs the same pipeline that built this site.</p>
+    </div></div>
+    <div class="steps" id="steps"></div>
+    <div class="install">
+      <div class="box">
+        <h3>Install</h3>
+        <p>Clone <a href="https://github.com/Gabicus/dejaviewed" target="_blank" rel="noopener">Gabicus/dejaviewed</a> &mdash; adds <code>/dejaviewed</code> to Claude Code. Then hand it your saves and go to bed.</p>
+      </div>
+      <div class="box">
+        <div class="cmd"><span class="p">$</span><code>git clone git@github.com:Gabicus/dejaviewed.git ~/.claude/plugins/dejaviewed</code><span class="w">Plugin</span></div>
+        <div class="cmd"><span class="p">$</span><code>git clone git@github.com:Gabicus/dejaviewed.git /tmp/dv &amp;&amp; cp -r /tmp/dv/skills/dejaviewed ~/.claude/skills/</code><span class="w">Skill-only</span></div>
+        <div class="cmd"><span class="p">&gt;</span><code>/dejaviewed</code><span class="w">Invoke</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site"><div class="wrap">
+  Curated by <a href="https://instagram.com/6ab3">@6ab3</a> · Built with the <code>dejaviewed</code> skill for Claude Code<br>
+  <span style="font-size:11px">All content sourced from public posts. Cookie-safe scraping. <span id="count"></span></span>
+</div></footer>
+
+<script src="catalog.js"></script>
+<script src="deep_dives.js"></script>
+<script src="landing_meta.js"></script>
+<script>
+(function(){
+  'use strict';
+  const el = DV.el;
+  const $ = id => document.getElementById(id);
+  const fmt = n => (typeof n === 'number' && isFinite(n)) ? n.toLocaleString('en-US') : '—';
+
+  async function loadJSON(url){
+    try { const r = await fetch(url); return r.ok ? await r.json() : null; } catch(e){ return null; }
+  }
+  async function loadDives(){
+    if (window.__DEEP_DIVES) return window.__DEEP_DIVES;
+    return await loadJSON('api/deep_dives.json');
+  }
+  function stripTags(s){ return String(s||'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim(); }
+  function clip(s, n){
+    s = stripTags(s);
+    if (s.length <= n) return s;
+    const cut = s.slice(0, n); const sp = cut.lastIndexOf(' ');
+    return (sp > n*0.6 ? cut.slice(0, sp) : cut).replace(/[\s,;:—–-]+$/,'') + '…';
+  }
+  function parseDate(d){ const t = Date.parse(d||''); return isNaN(t) ? 0 : t; }
+  function shortDate(t){
+    if (!t) return '';
+    return new Date(t).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+  const KNOWN_CATS = ['repo','tool','skill','guide','platform','resource','art','design','uiux','technique'];
+
+  function render(cat, dd){
+    const meta = window.__LANDING_META || null;
+    const entries = (cat && cat.entries) || [];
+    const stats = (cat && cat.stats) || {};
+    const tiers = stats.tiers || {};
+    const dives = (dd && dd.deep_dives) || [];
+    const curated = dives.filter(d => d.suggested_by === 'curated');
+    const guideSlugs = meta ? meta.guideSlugs : null;
+    const deeperSlugs = meta ? meta.deeperSlugs : null;
+    const guideSet = guideSlugs ? new Set(guideSlugs) : null;
+    const deeperSet = deeperSlugs ? new Set(deeperSlugs) : null;
+
+    const nEntries = entries.length || stats.total || 0;
+    const nColl = Object.keys(stats.collections || {}).length ||
+      new Set(entries.map(e => e.collection || e.source_collection).filter(Boolean)).size;
+    const nCreators = new Set(entries.map(e => (e.creator||'').toLowerCase()).filter(Boolean)).size;
+    const nS = (tiers.S != null) ? tiers.S : entries.filter(e => e.tier === 'S').length;
+    const nTrans = entries.filter(e => e.transcript && String(e.transcript).trim()).length;
+    const nDives = dives.length;
+    const nGuides = guideSlugs ? guideSlugs.length : curated.length;
+    const nDeeper = deeperSlugs ? deeperSlugs.length : curated.length;
+    const nTools = Object.keys((cat && cat.indices && cat.indices.by_tool) || {}).length;
+    const nTech = Object.keys((cat && cat.indices && cat.indices.by_technique) || {}).length;
+
+    // ── Hero stats ──
+    const statDefs = [
+      { v:nEntries,  l:'Entries',     href:'catalog.html', cls:'big' },
+      { v:nColl,     l:'Collections', href:'catalog.html' },
+      { v:nCreators, l:'Creators',    href:'graph.html' },
+      { v:nS,        l:'S-tier',      href:'catalog.html', cls:'s' },
+      { v:nTrans,    l:'Transcripts', href:'catalog.html' },
+      { v:nDives,    l:'Deep dives',  href:'#insight-dives' },
+      { v:nGuides,   l:'Guides',      href:'guides/' },
+    ];
+    const statsEl = $('stats');
+    statDefs.forEach(s => statsEl.appendChild(
+      el('a', { class:'stat' + (s.cls ? ' '+s.cls : ''), href:s.href }, [
+        el('span', { class:'v' }, fmt(s.v)),
+        el('span', { class:'l' }, s.l),
+      ])
+    ));
+
+    // Tier distribution bar
+    const tOrder = [['S','var(--c-entry-s)'],['A','var(--c-entry-a)'],['B','var(--c-entry-b)'],['C','var(--c-entry-c)']];
+    const tTotal = tOrder.reduce((a,[t]) => a + (tiers[t]||0), 0);
+    if (tTotal){
+      const bar = el('div', { class:'bar', role:'img', 'aria-label':'Tier distribution: ' + tOrder.map(([t]) => t+' '+(tiers[t]||0)).join(', ') });
+      const key = el('div', { class:'key' });
+      tOrder.forEach(([t,c]) => {
+        const n = tiers[t]||0;
+        const seg = el('i'); seg.style.width = (100*n/tTotal).toFixed(2)+'%'; seg.style.background = c;
+        bar.appendChild(seg);
+        const sw = el('i'); sw.style.background = c;
+        key.appendChild(el('span', null, [sw, t+' ', el('b', null, fmt(n))]));
+      });
+      $('tierbar').append(el('div', { class:'label', style:'margin-bottom:8px' }, 'Tier mix'), bar, key);
+    }
+    $('count').textContent = nEntries ? fmt(nEntries) + ' entries · ' + fmt(nDives) + ' deep dives.' : '';
+
+    // ── Destinations ──
+    const dest = [
+      { g:'◉', gc:'',       t:'Catalog',        href:'catalog.html',      n:nEntries, u:'entries',
+        p:'Every save, searchable and filterable by tier, type, collection and creator. The whole pile, finally legible.' },
+      { g:'◆', gc:'',       t:'Guides',         href:'guides/',           n:nGuides,  u:'guides',
+        p:'Long-form write-ups that stitch several saves into one plan &mdash; with the links the creators never gave you.' },
+      { g:'⬢', gc:'g-pink', t:'Deeper dives',   href:'#insight-dives',    n:nDeeper,  u:'deeper',
+        p:'The second pass on each insight &mdash; sources chased down, steps spelled out, rough edges named.' },
+      { g:'⬡', gc:'g-blue', t:'Graph · Force',  href:'graph.html',        n:nCreators, u:'creators',
+        p:'A force-directed map of the creators you keep saving, and the tools and techniques they share.' },
+      { g:'✦', gc:'g-blue', t:'Graph · Cosmos', href:'graph-cosmos.html', n:nTools + nTech, u:'tools + techniques',
+        p:'The same knowledge as a drifting canvas galaxy. Zoom out to see the clusters you didn&rsquo;t know you had.' },
+      { g:'▦', gc:'g-pink', t:'Board',          href:'board.html',        n:null,
+        p:'A drag-to-connect thought board. Pull saves onto a canvas and wire them into projects and ideas.' },
+      { g:'❯', gc:'g-ok',   t:'API for agents', href:null,                n:null,
+        p:'Machine-readable everything. Point your agent at it and skip the scraping.',
+        chips:[['api/catalog.json','api/catalog.json'],['llms.txt','llms.txt'],['context.md','context.md']] },
+      { g:'▪', gc:'',       t:'About',          href:'about/',            n:null,
+        p:'Who curates this pile, and the rest of what they build.' },
+      { g:'↗', gc:'g-gold', t:'Links',          href:'links/',            n:null,
+        p:'Everywhere else the curator lives online &mdash; one page, no algorithm.' },
+    ];
+    const destEl = $('dest');
+    dest.forEach(d => {
+      const top = el('div', { class:'top' }, [
+        el('span', { class:'glyph ' + d.gc, 'aria-hidden':'true' }, d.g),
+        d.n != null ? el('span', { class:'num' }, [fmt(d.n), el('small', null, d.u)]) : null,
+      ]);
+      const desc = el('p'); desc.textContent = decodeEntities(d.p);
+      const kids = [top, el('h3', null, d.t), desc];
+      if (d.chips){
+        kids.push(el('div', { class:'chips' }, d.chips.map(([label, href]) => el('a', { class:'chip', href }, label))));
+        destEl.appendChild(el('div', { class:'tile' }, kids));
+      } else {
+        destEl.appendChild(el('a', { class:'tile', href:d.href }, kids));
+      }
+    });
+
+    // ── Insight dives ──
+    const classes = (dd && dd.classes) || {};
+    const sorted = curated.slice().sort((a,b) =>
+      ((b.quality_rating||0) - (a.quality_rating||0)) || String(a.title||'').localeCompare(String(b.title||'')));
+    const divesEl = $('dives');
+    const INITIAL = 9;
+    function diveCard(d){
+      const slug = String(d.id||'').replace(/^dd-insight-/, '');
+      const hasGuide = guideSet ? guideSet.has(slug) : true;
+      const href = hasGuide ? 'guides/' + encodeURIComponent(slug) + '.html' : 'catalog.html#dive-' + encodeURIComponent(d.id||'');
+      const cls = d.class || d.dive_class || d.dive_type || '';
+      const clsLabel = (classes[cls] && classes[cls].label) || cls.replace(/_/g,' ');
+      const r = Math.max(0, Math.min(5, Math.round(d.quality_rating||0)));
+      const stars = el('span', { class:'stars', 'aria-label': r + ' of 5' }, [
+        '★'.repeat(r), el('span', { class:'off' }, '★'.repeat(5-r))
+      ]);
+      const n = (d.entry_ids && d.entry_ids.length) || d.entry_count || 0;
+      const metaKids = [el('span', null, n + (n === 1 ? ' entry' : ' entries'))];
+      if (deeperSet && deeperSet.has(slug)){
+        metaKids.push(el('a', { href:'deeper/deeper-insight-' + encodeURIComponent(slug) + '.html', title:'Deeper dive' }, 'deeper ↗'));
+      }
+      metaKids.push(el('span', { class:'go' }, hasGuide ? 'guide →' : 'in catalog →'));
+      return el('article', { class:'tile hov dive' }, [
+        el('a', { class:'cover', href, 'aria-label': stripTags(d.title||'Insight dive') }),
+        el('div', { class:'eb' }, [el('span', { class:'eyebrow' }, clsLabel), stars]),
+        el('h3', null, stripTags(d.title||'')),
+        el('p', null, clip(d.thesis || d.summary || '', 180)),
+        el('div', { class:'meta' }, metaKids),
+      ]);
+    }
+    if (!sorted.length){
+      divesEl.appendChild(el('div', { class:'err' }, 'No curated dives found in deep_dives.js.'));
+    } else {
+      sorted.slice(0, INITIAL).forEach(d => divesEl.appendChild(diveCard(d)));
+      if (sorted.length > INITIAL){
+        const btn = el('button', { class:'btn', type:'button', onclick: function(){
+          sorted.slice(INITIAL).forEach(d => divesEl.appendChild(diveCard(d)));
+          this.remove();
+        }}, 'Show all ' + sorted.length + ' insight dives');
+        $('showall').appendChild(btn);
+      }
+      $('dives-sub').textContent = sorted.length + ' hand-picked threads that only show up when you read a few hundred saves side by side — each one stitched from the entries that prove it.';
+    }
+
+    // ── Freshest saves ──
+    const fresh = entries
+      .map(e => ({ e, t: parseDate(e.date) }))
+      .filter(x => x.t)
+      .sort((a,b) => b.t - a.t)
+      .slice(0, 8);
+    const freshEl = $('fresh');
+    fresh.forEach(({e, t}) => {
+      const img = el('img', { src: e.thumb_path || ('thumb/' + encodeURIComponent(e.post_id || e.id) + '.jpg'),
+                              alt:'', loading:'lazy', decoding:'async' });
+      img.addEventListener('error', function(){ this.remove(); });
+      const type = String(e.type||'').toLowerCase();
+      const card = el('a', { class:'tile save' + (KNOWN_CATS.includes(type) ? ' cat' : ''),
+                             href: e.url || DV.entryUrl(e.id), target:'_blank', rel:'noopener' }, [
+        el('div', { class:'th' }, img),
+        el('div', { class:'bd' }, [
+          el('div', { class:'hd' }, [
+            el('h3', null, stripTags(e.title || e.summary || e.post_id || 'Untitled save')),
+            el('span', { class:'chiptier tier-' + String(e.tier||'C').toLowerCase() }, String(e.tier||'C').toUpperCase()),
+          ]),
+          el('div', { class:'meta' }, (e.creator ? '@' + e.creator : 'unknown') + ' · ' + shortDate(t)),
+        ]),
+      ]);
+      if (KNOWN_CATS.includes(type)) card.style.setProperty('--cat', 'var(--c-' + type + ')');
+      freshEl.appendChild(card);
+    });
+    if (!fresh.length) freshEl.appendChild(el('div', { class:'err' }, 'Catalog data didn’t load.'));
+
+    // ── Steps ──
+    const steps = [
+      ['Pull',       'Saves come out of Instagram, TikTok, X, Reddit, YouTube, Pinterest and your bookmarks.', fmt(nColl) + ' collections'],
+      ['Transcribe', 'Reels and videos get run through Whisper, so what was said is searchable too.',          fmt(nTrans) + ' transcripts'],
+      ['Enrich',     'Each save gets a real title, a summary, tools, techniques, repos and a tier.',            fmt(nS) + ' made S-tier'],
+      ['Curate',     'Saves get read side by side; the threads worth pulling become insight dives.',            fmt(curated.length) + ' curated dives'],
+      ['Publish',    'Out comes this site &mdash; catalog, guides, graphs &mdash; plus an agent-readable layer.', fmt(nGuides) + ' guides live'],
+    ];
+    const stepsEl = $('steps');
+    steps.forEach(([h, p, live], i) => {
+      stepsEl.appendChild(el('div', { class:'step' }, [
+        el('span', { class:'n' }, [el('b', null, '0' + (i+1)), ' ──']),
+        el('h3', null, h),
+        el('p', null, decodeEntities(p)),
+        el('span', { class:'live' }, '◉ ' + live),
+      ]));
+    });
+  }
+
+  // Static copy above uses &mdash;/&rsquo; for authoring convenience — decode to text (never innerHTML).
+  function decodeEntities(s){
+    return String(s).replace(/&mdash;/g,'—').replace(/&rsquo;/g,'’').replace(/&amp;/g,'&');
+  }
+
+  (async function boot(){
+    let cat = null, dd = null;
+    try { cat = await DV.loadCatalog(); } catch(e){ console.warn('catalog load failed', e); }
+    try { dd = await loadDives(); } catch(e){ console.warn('deep dives load failed', e); }
+    render(cat, dd);
+  })();
+})();
+</script>
+</body></html>
