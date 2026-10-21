@@ -19,7 +19,7 @@ Updated: 2026-10-21
 
 ## Next up
 
-1. **Landing / showcase page redesign** (Victor: "smoother, cooler display page for what this site does, can do, and holds"). Inventory done (see session-log.md Oct 21): index.html is the catalog itself, no hero; nav lacks About/Links/deeper; Admin exposed in public nav. Use DESIGN.md + frontend-design skill; live stats from catalog.json; feature the 38 curated dives.
+1. ~~Landing redesign~~ DONE Oct 21 (merged 05f9bec): index.html = showcase, catalog.html = full catalog, nav Catalog·Guides·Graphs·Board·About, Admin out of nav. `build_landing_meta.py` runs after guides/deeper regen.
 2. Parked q3 proposals: revisit after Victor reads the 17 new dives.
 3. Carousel slide videos (few) untranscribed — add to transcribe.py targets if wanted.
 4. Old collections ai2/ai4/ai7/quant S-rate 20–29% (July manual regrade) — gate warns; decide whether to re-tier with the LLM rubric.
