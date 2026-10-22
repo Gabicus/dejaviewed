@@ -78,7 +78,8 @@ AI_CRAWLERS = [
     ("DuckDuckBot", r"duckduckbot|duckassistbot"),
     ("cohere-ai", r"cohere-ai|cohere-training"),
     ("Diffbot", r"diffbot"),
-    ("other-bot", r"bot|crawler|spider|scrape|curl/|wget/|python-requests|python-urllib|httpx|go-http-client|axios|node-fetch|headless"),
+    ("scanner", r"scanner|scan/|l9scan|leakix|nuclei|zgrab|masscan|nmap|censys|shodan|^https?://|wp-admin|wp-login|install\.php"),
+    ("other-bot", r"bot|crawler|spider|scrape|curl/|wget/|python-requests|python-urllib|httpx|go-http-client|axios|node-fetch|headless|^mozilla/5\.0 \(windows nt 10\.0; win64; x64\) applewebkit/537\.36$"),
 ]
 _AI_RE = [(n, re.compile(p, re.I)) for n, p in AI_CRAWLERS]
 

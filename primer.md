@@ -55,15 +55,16 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 
 ## Next up
 
-**Victor (dashboards, ~30 min) — unblocks all measurement:**
-1. Cloudflare → Web Analytics → add dejaviewed.dev (automatic injection for Pages).
-2. API token (Account Analytics:Read, Zone Analytics:Read, Zone:Read) → `~/.config/cloudflare/dejaviewed.env` as `CLOUDFLARE_API_TOKEN=...`, `chmod 600`. Never in chat.
+**Victor (dashboards) — unblocks search measurement:**
+1. ~~Cloudflare Web Analytics~~ DONE (28d of data already flowing).
+2. ~~Cloudflare API token~~ DONE Oct 22 → baseline `reports/analytics_2026-10-22.md` (bot-score fields are Enterprise-only; UA classes used).
 3. Search Console domain property (DNS TXT at Cloudflare) + service-account JSON → `~/.config/google/dejaviewed-gsc.json`; add SA email as Full user. Bing: import from GSC.
    Full click-paths: `data/analytics/SETUP.md`. Then Fable runs `scripts/analytics_report.py` → baseline.
 4. Post the first content kit (content/INDEX.md "Next 7"); mark in `content/status.json`.
 
 **Fable next session:**
-5. `python3 scripts/indexnow.py` (now that the key is live). Submit sitemap in GSC/Bing once verified.
+5. ~~IndexNow~~ DONE (974 URLs). Submit sitemap in GSC/Bing once Victor verifies the property.
+5b. Baseline facts (Oct 22, 7d): 18.4K edge req, 290 real page views / 280 visits (Web Analytics), human-UA share 58%, scanners 2.4K (wp-admin/.env probes, all 403 by Cloudflare), AI crawlers present: ChatGPT-User 119, ClaudeBot 116, PerplexityBot 79, GPTBot 57, OAI-SearchBot 56, CCBot 45 — nobody fetches llms-full.txt or /prompts yet; /api/ gets 275 hits (mostly our own pages' fetches). Consider a WAF rule for /wp-*, /.env*, /.git/* → 404 to cut noise.
 6. Register llms.txt on llmstxt.site / directory.llmstxt.cloud; GitHub README → site; 1gabe.com cross-link.
 7. 55 entry pages have stub summaries ("title — @creator") → re-enrich those ids (build_seo prints them).
 8. Baseline report → pick 5 SEO experiments, measure weekly.
