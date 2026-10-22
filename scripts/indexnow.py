@@ -77,7 +77,8 @@ def sitemap_urls(since: dt.date | None) -> list[str]:
 
 def key_live(key: str) -> bool:
     try:
-        with urllib.request.urlopen(f"https://{HOST}/{key}.txt", timeout=20) as r:
+        req = urllib.request.Request(f"https://{HOST}/{key}.txt", headers={"User-Agent": "dejaviewed-indexnow/1.0"})
+        with urllib.request.urlopen(req, timeout=20) as r:
             return r.read().decode().strip() == key
     except Exception:
         return False
@@ -127,7 +128,7 @@ def main() -> int:
         body = json.dumps({"host": HOST, "key": key, "keyLocation": f"https://{HOST}/{key}.txt",
                            "urlList": b}).encode()
         req = urllib.request.Request(ENDPOINT, data=body, method="POST",
-                                     headers={"Content-Type": "application/json; charset=utf-8"})
+                                     headers={"Content-Type": "application/json; charset=utf-8", "User-Agent": "dejaviewed-indexnow/1.0"})
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
                 print(f"batch {i}/{len(batches)}: {len(b)} URLs -> HTTP {r.status}")
