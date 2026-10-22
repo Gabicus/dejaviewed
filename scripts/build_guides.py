@@ -33,6 +33,9 @@ CATALOG = SITE / "catalog.json"
 
 SLUG_PREFIX = "dd-insight-"
 CURATOR = "6ab3"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from prompt_systems import load_packs, section_markdown, PS_CSS, GUIDE_COPY_JS  # noqa: E402
+PACKS = load_packs()
 
 # Featured guides pinned to the top of the index (pink FEATURED card).
 FEATURED = {
@@ -99,7 +102,7 @@ PAGE_TAIL = """</script>
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>"""
+</script><style>""" + PS_CSS + "</style>" + GUIDE_COPY_JS + "</body></html>"
 
 # Same markup the hand-written pages use for the deeper-dive cross-link.
 CROSS_LINK = (
@@ -229,6 +232,10 @@ def build_markdown(d: dict, entries: list[dict], classes: dict, catalog_total: i
     if creators:
         out += ["## Creators to follow", ""] + [f"- {creator_link(c)}" for c in creators] + [""]
     out += ["---", ""]
+
+    pack = PACKS.get(slug_of(d["id"]))
+    if pack:
+        out += [section_markdown(pack), ""]
 
     out += [
         "## Related deep dives", "",

@@ -98,7 +98,8 @@ Skip phases with `--skip <phase>[,<phase>...]`. Phases (in order):
 | `curate` | `scripts/curation_export.py` | Digest for the researcher curation pass (Phase 5c) |
 | `dives` | `scripts/deep_dives.py` | Auto-detect + merge curated dives |
 | `deeper` | `scripts/deeper_dives.py --all-curated` | Narrative deeper-dive pages |
-| `guides` | `scripts/build_guides.py` | Full guide pages + `guides/index.html` |
+| `prompts` | `scripts/prompt_systems.py` | One prompting system per curated dive + hand-written guide (Phase 5d) — export, agents, merge, render |
+| `guides` | `scripts/build_guides.py` | Full guide pages + `guides/index.html` (embeds prompt systems) |
 | `landing` | `scripts/build_landing_meta.py` | `site/landing_meta.js` — guide/deeper slugs the showcase `index.html` links to |
 | `digest` | `scripts/digest.py` | summaries.json / recommendations.json |
 | `rebuild` | `scripts/cms.py rebuild` | Crosslinks + exports |
@@ -626,6 +627,39 @@ Why: a Jul-2026 review found the auto dives were tag buckets ("art", "agents") w
 the saves was in intersections nobody had written down. Victor: "pretend you're an advanced researcher
 looking across the spectrum… for novel ideas that exist between the technologies."
 
+### Phase 5d: Prompt Systems (REQUIRED for every dive and guide before publish)
+
+A dive that tells you *what* exists is not finished until it also hands you the prompts that *build*
+it. Every curated dive and every hand-written guide carries a **prompt system**: a deeper-not-bigger
+rewrite of the ask, a verbose one-shot prompt, 5–9 step prompts that each carry their own audit, a
+post-build gap-analysis prompt, the questions the agent must ask itself, the external oracles that
+prove the result right, failure modes, and direction for an unattended agent harness.
+
+1. Export targets (curated dives from `deep_dives.json` + standalone pages in `site/guides/`):
+   ```bash
+   python3 scripts/prompt_systems.py export --size 8     # -> data/prompt_systems/batch_NN.json
+   ```
+2. One strong-model agent per batch writes `data/prompt_systems/out_NN.json` to the schema and laws in
+   `data/prompt_systems/SPEC.md` (ships with the skill as `references/PROMPT_SYSTEM_SPEC.md`). Each pack
+   must be specific to its dive (names the tools/repos/creators' claims from the transcripts), include
+   a paper/backtest arm with caps for anything money-adjacent, and defensive framing only for anything
+   security-adjacent. The agent runs `prompt_systems.validate` on its own output before returning.
+3. Merge (validator rejects thin packs) and render:
+   ```bash
+   python3 scripts/prompt_systems.py merge 'data/prompt_systems/out_*.json'   # -> data/prompt_systems.json
+   python3 scripts/prompt_systems.py render   # injects hand-written guides, writes api/prompts.json + prompts.html
+   python3 scripts/build_guides.py --force && python3 scripts/deeper_dives.py --all-curated
+   python3 scripts/build_landing_meta.py      # promptCount for the showcase tile
+   ```
+   `rebuild.sh` stops at the `prompts` phase whenever a target has no pack.
+4. Review as the lead: open three packs at random; a prompt that could be pasted under a different dive
+   unchanged fails. Confirm `prompts.html`, `api/prompts.json`, the `Prompts` nav item, and the
+   "Prompt system" section at the bottom of a guide page and a deeper page all render.
+
+The deeper-not-bigger block is the fixed core of every pack (Victor, 2026-10-22): *what would a top
+professional do here that I'm not asking for; what is the rawest material; which methods and tools;
+what, other than you or me, proves it right; now rewrite the prompt to ask for exactly that.*
+
 ### 6 Insight Classes
 
 | Class | Description |
@@ -1060,6 +1094,8 @@ No build step required — everything is pre-rendered static files.
 50. **`enrich_entries.py` reads `site/catalog.json`, not parquet.** Any parquet-only edit (media_type fix, user_notes, recovered transcripts) made since the last export gets overwritten by the next sweep. ALWAYS `python3 scripts/cms.py rebuild` right before `enrich_entries.py --sweep`, and re-run the quality gate after.
 
 51. **Page-text caption scrapes can read the PREVIOUS post.** The July-2026 `ab_scrape_posts.py` run attached the prior page's caption/creator to some entries ("Edited" as creator, caption contradicting the transcript). Transcripts from yt-dlp-by-URL were right. Any scrape that navigates then reads must verify the page's `instagram://media?id=` equals the shortcode-decoded pk first — `scripts/ig_refresh_captions.py` does this and prefers the media-info API; run it (`--apply`) on any collection scraped before Oct 2026 and re-enrich the entries it changes.
+
+52. **Hand-written guide pages are patched in place, generated ones are regenerated.** `prompt_systems.py render` injects its block between `<!-- prompt-system:start|end -->` markers inside the page's `<script id="md">` markdown (idempotent; HTML comments, stripped by DOMPurify and search_prep), while curated-dive guides get the block from `build_guides.py --force`. Never hand-edit the injected block — edit `data/prompt_systems.json` and re-render.
 
 ## Output Checklist
 

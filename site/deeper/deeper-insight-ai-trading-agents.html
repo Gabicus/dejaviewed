@@ -37,6 +37,22 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 .action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
 .action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
 .prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+
 </style>
 </head><body>
 <main class="deeper-wrap" data-pagefind-body data-pagefind-filter="kind:Deep dive">
@@ -54,7 +70,7 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 <div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Build regime detection with HMMs → layer Heston vol surface for options → add phase space reconstruction for hidden dynamics → implement A-S market making for execution → wrap in multi-agent debate system where agents specialize by model type → score on real P&amp;L, not backtest metrics.</p></div>
 
-<div class='prereqs'><strong>Prerequisites:</strong> Python, basic stochastic calculus concepts, market data API access. Familiarity with at least one quant model.</div>
+
 
 <div class="dd-entries">
 <h2>Connected Posts (6)</h2>
@@ -115,8 +131,106 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 </div>
 
+<section class="ps" id="prompt-system"><h2>Prompt system — run this yourself</h2>
+<p class="ps-lead">Pasteable into Claude Code, Claude, or any agent. One-shot for the whole result, step prompts when you want to steer. Every step carries its own audit; the gap audit makes the agent find and fill what it missed.</p>
+<p><strong>Mission.</strong> Build a multi-agent trading research system where specialist agents (HMM regime detector, Heston volatility surface, Cox-process event intensity, phase-space dynamics, Avellaneda-Stoikov market maker) feed a debate and a risk gate, then test whether debate adds anything over the specialists alone. For a quant-curious builder looking at swarms like atlas-gic. Done means: every specialist model is validated on its own, the debate system is compared against simple combinations and controls in a backtest that avoids LLM look-ahead, and only a capped paper arm runs until pre-set gates pass. No real money in this pack.</p>
+<h3>1 · Deeper, not bigger</h3><ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A systematic trading lead would separate the quantitative models from the language-model layer and test each. They would recognize that an LLM backtested on dates inside its training data has seen the future, so LLM agents can only be evaluated forward or on data after the model&#x27;s training cutoff. They would treat &#x27;weakest agent gets its prompt rewritten, Sharpe decides survival&#x27; as a multiple-testing machine that will overfit noise unless gated by out-of-sample tests. They would require that debate beat a plain average of specialist signals, or remove it. They would set risk limits outside any agent&#x27;s control.</li>
+<li><strong>Rawest material to start from:</strong> 1) The atlas-gic repo (github.com/chrisworsey55/atlas-gic): its agent roles, layers, scoring, prompt-rewrite loop and how &#x27;Sharpe decides commit survives or gets reverted&#x27;. 2) TauricResearch/TradingAgents repo and paper for a published multi-agent LLM trading design to compare. 3) Papers: Hamilton 1989 regime switching; Heston 1993; Cox 1955 and Cox-Ingersoll-Ross 1985 for intensity; Avellaneda and Stoikov 2008 &#x27;High-frequency trading in a limit order book&#x27;; Takens 1981. 4) Data: Binance klines and trades (data.binance.vision), order book snapshots if available, Deribit options for Heston, the model provider&#x27;s published training cutoff date. 5) quant.dhawan&#x27;s posts as claims to test: HMM states (low-vol bull, high-vol bear, recovery) &#x27;better than lagging indicators&#x27;; A-S &#x27;calculates optimal spread, not price direction&#x27;; Cox for &#x27;bursty&#x27; trade arrivals.</li>
+<li><strong>Methods and tools:</strong> hmmlearn GaussianHMM with forward-filtered probabilities for live use (not Viterbi on the full sample, which uses future data); QuantLib Heston calibration; CIR-intensity simulation and a Hawkes fit with the tick library for trade arrivals; nolds or teaspoon for embedding; an A-S simulator with inventory, reservation price r = s - q*gamma*sigma^2*(T-t) and spread from gamma, sigma, k, using hftbacktest or a custom queue-aware simulator; an LLM debate layer via the Claude API with structured JSON outputs; arch for SPA tests; exchange testnet or paper account for the forward arm.</li>
+<li><strong>What proves it right:</strong> Each specialist reproduces its paper&#x27;s behavior in simulation (A-S inventory stays mean-reverting, Cox simulation shows clustering vs Poisson). The debate system is compared against equal-weight specialist average and random controls on data after the LLM&#x27;s training cutoff only. Hansen SPA across all prompt and agent variants. A 60-day paper arm with hard caps beating a parallel random control.</li></ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>You are a systematic trading lead. Build and test, do not deploy. Specialists first, each as plain Python with its own validation: HMM regime detector (hmmlearn, filtered probabilities only), Heston calibration on Deribit BTC options (QuantLib), Cox/Hawkes intensity on trade arrivals, phase-space instability score, and an Avellaneda-Stoikov market-making simulator. Validate each against its paper on simulated and real data. Then add an LLM debate layer modeled on atlas-gic and TradingAgents: agents read specialist outputs, argue, and a risk agent outside the debate enforces limits. Compare four arms on data after the LLM&#x27;s training cutoff: equal-weight specialist average, best single specialist, debate, random-entry control - with fees and slippage. Count every prompt rewrite as a variant and correct with Hansen SPA. If debate does not beat the plain average, say so. Paper-trade only: 1% of notional per position, 3% daily loss stop, 10% drawdown halt, 60 days minimum. No real money until those gates pass, and real-money code paths must raise.</pre></div>
+<h3>2 · One-shot prompt</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>ROLE: You are a systematic trading lead and ML engineer. Stance: agents are a hypothesis on top of models; every layer must beat a simpler control after costs, and no real money moves in this project.
+
+CONTEXT: Source posts: marc.kaz on github.com/chrisworsey55/atlas-gic - &#x27;25+ autonomous agents debate every trading day across 4 layers&#x27;, &#x27;real-outcome scoring on every recommendation&#x27;, &#x27;weakest agent gets its prompt rewritten&#x27;, &#x27;Sharpe ratio decides: commit survives or gets reverted&#x27;, &#x27;detects regime shifts, spawns new strategies&#x27;, &#x27;runs on a $20/month VM with real capital&#x27;. quant.dhawan: HMMs deduce hidden states (low-vol bull, high-vol bear, recovery) and beat lagging indicators for strategy selection; Heston captures smile and skew; phase space reconstruction with tau=3 on BTC volatility; Avellaneda-Stoikov computes optimal spread from volatility, time horizon and inventory; Cox process with CIR intensity models bursty trade arrivals, defaults and vol spikes. Reference design: TauricResearch/TradingAgents. Tools: Python, hmmlearn, QuantLib, tick, nolds, hftbacktest, Claude API, arch.
+
+HARD CONSTRAINTS: No real orders; any real-key code path raises. LLM agents are evaluated only on data after the model&#x27;s published training cutoff, or forward in paper. HMM uses filtered probabilities at time t, never smoothed or Viterbi paths over future data. Fees, slippage and funding in every backtest. Every prompt rewrite or agent variant is logged in VARIANTS.csv. Risk agent limits live in code outside any LLM&#x27;s control: 1% notional per position, 3 concurrent positions, 3% daily loss stop, 10% drawdown halt. Never project returns.
+
+DELIVERABLES:
+1. SOURCES.md: atlas-gic and TradingAgents architecture notes with file references; paper equations.
+2. specialists/: hmm.py, heston.py, intensity.py, phase.py, as_mm.py, each with a validate() that reproduces paper behavior.
+3. debate/: agent prompts, structured JSON outputs (view, confidence, evidence from specialist outputs only), a moderator, and a risk gate in plain code.
+4. backtest/: four arms (specialist average, best specialist, debate, random control) on the post-cutoff window with costs.
+5. STATS.md: SPA across VARIANTS.csv.
+6. paper/: runner, caps, daily log, GATE.md.
+
+BUILT-IN GAP ANALYSIS: Keep GAPS.md: specialists that failed validation, look-ahead risks found, the atlas-gic claims you could or could not check (especially &#x27;real capital&#x27; performance - there is no independent record), market-making realism gaps (queue position, adverse selection, latency), and costs of running agents per day. Fill what you can.
+
+SELF-QUESTIONS: Does the LLM know what happened on my backtest dates? Did I use Viterbi on the full sample anywhere? Does A-S still make money once adverse selection and queue position are modeled? Does the debate add information or just average opinions with extra cost? How many prompt rewrites did the evolution loop make, and what does SPA say? What does one trading day of debate cost in API tokens vs expected edge?
+
+STOP CONDITIONS: Stop when all specialists have validation results, the four-arm comparison and SPA are done, and the paper arm runs with caps. Stop early and report if no arm beats the random control after costs - that is a valid answer.
+
+RETURN FORMAT: Specialist validation table; four-arm results table with costs and intervals; SPA p-value; API cost per day; GAPS.md; and the line REAL MONEY GATE: CLOSED with the pass criteria.</pre></div>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: repos, papers, data and the training cutoff</h4><p><em>Goal:</em> Understand the real architectures and the evaluation window before coding.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Clone github.com/chrisworsey55/atlas-gic and TauricResearch/TradingAgents. For each, document in SOURCES.md: agent roles, layers, data inputs, how decisions are made, how agents are scored, how prompts are rewritten, how risk is enforced, and file paths for each. Note what evidence atlas-gic provides for &#x27;real capital&#x27; results (logs, broker statements, or none). Collect the papers: Hamilton 1989, Heston 1993, Cox-Ingersoll-Ross 1985, Hawkes 1971, Avellaneda-Stoikov 2008, Takens 1981; write the key equations. Download BTCUSDT klines and aggregated trades from data.binance.vision, Deribit option snapshots if available. Look up the published training cutoff of the LLM you will use and define the LLM evaluation window as strictly after it. Write data/MANIFEST.md with ranges and gaps. Record the exact model id you will use for agents, since the cutoff and behavior change between versions.</pre></div>
+<p><strong>Expect:</strong> SOURCES.md with both architectures mapped to files, equations list, data/MANIFEST.md, and an LLM window start date.</p>
+<p><strong>Audit before moving on:</strong> Every architecture claim cites a file and line range. If atlas-gic has no verifiable performance record, write that plainly. Confirm the LLM window has at least 6 months of data; if not, plan a forward-only paper evaluation.</p>
+<h4>Step 2 — Specialist models with paper validation</h4><p><em>Goal:</em> Five plain-Python specialists that each reproduce known behavior.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Write specialists/. hmm.py: GaussianHMM (hmmlearn) on daily returns and realized vol, 3 states, fit on train only; expose filtered state probabilities at time t using only data up to t; label states by mean and variance. heston.py: QuantLib calibration to option quotes; report RMSE in implied vol and parameter stability over 10 dates. intensity.py: simulate a CIR-intensity Cox process and a Poisson process with the same mean, show overdispersion; fit a Hawkes model with tick to real trade arrival times and report branching ratio. phase.py: choose tau by mutual information and dimension by false nearest neighbors, output an instability score; compare to surrogates. as_mm.py: Avellaneda-Stoikov with reservation price and optimal spread; simulate with a Poisson fill model, then with fills depending on queue and adverse price moves. Each file has validate() that prints numbers against expected behavior. Write SPECIALISTS.md.</pre></div>
+<p><strong>Expect:</strong> Five modules, each validate() passing or failing with numbers, SPECIALISTS.md table.</p>
+<p><strong>Audit before moving on:</strong> Test hmm.py for look-ahead: compute state at t, append future data, recompute state at t; must be identical. For as_mm.py, record PnL with naive fills vs adverse-selection fills; if PnL flips sign, mark the naive result unrealistic.</p>
+<h4>Step 3 — Simple combinations and controls first</h4><p><em>Goal:</em> Set the bar the agent layer must clear.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Build backtest/engine.py: next-bar execution, Binance taker fees, 2 bps slippage, perpetual funding. Define a directional or exposure rule per specialist (e.g. HMM: long in low-vol bull state, flat otherwise; phase: cut exposure when instability above 80th percentile; intensity: reduce size when branching ratio spikes). Build arm A: equal-weight average of specialist signals. Arm B: best single specialist chosen on train. Arm C: random-entry with matched exposure (1,000 draws). Arm D: buy-and-hold. Freeze all parameters in PREREG.md. Run on train with walk-forward and on validation. Market making is evaluated separately in the as_mm simulator with fees and adverse selection. Report Sharpe, max drawdown, turnover, hit rate and payoff ratio per arm, and the random control&#x27;s percentile for arms A and B. This is the bar: the debate layer in step 4 must beat arm A after its own API cost, or it is dropped.</pre></div>
+<p><strong>Expect:</strong> PREREG.md committed, results for arms A-D on train and validation.</p>
+<p><strong>Audit before moving on:</strong> Double fees and re-run; mark cost-fragile arms. Confirm at least 30 trades per arm or flag low sample.</p>
+<h4>Step 4 — Debate layer with a code-enforced risk gate</h4><p><em>Goal:</em> An LLM debate that reads specialist outputs and cannot bypass risk.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Write debate/: 4-6 agents with fixed roles (regime analyst reading hmm.py output, volatility analyst reading heston.py, flow analyst reading intensity.py, dynamics analyst reading phase.py, a skeptic arguing against the consensus, a moderator). Each returns JSON: {view: long|flat|short, confidence: 0-1, evidence: [specialist fields cited]}. Agents get only specialist outputs and timestamps, never raw future data or news. The moderator produces a proposal; a plain-Python risk gate applies caps (1% notional, 3 concurrent, 3% daily stop, 10% drawdown halt) and can only shrink or reject. Log every debate to debate/logs/ with tokens and cost. Implement an atlas-gic-style evolution loop but gated: a prompt rewrite is a new variant in VARIANTS.csv, evaluated only on a rolling out-of-sample window, never on the window that triggered it.</pre></div>
+<p><strong>Expect:</strong> debate/ code, sample logs with JSON outputs, cost per debate, VARIANTS.csv started.</p>
+<p><strong>Audit before moving on:</strong> Fuzz the moderator with an extreme proposal (100% notional) and confirm the risk gate cuts it. Check that no agent prompt contains dates or prices after the decision time.</p>
+<h4>Step 5 — Four-arm comparison on the post-cutoff window</h4><p><em>Goal:</em> Find out whether debate adds anything.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Run arms A (specialist average), B (best specialist), C (random control), D (buy-and-hold) and E (debate) on the LLM window after the model&#x27;s training cutoff only. Same costs and caps for all. Report Sharpe, max drawdown, turnover, hit rate, payoff ratio, and E&#x27;s API cost per day. Compute Hansen SPA (arch.bootstrap.SPA) across all variants in VARIANTS.csv against arm A. Decide by the pre-registered rule: debate is kept only if it beats arm A after API costs and survives SPA. Also test whether the debate adds information: regress arm E&#x27;s daily positions on arm A&#x27;s and report how much of E is explained by the plain average. Sample 10 debate transcripts and check whether cited evidence matches the specialist outputs it names; count fabricated or misread citations. Write STATS.md and RESULTS.md.</pre></div>
+<p><strong>Expect:</strong> RESULTS.md with five arms, STATS.md with SPA p-value and a keep or drop decision for debate.</p>
+<p><strong>Audit before moving on:</strong> Confirm no backtest date precedes the training cutoff for arm E. Recompute one arm&#x27;s Sharpe by hand from the trade log. If debate wins only before costs, record drop.</p>
+<h4>Step 6 — Paper arm with hard caps and the money gate</h4><p><em>Goal:</em> Forward evidence without real money.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Build paper/runner.py on an exchange testnet or a paper account. Run the kept arm (debate or specialist average) plus a parallel random-entry control, daily, with the code-enforced caps. Log decisions, debate transcripts, fills, PnL and API cost. Write GATE.md: real money stays closed until at least 60 days and 30 trades, the kept arm beats the paper control net of API costs, live-vs-backtest return distributions are within the 95th bootstrap percentile of Wasserstein distance, and zero cap breaches. Any code path to a real-money key raises an exception. Run a fault test: inject a 10% gap and an API outage; confirm stops fire and the system flattens and halts. Set a daily API spend limit and halt debates when it is reached.</pre></div>
+<p><strong>Expect:</strong> A running paper arm, logs, GATE.md, fault test output.</p>
+<p><strong>Audit before moving on:</strong> Grep for real endpoints or key loads; fail if present. Confirm the fault test log shows the halt.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4><p><em>Goal:</em> Verdict per layer and an honest gap list.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Check oracles: specialist validations pass; arm comparison on post-cutoff data done; SPA result recorded; paper arm running with caps and fault test passed. Write REPORT.md: per specialist (validated or not, useful alone or not), debate verdict (keep or drop, with cost), market-making realism verdict, and atlas-gic claims checked (prompt rewriting as a multiple-testing risk, &#x27;real capital&#x27; with or without evidence, $20/month VM vs your measured API cost). Write GAPS.md: look-ahead risks, data gaps, untested specialists, simulator realism gaps (queue, latency), and missing monitoring. Rank and fix the top two. Include a table of API cost per trading day vs the kept arm&#x27;s paper PnL per day, so the economics are visible. End with REAL MONEY GATE: CLOSED and the criteria still unmet.</pre></div>
+<p><strong>Expect:</strong> REPORT.md, GAPS.md, gate line.</p>
+<p><strong>Audit before moving on:</strong> Every verdict cites a file and number. Unrun oracles are FAIL-UNRUN. Remove any sentence implying expected profit.</p>
+<h3>4 · Gap analysis and audit</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>You did not build this system. Audit it from files: SOURCES.md, specialists/, SPECIALISTS.md, PREREG.md, VARIANTS.csv, RESULTS.md, STATS.md, debate/logs/, paper/, REPORT.md, GAPS.md. List every claim: specialist validation numbers, arm Sharpes, SPA p-value, debate keep/drop, API cost per day, paper results. Mark each VERIFIED (re-ran and matched), UNVERIFIED (why), or FALSE (show both numbers). Specifically: re-run the HMM look-ahead test; confirm every arm E date is after the LLM training cutoff; scan debate prompts for leaked future information; recompute one Sharpe from raw trades; confirm VARIANTS.csv counts every prompt rewrite; run the risk gate against a 100% notional proposal; grep for real-money endpoints and keys; confirm PREREG.md predates results in git. List missing pieces (no kill switch on API outage, no monitoring alerts, no capacity analysis, naive fill model), rank by risk of losing money if someone flipped the gate, fix the top three, and report what you could not fix and why. Restate the gate status.</pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p><ul>
+<li>Does the LLM&#x27;s training data include my backtest window, and how did I exclude it?</li>
+<li>Is any HMM state at time t computed with data after t?</li>
+<li>Does the debate beat a plain average of specialist signals after API costs?</li>
+<li>How many prompt rewrites did the evolution loop make, and does the best survive SPA?</li>
+<li>Does Avellaneda-Stoikov still profit with adverse selection and queue position modeled?</li>
+<li>Is Heston calibration stable enough to be a feature, or noise?</li>
+<li>Does the Hawkes branching ratio on real trades differ from a Poisson baseline meaningfully?</li>
+<li>Can any agent output bypass the code risk gate?</li>
+<li>What does a day of debate cost, and what edge would it need to pay for itself?</li>
+<li>Is there any evidence for atlas-gic&#x27;s &#x27;real capital&#x27; performance, or only the claim?</li>
+<li>What happens on an exchange or API outage mid-position?</li>
+<li>Is there any code path from this repo to a real-money order?</li>
+</ul><h3>5 · What proves it right</h3><ul>
+<li>Avellaneda and Stoikov 2008: simulator reproduces inventory mean reversion and the spread formula&#x27;s dependence on gamma and sigma; PnL reported with and without adverse selection.</li>
+<li>HMM look-ahead unit test: state probabilities at t unchanged when future data is appended.</li>
+<li>Five-arm backtest on data strictly after the LLM&#x27;s published training cutoff, with costs, and Hansen SPA across VARIANTS.csv.</li>
+<li>60-day paper arm on a testnet or paper account vs a parallel random-entry control, zero cap breaches, fault test logged.</li>
+<li>Independent reviewer re-runs one arm from raw data and matches Sharpe within 0.05.</li>
+</ul><h3>6 · Failure modes</h3><ul>
+<li>LLM look-ahead. Tell: debate looks brilliant on 2020-2023. Fix: evaluate only after the training cutoff or forward.</li>
+<li>Viterbi leakage. Tell: regime labels switch exactly at turning points. Fix: filtered probabilities only, plus the append-future test.</li>
+<li>Evolution overfits noise. Tell: frequent prompt rewrites, each &#x27;improving&#x27; Sharpe. Fix: out-of-sample gating and SPA over all variants.</li>
+<li>Market-making fantasy fills. Tell: A-S profits with Poisson fills, loses with adverse selection. Fix: queue and adverse-selection fill model.</li>
+<li>Debate as expensive averaging. Tell: debate matches arm A at many times the cost. Fix: drop it.</li>
+<li>Risk inside the LLM. Tell: position sizes vary with agent mood. Fix: code-enforced caps outside agents.</li>
+<li>Unverified external results. Tell: &#x27;runs with real capital&#x27; cited as proof. Fix: require logs or treat as claim.</li>
+</ul><h3>7 · Agent direction (unattended runs)</h3>
+<p>Read the atlas-gic and TradingAgents code before any design; cache data as parquet. Build and validate specialists yourself or with one sub-agent each (separate files), then review each for look-ahead before use. Keep LLM evaluation strictly post-cutoff; enforce the date in code. Cache every debate transcript and its token cost. Spawn a fresh sub-agent with no context for the gap audit. Stop and ask before: connecting any exchange account, changing caps, re-opening the test window, or exceeding an API budget the human sets. Never place real orders; real-key paths raise. Use a cheaper model for routine agent turns only if it is evaluated as its own variant in VARIANTS.csv. Return REPORT.md, RESULTS.md, STATS.md, GAPS.md and paper/GATE.md with the gate status first.</p>
+<p class="ps-foot">Prompt system updated 2026-10-22 · <a href="../prompts.html">all prompt systems</a> · <a href="../api/prompts.json">JSON</a></p></section>
+
 <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
-  Deeper Dive generated 2026-10-22T00:39:52.686280 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
+  Deeper Dive generated 2026-10-22T10:32:34.943650 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
 </div>
 </main>
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script>
 </body></html>

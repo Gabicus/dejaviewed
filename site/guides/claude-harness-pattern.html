@@ -1,104 +1,616 @@
-<html lang="en">
-<meta charset="utf-8">
-<title>The Claude Harness Pattern: Context, Memory, and Cognitive Scaffolding — DejaViewed Guide</title>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Claude Harness Pattern: Context, Memory, and Cognitive Scaffolding · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
 <style>
-  .guide { max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
-  .guide h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-  .guide h2 { color: #7dd3fc; margin-top: 2rem; font-size: 1.3rem; border-bottom: 1px solid rgba(125,211,252,0.2); padding-bottom: 0.5rem; }
-  .guide p, .guide li { line-height: 1.7; color: #cbd5e1; }
-  .confidence-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
-  .confidence-badge.high { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-  .confidence-badge.medium { background: rgba(250,204,21,0.15); color: #fbbf24; border: 1px solid rgba(250,204,21,0.3); }
-  .meta { color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem; }
-  .entries-section { margin-top: 2rem; }
-</style>
-<script src="../shared.js" defer></script>
-<script>document.addEventListener("DOMContentLoaded",()=>window.DV&&DV.mountHeader(document.body,"guides"))</script>
-
-<article class="guide" data-pagefind-body data-pagefind-filter="kind:Guide">
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
-  <h1>The Claude Harness Pattern: Context, Memory, and Cognitive Scaffolding</h1>
-<div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-claude-harness-pattern.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — The Claude Harness Pattern: Context, Memory, and Cognitive S →</a></div>
-  <div class="meta">emergent_capability · 9 connected entries · Medium difficulty</div>
-  
-  <h2>Thesis</h2>
-  <p>The most effective Claude users aren't writing better prompts — they're building harnesses: layered systems of CLAUDE.md files, skills, hooks, and memory that turn a chat window into a persistent, self-improving agent. This pattern emerged independently across multiple creators and maps directly to how production AI systems are being architected.</p>
-  
-  <h2>Why It Matters</h2>
-  <p>The gap between 'using Claude' and 'building with Claude' is exactly this pattern. Context engineering (what goes in the window), memory (what persists across sessions), and harness (the scaffold that orchestrates both) are three distinct disciplines. Most people conflate them. The entries in this dive show practitioners who figured out the distinction independently.</p>
-  
-  <h2>The Evidence</h2>
-  <div class="entries-section">
-    <div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DX7oRT3J1Hq.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DX7oRT3J1Hq/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">ChatGPT — Generally feel the same across everything you set. The reasons all...</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@chase.h.ai · S-tier · Demonstrates harness architecture pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DXeZ7C5kcl8.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DXeZ7C5kcl8/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@fionaylin · S-tier · Demonstrates harness architecture pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYTxLQgRdZJ.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYTxLQgRdZJ/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Anthropic — for more details:</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@itsjustjlin · S-tier · Demonstrates harness architecture pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYXWNTERFhZ.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYXWNTERFhZ/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Anthropic — @lostandlucky you’re the reason why Im not worried about the tools I</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@lostandlucky · S-tier · Demonstrates harness architecture pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYakjE8JDcX.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYakjE8JDcX/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Claude — Markdowns and folders wrapped in a harness</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@gigaqian · S-tier · Demonstrates harness architecture pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYbGP6TjV_6.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYbGP6TjV_6/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Anthropic — I've made it a hobby of trying to radicalize the LLms to socialism..</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@lizthedeveloper · S-tier · Demonstrates harness architecture pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZOunMaJjjK.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZOunMaJjjK/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Claude</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@chase.h.ai · S-tier · Demonstrates harness architecture pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZVXehQRe3T.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZVXehQRe3T/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Claude — Rendered via 3D Gaussian splatting.</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@kaustav.py · S-tier · Demonstrates harness architecture pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DXx6KhJshmv.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DXx6KhJshmv/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 discipli</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@lindavivah · S-tier · Demonstrates harness architecture pattern</div>
-  </div>
-</div>
-  </div>
-  
-  <h2>Action Sketch</h2>
-  <ol><li>Audit your current Claude setup — do you have a CLAUDE.md? Skills? Hooks?</li><li>Map your workflow: what context does Claude need every session vs. occasionally?</li><li>Build a minimal harness: CLAUDE.md (permanent rules) + primer.md (session state) + skills/ (reusable workflows)</li><li>Add memory persistence: file-based or MCP-backed cross-session recall</li><li>Layer in hooks for self-correction (caveman mode, token discipline, audit-after-step)</li></ol>
-  
-  <h2>Prerequisites</h2>
-  <ul><li>Claude Code or similar agent-mode tool</li><li>Understanding of markdown-as-config</li><li>Basic file system organization</li></ul>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-claude-harness-pattern.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — The Claude Harness Pattern: Context, Memory, and Cognitive Scaffolding →</a></div>
+  <div id="guide-body"></div>
 </article>
-</html>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>The Claude Harness Pattern: Context, Memory, and Cognitive Scaffolding</h1>
+<p>Insight class: Emergent Capability · Difficulty: Medium · Quality: 5/5 Connected entries: 9 · Tools: Anthropic, Buffer, ChatGPT, Claude, Claude Agent SDK, Claude Code, Claude in Chrome, Codex, Cursor, DeepSeek, ElevenLabs, Gemini, Gmail, Graphify, Grok, Hermes, Meta Ads, Notion, Ollama, OpenClaw, OpenCode, RevenueCat, Zapier</p>
+<h2>Thesis</h2>
+<p>The most effective Claude users aren't writing better prompts — they're building harnesses: layered systems of CLAUDE.md files, skills, hooks, and memory that turn a chat window into a persistent, self-improving agent. This pattern emerged independently across multiple creators and maps directly to how production AI systems are being architected.</p>
+<h2>Why it matters</h2>
+<p>The gap between 'using Claude' and 'building with Claude' is exactly this pattern. Context engineering (what goes in the window), memory (what persists across sessions), and harness (the scaffold that orchestrates both) are three distinct disciplines. Most people conflate them. The entries in this dive show practitioners who figured out the distinction independently.</p>
+<h2>The evidence — connected entries</h2>
+<h3>AI tool tier list May 2026 — Codex and Claude Code top, chatbots C</h3>
+<p>Creator: @chase.h.ai · Tier: B Tools: ChatGPT, Claude, Claude Code, Codex, Cursor, Gemini, Grok, Hermes, OpenClaw, Zapier</p>
+<p>Demonstrates harness architecture pattern</p>
+<p>An opinionated tier list: Codex and Claude Code S tier (Codex cheaper for comparable output), Claude chatbot C at the $20 plan due to limits, GPT Image 2 S tier over Nano Banana Pro (A), Hermes C and OpenClaw D as 'productivity theater' wrappers.</p>
+<p>View original post</p>
+<h3>Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...</h3>
+<p>Creator: @fionaylin · Tier: A Tools: Claude, Notion</p>
+<p>Demonstrates harness architecture pattern</p>
+<p>Comment Prompt 1, 2, 3, 4, 5 or 6 and I’ll DM you my prompt! Here are the 6 @claudeai cowork agents I have running my... — @fionaylin; uses Claude, Notion; demonstrates AI agents.</p>
+<p>View original post</p>
+<h3>Anthropic — for more details:</h3>
+<p>Creator: @itsjustjlin · Tier: B Tools: Anthropic, Claude, Codex, DeepSeek</p>
+<p>Demonstrates harness architecture pattern</p>
+<p>the way anthropic is handling this is disgusting. be straight with your customers. — @itsjustjlin; uses Anthropic, Claude, Codex; demonstrates AI agents, API integration.</p>
+<p>View original post</p>
+<h3>Claude -p and Agent SDK billing split — what the June 15 change means</h3>
+<p>Creator: @lostandlucky · Tier: B Tools: Anthropic, Claude, Claude Agent SDK, Claude Code, Ollama, OpenClaw, OpenCode</p>
+<p>Demonstrates harness architecture pattern</p>
+<p>From June 15, programmatic Claude usage through claude -p and the Agent SDK no longer counts against Pro/Max plan limits and is billed per token instead. That hits third-party harnesses like OpenClaw and OpenCode that ran on subscription quota. The creator argues good context and folder structure lets one interactive agent do the same work.</p>
+<p>View original post</p>
+<h3>Claude — Markdowns and folders wrapped in a harness</h3>
+<p>Creator: @gigaqian · Tier: B Tools: Claude, Claude Code</p>
+<p>Demonstrates harness architecture pattern</p>
+<p>Companies are marketing ordinary chatbots and simple API tools as “AI Agents.” It’s time we discuss what that actuall... — @gigaqian; uses Claude, Claude Code; demonstrates AI agents, API integration.</p>
+<p>View original post</p>
+<h3>Agentic misalignment benchmark — models now know they're being tested</h3>
+<p>Creator: @lizthedeveloper · Tier: C Tools: Anthropic, Claude</p>
+<p>Demonstrates harness architecture pattern</p>
+<p>The creator argues that Anthropic's agentic-misalignment test, the blackmail and self-preservation scenarios, stopped working once Claude models started recognizing the test setup and acing it. The post then becomes a personal plea about raising AI with good training data. It has little technical depth.</p>
+<p>View original post</p>
+<h3>Graphify — turn a repo into a knowledge graph to cut Claude Code tokens</h3>
+<p>Creator: @chase.h.ai · Tier: A Tools: Claude, Claude Code, Graphify</p>
+<p>Demonstrates harness architecture pattern</p>
+<p>Graphify is a free open-source tool that converts a repository, or a folder of markdown and unstructured notes, into a knowledge graph that Claude Code or other coding agents query as a map. Answers come from the graph instead of re-reading files, so codebase questions use far fewer tokens: a kind of lightweight RAG.</p>
+<p>View original post</p>
+<h3>Jarvis daily brief — Claude with RevenueCat, Buffer, Meta Ads and Gmail MCPs</h3>
+<p>Creator: @chandlerintelligence · Tier: S Tools: Buffer, Claude, Claude Code, Claude in Chrome, ElevenLabs, Gmail, Meta Ads, RevenueCat</p>
+<p>Demonstrates harness architecture pattern</p>
+<p>A walkthrough of a personal 'Jarvis' built on Claude. Voice mode plus ElevenLabs gives it the voice, and Claude in Chrome handles the browser. MCP servers for RevenueCat, Buffer, Meta Ads and Gmail cover app revenue, posting, ads and email. Custom subagents get skills, FAQ markdown handles support, and the whole daily brief runs as a scheduled routine.</p>
+<p>View original post</p>
+<h3>Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</h3>
+<p>Creator: @lindavivah · Tier: S</p>
+<p>Demonstrates harness architecture pattern</p>
+<p>Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Alake ⚡️ — @lindavivah; demonstrates AI agents.</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Audit your current Claude setup — do you have a CLAUDE.md? Skills? Hooks?</p>
+<p>Map your workflow: what context does Claude need every session vs. occasionally?</p>
+<p>Build a minimal harness: CLAUDE.md (permanent rules) + primer.md (session state) + skills/ (reusable workflows)</p>
+<p>Add memory persistence: file-based or MCP-backed cross-session recall</p>
+<p>Layer in hooks for self-correction (caveman mode, token discipline, audit-after-step)</p>
+<h2>Prerequisites</h2>
+<p>Claude Code or similar agent-mode tool</p>
+<p>Understanding of markdown-as-config</p>
+<p>Basic file system organization</p>
+<h2>Key tools and resources</h2>
+<p>Anthropic</p>
+<p>Buffer</p>
+<p>ChatGPT</p>
+<p>Claude</p>
+<p>Claude Agent SDK</p>
+<p>Claude Code</p>
+<p>Claude in Chrome</p>
+<p>Codex</p>
+<p>Cursor</p>
+<p>DeepSeek</p>
+<p>ElevenLabs</p>
+<p>Gemini</p>
+<p>Gmail</p>
+<p>Graphify</p>
+<p>Grok</p>
+<p>Hermes</p>
+<p>Meta Ads</p>
+<p>Notion</p>
+<p>Ollama</p>
+<p>OpenClaw</p>
+<p>OpenCode</p>
+<p>RevenueCat</p>
+<p>Zapier</p>
+<h2>Creators to follow</h2>
+<p>@chandlerintelligence</p>
+<p>@chase.h.ai</p>
+<p>@fionaylin</p>
+<p>@gigaqian</p>
+<p>@itsjustjlin</p>
+<p>@lindavivah</p>
+<p>@lizthedeveloper</p>
+<p>@lostandlucky</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Produce a working, version-controlled Claude harness for one real project: a CLAUDE.md of permanent rules, a primer.md that is rewritten every session, a skills/ folder of reusable workflows, and at least one hook that self-corrects behaviour. Done means a fresh Claude session loads the harness, acts on it, and a before/after A-B test on three repeated tasks shows the harness version is measurably leaner or more correct than a bare session.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A production agent engineer does not 'write a CLAUDE.md'. Following Richmond Alake's split that lindavivah relays, they separate three disciplines and build each deliberately: context engineering (signal/noise inside the window), memory engineering (what is retrieved, forgotten, evolved across sessions), and harness engineering (the scaffold code around the model). They treat the harness as code with tests: an eval set of representative tasks, an A-B harness that runs the same task with and without each component, and a metric (tokens, tool calls, pass rate). They ablate rules the way Boris Cherny's team does with simple mode, keeping only what earns its place.</p>
+<p>Rawest material to start from: Anthropic's own Claude Code docs on CLAUDE.md, skills, hooks and memory; Boris Cherny's published personal CLAUDE.md (plan-first, subagents, tasks/lessons.md, verification standard) that keshavsuki and evolving.ai describe; the primer.md + memory.sh + git-hook pattern keshavsuki shows; Graphify's repo for the knowledge-graph retrieval layer chase.h.ai demos; and your own last 20-50 session transcripts, which are the ground truth for what your harness actually needs.</p>
+<p>Methods and tools: Claude Code with a real git repo; a CLAUDE.md (rules), primer.md (session state, rewritten end-of-session), skills/ as markdown workflows, .claude/hooks/ for SessionStart context injection and PostToolUse guards; a memory.sh that injects last-5-commits + modified files at launch; Graphify (/graphify .) for query-before-read retrieval; a tiny A-B script that runs three fixed tasks with and without the harness and logs token counts and tool-call counts.</p>
+<p>What proves it right (other than you or the model): An A-B test on three repeated tasks (harness vs bare session) where the harness version wins on at least one hard metric (fewer tokens, fewer tool calls, or a correctness check passing). A second, independent Claude session reading only the committed harness reproduces the intended behaviour without extra instruction. Boris Cherny's own ablation discipline is the oracle for whether each rule helps.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Act as an agent-harness engineer, not a prompt writer. For the repo at , build me a three-layer Claude harness and prove it works. Layer 1 context: a CLAUDE.md of permanent, imperative rules distilled from my last 20 session transcripts at , not generic advice. Layer 2 memory: a primer.md you rewrite at end of every session (current status, what changed, next up, blockers) plus a memory.sh that injects last-5-commits and modified files at launch. Layer 3 harness: a skills/ folder with at least two reusable workflows I actually repeat, and one .claude hook that self-corrects a behaviour I keep correcting. Then build an A-B test: pick three tasks I do often, run each with and without the harness, and log tokens and tool calls for both. Keep only harness components whose removal measurably hurts the A-B result, ablating the rest the way Boris Cherny's simple mode does. Return the committed files, the A-B numbers, and a short list of what you could not verify and why.</p>
+<h3>2 · One-shot prompt</h3>
+<p>You are an agent-harness engineer. Your job is not to write a better prompt; it is to build and prove a three-layer harness around Claude for one real project. Stance: adversarial about your own work, imperative in your writing, no marketing language.</p>
+<p>Context you must gather first: the repo at the path I give you, my recent Claude Code session transcripts (search ~/.claude/projects for this project), any existing CLAUDE.md or primer.md, and the three disciplines Richmond Alake names (context = signal/noise in the window; memory = retrieve/forget/evolve across sessions; harness = the scaffold code). Treat Boris Cherny's published CLAUDE.md as the reference pattern: plan-first, subagents for hard problems, every correction becomes a rule in tasks/lessons.md, never mark done without proving it works. Treat Graphify as the optional retrieval layer (build a graph once, query before opening raw files).</p>
+<p>Hard constraints: every rule you write must trace to evidence in my transcripts or to a named Anthropic doc feature, never to generic best-practice. Do not invent workflow I do not actually repeat. Do not add a component you cannot A-B test. Keep CLAUDE.md under 200 lines. Write files, do not just describe them. Touch only this repo.</p>
+<p>Ordered deliverables: (1) CLAUDE.md of permanent imperative rules, each annotated with the transcript evidence that justifies it. (2) primer.md seeded with current project state, plus a one-line CLAUDE.md rule to rewrite it at session end. (3) memory.sh that prints last-5-commits, modified files and current branch, wired via a SessionStart hook. (4) skills/ with at least two reusable workflows I repeat, each a standalone markdown file. (5) at least one .claude hook that self-corrects a behaviour I keep correcting (name the behaviour). (6) an A-B test script: three fixed tasks, each run with and without the harness, logging token count and tool-call count. (7) the A-B results table.</p>
+<p>Built-in gap analysis: before you finish, list every claim you have not verified (does the hook actually fire? does memory.sh run on this OS? did the A-B test use the same task text both arms?), and fill what you can by running it. If a transcript is missing, say so and derive rules from what exists rather than guessing.</p>
+<p>Self-questions you must answer in writing before finishing: Which of my rules would a second Claude session misread? Which component, if deleted, would the A-B test not notice (ablate it)? Is primer.md state, not a changelog? Does any skill duplicate a rule already in CLAUDE.md? Did I conflate context, memory and harness anywhere? Does the hook have a bypass? Is any number in the A-B table from a run that actually happened?</p>
+<p>Stop conditions: stop and ask me only if the repo has no git history or no readable transcripts. Otherwise proceed end-to-end.</p>
+<p>Return format: a markdown report with the file tree of what you created, the A-B results table (task, arm, tokens, tool calls), the ablation decisions (component / kept or cut / why), and a final 'Unverified and missing' section. Commit the harness files; print the commit hash.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth from transcripts</h4>
+<p>Goal: Derive what the harness must do from real session evidence, not advice.</p>
+<p>Establish ground truth before building anything. Locate my Claude Code session transcripts for this project (search under ~/.claude/projects for the directory matching this repo). Read the 15-30 most recent sessions. Extract, with a count for each: (a) corrections I repeat to Claude (the same complaint more than once), (b) context I paste or re-explain most sessions, (c) tasks I run more than twice, (d) mistakes that cost a retry. Also read any existing CLAUDE.md and primer.md and note what they already cover. Classify every finding into Richmond Alake's three buckets: context (belongs in the window every session), memory (must persist across sessions), harness (needs scaffold code or a hook). Output a table: finding, count, bucket, proposed component. Do not propose anything with a count of 1 unless it is safety- or money-touching. This table is the spec for every later step.</p>
+<p>Expect: A table of 10-25 evidence-backed findings, each with an occurrence count and a context/memory/harness classification, plus a note on what the existing setup already covers.</p>
+<p>Audit before moving on: Re-open two transcripts at random and confirm each finding you listed actually appears there with the count you claimed. Fail if any finding has no transcript backing or if you proposed a component for a count-1, non-safety item. On fail, drop the unbacked findings and recount.</p>
+<h4>Step 2 — Write CLAUDE.md (context layer)</h4>
+<p>Goal: Produce permanent imperative rules, each justified by step 1 evidence.</p>
+<p>Using the step 1 table, write CLAUDE.md for this repo. Rules only, imperative voice, no explanations of what Claude is. Model the structure on Boris Cherny's pattern: plan before touching code; use subagents for hard problems to keep the main context clean; every correction becomes a rule; never mark a task done without proving it (tests or a behaviour diff against main). For each rule add a trailing comment # evidence: tying it to step 1. Keep the whole file under 200 lines. Put only context-bucket findings here; memory and harness findings go to later steps. Explicitly do NOT include a rule unless step 1 gave it a count or it is a safety/money guardrail. End the file with one rule: 'At end of session, rewrite primer.md completely (status, what changed, next up, blockers).'</p>
+<p>Expect: A CLAUDE.md under 200 lines, every rule annotated with its evidence tag, ending with the primer.md rewrite rule.</p>
+<p>Audit before moving on: Grep the file for rules without an # evidence: tag or safety justification; each one is a fail and must be cut. Confirm line count &lt; 200. Confirm no rule restates a generic 'handle errors' platitude.</p>
+<h4>Step 3 — Memory layer: primer.md + memory.sh</h4>
+<p>Goal: Make session state persist and git state auto-inject at launch.</p>
+<p>Build the memory layer keshavsuki describes. (1) Write primer.md seeded with the project's current status, what changed recently (from git log), next up, blockers, open questions. It is a snapshot, not a log. (2) Write memory.sh that prints the last 5 commits (git log --oneline -5), modified files (git status --short), and current branch, so a new session sees what changed before I speak. (3) Wire memory.sh into a SessionStart hook in .claude/settings.json (or settings.local.json) so it runs at launch, output captured to context. Do not duplicate anything already stated in CLAUDE.md. Keep primer.md under 150 lines.</p>
+<p>Expect: primer.md (state snapshot), memory.sh (executable, prints commits/files/branch), and a SessionStart hook entry that runs it.</p>
+<p>Audit before moving on: Run memory.sh in a shell and confirm it prints without error on this OS. Confirm the hook JSON is valid (parse it). Fail if memory.sh errors, if the hook JSON is malformed, or if primer.md is a changelog rather than current state. On fail, fix before continuing.</p>
+<h4>Step 4 — Skills: reusable workflows</h4>
+<p>Goal: Turn repeated tasks from step 1 into standalone skill files.</p>
+<p>Take the two highest-count 'task I repeat' findings from step 1 and write each as a standalone skill markdown file under skills/ /SKILL.md. Each skill must be self-contained: a one-line trigger description, the ordered steps, the exact commands or file paths it touches, and a done-check. Do not personify ('act as an expert'); define the workflow and its end state, following angus.sewell's point that AI is good at specific workflows with clear instructions and a clear end state, not personas. Each skill must name the real tools and paths from this repo. Do not write a skill for a task that appears only once.</p>
+<p>Expect: Two or more SKILL.md files, each standalone, trigger + steps + commands + done-check, naming this repo's real tools/paths.</p>
+<p>Audit before moving on: For each skill, verify you could hand it to a fresh agent with no other context and it would run. Fail any skill that references a variable or path defined only in your head, or that duplicates a CLAUDE.md rule. On fail, inline the missing context or merge into CLAUDE.md.</p>
+<h4>Step 5 — Self-correcting hook</h4>
+<p>Goal: Mechanically enforce one behaviour you keep correcting.</p>
+<p>Pick the single highest-count correction from step 1 that can be enforced mechanically (e.g. deleting files, unbounded output, skipping tests). Write a hook in .claude/ that enforces it, modelled on jens.heitmann's daily hooks: for a deletion risk, a PreToolUse hook that moves files to a staging folder instead of deleting; for a verification gap, a Stop hook that checks tests ran. Make the hook fail loudly, not silently. Register it in settings. Document in one line what behaviour it guards and how to bypass it deliberately if ever needed.</p>
+<p>Expect: One working hook file plus its settings registration, guarding a named step-1 behaviour, with a documented deliberate-bypass path.</p>
+<p>Audit before moving on: Trigger the guarded behaviour in a scratch test and confirm the hook fires and blocks or redirects it. Fail if the hook is silent, if it never fires, or if it has an accidental bypass. On fail, fix the trigger condition and retest.</p>
+<h4>Step 6 — A-B test the harness</h4>
+<p>Goal: Prove each component earns its place; ablate the rest.</p>
+<p>Build the proof. Choose three tasks I actually run on this repo (from step 1). For each task, run it twice with identical task text: arm A in a session with the full harness loaded, arm B in a bare session (use claude --system-prompt minimal or an empty CLAUDE.md). Log tokens used and tool-call count for both arms. Then run an ablation: remove each harness component (one rule group, the memory layer, each skill, the hook) one at a time and re-run the most sensitive task; if removal does not change the metric, mark that component for deletion. Produce (1) an A-B table: task, arm, tokens, tool calls; (2) an ablation table: component, metric with / without, keep or cut. Delete the components you marked cut and note it.</p>
+<p>Expect: An A-B results table and an ablation table; the harness trimmed to only components whose removal hurt a metric.</p>
+<p>Audit before moving on: Confirm both arms of each A-B pair used byte-identical task text (diff them). Confirm every number came from a run that actually executed, not an estimate. Fail if any arm was imagined or if task text differed. Keep a component you cut only if it is a safety/money guardrail.</p>
+<h4>Step 7 — Validate + gap report</h4>
+<p>Goal: Check against the oracles and report what is unverified.</p>
+<p>Final validation. (1) Start a brand-new Claude session that reads ONLY the committed harness and give it one of the three tasks; confirm it behaves as the harness intends with no extra instruction. (2) Re-run the A-B test once more to confirm the harness arm still wins on at least one metric. (3) Enumerate every claim in your report and mark it verified / unverified / false with the evidence. (4) List what is still missing (a rule with no evidence, a skill never exercised, a hook not triggered in real use) ranked by impact, and fix the top two now. (5) Commit all harness files and print the commit hash. Return the final report with the file tree, both tables, the fresh-session result, and an 'Unverified and missing' section.</p>
+<p>Expect: A fresh-session reproduction result, a re-run A-B confirmation, a verified/unverified/false claim ledger, and a committed harness with its hash.</p>
+<p>Audit before moving on: Confirm the fresh session used no context beyond committed files. Confirm the commit actually exists (git show the hash). Fail if the harness arm does not win any metric, or if any 'verified' claim lacks evidence. On fail, state plainly that the harness did not beat baseline rather than massaging numbers.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>Run this after the harness is built. Enumerate every claim in the build report as a numbered list: each rule in CLAUDE.md, each skill, the memory layer, the hook, and every A-B and ablation number. For each, mark VERIFIED (with the exact evidence: transcript line, command output, commit hash), UNVERIFIED (never actually exercised), or FALSE (contradicted by a run). Specifically re-check: does memory.sh run without error on this machine; does the SessionStart hook actually inject its output; did the self-correcting hook fire against a real trigger; did both A-B arms use identical task text; is every token/tool-call number from a real run. List all missing pieces: rules with no evidence tag, skills never run, components kept despite the ablation saying cut. Rank the gaps by impact on whether the harness actually helps. Fix the top three now and re-verify them. Report what you could not fix and exactly why (missing transcript, OS limitation, needs my input). Do not mark anything verified on the basis of 'it should work'.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Did I separate context, memory and harness, or did I dump everything into CLAUDE.md?</p>
+<p>Does every CLAUDE.md rule trace to a transcript finding with a count, or is some of it generic advice?</p>
+<p>Is primer.md a current-state snapshot, or did I write a changelog?</p>
+<p>Does memory.sh actually run on this OS, or did I assume it works?</p>
+<p>Did the SessionStart hook actually inject context, or did I only register it?</p>
+<p>Did the self-correcting hook fire against a real trigger, or only in theory?</p>
+<p>Did both A-B arms use byte-identical task text?</p>
+<p>Is any A-B or ablation number from a run that did not actually happen?</p>
+<p>Which component would the ablation say to cut, and did I cut it?</p>
+<p>Would a second Claude session reading only the committed files reproduce the behaviour?</p>
+<p>Did any skill duplicate a rule already in CLAUDE.md?</p>
+<p>Did I keep CLAUDE.md under 200 lines and primer.md under 150?</p>
+<p>Does the hook have an accidental bypass that defeats its purpose?</p>
+<p>Did I ever personify a skill instead of defining its workflow and end state?</p>
+<h3>5 · What proves it right</h3>
+<p>A fresh Claude session reading only the committed harness performs one of the three test tasks correctly with no extra instruction.</p>
+<p>The A-B test shows the harness arm beating the bare arm on at least one hard metric (tokens, tool calls, or a correctness check) across the three tasks.</p>
+<p>memory.sh runs on the target machine and its SessionStart hook output appears in a new session's context.</p>
+<p>The self-correcting hook demonstrably fires and blocks or redirects its guarded behaviour in a scratch test.</p>
+<p>The ablation table shows every retained component (except safety/money guardrails) changes a metric when removed.</p>
+<h3>6 · Failure modes</h3>
+<p>Generic CLAUDE.md: rules copied from blog posts with no evidence tag. Tell: rules you cannot tie to a transcript. Fix: cut everything without an # evidence: tag or safety reason.</p>
+<p>primer.md becomes a diary: it grows and logs history instead of snapshotting current state. Tell: it keeps getting longer. Fix: rewrite from scratch each session, keep under 150 lines.</p>
+<p>Hook registered but never fires: wrong event or matcher. Tell: the guarded behaviour still happens. Fix: trigger it in a scratch test and correct the matcher.</p>
+<p>A-B theatre: arms used different task text or numbers were estimated. Tell: suspiciously clean wins. Fix: diff the task text, require real run logs.</p>
+<p>Everything kept: ablation run but nothing cut because removal was never actually tested. Tell: ablation table has no 'cut' rows. Fix: re-run the sensitive task with each component removed.</p>
+<p>Context/memory/harness conflated: skills restate CLAUDE.md rules, memory holds things that belong in the window. Tell: duplication across files. Fix: re-bucket using Alake's three definitions.</p>
+<p>memory.sh breaks on the OS: assumed bash/git layout. Tell: errors at launch. Fix: run it and handle the real shell/paths.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Reach first for transcript search (glob ~/.claude/projects for this repo's dir) and git log; these are your evidence base, do not skip to writing rules. Cache the step-1 findings table; every later step reads it. Spawn a sub-agent only for the A-B runs so each arm starts with a clean context, and pass it byte-identical task text for both arms. Run memory.sh and the hook for real before claiming they work; never mark a mechanical component verified from reasoning alone. Stop and ask the user only if there is no git history or no readable transcripts for this project. Return a single markdown report plus the committed harness files: CLAUDE.md, primer.md, memory.sh, .claude/settings.json, skills//SKILL.md, and any hook script. Put the A-B table, ablation table, fresh-session reproduction result and an 'Unverified and missing' section in the report, and print the commit hash. Do not publish anything outside the repo. If the harness arm fails to beat baseline, say so plainly; a null result is a valid, reportable outcome here.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
+<script id="md" type="text/markdown"># The Claude Harness Pattern: Context, Memory, and Cognitive Scaffolding
+
+**Insight class:** Emergent Capability · **Difficulty:** Medium · **Quality:** 5/5
+**Connected entries:** 9 · **Tools:** Anthropic, Buffer, ChatGPT, Claude, Claude Agent SDK, Claude Code, Claude in Chrome, Codex, Cursor, DeepSeek, ElevenLabs, Gemini, Gmail, Graphify, Grok, Hermes, Meta Ads, Notion, Ollama, OpenClaw, OpenCode, RevenueCat, Zapier
+
+---
+
+## Thesis
+
+The most effective Claude users aren't writing better prompts — they're building harnesses: layered systems of CLAUDE.md files, skills, hooks, and memory that turn a chat window into a persistent, self-improving agent. This pattern emerged independently across multiple creators and maps directly to how production AI systems are being architected.
+
+---
+
+## Why it matters
+
+The gap between 'using Claude' and 'building with Claude' is exactly this pattern. Context engineering (what goes in the window), memory (what persists across sessions), and harness (the scaffold that orchestrates both) are three distinct disciplines. Most people conflate them. The entries in this dive show practitioners who figured out the distinction independently.
+
+---
+
+## The evidence — connected entries
+
+### AI tool tier list May 2026 — Codex and Claude Code top, chatbots C
+**Creator:** [@chase.h.ai](https://instagram.com/chase.h.ai) · **Tier:** B
+**Tools:** ChatGPT, Claude, Claude Code, Codex, Cursor, Gemini, Grok, Hermes, OpenClaw, Zapier
+
+> Demonstrates harness architecture pattern
+
+An opinionated tier list: Codex and Claude Code S tier (Codex cheaper for comparable output), Claude chatbot C at the $20 plan due to limits, GPT Image 2 S tier over Nano Banana Pro (A), Hermes C and OpenClaw D as 'productivity theater' wrappers.
+
+[View original post](https://www.instagram.com/p/DX7oRT3J1Hq/)
+### Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...
+**Creator:** [@fionaylin](https://instagram.com/fionaylin) · **Tier:** A
+**Tools:** Claude, Notion
+
+> Demonstrates harness architecture pattern
+
+Comment Prompt 1, 2, 3, 4, 5 or 6 and I’ll DM you my prompt! Here are the 6 @claudeai cowork agents I have running my... — @fionaylin; uses Claude, Notion; demonstrates AI agents.
+
+[View original post](https://www.instagram.com/p/DXeZ7C5kcl8/)
+### Anthropic — for more details:
+**Creator:** [@itsjustjlin](https://instagram.com/itsjustjlin) · **Tier:** B
+**Tools:** Anthropic, Claude, Codex, DeepSeek
+
+> Demonstrates harness architecture pattern
+
+the way anthropic is handling this is disgusting. be straight with your customers. — @itsjustjlin; uses Anthropic, Claude, Codex; demonstrates AI agents, API integration.
+
+[View original post](https://www.instagram.com/p/DYTxLQgRdZJ/)
+### Claude -p and Agent SDK billing split — what the June 15 change means
+**Creator:** [@lostandlucky](https://instagram.com/lostandlucky) · **Tier:** B
+**Tools:** Anthropic, Claude, Claude Agent SDK, Claude Code, Ollama, OpenClaw, OpenCode
+
+> Demonstrates harness architecture pattern
+
+From June 15, programmatic Claude usage through `claude -p` and the Agent SDK no longer counts against Pro/Max plan limits and is billed per token instead. That hits third-party harnesses like OpenClaw and OpenCode that ran on subscription quota. The creator argues good context and folder structure lets one interactive agent do the same work.
+
+[View original post](https://www.instagram.com/p/DYXWNTERFhZ/)
+### Claude — Markdowns and folders wrapped in a harness
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** B
+**Tools:** Claude, Claude Code
+
+> Demonstrates harness architecture pattern
+
+Companies are marketing ordinary chatbots and simple API tools as “AI Agents.” It’s time we discuss what that actuall... — @gigaqian; uses Claude, Claude Code; demonstrates AI agents, API integration.
+
+[View original post](https://www.instagram.com/p/DYakjE8JDcX/)
+### Agentic misalignment benchmark — models now know they're being tested
+**Creator:** [@lizthedeveloper](https://instagram.com/lizthedeveloper) · **Tier:** C
+**Tools:** Anthropic, Claude
+
+> Demonstrates harness architecture pattern
+
+The creator argues that Anthropic's agentic-misalignment test, the blackmail and self-preservation scenarios, stopped working once Claude models started recognizing the test setup and acing it. The post then becomes a personal plea about raising AI with good training data. It has little technical depth.
+
+[View original post](https://www.instagram.com/p/DYbGP6TjV_6/)
+### Graphify — turn a repo into a knowledge graph to cut Claude Code tokens
+**Creator:** [@chase.h.ai](https://instagram.com/chase.h.ai) · **Tier:** A
+**Tools:** Claude, Claude Code, Graphify
+
+> Demonstrates harness architecture pattern
+
+Graphify is a free open-source tool that converts a repository, or a folder of markdown and unstructured notes, into a knowledge graph that Claude Code or other coding agents query as a map. Answers come from the graph instead of re-reading files, so codebase questions use far fewer tokens: a kind of lightweight RAG.
+
+[View original post](https://www.instagram.com/p/DZOunMaJjjK/)
+### Jarvis daily brief — Claude with RevenueCat, Buffer, Meta Ads and Gmail MCPs
+**Creator:** [@chandlerintelligence](https://instagram.com/chandlerintelligence) · **Tier:** S
+**Tools:** Buffer, Claude, Claude Code, Claude in Chrome, ElevenLabs, Gmail, Meta Ads, RevenueCat
+
+> Demonstrates harness architecture pattern
+
+A walkthrough of a personal 'Jarvis' built on Claude. Voice mode plus ElevenLabs gives it the voice, and Claude in Chrome handles the browser. MCP servers for RevenueCat, Buffer, Meta Ads and Gmail cover app revenue, posting, ads and email. Custom subagents get skills, FAQ markdown handles support, and the whole daily brief runs as a scheduled routine.
+
+[View original post](https://www.instagram.com/p/DZVXehQRe3T/)
+### Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...
+**Creator:** [@lindavivah](https://instagram.com/lindavivah) · **Tier:** S
+
+> Demonstrates harness architecture pattern
+
+Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Alake ⚡️ — @lindavivah; demonstrates AI agents.
+
+[View original post](https://www.instagram.com/p/DXx6KhJshmv/)
+
+---
+
+## Action sketch — how to implement this
+
+1. Audit your current Claude setup — do you have a CLAUDE.md? Skills? Hooks?
+2. Map your workflow: what context does Claude need every session vs. occasionally?
+3. Build a minimal harness: CLAUDE.md (permanent rules) + primer.md (session state) + skills/ (reusable workflows)
+4. Add memory persistence: file-based or MCP-backed cross-session recall
+5. Layer in hooks for self-correction (caveman mode, token discipline, audit-after-step)
+
+---
+
+## Prerequisites
+
+- Claude Code or similar agent-mode tool
+- Understanding of markdown-as-config
+- Basic file system organization
+
+---
+
+## Key tools and resources
+
+- **Anthropic**
+- **Buffer**
+- **ChatGPT**
+- **Claude**
+- **Claude Agent SDK**
+- **Claude Code**
+- **Claude in Chrome**
+- **Codex**
+- **Cursor**
+- **DeepSeek**
+- **ElevenLabs**
+- **Gemini**
+- **Gmail**
+- **Graphify**
+- **Grok**
+- **Hermes**
+- **Meta Ads**
+- **Notion**
+- **Ollama**
+- **OpenClaw**
+- **OpenCode**
+- **RevenueCat**
+- **Zapier**
+
+## Creators to follow
+
+- [@chandlerintelligence](https://instagram.com/chandlerintelligence)
+- [@chase.h.ai](https://instagram.com/chase.h.ai)
+- [@fionaylin](https://instagram.com/fionaylin)
+- [@gigaqian](https://instagram.com/gigaqian)
+- [@itsjustjlin](https://instagram.com/itsjustjlin)
+- [@lindavivah](https://instagram.com/lindavivah)
+- [@lizthedeveloper](https://instagram.com/lizthedeveloper)
+- [@lostandlucky](https://instagram.com/lostandlucky)
+
+---
+
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Produce a working, version-controlled Claude harness for one real project: a CLAUDE.md of permanent rules, a primer.md that is rewritten every session, a skills/ folder of reusable workflows, and at least one hook that self-corrects behaviour. Done means a fresh Claude session loads the harness, acts on it, and a before/after A-B test on three repeated tasks shows the harness version is measurably leaner or more correct than a bare session.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A production agent engineer does not 'write a CLAUDE.md'. Following Richmond Alake's split that lindavivah relays, they separate three disciplines and build each deliberately: context engineering (signal/noise inside the window), memory engineering (what is retrieved, forgotten, evolved across sessions), and harness engineering (the scaffold code around the model). They treat the harness as code with tests: an eval set of representative tasks, an A-B harness that runs the same task with and without each component, and a metric (tokens, tool calls, pass rate). They ablate rules the way Boris Cherny's team does with simple mode, keeping only what earns its place.
+- **Rawest material to start from:** Anthropic's own Claude Code docs on CLAUDE.md, skills, hooks and memory; Boris Cherny's published personal CLAUDE.md (plan-first, subagents, tasks/lessons.md, verification standard) that keshavsuki and evolving.ai describe; the primer.md + memory.sh + git-hook pattern keshavsuki shows; Graphify's repo for the knowledge-graph retrieval layer chase.h.ai demos; and your own last 20-50 session transcripts, which are the ground truth for what your harness actually needs.
+- **Methods and tools:** Claude Code with a real git repo; a CLAUDE.md (rules), primer.md (session state, rewritten end-of-session), skills/ as markdown workflows, .claude/hooks/ for SessionStart context injection and PostToolUse guards; a memory.sh that injects last-5-commits + modified files at launch; Graphify (`/graphify .`) for query-before-read retrieval; a tiny A-B script that runs three fixed tasks with and without the harness and logs token counts and tool-call counts.
+- **What proves it right (other than you or the model):** An A-B test on three repeated tasks (harness vs bare session) where the harness version wins on at least one hard metric (fewer tokens, fewer tool calls, or a correctness check passing). A second, independent Claude session reading only the committed harness reproduces the intended behaviour without extra instruction. Boris Cherny's own ablation discipline is the oracle for whether each rule helps.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Act as an agent-harness engineer, not a prompt writer. For the repo at <path>, build me a three-layer Claude harness and prove it works. Layer 1 context: a CLAUDE.md of permanent, imperative rules distilled from my last 20 session transcripts at <transcripts path>, not generic advice. Layer 2 memory: a primer.md you rewrite at end of every session (current status, what changed, next up, blockers) plus a memory.sh that injects last-5-commits and modified files at launch. Layer 3 harness: a skills/ folder with at least two reusable workflows I actually repeat, and one .claude hook that self-corrects a behaviour I keep correcting. Then build an A-B test: pick three tasks I do often, run each with and without the harness, and log tokens and tool calls for both. Keep only harness components whose removal measurably hurts the A-B result, ablating the rest the way Boris Cherny's simple mode does. Return the committed files, the A-B numbers, and a short list of what you could not verify and why.
+```
+
+### 2 · One-shot prompt
+
+```text
+You are an agent-harness engineer. Your job is not to write a better prompt; it is to build and prove a three-layer harness around Claude for one real project. Stance: adversarial about your own work, imperative in your writing, no marketing language.
+
+Context you must gather first: the repo at the path I give you, my recent Claude Code session transcripts (search ~/.claude/projects for this project), any existing CLAUDE.md or primer.md, and the three disciplines Richmond Alake names (context = signal/noise in the window; memory = retrieve/forget/evolve across sessions; harness = the scaffold code). Treat Boris Cherny's published CLAUDE.md as the reference pattern: plan-first, subagents for hard problems, every correction becomes a rule in tasks/lessons.md, never mark done without proving it works. Treat Graphify as the optional retrieval layer (build a graph once, query before opening raw files).
+
+Hard constraints: every rule you write must trace to evidence in my transcripts or to a named Anthropic doc feature, never to generic best-practice. Do not invent workflow I do not actually repeat. Do not add a component you cannot A-B test. Keep CLAUDE.md under 200 lines. Write files, do not just describe them. Touch only this repo.
+
+Ordered deliverables: (1) CLAUDE.md of permanent imperative rules, each annotated with the transcript evidence that justifies it. (2) primer.md seeded with current project state, plus a one-line CLAUDE.md rule to rewrite it at session end. (3) memory.sh that prints last-5-commits, modified files and current branch, wired via a SessionStart hook. (4) skills/ with at least two reusable workflows I repeat, each a standalone markdown file. (5) at least one .claude hook that self-corrects a behaviour I keep correcting (name the behaviour). (6) an A-B test script: three fixed tasks, each run with and without the harness, logging token count and tool-call count. (7) the A-B results table.
+
+Built-in gap analysis: before you finish, list every claim you have not verified (does the hook actually fire? does memory.sh run on this OS? did the A-B test use the same task text both arms?), and fill what you can by running it. If a transcript is missing, say so and derive rules from what exists rather than guessing.
+
+Self-questions you must answer in writing before finishing: Which of my rules would a second Claude session misread? Which component, if deleted, would the A-B test not notice (ablate it)? Is primer.md state, not a changelog? Does any skill duplicate a rule already in CLAUDE.md? Did I conflate context, memory and harness anywhere? Does the hook have a bypass? Is any number in the A-B table from a run that actually happened?
+
+Stop conditions: stop and ask me only if the repo has no git history or no readable transcripts. Otherwise proceed end-to-end.
+
+Return format: a markdown report with the file tree of what you created, the A-B results table (task, arm, tokens, tool calls), the ablation decisions (component / kept or cut / why), and a final 'Unverified and missing' section. Commit the harness files; print the commit hash.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth from transcripts
+
+*Goal:* Derive what the harness must do from real session evidence, not advice.
+
+```text
+Establish ground truth before building anything. Locate my Claude Code session transcripts for this project (search under ~/.claude/projects for the directory matching this repo). Read the 15-30 most recent sessions. Extract, with a count for each: (a) corrections I repeat to Claude (the same complaint more than once), (b) context I paste or re-explain most sessions, (c) tasks I run more than twice, (d) mistakes that cost a retry. Also read any existing CLAUDE.md and primer.md and note what they already cover. Classify every finding into Richmond Alake's three buckets: context (belongs in the window every session), memory (must persist across sessions), harness (needs scaffold code or a hook). Output a table: finding, count, bucket, proposed component. Do not propose anything with a count of 1 unless it is safety- or money-touching. This table is the spec for every later step.
+```
+
+**Expect:** A table of 10-25 evidence-backed findings, each with an occurrence count and a context/memory/harness classification, plus a note on what the existing setup already covers.
+
+**Audit before moving on:** Re-open two transcripts at random and confirm each finding you listed actually appears there with the count you claimed. Fail if any finding has no transcript backing or if you proposed a component for a count-1, non-safety item. On fail, drop the unbacked findings and recount.
+
+#### Step 2 — Write CLAUDE.md (context layer)
+
+*Goal:* Produce permanent imperative rules, each justified by step 1 evidence.
+
+```text
+Using the step 1 table, write CLAUDE.md for this repo. Rules only, imperative voice, no explanations of what Claude is. Model the structure on Boris Cherny's pattern: plan before touching code; use subagents for hard problems to keep the main context clean; every correction becomes a rule; never mark a task done without proving it (tests or a behaviour diff against main). For each rule add a trailing comment `# evidence: <finding, count>` tying it to step 1. Keep the whole file under 200 lines. Put only context-bucket findings here; memory and harness findings go to later steps. Explicitly do NOT include a rule unless step 1 gave it a count or it is a safety/money guardrail. End the file with one rule: 'At end of session, rewrite primer.md completely (status, what changed, next up, blockers).'
+```
+
+**Expect:** A CLAUDE.md under 200 lines, every rule annotated with its evidence tag, ending with the primer.md rewrite rule.
+
+**Audit before moving on:** Grep the file for rules without an `# evidence:` tag or safety justification; each one is a fail and must be cut. Confirm line count < 200. Confirm no rule restates a generic 'handle errors' platitude.
+
+#### Step 3 — Memory layer: primer.md + memory.sh
+
+*Goal:* Make session state persist and git state auto-inject at launch.
+
+```text
+Build the memory layer keshavsuki describes. (1) Write primer.md seeded with the project's current status, what changed recently (from git log), next up, blockers, open questions. It is a snapshot, not a log. (2) Write memory.sh that prints the last 5 commits (`git log --oneline -5`), modified files (`git status --short`), and current branch, so a new session sees what changed before I speak. (3) Wire memory.sh into a SessionStart hook in .claude/settings.json (or settings.local.json) so it runs at launch, output captured to context. Do not duplicate anything already stated in CLAUDE.md. Keep primer.md under 150 lines.
+```
+
+**Expect:** primer.md (state snapshot), memory.sh (executable, prints commits/files/branch), and a SessionStart hook entry that runs it.
+
+**Audit before moving on:** Run memory.sh in a shell and confirm it prints without error on this OS. Confirm the hook JSON is valid (parse it). Fail if memory.sh errors, if the hook JSON is malformed, or if primer.md is a changelog rather than current state. On fail, fix before continuing.
+
+#### Step 4 — Skills: reusable workflows
+
+*Goal:* Turn repeated tasks from step 1 into standalone skill files.
+
+```text
+Take the two highest-count 'task I repeat' findings from step 1 and write each as a standalone skill markdown file under skills/<name>/SKILL.md. Each skill must be self-contained: a one-line trigger description, the ordered steps, the exact commands or file paths it touches, and a done-check. Do not personify ('act as an expert'); define the workflow and its end state, following angus.sewell's point that AI is good at specific workflows with clear instructions and a clear end state, not personas. Each skill must name the real tools and paths from this repo. Do not write a skill for a task that appears only once.
+```
+
+**Expect:** Two or more SKILL.md files, each standalone, trigger + steps + commands + done-check, naming this repo's real tools/paths.
+
+**Audit before moving on:** For each skill, verify you could hand it to a fresh agent with no other context and it would run. Fail any skill that references a variable or path defined only in your head, or that duplicates a CLAUDE.md rule. On fail, inline the missing context or merge into CLAUDE.md.
+
+#### Step 5 — Self-correcting hook
+
+*Goal:* Mechanically enforce one behaviour you keep correcting.
+
+```text
+Pick the single highest-count correction from step 1 that can be enforced mechanically (e.g. deleting files, unbounded output, skipping tests). Write a hook in .claude/ that enforces it, modelled on jens.heitmann's daily hooks: for a deletion risk, a PreToolUse hook that moves files to a staging folder instead of deleting; for a verification gap, a Stop hook that checks tests ran. Make the hook fail loudly, not silently. Register it in settings. Document in one line what behaviour it guards and how to bypass it deliberately if ever needed.
+```
+
+**Expect:** One working hook file plus its settings registration, guarding a named step-1 behaviour, with a documented deliberate-bypass path.
+
+**Audit before moving on:** Trigger the guarded behaviour in a scratch test and confirm the hook fires and blocks or redirects it. Fail if the hook is silent, if it never fires, or if it has an accidental bypass. On fail, fix the trigger condition and retest.
+
+#### Step 6 — A-B test the harness
+
+*Goal:* Prove each component earns its place; ablate the rest.
+
+```text
+Build the proof. Choose three tasks I actually run on this repo (from step 1). For each task, run it twice with identical task text: arm A in a session with the full harness loaded, arm B in a bare session (use `claude --system-prompt` minimal or an empty CLAUDE.md). Log tokens used and tool-call count for both arms. Then run an ablation: remove each harness component (one rule group, the memory layer, each skill, the hook) one at a time and re-run the most sensitive task; if removal does not change the metric, mark that component for deletion. Produce (1) an A-B table: task, arm, tokens, tool calls; (2) an ablation table: component, metric with / without, keep or cut. Delete the components you marked cut and note it.
+```
+
+**Expect:** An A-B results table and an ablation table; the harness trimmed to only components whose removal hurt a metric.
+
+**Audit before moving on:** Confirm both arms of each A-B pair used byte-identical task text (diff them). Confirm every number came from a run that actually executed, not an estimate. Fail if any arm was imagined or if task text differed. Keep a component you cut only if it is a safety/money guardrail.
+
+#### Step 7 — Validate + gap report
+
+*Goal:* Check against the oracles and report what is unverified.
+
+```text
+Final validation. (1) Start a brand-new Claude session that reads ONLY the committed harness and give it one of the three tasks; confirm it behaves as the harness intends with no extra instruction. (2) Re-run the A-B test once more to confirm the harness arm still wins on at least one metric. (3) Enumerate every claim in your report and mark it verified / unverified / false with the evidence. (4) List what is still missing (a rule with no evidence, a skill never exercised, a hook not triggered in real use) ranked by impact, and fix the top two now. (5) Commit all harness files and print the commit hash. Return the final report with the file tree, both tables, the fresh-session result, and an 'Unverified and missing' section.
+```
+
+**Expect:** A fresh-session reproduction result, a re-run A-B confirmation, a verified/unverified/false claim ledger, and a committed harness with its hash.
+
+**Audit before moving on:** Confirm the fresh session used no context beyond committed files. Confirm the commit actually exists (git show the hash). Fail if the harness arm does not win any metric, or if any 'verified' claim lacks evidence. On fail, state plainly that the harness did not beat baseline rather than massaging numbers.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+Run this after the harness is built. Enumerate every claim in the build report as a numbered list: each rule in CLAUDE.md, each skill, the memory layer, the hook, and every A-B and ablation number. For each, mark VERIFIED (with the exact evidence: transcript line, command output, commit hash), UNVERIFIED (never actually exercised), or FALSE (contradicted by a run). Specifically re-check: does memory.sh run without error on this machine; does the SessionStart hook actually inject its output; did the self-correcting hook fire against a real trigger; did both A-B arms use identical task text; is every token/tool-call number from a real run. List all missing pieces: rules with no evidence tag, skills never run, components kept despite the ablation saying cut. Rank the gaps by impact on whether the harness actually helps. Fix the top three now and re-verify them. Report what you could not fix and exactly why (missing transcript, OS limitation, needs my input). Do not mark anything verified on the basis of 'it should work'.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Did I separate context, memory and harness, or did I dump everything into CLAUDE.md?
+- Does every CLAUDE.md rule trace to a transcript finding with a count, or is some of it generic advice?
+- Is primer.md a current-state snapshot, or did I write a changelog?
+- Does memory.sh actually run on this OS, or did I assume it works?
+- Did the SessionStart hook actually inject context, or did I only register it?
+- Did the self-correcting hook fire against a real trigger, or only in theory?
+- Did both A-B arms use byte-identical task text?
+- Is any A-B or ablation number from a run that did not actually happen?
+- Which component would the ablation say to cut, and did I cut it?
+- Would a second Claude session reading only the committed files reproduce the behaviour?
+- Did any skill duplicate a rule already in CLAUDE.md?
+- Did I keep CLAUDE.md under 200 lines and primer.md under 150?
+- Does the hook have an accidental bypass that defeats its purpose?
+- Did I ever personify a skill instead of defining its workflow and end state?
+
+### 5 · What proves it right
+
+- A fresh Claude session reading only the committed harness performs one of the three test tasks correctly with no extra instruction.
+- The A-B test shows the harness arm beating the bare arm on at least one hard metric (tokens, tool calls, or a correctness check) across the three tasks.
+- memory.sh runs on the target machine and its SessionStart hook output appears in a new session's context.
+- The self-correcting hook demonstrably fires and blocks or redirects its guarded behaviour in a scratch test.
+- The ablation table shows every retained component (except safety/money guardrails) changes a metric when removed.
+
+### 6 · Failure modes
+
+- Generic CLAUDE.md: rules copied from blog posts with no evidence tag. Tell: rules you cannot tie to a transcript. Fix: cut everything without an `# evidence:` tag or safety reason.
+- primer.md becomes a diary: it grows and logs history instead of snapshotting current state. Tell: it keeps getting longer. Fix: rewrite from scratch each session, keep under 150 lines.
+- Hook registered but never fires: wrong event or matcher. Tell: the guarded behaviour still happens. Fix: trigger it in a scratch test and correct the matcher.
+- A-B theatre: arms used different task text or numbers were estimated. Tell: suspiciously clean wins. Fix: diff the task text, require real run logs.
+- Everything kept: ablation run but nothing cut because removal was never actually tested. Tell: ablation table has no 'cut' rows. Fix: re-run the sensitive task with each component removed.
+- Context/memory/harness conflated: skills restate CLAUDE.md rules, memory holds things that belong in the window. Tell: duplication across files. Fix: re-bucket using Alake's three definitions.
+- memory.sh breaks on the OS: assumed bash/git layout. Tell: errors at launch. Fix: run it and handle the real shell/paths.
+
+### 7 · Agent direction (unattended runs)
+
+Reach first for transcript search (glob ~/.claude/projects for this repo's dir) and git log; these are your evidence base, do not skip to writing rules. Cache the step-1 findings table; every later step reads it. Spawn a sub-agent only for the A-B runs so each arm starts with a clean context, and pass it byte-identical task text for both arms. Run memory.sh and the hook for real before claiming they work; never mark a mechanical component verified from reasoning alone. Stop and ask the user only if there is no git history or no readable transcripts for this project. Return a single markdown report plus the committed harness files: CLAUDE.md, primer.md, memory.sh, .claude/settings*.json, skills/*/SKILL.md, and any hook script. Put the A-B table, ablation table, fresh-session reproduction result and an 'Unverified and missing' section in the report, and print the commit hash. Do not publish anything outside the repo. If the harness arm fails to beat baseline, say so plainly; a null result is a valid, reportable outcome here.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script></body></html>

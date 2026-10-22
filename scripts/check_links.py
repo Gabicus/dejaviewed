@@ -186,7 +186,8 @@ def _as_list(v) -> list:
 
 
 URL_RE = re.compile(r"https?://[^\s\"'<>)\]`|\\]+")
-PLACEHOLDER_RE = re.compile(r"(^|\.)(example\.(com|org|net)|yourdomain\.com)$|^localhost|^127\.0\.0\.1|^host\.docker\.internal")
+PLACEHOLDER_RE = re.compile(r"(^|\.)(example\.(com|org|net)|yourdomain\.com)$|^localhost|^127\.0\.0\.1|^host\.docker\.internal"
+                            r"|example-|\.(invalid|test|localhost)$|[<>&]|^[^.]+$")  # sample hosts in prompts/code
 # page-asset hosts (fonts/CDNs/XML namespaces) — not content links
 ASSET_HOSTS = {"fonts.googleapis.com", "fonts.gstatic.com", "cdn.jsdelivr.net",
                "cdnjs.cloudflare.com", "unpkg.com", "www.w3.org", "w3.org",

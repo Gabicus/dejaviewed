@@ -84,7 +84,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>@iamfesq demos using an AI detection/segmentation model to auto-rotoscope a mask of himself for compositing into his animated art. Quick technique reference for AI-assisted rotoscoping.</p>
 <p>View original post</p>
 <h3>OpenScreen — free open-source Screen Studio alternative</h3>
-<p>Creator: @marc.kaz · Tier: S Tools: Claude, Cursor, OpenScreen, siddharthvaddem/openscreen</p>
+<p>Creator: @marc.kaz · Tier: A Tools: Claude, Cursor, OpenScreen, siddharthvaddem/openscreen</p>
 <p>OpenScreen: free screen recording (post-production tool)</p>
 <p>@marc.kaz on OpenScreen (github.com/siddharthvaddem/openscreen): free MIT-licensed screen recorder with auto-zoom on clicks, cursor animations, webcam overlays, any aspect ratio. Plus the Recordly fork with native Mac/Windows recording.</p>
 <p>View original post</p>
@@ -115,9 +115,123 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>@marc.kaz</p>
 <p>@mattfarmerai</p>
 <p>@realrileybrown</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Running this system produces one finished 60-90 second video made by one person with AI tools: a Claude-written script and shot list, base footage from Runway (Gen-3 Alpha, video-to-video, non-linear keyframe canvas) and Kling (motion brush on up to 5 subjects), optional Veo or Sora shots, an AI-rotoscoped insert of the creator, a screen-recorded segment from OpenScreen, and a final edit with sound. It is for a solo creator testing the '$30 a month replaces a production team' claim. Done means a ledger of every generation with credits and cost, a continuity check by a second person, a delivered file that passes platform specs, and a gap report on where the tools still needed a human.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A producer would start with a script, a shot list and a continuity bible (character reference sheet, wardrobe, palette, lens and lighting per scene) before generating a frame, because AI video fails mostly on consistency between shots. They would pick the tool per shot by what it controls: Kling's motion brush for directed subject motion, Runway video-to-video when a real performance must drive the shot, a keyframe pair on Runway's canvas when start and end frames matter. They would budget by cost per usable second, counting rejected generations, and spend real effort on sound and the edit. They would check commercial rights per plan and label AI content where platforms require it.</p>
+<p>Rawest material to start from: - The current Runway docs for Gen-3 Alpha, video-to-video and keyframes, plus the plan's credit cost per second and commercial terms.</p>
+<p>Kling docs for motion brush (up to 5 selectable regions with drawn paths) and its credit and plan terms.</p>
+<p>Google's Veo documentation and access route, and OpenAI's Sora availability in the user's region.</p>
+<p>github.com/siddharthvaddem/openscreen (MIT; auto-zoom on clicks, cursor animation, webcam overlay) and its Recordly fork.</p>
+<p>Meta's Segment Anything 2 (SAM 2) repo for video masks, as the open option for the rotoscope step iamfesq showed.</p>
+<p>The creator's own footage, voice and screen captures in original resolution.</p>
+<p>YouTube, Instagram and TikTok upload spec pages and their AI-content disclosure rules.</p>
+<p>Methods and tools: Claude for script, shot list and continuity bible; Midjourney or another image model for character reference sheets and start frames with fixed style references; Runway Gen-3 Alpha image-to-video, video-to-video and the keyframe canvas; Kling image-to-video with motion brush; SAM 2 (or Runway's green-screen tool) for masks, composited in DaVinci Resolve Fusion or After Effects; OpenScreen for the screen segment; an NLE (Premiere Pro or DaVinci Resolve) for edit, J and L cuts, color matching with scopes, loudness normalization to -14 LUFS integrated; ffprobe and ffmpeg loudnorm for checks; a generation ledger CSV (shot, tool, prompt, seed, settings, credits, seconds, kept or rejected, reason).</p>
+<p>What proves it right (other than you or the model): ffprobe confirms resolution, frame rate, codec and duration; ffmpeg loudnorm reports integrated loudness near -14 LUFS. A second person checks each cut against the continuity bible and lists breaks. The platform upload accepts the file with the AI disclosure set. The ledger and invoices give actual cost per finished second, compared to the '$30 a month' claim. A small blind viewer test (5 people) rates whether the piece holds attention against one human-shot reference video by the same creator.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Produce one 60-90 second video with me as a one-person studio, and measure what it really costs. Before any generation: write the script, a numbered shot list with shot type, duration and the tool chosen for each shot with a reason (Kling motion brush for directed subject motion, Runway video-to-video when my real performance drives it, Runway's keyframe canvas when start and end frames matter, Veo or Sora only if available to me), and a continuity bible: character reference sheet, wardrobe, palette, lighting and lens per scene. Generate start frames from the reference sheet so characters stay consistent. Keep a ledger of every generation: tool, prompt, seed, settings, credits, seconds, kept or rejected and why. Rotoscope me into one shot with SAM 2 masks or Runway's tool and composite it. Record the tutorial segment with OpenScreen. Edit in Premiere or Resolve with real sound design, color-match shots with scopes, and normalize to -14 LUFS. Check rights and AI-disclosure rules for each tool's plan and the target platform. Validate with ffprobe, a second person's continuity check against the bible, and cost per finished second from the ledger versus the '$30 a month' claim. End with a gap report.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are a producer-director running a one-person AI video production. You care about the finished piece and its cost per usable second, not about any single impressive generation. You expect consistency, hands, text and physics to fail and you plan shots around those weaknesses.</p>
+<p>CONTEXT</p>
+<p>realrileybrown on Runway's non-linear exploration: start from an AI image, generate a future frame, connect them, let AI fill the frames between, branch alternatives on a canvas instead of a timeline.</p>
+<p>realrileybrown on Kling's motion brush: select up to 5 characters or objects in a start image (often Midjourney) and draw their motion paths.</p>
+<p>Runway Gen-3 Alpha video-to-video (ailevels): a real performance drives movement and expression.</p>
+<p>Kling's free international rollout (mattfarmerai) and Google's Veo (1080p from text, image and video prompts).</p>
+<p>iamfesq: AI detection and segmentation to rotoscope yourself into your own animation.</p>
+<p>OpenScreen (siddharthvaddem/openscreen, MIT): free Screen Studio alternative with auto-zoom on clicks.</p>
+<p>The dive's claim: production cost falls from $10K per video to about $30 a month in subscriptions.</p>
+<p>HARD CONSTRAINTS</p>
+<p>No generation before the script, shot list and continuity bible are approved by the user.</p>
+<p>Every generation, including rejects, is a ledger row.</p>
+<p>Use only the user's own likeness, voice and assets, or properly licensed ones; no real people or brands without rights.</p>
+<p>Record each tool plan's commercial terms and the target platform's AI-disclosure rule before publishing.</p>
+<p>Final deliverable: 1080p or higher, constant frame rate, H.264 or H.265, -14 LUFS integrated, captions file.</p>
+<p>DELIVERABLES, IN ORDER</p>
+<p>ground_truth.md: tools, plans, credit prices, per-second costs, commercial terms, platform specs and disclosure rules, with dates read.</p>
+<p>preprod/: script (with timing), shot list (shot, duration, type, tool, reason, risk), continuity bible with a character reference sheet and palette.</p>
+<p>frames/: start and end frames per shot generated from the reference sheet.</p>
+<p>gen/: generated clips per shot and ledger.csv.</p>
+<p>roto/: SAM 2 or Runway masks and the composited shot.</p>
+<p>screen/: OpenScreen recording with settings.</p>
+<p>edit/: project file, music and SFX licenses, color notes, final.mp4, captions.srt.</p>
+<p>report.md.</p>
+<p>BUILT-IN GAP ANALYSIS Keep GAPS in report.md marking VERIFIED, UNVERIFIED or FALSE with evidence: cost per finished second and total versus $30 a month (include rejects and any plan upgrades); character consistency across shots; motion brush following drawn paths; video-to-video preserving the performance; mask edge quality on hair and hands; final specs; rights per tool; disclosure set. Fill by measuring; list the rest.</p>
+<p>SELF-QUESTIONS</p>
+<p>Which shots would a viewer instantly read as AI, and can the edit hide or cut them?</p>
+<p>Does the character look like the same person in every shot?</p>
+<p>Is the story carried by sound and edit, or by novelty that will age in a month?</p>
+<p>How many generations per kept second did each tool take?</p>
+<p>Do I own the outputs on this plan, and may I monetize them?</p>
+<p>Did I compare to anything, such as the creator's own human-shot video?</p>
+<p>STOP CONDITIONS Stop and ask before buying credits or upgrading plans, before using anyone else's likeness, and before publishing. If a shot fails 5 generations, redesign the shot rather than regenerating.</p>
+<p>RETURN FORMAT report.md with the shot table (tool, attempts, kept seconds, credits, cost), totals, cost per finished second, specs from ffprobe, continuity check results, rights table, GAPS, and paths to final.mp4 and captions.srt.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: tools, costs, rights, specs</h4>
+<p>Goal: Know what each tool costs per usable second and what you may do with its output.</p>
+<p>For Runway, Kling, Veo (via whatever product the user has access to), Sora if available in their region, Midjourney and OpenScreen, record: the plan the user holds, monthly price, credits included, credit cost per second of video at each resolution, maximum clip length, and the commercial-use and ownership terms, with the URL and date read. Clone github.com/siddharthvaddem/openscreen and record the version and platform support. Install SAM 2 or note Runway's masking tool as the rotoscope route. Pull current upload specs and AI-content disclosure rules for the target platform (YouTube, Instagram or TikTok). Translate the '$30 a month' claim into a hypothesis: how many finished seconds per month that budget buys if 1 in 3 generations is kept. Note watermark rules on free tiers, since a watermark makes a clip unusable. Write ground_truth.md.</p>
+<p>Expect: ground_truth.md with a cost table per tool, a rights table, platform specs and disclosure rules, and the budget hypothesis in seconds.</p>
+<p>Audit before moving on: Fail any row without a source URL and date. If any tool's terms forbid commercial use on the user's plan, flag it before preproduction.</p>
+<h4>Step 2 — Preproduction: script, shot list, continuity bible</h4>
+<p>Goal: Plan shots around what each tool controls.</p>
+<p>With Claude, write a 60-90 second script with timing per line, then a numbered shot list: shot id, duration, framing, subject action, tool (Kling motion brush for directed motion of up to 5 subjects; Runway video-to-video when the user's performance must drive the shot; Runway keyframe canvas when start and end frames are fixed; Veo or Sora for establishing shots if available; OpenScreen for the tutorial segment; rotoscope composite for the user's insert), reason, and failure risk (hands, text, fast motion, crowds). Avoid shots that depend on legible text or close-up hands unless they are screen recordings. Write a continuity bible: character reference sheet prompt and images (front, three-quarter, side), wardrobe, palette hex codes, lighting direction and lens per scene. Present all of it to the user for approval.</p>
+<p>Expect: preprod/script.md, shot_list.csv, bible.md with reference images, total planned seconds matching the script.</p>
+<p>Audit before moving on: Sum shot durations against script timing; fail if off by more than 5%. Fail any shot whose tool choice has no reason. Wait for user approval before step 3.</p>
+<h4>Step 3 — Generate frames and footage with a ledger</h4>
+<p>Goal: Produce every planned shot with tracked cost.</p>
+<p>Generate start frames (and end frames for keyframe shots) from the reference sheet with fixed style references and seeds. For Kling shots, upload the start frame, paint motion-brush regions for up to 5 subjects, draw paths, and generate; for Runway video-to-video, film the user's performance on a phone at the target frame rate, then drive the generation; for keyframe shots, connect start and end frames on Runway's canvas and branch two alternatives. Log every generation in gen/ledger.csv: shot, tool, prompt, seed, settings, credits, seconds generated, kept or rejected, reason. Score each kept clip against the bible: character match, palette, lighting direction. After 5 failed attempts on a shot, rewrite the shot instead of regenerating. Keep rejected clips in a rejects folder so the ledger can be checked against them.</p>
+<p>Expect: gen/ clips per shot, ledger.csv with every attempt, a kept clip per shot or a redesign note.</p>
+<p>Audit before moving on: Compute attempts per kept second per tool from the ledger. Fail if any kept clip breaks the bible on character identity; regenerate from a closer reference or redesign.</p>
+<h4>Step 4 — Rotoscope insert and screen segment</h4>
+<p>Goal: Put the creator into one generated shot and record the tutorial part.</p>
+<p>Film the user against any background, matched to the target shot's lighting direction from the bible. Run SAM 2 with a click prompt on the first frame to propagate a mask through the clip (or use Runway's green-screen tool). Export a matte, refine edges (choke 1 px, feather 2 px, check hair and fingers), and composite over the generated plate in Resolve Fusion or After Effects with a matched color grade and a contact shadow. For the tutorial segment, record with OpenScreen: enable auto-zoom on clicks, cursor smoothing, 16:9 or 9:16 per platform, webcam overlay off unless needed; script the clicks first so zooms land on the right UI. Log time spent per task in the ledger as manual minutes.</p>
+<p>Expect: roto/ with masks and a composited shot, screen/ with the recording and settings.</p>
+<p>Audit before moving on: Inspect the composite at 200% on 10 frames; fail on visible halos, missing fingers or flicker in the matte. Fail the screen segment if any zoom lands off target; re-record.</p>
+<h4>Step 5 — Edit, sound, color, deliver</h4>
+<p>Goal: Assemble a finished piece that meets platform specs.</p>
+<p>Assemble in Premiere Pro or DaVinci Resolve following the script. Cut on action, use J and L cuts to hide generation seams, and trim each AI clip to its strongest 1-3 seconds. Color-match shots with scopes (waveform for exposure, vectorscope for skin tone) against a hero shot. Build sound: voiceover recorded by the user, licensed music with the license file saved, SFX for every on-screen action, and room tone. Normalize to -14 LUFS integrated (check with ffmpeg -af loudnorm=print_format=summary). Export H.264 at the platform's recommended resolution and constant frame rate, plus captions.srt. Run ffprobe and paste the output. Upload as private or unlisted first and confirm the platform accepts it. Set the platform's AI-content disclosure as required, and log total edit hours in the ledger.</p>
+<p>Expect: edit/final.mp4, captions.srt, music and SFX licenses, ffprobe and loudness outputs.</p>
+<p>Audit before moving on: Fail if loudness is outside -15 to -13 LUFS, frame rate is variable, or any music lacks a license. Fix and re-export.</p>
+<h4>Step 6 — Validate against oracles and write the gap report</h4>
+<p>Goal: Test the cost claim and the quality with outside eyes.</p>
+<p>From ledger.csv compute: total credits, money spent including plan prices and any top-ups, finished seconds, cost per finished second, attempts per kept second per tool, and manual minutes per task. Compare to the '$30 a month' claim and to one quote or rate card for a small crew producing a similar 60-90 second video. Ask a second person to check every cut against the continuity bible and list breaks. Run a blind viewer test with 5 people: show this video and one human-shot video by the same creator, ask which held attention better and which shots felt off. Write report.md with the shot table, totals, specs, continuity findings, viewer results, rights and disclosure status, and GAPS marking each claim VERIFIED, UNVERIFIED or FALSE with evidence. Fix the top three issues if possible and re-export.</p>
+<p>Expect: report.md with cost math, continuity and viewer results, and GAPS.</p>
+<p>Audit before moving on: Recompute cost per finished second from the raw ledger. Fail if rejects or plan upgrades were excluded, or if the crew comparison has no source.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are auditing a one-person AI video production built with Claude, Runway, Kling, optional Veo or Sora, SAM 2 or Runway masking, OpenScreen and an NLE. Inputs: ground_truth.md, preprod/, gen/ledger.csv, roto/, screen/, edit/, report.md. 1) Enumerate claims: total cost and cost per finished second, '$30 a month' sufficiency, character consistency, rights to monetize, disclosure set, specs met. 2) Re-verify: re-sum the ledger and match against invoices or credit balances; run ffprobe and loudnorm on final.mp4; walk the cut against the continuity bible yourself; confirm each tool's terms row has a URL and date; check every music and SFX file has a license. Mark VERIFIED, UNVERIFIED or FALSE with evidence. 3) Hunt hidden costs and labor: generations made outside the ledger (compare clip counts in tool histories), plan upgrades mid-project, manual minutes not logged. 4) Rank gaps by impact on the cost claim and on publishability. 5) Fix the top three now. 6) Report what you could not fix and why.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>How many generations did each kept second cost, per tool?</p>
+<p>Does the main character look like the same person in every shot?</p>
+<p>Which shots read as AI immediately, and could the edit cut around them?</p>
+<p>Did I choose Kling, Runway video-to-video or keyframes per shot for a reason?</p>
+<p>Are hands, text and fast motion avoided or covered?</p>
+<p>Do my plans allow commercial use and monetization of the outputs?</p>
+<p>Is AI disclosure set where the platform requires it?</p>
+<p>Is the sound mix carrying the piece, with licensed music and SFX?</p>
+<p>Does the rotoscoped insert match lighting direction and have a contact shadow?</p>
+<p>Did OpenScreen's auto-zoom land on the right UI elements?</p>
+<p>Is the '$30 a month' claim compared to a real crew quote, not a guessed $10K?</p>
+<h3>5 · What proves it right</h3>
+<p>ffprobe shows target resolution, constant frame rate and codec; ffmpeg loudnorm reports integrated loudness between -15 and -13 LUFS.</p>
+<p>A second person checks every cut against the continuity bible and lists breaks.</p>
+<p>The platform accepts the upload with AI disclosure set (unlisted or private first).</p>
+<p>The generation ledger and invoices give cost per finished second, compared to '$30 a month' and to a sourced crew quote.</p>
+<p>A blind test with 5 viewers compares attention against one human-shot video by the same creator.</p>
+<h3>6 · Failure modes</h3>
+<p>Character drift. Tell: face or wardrobe changes between shots. Fix: generate start frames from one reference sheet with fixed style references and seeds.</p>
+<p>Credit burn. Tell: attempts per kept second above 5. Fix: redesign shots around tool strengths, stop regenerating after 5 tries.</p>
+<p>Motion brush ignored. Tell: subjects drift off drawn paths. Fix: fewer regions, simpler paths, shorter clips.</p>
+<p>Matte halos. Tell: edges flicker on hair and fingers. Fix: refine SAM 2 prompts on several frames, choke and feather, match grade.</p>
+<p>Silent-film feel. Tell: viewers drop off despite good visuals. Fix: voiceover, SFX for each action, music, J and L cuts.</p>
+<p>Rights surprise. Tell: free-plan watermark or non-commercial terms found at upload. Fix: check terms in step 1, upgrade only with user approval.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Begin with ground truth on costs and rights; it changes which tools are used. Claude writes script, shot list and bible; most generation happens in web apps under the user's accounts, so prepare exact prompts, frames and settings per shot and ask the user to run them and return clips, or drive them only through official APIs the user has keys for (keys loaded from environment, never printed). Run SAM 2 locally if a GPU exists. Spawn a sub-agent for the ledger analysis and ffprobe checks. Cache reference images and seeds. Stop and ask before spending credits beyond the plan, using any likeness other than the user's, and publishing. Return: ground_truth.md, preprod/, gen/ledger.csv, roto/, screen/, edit/final.mp4, captions.srt, report.md with GAPS.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 <h2>Related deep dives</h2>
 <p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
-<p>Generated 2026-10-21 · curated by @6ab3 for DejaViewed</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># The One-Person Video Studio: AI Tools That Replace a Production Team
 
@@ -194,7 +308,7 @@ Official @google reel introducing Veo at Google I/O: high-def video generation f
 
 [View original post](https://www.instagram.com/p/DHTvblkRgZG/)
 ### OpenScreen — free open-source Screen Studio alternative
-**Creator:** [@marc.kaz](https://instagram.com/marc.kaz) · **Tier:** S
+**Creator:** [@marc.kaz](https://instagram.com/marc.kaz) · **Tier:** A
 **Tools:** Claude, Cursor, OpenScreen, siddharthvaddem/openscreen
 
 > OpenScreen: free screen recording (post-production tool)
@@ -246,13 +360,213 @@ Runway account (~$12/mo), Kling (free tier), OpenScreen (free), basic video edit
 
 ---
 
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Running this system produces one finished 60-90 second video made by one person with AI tools: a Claude-written script and shot list, base footage from Runway (Gen-3 Alpha, video-to-video, non-linear keyframe canvas) and Kling (motion brush on up to 5 subjects), optional Veo or Sora shots, an AI-rotoscoped insert of the creator, a screen-recorded segment from OpenScreen, and a final edit with sound. It is for a solo creator testing the '$30 a month replaces a production team' claim. Done means a ledger of every generation with credits and cost, a continuity check by a second person, a delivered file that passes platform specs, and a gap report on where the tools still needed a human.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A producer would start with a script, a shot list and a continuity bible (character reference sheet, wardrobe, palette, lens and lighting per scene) before generating a frame, because AI video fails mostly on consistency between shots. They would pick the tool per shot by what it controls: Kling's motion brush for directed subject motion, Runway video-to-video when a real performance must drive the shot, a keyframe pair on Runway's canvas when start and end frames matter. They would budget by cost per usable second, counting rejected generations, and spend real effort on sound and the edit. They would check commercial rights per plan and label AI content where platforms require it.
+- **Rawest material to start from:** - The current Runway docs for Gen-3 Alpha, video-to-video and keyframes, plus the plan's credit cost per second and commercial terms.
+- Kling docs for motion brush (up to 5 selectable regions with drawn paths) and its credit and plan terms.
+- Google's Veo documentation and access route, and OpenAI's Sora availability in the user's region.
+- github.com/siddharthvaddem/openscreen (MIT; auto-zoom on clicks, cursor animation, webcam overlay) and its Recordly fork.
+- Meta's Segment Anything 2 (SAM 2) repo for video masks, as the open option for the rotoscope step iamfesq showed.
+- The creator's own footage, voice and screen captures in original resolution.
+- YouTube, Instagram and TikTok upload spec pages and their AI-content disclosure rules.
+- **Methods and tools:** Claude for script, shot list and continuity bible; Midjourney or another image model for character reference sheets and start frames with fixed style references; Runway Gen-3 Alpha image-to-video, video-to-video and the keyframe canvas; Kling image-to-video with motion brush; SAM 2 (or Runway's green-screen tool) for masks, composited in DaVinci Resolve Fusion or After Effects; OpenScreen for the screen segment; an NLE (Premiere Pro or DaVinci Resolve) for edit, J and L cuts, color matching with scopes, loudness normalization to -14 LUFS integrated; ffprobe and ffmpeg loudnorm for checks; a generation ledger CSV (shot, tool, prompt, seed, settings, credits, seconds, kept or rejected, reason).
+- **What proves it right (other than you or the model):** ffprobe confirms resolution, frame rate, codec and duration; ffmpeg loudnorm reports integrated loudness near -14 LUFS. A second person checks each cut against the continuity bible and lists breaks. The platform upload accepts the file with the AI disclosure set. The ledger and invoices give actual cost per finished second, compared to the '$30 a month' claim. A small blind viewer test (5 people) rates whether the piece holds attention against one human-shot reference video by the same creator.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Produce one 60-90 second video with me as a one-person studio, and measure what it really costs. Before any generation: write the script, a numbered shot list with shot type, duration and the tool chosen for each shot with a reason (Kling motion brush for directed subject motion, Runway video-to-video when my real performance drives it, Runway's keyframe canvas when start and end frames matter, Veo or Sora only if available to me), and a continuity bible: character reference sheet, wardrobe, palette, lighting and lens per scene. Generate start frames from the reference sheet so characters stay consistent. Keep a ledger of every generation: tool, prompt, seed, settings, credits, seconds, kept or rejected and why. Rotoscope me into one shot with SAM 2 masks or Runway's tool and composite it. Record the tutorial segment with OpenScreen. Edit in Premiere or Resolve with real sound design, color-match shots with scopes, and normalize to -14 LUFS. Check rights and AI-disclosure rules for each tool's plan and the target platform. Validate with ffprobe, a second person's continuity check against the bible, and cost per finished second from the ledger versus the '$30 a month' claim. End with a gap report.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are a producer-director running a one-person AI video production. You care about the finished piece and its cost per usable second, not about any single impressive generation. You expect consistency, hands, text and physics to fail and you plan shots around those weaknesses.
+
+CONTEXT
+- realrileybrown on Runway's non-linear exploration: start from an AI image, generate a future frame, connect them, let AI fill the frames between, branch alternatives on a canvas instead of a timeline.
+- realrileybrown on Kling's motion brush: select up to 5 characters or objects in a start image (often Midjourney) and draw their motion paths.
+- Runway Gen-3 Alpha video-to-video (ailevels): a real performance drives movement and expression.
+- Kling's free international rollout (mattfarmerai) and Google's Veo (1080p from text, image and video prompts).
+- iamfesq: AI detection and segmentation to rotoscope yourself into your own animation.
+- OpenScreen (siddharthvaddem/openscreen, MIT): free Screen Studio alternative with auto-zoom on clicks.
+- The dive's claim: production cost falls from $10K per video to about $30 a month in subscriptions.
+
+HARD CONSTRAINTS
+- No generation before the script, shot list and continuity bible are approved by the user.
+- Every generation, including rejects, is a ledger row.
+- Use only the user's own likeness, voice and assets, or properly licensed ones; no real people or brands without rights.
+- Record each tool plan's commercial terms and the target platform's AI-disclosure rule before publishing.
+- Final deliverable: 1080p or higher, constant frame rate, H.264 or H.265, -14 LUFS integrated, captions file.
+
+DELIVERABLES, IN ORDER
+1. ground_truth.md: tools, plans, credit prices, per-second costs, commercial terms, platform specs and disclosure rules, with dates read.
+2. preprod/: script (with timing), shot list (shot, duration, type, tool, reason, risk), continuity bible with a character reference sheet and palette.
+3. frames/: start and end frames per shot generated from the reference sheet.
+4. gen/: generated clips per shot and ledger.csv.
+5. roto/: SAM 2 or Runway masks and the composited shot.
+6. screen/: OpenScreen recording with settings.
+7. edit/: project file, music and SFX licenses, color notes, final.mp4, captions.srt.
+8. report.md.
+
+BUILT-IN GAP ANALYSIS
+Keep GAPS in report.md marking VERIFIED, UNVERIFIED or FALSE with evidence: cost per finished second and total versus $30 a month (include rejects and any plan upgrades); character consistency across shots; motion brush following drawn paths; video-to-video preserving the performance; mask edge quality on hair and hands; final specs; rights per tool; disclosure set. Fill by measuring; list the rest.
+
+SELF-QUESTIONS
+- Which shots would a viewer instantly read as AI, and can the edit hide or cut them?
+- Does the character look like the same person in every shot?
+- Is the story carried by sound and edit, or by novelty that will age in a month?
+- How many generations per kept second did each tool take?
+- Do I own the outputs on this plan, and may I monetize them?
+- Did I compare to anything, such as the creator's own human-shot video?
+
+STOP CONDITIONS
+Stop and ask before buying credits or upgrading plans, before using anyone else's likeness, and before publishing. If a shot fails 5 generations, redesign the shot rather than regenerating.
+
+RETURN FORMAT
+report.md with the shot table (tool, attempts, kept seconds, credits, cost), totals, cost per finished second, specs from ffprobe, continuity check results, rights table, GAPS, and paths to final.mp4 and captions.srt.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: tools, costs, rights, specs
+
+*Goal:* Know what each tool costs per usable second and what you may do with its output.
+
+```text
+For Runway, Kling, Veo (via whatever product the user has access to), Sora if available in their region, Midjourney and OpenScreen, record: the plan the user holds, monthly price, credits included, credit cost per second of video at each resolution, maximum clip length, and the commercial-use and ownership terms, with the URL and date read. Clone github.com/siddharthvaddem/openscreen and record the version and platform support. Install SAM 2 or note Runway's masking tool as the rotoscope route. Pull current upload specs and AI-content disclosure rules for the target platform (YouTube, Instagram or TikTok). Translate the '$30 a month' claim into a hypothesis: how many finished seconds per month that budget buys if 1 in 3 generations is kept. Note watermark rules on free tiers, since a watermark makes a clip unusable. Write ground_truth.md.
+```
+
+**Expect:** ground_truth.md with a cost table per tool, a rights table, platform specs and disclosure rules, and the budget hypothesis in seconds.
+
+**Audit before moving on:** Fail any row without a source URL and date. If any tool's terms forbid commercial use on the user's plan, flag it before preproduction.
+
+#### Step 2 — Preproduction: script, shot list, continuity bible
+
+*Goal:* Plan shots around what each tool controls.
+
+```text
+With Claude, write a 60-90 second script with timing per line, then a numbered shot list: shot id, duration, framing, subject action, tool (Kling motion brush for directed motion of up to 5 subjects; Runway video-to-video when the user's performance must drive the shot; Runway keyframe canvas when start and end frames are fixed; Veo or Sora for establishing shots if available; OpenScreen for the tutorial segment; rotoscope composite for the user's insert), reason, and failure risk (hands, text, fast motion, crowds). Avoid shots that depend on legible text or close-up hands unless they are screen recordings. Write a continuity bible: character reference sheet prompt and images (front, three-quarter, side), wardrobe, palette hex codes, lighting direction and lens per scene. Present all of it to the user for approval.
+```
+
+**Expect:** preprod/script.md, shot_list.csv, bible.md with reference images, total planned seconds matching the script.
+
+**Audit before moving on:** Sum shot durations against script timing; fail if off by more than 5%. Fail any shot whose tool choice has no reason. Wait for user approval before step 3.
+
+#### Step 3 — Generate frames and footage with a ledger
+
+*Goal:* Produce every planned shot with tracked cost.
+
+```text
+Generate start frames (and end frames for keyframe shots) from the reference sheet with fixed style references and seeds. For Kling shots, upload the start frame, paint motion-brush regions for up to 5 subjects, draw paths, and generate; for Runway video-to-video, film the user's performance on a phone at the target frame rate, then drive the generation; for keyframe shots, connect start and end frames on Runway's canvas and branch two alternatives. Log every generation in gen/ledger.csv: shot, tool, prompt, seed, settings, credits, seconds generated, kept or rejected, reason. Score each kept clip against the bible: character match, palette, lighting direction. After 5 failed attempts on a shot, rewrite the shot instead of regenerating. Keep rejected clips in a rejects folder so the ledger can be checked against them.
+```
+
+**Expect:** gen/ clips per shot, ledger.csv with every attempt, a kept clip per shot or a redesign note.
+
+**Audit before moving on:** Compute attempts per kept second per tool from the ledger. Fail if any kept clip breaks the bible on character identity; regenerate from a closer reference or redesign.
+
+#### Step 4 — Rotoscope insert and screen segment
+
+*Goal:* Put the creator into one generated shot and record the tutorial part.
+
+```text
+Film the user against any background, matched to the target shot's lighting direction from the bible. Run SAM 2 with a click prompt on the first frame to propagate a mask through the clip (or use Runway's green-screen tool). Export a matte, refine edges (choke 1 px, feather 2 px, check hair and fingers), and composite over the generated plate in Resolve Fusion or After Effects with a matched color grade and a contact shadow. For the tutorial segment, record with OpenScreen: enable auto-zoom on clicks, cursor smoothing, 16:9 or 9:16 per platform, webcam overlay off unless needed; script the clicks first so zooms land on the right UI. Log time spent per task in the ledger as manual minutes.
+```
+
+**Expect:** roto/ with masks and a composited shot, screen/ with the recording and settings.
+
+**Audit before moving on:** Inspect the composite at 200% on 10 frames; fail on visible halos, missing fingers or flicker in the matte. Fail the screen segment if any zoom lands off target; re-record.
+
+#### Step 5 — Edit, sound, color, deliver
+
+*Goal:* Assemble a finished piece that meets platform specs.
+
+```text
+Assemble in Premiere Pro or DaVinci Resolve following the script. Cut on action, use J and L cuts to hide generation seams, and trim each AI clip to its strongest 1-3 seconds. Color-match shots with scopes (waveform for exposure, vectorscope for skin tone) against a hero shot. Build sound: voiceover recorded by the user, licensed music with the license file saved, SFX for every on-screen action, and room tone. Normalize to -14 LUFS integrated (check with ffmpeg -af loudnorm=print_format=summary). Export H.264 at the platform's recommended resolution and constant frame rate, plus captions.srt. Run ffprobe and paste the output. Upload as private or unlisted first and confirm the platform accepts it. Set the platform's AI-content disclosure as required, and log total edit hours in the ledger.
+```
+
+**Expect:** edit/final.mp4, captions.srt, music and SFX licenses, ffprobe and loudness outputs.
+
+**Audit before moving on:** Fail if loudness is outside -15 to -13 LUFS, frame rate is variable, or any music lacks a license. Fix and re-export.
+
+#### Step 6 — Validate against oracles and write the gap report
+
+*Goal:* Test the cost claim and the quality with outside eyes.
+
+```text
+From ledger.csv compute: total credits, money spent including plan prices and any top-ups, finished seconds, cost per finished second, attempts per kept second per tool, and manual minutes per task. Compare to the '$30 a month' claim and to one quote or rate card for a small crew producing a similar 60-90 second video. Ask a second person to check every cut against the continuity bible and list breaks. Run a blind viewer test with 5 people: show this video and one human-shot video by the same creator, ask which held attention better and which shots felt off. Write report.md with the shot table, totals, specs, continuity findings, viewer results, rights and disclosure status, and GAPS marking each claim VERIFIED, UNVERIFIED or FALSE with evidence. Fix the top three issues if possible and re-export.
+```
+
+**Expect:** report.md with cost math, continuity and viewer results, and GAPS.
+
+**Audit before moving on:** Recompute cost per finished second from the raw ledger. Fail if rejects or plan upgrades were excluded, or if the crew comparison has no source.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are auditing a one-person AI video production built with Claude, Runway, Kling, optional Veo or Sora, SAM 2 or Runway masking, OpenScreen and an NLE. Inputs: ground_truth.md, preprod/, gen/ledger.csv, roto/, screen/, edit/, report.md. 1) Enumerate claims: total cost and cost per finished second, '$30 a month' sufficiency, character consistency, rights to monetize, disclosure set, specs met. 2) Re-verify: re-sum the ledger and match against invoices or credit balances; run ffprobe and loudnorm on final.mp4; walk the cut against the continuity bible yourself; confirm each tool's terms row has a URL and date; check every music and SFX file has a license. Mark VERIFIED, UNVERIFIED or FALSE with evidence. 3) Hunt hidden costs and labor: generations made outside the ledger (compare clip counts in tool histories), plan upgrades mid-project, manual minutes not logged. 4) Rank gaps by impact on the cost claim and on publishability. 5) Fix the top three now. 6) Report what you could not fix and why.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- How many generations did each kept second cost, per tool?
+- Does the main character look like the same person in every shot?
+- Which shots read as AI immediately, and could the edit cut around them?
+- Did I choose Kling, Runway video-to-video or keyframes per shot for a reason?
+- Are hands, text and fast motion avoided or covered?
+- Do my plans allow commercial use and monetization of the outputs?
+- Is AI disclosure set where the platform requires it?
+- Is the sound mix carrying the piece, with licensed music and SFX?
+- Does the rotoscoped insert match lighting direction and have a contact shadow?
+- Did OpenScreen's auto-zoom land on the right UI elements?
+- Is the '$30 a month' claim compared to a real crew quote, not a guessed $10K?
+
+### 5 · What proves it right
+
+- ffprobe shows target resolution, constant frame rate and codec; ffmpeg loudnorm reports integrated loudness between -15 and -13 LUFS.
+- A second person checks every cut against the continuity bible and lists breaks.
+- The platform accepts the upload with AI disclosure set (unlisted or private first).
+- The generation ledger and invoices give cost per finished second, compared to '$30 a month' and to a sourced crew quote.
+- A blind test with 5 viewers compares attention against one human-shot video by the same creator.
+
+### 6 · Failure modes
+
+- Character drift. Tell: face or wardrobe changes between shots. Fix: generate start frames from one reference sheet with fixed style references and seeds.
+- Credit burn. Tell: attempts per kept second above 5. Fix: redesign shots around tool strengths, stop regenerating after 5 tries.
+- Motion brush ignored. Tell: subjects drift off drawn paths. Fix: fewer regions, simpler paths, shorter clips.
+- Matte halos. Tell: edges flicker on hair and fingers. Fix: refine SAM 2 prompts on several frames, choke and feather, match grade.
+- Silent-film feel. Tell: viewers drop off despite good visuals. Fix: voiceover, SFX for each action, music, J and L cuts.
+- Rights surprise. Tell: free-plan watermark or non-commercial terms found at upload. Fix: check terms in step 1, upgrade only with user approval.
+
+### 7 · Agent direction (unattended runs)
+
+Begin with ground truth on costs and rights; it changes which tools are used. Claude writes script, shot list and bible; most generation happens in web apps under the user's accounts, so prepare exact prompts, frames and settings per shot and ask the user to run them and return clips, or drive them only through official APIs the user has keys for (keys loaded from environment, never printed). Run SAM 2 locally if a GPU exists. Spawn a sub-agent for the ledger analysis and ffprobe checks. Cache reference images and seeds. Stop and ask before spending credits beyond the plan, using any likeness other than the user's, and publishing. Return: ground_truth.md, preprod/, gen/ledger.csv, roto/, screen/, edit/final.mp4, captions.srt, report.md with GAPS.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
 ## Related deep dives
 
 Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
 
 ---
 
-*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -260,4 +574,26 @@ Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across t
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
 </script></body></html>

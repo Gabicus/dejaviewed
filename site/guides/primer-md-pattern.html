@@ -196,6 +196,137 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Feature request: Auto-documentation on CLI session exit (issue #3401)</p>
 <p>Feature request: Session Handoff / Continuity Support (issue #11455)</p>
 <p>Claude Code memory docs</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Implement the primer.md living-handoff pattern (credited to @keshavsuki, lineage from @ykdojo's HANDOFF.md) in a real project so every Claude Code session starts from an accurate state snapshot and ends by rewriting it, without the human remembering. Running this produces a verified hook setup, a primer linter, a SessionStart injection, and a resume trial against a no-primer control. Done means hooks fire on the right events without recursion, primer.md stays under 150 lines with all six sections, and fresh sessions reach the first correct action faster than the control.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): Verify hook semantics against the current Claude Code docs before copying the guide's config: the guide wires the rewrite to the Stop hook, but Stop fires whenever the main agent finishes a response, so the guide's config would spawn a rewrite after every turn, and the spawned claude -p session fires its own Stop hook, which is a recursion risk. A professional uses SessionEnd and PreCompact for the rewrite, a recursion guard, a timeout, and reads transcript_path from the hook's stdin JSON rather than the guide's CLAUDE_TRANSCRIPT_PATH env var. They lint the output for structure and line count, commit primer.md so history shows drift, and measure the benefit with a blind resume trial instead of assuming it.</p>
+<p>Rawest material to start from: - Claude Code hooks reference and hooks guide on docs.claude.com: event list (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Stop, SubagentStop, PreCompact, SessionEnd), stdin JSON schema, exit-code semantics, additionalContext output for SessionStart, timeouts.</p>
+<p>claude --help for the installed version: -p, --allowedTools, --output-format, --max-turns, settings sources.</p>
+<p>Real transcripts under ~/.claude/projects/ /.jsonl to see what a rewrite agent can read.</p>
+<p>Victor's existing primer.md files and the global CLAUDE.md Session Continuity rules (six sections, under 150 lines, snapshot not log).</p>
+<p>@ykdojo's claude-code-tips HANDOFF.md write-up and awesome-claude-code entries for SESSION.md and STATE.md variants.</p>
+<p>Methods and tools: A test project in a scratch directory; .claude/settings.json hooks with matchers; bash hook scripts that read stdin with jq, check a guard env var such as PRIMER_REWRITE=1 to stop recursion, and run claude -p in the background with nohup and a timeout; --allowedTools Read,Write,Glob,Grep to limit the rewriter; a Python primer linter (six required headings, under 150 lines, Next up item 1 names a file path or command, no secrets regex); git log -p primer.md to inspect drift; claude --debug to see hook execution; a SessionStart hook printing primer.md into additionalContext; a resume trial with timed sessions.</p>
+<p>What proves it right (other than you or the model): claude --debug logs showing exactly one rewrite per session end and per compaction, and none per turn. The linter passing on 10 consecutive rewrites. git history of primer.md where each version reflects that session's actual changes, checked against git log of code commits. A blind resume trial: 5 fresh sessions with primer versus 5 with no primer on the same project state, measuring time and clarifying questions until the first correct action, scored by someone who did not write the primer.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Set up the primer.md handoff pattern in my project, but verify it against the current Claude Code hook docs first instead of copying the guide.</p>
+<p>Read the hooks reference for my installed version. Confirm when Stop, SessionEnd, PreCompact, and SessionStart fire, what JSON arrives on stdin (transcript_path, session_id, cwd), and how SessionStart can inject additionalContext. Tell me whether the guide's Stop hook running claude -p would fire every turn and whether the child process would trigger hooks recursively, and whether a CLAUDE_TRANSCRIPT_PATH env var exists.</p>
+<p>Write a primer template with Current status, What changed, Next up, Blockers, Open questions, Don't forget, and a linter: all six headings, under 150 lines, Next up item 1 names a file or command, no secret-shaped strings.</p>
+<p>Implement rewrite hooks on SessionEnd and PreCompact with a recursion guard, a timeout, background execution, the rewriter limited to Read, Write, Glob, Grep, and the transcript path taken from stdin.</p>
+<p>Add a SessionStart hook that injects primer.md so reading it does not depend on CLAUDE.md compliance.</p>
+<p>Commit primer.md after each rewrite.</p>
+<p>Run a resume trial: 5 fresh sessions with primer versus 5 without, timing to the first correct action.</p>
+<p>Return: the doc findings table, the config, the linter, debug logs proving hook counts, and trial results.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE: You are a Claude Code harness engineer. You verify hook behavior against the installed version's documentation and debug logs, not against blog posts. You are implementing the primer.md living-handoff pattern for Victor, who already keeps primer.md files by hand per his global CLAUDE.md (six sections, under 150 lines, rewritten as a snapshot at session end).</p>
+<p>CONTEXT:</p>
+<p>Pattern: primer.md is live project state, sibling to CLAUDE.md (permanent rules). Rewritten from scratch at session end, read at session start. Sections: Current status, What changed, Next up, Blockers, Open questions, Don't forget.</p>
+<p>Guide config to test, not copy: a Stop hook running claude -p 'Rewrite primer.md ...' --allowedTools Read,Write,Glob,Grep; the claim that the subprocess reads context via a CLAUDE_TRANSCRIPT_PATH env var; PreCompact as an alternative; a /prime slash command at .claude/commands/prime.md as the manual fallback; the claim that hooks silently skip on JSON errors.</p>
+<p>Known risks to check: Stop fires at the end of every main-agent response, not only at session end; a child claude -p inherits project hooks and can trigger its own Stop hook; hook input arrives as JSON on stdin.</p>
+<p>HARD CONSTRAINTS:</p>
+<p>Work in a scratch test project first; touch Victor's real projects only after the trial passes, and only the settings file he names.</p>
+<p>The rewriter may only use Read, Write, Glob, Grep. It must never write secrets into primer.md; the linter enforces a secret regex (private keys, sk-ant, HL_PRIVATE_KEY=, 0x followed by 64 hex chars).</p>
+<p>A recursion guard is mandatory: the hook exits 0 immediately when PRIMER_REWRITE=1 is set, and sets it for the child.</p>
+<p>Hooks must time out (60-120 s) and must not block session exit for the user.</p>
+<p>primer.md is a snapshot: rewritten whole, under 150 lines.</p>
+<p>DELIVERABLES, in order:</p>
+<p>hook_facts.md: for the installed version (claude --version), when each relevant event fires, the stdin JSON fields, exit-code behavior, SessionStart additionalContext, and verdicts on each guide claim, with doc URLs.</p>
+<p>templates/primer.md and lint_primer.py (six headings, line cap, Next up item 1 contains a path or command, secret regex, Last updated stamp).</p>
+<p>hooks/primer_rewrite.sh and the settings.json block wiring it to SessionEnd and PreCompact with the guard, timeout, background run, and transcript_path from stdin.</p>
+<p>hooks/primer_inject.sh on SessionStart emitting primer.md as additional context.</p>
+<p>Auto-commit of primer.md after a successful lint, with a message naming the session id.</p>
+<p>trial.md: 5 sessions with primer versus 5 without on the same project state; minutes and clarifying questions until the first correct action; scored by a reviewer who did not write the primer.</p>
+<p>GAP ANALYSIS (built in): keep gaps.md. Record every behavior you could not observe directly (SessionEnd on terminal kill, PreCompact on auto-compaction) and fill by forcing the event (/compact, exit, kill -TERM) with --debug on. State the rest with the next action.</p>
+<p>SELF-QUESTIONS before finishing:</p>
+<p>Does my rewrite fire once per session end and once per compaction, never per turn?</p>
+<p>Does the child claude -p trigger any hook, and does the guard stop it?</p>
+<p>Can the rewriter actually read the transcript at transcript_path, and is it large enough to need a summary step?</p>
+<p>What happens when the session is killed rather than exited?</p>
+<p>Does SessionStart injection duplicate the CLAUDE.md read instruction or replace it cleanly?</p>
+<p>Is Next up item 1 executable by a fresh session with zero other context?</p>
+<p>Did any rewrite drop a still-open blocker from the previous primer?</p>
+<p>What does each rewrite cost in tokens and time?</p>
+<p>STOP CONDITIONS: stop if the rewrite fires per turn or recurses (fix before any trial); stop before editing any of Victor's real project settings; stop if the linter finds a secret in any rewrite.</p>
+<p>RETURN FORMAT: markdown report: Hook facts table, Config (full JSON), Scripts (paths), Debug evidence (hook fire counts), Linter results across 10 rewrites, Trial table, Gaps ranked, file paths.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: hook semantics for this version</h4>
+<p>Goal: Replace the guide's hook assumptions with documented and observed behavior.</p>
+<p>Run claude --version and record it. Read the Claude Code hooks reference and hooks guide on docs.claude.com. For each event (SessionStart, Stop, SubagentStop, PreCompact, SessionEnd) record: when it fires, matcher support, stdin JSON fields (look for session_id, transcript_path, cwd, hook_event_name, reason, trigger), exit-code meanings, timeout default, and output options (additionalContext for SessionStart).</p>
+<p>Then observe: in a scratch project, register a logging hook for all five events that appends the stdin JSON plus env grep -i claude output to hooks.log in the scratch project. Run a session with three turns, run /compact, then exit. Count events.</p>
+<p>Write hook_facts.md with a verdict per guide claim: Stop fires at session end (true or false, observed count), CLAUDE_TRANSCRIPT_PATH env var exists, hooks silently skip on invalid JSON, a child claude -p inherits project hooks. Cite doc URLs and log lines.</p>
+<p>Expect: hook_facts.md with an event table and five claim verdicts; hooks.log showing event counts for a 3-turn session plus compaction plus exit.</p>
+<p>Audit before moving on: Event counts in hooks.log must match your table; if Stop appears 3 times for 3 turns, the guide's config is per-turn and must not be used. Any verdict without a doc URL or log line is unverified. Delete the logging hooks after the step.</p>
+<h4>Step 2 — Template and linter</h4>
+<p>Goal: Define what a valid primer is and enforce it mechanically.</p>
+<p>Write templates/primer.md with the six sections in order: Current status (one paragraph), What changed (bullets), Next up (numbered, item 1 immediately executable with a file path or command), Blockers, Open questions, Don't forget; plus a Last updated line with UTC timestamp and session id.</p>
+<p>Write lint_primer.py taking a path, exiting non-zero with messages on: missing or misordered headings; over 150 lines; Current status over 120 words; Next up item 1 lacking a path-like token or backticked command; secret-shaped strings (BEGIN PRIVATE KEY, sk-ant-, HL_PRIVATE_KEY=, 0x plus 64 hex, AKIA plus 16 uppercase alphanumerics); a Last updated stamp older than the file's mtime by more than a day.</p>
+<p>Write 8 fixture primers (2 valid, 6 each breaking one rule) and a test runner proving each fixture produces the expected result. Run the linter against Victor's existing primer.md in this repo, read-only, and report its findings without editing it.</p>
+<p>Expect: templates/primer.md, lint_primer.py, fixtures/ with 8 files, test output showing 8/8 expected results, a findings list for the existing primer.md.</p>
+<p>Audit before moving on: All 8 fixtures must behave as expected; a valid fixture failing means the rules are too strict. Confirm the secret regex does not print the matched value, only the line number.</p>
+<h4>Step 3 — Rewrite hook with guard</h4>
+<p>Goal: Rewrite primer.md exactly once per session end and per compaction, safely.</p>
+<p>Write hooks/primer_rewrite.sh: read stdin JSON with jq; exit 0 immediately if PRIMER_REWRITE=1; extract transcript_path, session_id, cwd, hook_event_name; copy the current primer.md to primer.prev.md; launch in the background with nohup and timeout 120: PRIMER_REWRITE=1 claude -p with a prompt that reads primer.prev.md, the transcript at transcript_path (tail the last 400 lines if larger than 2 MB), and git log --oneline -20 output saved to a temp file, then rewrites primer.md whole per the template, keeping unresolved blockers from the previous version, with --allowedTools Read,Write,Glob,Grep. After the child exits, run lint_primer.py; on failure restore primer.prev.md and write the lint errors to primer.lint.log.</p>
+<p>Wire it in .claude/settings.json of the scratch project for SessionEnd and PreCompact only. Validate the JSON with jq before saving. Run three sessions with --debug, including one with /compact and one killed with kill -TERM.</p>
+<p>Expect: hooks/primer_rewrite.sh, settings.json block, three debug logs, primer.md versions after each event, lint results.</p>
+<p>Audit before moving on: Count rewrites per debug log: exactly one per exit and one per compaction, zero per turn, zero from the child. If the killed session produced no rewrite, record it as a gap and document the manual /prime command at .claude/commands/prime.md as the fallback. Fail if a rewrite dropped an unresolved blocker; tighten the prompt.</p>
+<h4>Step 4 — SessionStart injection and commit</h4>
+<p>Goal: Make the next session see the primer without relying on instruction-following.</p>
+<p>Write hooks/primer_inject.sh for SessionStart: if primer.md exists in cwd, output the documented JSON with additionalContext containing the file content prefixed by a one-line instruction to start from Next up item 1 unless the user redirects; cap at 150 lines; exit 0 silently if absent. Register it in the scratch settings.json.</p>
+<p>Add to primer_rewrite.sh: after a passing lint, git add primer.md and commit with message primer: session , only if the working tree has no other staged changes (never sweep other files into the commit). Start a fresh session and ask: what is the first thing to do? Record the answer and whether it matches Next up item 1.</p>
+<p>Decide whether the CLAUDE.md Session continuity block stays (as a fallback) or is shortened, and justify the choice in one paragraph.</p>
+<p>Expect: hooks/primer_inject.sh, updated settings.json, a commit history with primer-only commits, a transcript excerpt where the new session names Next up item 1.</p>
+<p>Audit before moving on: Run git show --stat on each primer commit: any file other than primer.md is a fail; fix the staging logic. If the new session does not reference the primer content, check the hook output format against hook_facts.md.</p>
+<h4>Step 5 — Resume trial against a control</h4>
+<p>Goal: Measure whether primer.md actually shortens cold starts.</p>
+<p>Prepare a project state with real mid-task work: a half-finished feature, one blocker, one gotcha outside the code (an env var that must be set). Snapshot the repo with git stash or a branch so every trial starts identical.</p>
+<p>Run 5 fresh sessions with the primer hooks enabled and 5 with primer.md removed and hooks disabled (control). In each, the first user message is only: continue. Record: minutes until the first correct action (an edit or command that advances Next up item 1), number of clarifying questions, files read before acting, whether the gotcha was respected, and tokens used. A reviewer who did not write the primer scores correct action from transcripts, blind to arm where possible.</p>
+<p>Write trial.md with a per-session table and medians per arm.</p>
+<p>Expect: trial.md with 10 rows and arm medians; transcripts saved; reviewer name or id noted.</p>
+<p>Audit before moving on: Confirm both arms started from the identical commit. If the primer arm is not faster on median time and questions, the step does not fail silently: record it and inspect whether Next up item 1 was actually executable. Note that 5 per arm is a small sample and report ranges, not just medians.</p>
+<h4>Step 6 — Validate against oracles, gap report</h4>
+<p>Goal: Prove the setup works and list what remains.</p>
+<p>Run the oracles and record pass or fail with evidence: (1) debug logs show one rewrite per exit and per compaction, zero per turn, zero recursive; (2) lint_primer.py passes on 10 consecutive rewrites; (3) primer git history matches code history (each What changed list is consistent with that session's commits); (4) the resume trial shows the primer arm faster on median with fewer clarifying questions, scored by a reviewer who did not write it; (5) no secret pattern in any primer version (run the linter over git log -p primer.md).</p>
+<p>Write gap_report.md: every guide claim (Stop hook at session end, CLAUDE_TRANSCRIPT_PATH, additionalDirectories reading, hooks skipping on JSON errors, /prime fallback) and every deliverable, marked verified / unverified / false with evidence, ranked by impact. Fix the top three. Then write rollout.md: the exact settings block and files to copy into a real project, for Victor to approve.</p>
+<p>Expect: oracles.md with five rows, gap_report.md ranked, rollout.md ready for approval.</p>
+<p>Audit before moving on: Any oracle without a log or file reference is unverified. Do not apply rollout.md to any real project in this step; it waits for Victor.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are reviewing a primer.md hook implementation you did not build. Read hook_facts.md, lint_primer.py, the hook scripts, settings.json, debug logs, primer git history, trial.md, oracles.md, and gap_report.md.</p>
+<p>Enumerate every claim: event semantics, rewrite counts, recursion guard, transcript access, injection working, lint pass rate, trial results, guide-claim verdicts. Mark each verified, unverified, or false. Re-run one session with --debug and count hook firings yourself.</p>
+<p>List missing pieces: killed-session behavior, very large transcripts, concurrent sessions in the same repo racing to rewrite, primer commits sweeping other files, blockers silently dropped across rewrites, token cost per rewrite.</p>
+<p>Rank by impact: anything that loses state or leaks secrets first, then wrong-event firing, then trial weakness.</p>
+<p>Fix the top three now and show evidence.</p>
+<p>Report what you could not fix and why, with the exact next action.</p>
+<p>Return a claim table (claim, status, evidence, fix) and the ranked gap list.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Does the guide's Stop hook fire once per session or once per turn on my installed version?</p>
+<p>Does the child claude -p load the same project hooks, and does PRIMER_REWRITE=1 actually stop recursion?</p>
+<p>Where does transcript_path come from, stdin JSON or an env var, and can the rewriter read it?</p>
+<p>What happens on kill -TERM, a closed terminal, or a crash: does SessionEnd fire at all?</p>
+<p>If two sessions run in the same repo, which rewrite wins, and is state lost?</p>
+<p>Did any rewrite drop an unresolved blocker or a Don't forget item from the previous primer?</p>
+<p>Is Next up item 1 truly executable cold, or vague like continue the thing?</p>
+<p>Does the SessionStart injection make the CLAUDE.md read instruction redundant?</p>
+<p>Could a secret from the transcript end up in primer.md and then in git?</p>
+<p>Is the primer arm faster in the trial, and is 5 per arm enough to say so?</p>
+<p>What does each rewrite cost in tokens, and is per-compaction rewriting worth it?</p>
+<h3>5 · What proves it right</h3>
+<p>claude --debug logs across exit, /compact, and multi-turn sessions: exactly one rewrite per exit and per compaction, zero per turn, zero recursive.</p>
+<p>lint_primer.py passes on 10 consecutive automatic rewrites, and its 8-fixture test suite returns 8/8 expected results.</p>
+<p>git log -p primer.md: each version's What changed matches that session's code commits, and the linter finds no secret pattern in any version.</p>
+<p>Blind resume trial, 5 sessions per arm on an identical commit, scored by a reviewer who did not write the primer: primer arm lower median time to first correct action and fewer clarifying questions.</p>
+<h3>6 · Failure modes</h3>
+<p>Rewrite on every turn. Tell: debug log shows the hook after each response; token use balloons. Fix: move to SessionEnd and PreCompact.</p>
+<p>Recursive rewrites. Tell: many claude processes spawn at exit. Fix: PRIMER_REWRITE=1 guard checked first in the script and set for the child.</p>
+<p>Rewriter has no context. Tell: primer.md becomes generic or repeats the previous version. Fix: pass transcript_path from stdin and the git log into the prompt.</p>
+<p>Blockers silently dropped. Tell: an open blocker disappears without a matching fix in git. Fix: prompt requires carrying forward unresolved items; diff check against primer.prev.md.</p>
+<p>Primer commit sweeps other files. Tell: git show --stat lists code files. Fix: commit only when nothing else is staged and add primer.md by explicit path.</p>
+<p>Session killed, no rewrite. Tell: Last updated stamp older than recent commits. Fix: /prime manual command and a SessionStart warning when the stamp is stale.</p>
+<p>Primer grows into a log. Tell: line count creeps toward 150. Fix: linter cap and a retro when it is hit.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Do everything in a scratch project first; Victor's real projects get only an approved rollout.md. Reach first for the hooks docs and claude --debug; observed fire counts beat any blog post. Cache hook_facts.md and refer to it rather than re-reading docs. A sub-agent can write the linter and fixtures in parallel with hook research. Never git add -A; stage primer.md by path only. Never print secrets; the linter reports line numbers, not matches. Stop and ask Victor before editing any real project's settings.json or CLAUDE.md, and if hooks fire per turn or recurse after your fix. Write outputs to docs/primer_pattern/: hook_facts.md, lint_primer.py, fixtures/, hooks/, trial.md, oracles.md, gap_report.md, rollout.md. Return the oracle table, the gap list, and the rollout path.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># primer.md — The Living Handoff Document Pattern
 
@@ -435,6 +566,234 @@ you already run a related but distinct pattern at `~/.claude/projects/<project>/
 - [Feature request: Auto-documentation on CLI session exit (issue #3401)](https://github.com/anthropics/claude-code/issues/3401)
 - [Feature request: Session Handoff / Continuity Support (issue #11455)](https://github.com/anthropics/claude-code/issues/11455)
 - [Claude Code memory docs](https://code.claude.com/docs/en/memory)
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Implement the primer.md living-handoff pattern (credited to @keshavsuki, lineage from @ykdojo's HANDOFF.md) in a real project so every Claude Code session starts from an accurate state snapshot and ends by rewriting it, without the human remembering. Running this produces a verified hook setup, a primer linter, a SessionStart injection, and a resume trial against a no-primer control. Done means hooks fire on the right events without recursion, primer.md stays under 150 lines with all six sections, and fresh sessions reach the first correct action faster than the control.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** Verify hook semantics against the current Claude Code docs before copying the guide's config: the guide wires the rewrite to the Stop hook, but Stop fires whenever the main agent finishes a response, so the guide's config would spawn a rewrite after every turn, and the spawned claude -p session fires its own Stop hook, which is a recursion risk. A professional uses SessionEnd and PreCompact for the rewrite, a recursion guard, a timeout, and reads transcript_path from the hook's stdin JSON rather than the guide's CLAUDE_TRANSCRIPT_PATH env var. They lint the output for structure and line count, commit primer.md so history shows drift, and measure the benefit with a blind resume trial instead of assuming it.
+- **Rawest material to start from:** - Claude Code hooks reference and hooks guide on docs.claude.com: event list (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Stop, SubagentStop, PreCompact, SessionEnd), stdin JSON schema, exit-code semantics, additionalContext output for SessionStart, timeouts.
+- claude --help for the installed version: -p, --allowedTools, --output-format, --max-turns, settings sources.
+- Real transcripts under ~/.claude/projects/<project>/*.jsonl to see what a rewrite agent can read.
+- Victor's existing primer.md files and the global CLAUDE.md Session Continuity rules (six sections, under 150 lines, snapshot not log).
+- @ykdojo's claude-code-tips HANDOFF.md write-up and awesome-claude-code entries for SESSION.md and STATE.md variants.
+- **Methods and tools:** A test project in a scratch directory; .claude/settings.json hooks with matchers; bash hook scripts that read stdin with jq, check a guard env var such as PRIMER_REWRITE=1 to stop recursion, and run claude -p in the background with nohup and a timeout; --allowedTools Read,Write,Glob,Grep to limit the rewriter; a Python primer linter (six required headings, under 150 lines, Next up item 1 names a file path or command, no secrets regex); git log -p primer.md to inspect drift; claude --debug to see hook execution; a SessionStart hook printing primer.md into additionalContext; a resume trial with timed sessions.
+- **What proves it right (other than you or the model):** claude --debug logs showing exactly one rewrite per session end and per compaction, and none per turn. The linter passing on 10 consecutive rewrites. git history of primer.md where each version reflects that session's actual changes, checked against git log of code commits. A blind resume trial: 5 fresh sessions with primer versus 5 with no primer on the same project state, measuring time and clarifying questions until the first correct action, scored by someone who did not write the primer.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Set up the primer.md handoff pattern in my project, but verify it against the current Claude Code hook docs first instead of copying the guide.
+
+1. Read the hooks reference for my installed version. Confirm when Stop, SessionEnd, PreCompact, and SessionStart fire, what JSON arrives on stdin (transcript_path, session_id, cwd), and how SessionStart can inject additionalContext. Tell me whether the guide's Stop hook running claude -p would fire every turn and whether the child process would trigger hooks recursively, and whether a CLAUDE_TRANSCRIPT_PATH env var exists.
+2. Write a primer template with Current status, What changed, Next up, Blockers, Open questions, Don't forget, and a linter: all six headings, under 150 lines, Next up item 1 names a file or command, no secret-shaped strings.
+3. Implement rewrite hooks on SessionEnd and PreCompact with a recursion guard, a timeout, background execution, the rewriter limited to Read, Write, Glob, Grep, and the transcript path taken from stdin.
+4. Add a SessionStart hook that injects primer.md so reading it does not depend on CLAUDE.md compliance.
+5. Commit primer.md after each rewrite.
+6. Run a resume trial: 5 fresh sessions with primer versus 5 without, timing to the first correct action.
+
+Return: the doc findings table, the config, the linter, debug logs proving hook counts, and trial results.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE: You are a Claude Code harness engineer. You verify hook behavior against the installed version's documentation and debug logs, not against blog posts. You are implementing the primer.md living-handoff pattern for Victor, who already keeps primer.md files by hand per his global CLAUDE.md (six sections, under 150 lines, rewritten as a snapshot at session end).
+
+CONTEXT:
+- Pattern: primer.md is live project state, sibling to CLAUDE.md (permanent rules). Rewritten from scratch at session end, read at session start. Sections: Current status, What changed, Next up, Blockers, Open questions, Don't forget.
+- Guide config to test, not copy: a Stop hook running claude -p 'Rewrite primer.md ...' --allowedTools Read,Write,Glob,Grep; the claim that the subprocess reads context via a CLAUDE_TRANSCRIPT_PATH env var; PreCompact as an alternative; a /prime slash command at .claude/commands/prime.md as the manual fallback; the claim that hooks silently skip on JSON errors.
+- Known risks to check: Stop fires at the end of every main-agent response, not only at session end; a child claude -p inherits project hooks and can trigger its own Stop hook; hook input arrives as JSON on stdin.
+
+HARD CONSTRAINTS:
+- Work in a scratch test project first; touch Victor's real projects only after the trial passes, and only the settings file he names.
+- The rewriter may only use Read, Write, Glob, Grep. It must never write secrets into primer.md; the linter enforces a secret regex (private keys, sk-ant, HL_PRIVATE_KEY=, 0x followed by 64 hex chars).
+- A recursion guard is mandatory: the hook exits 0 immediately when PRIMER_REWRITE=1 is set, and sets it for the child.
+- Hooks must time out (60-120 s) and must not block session exit for the user.
+- primer.md is a snapshot: rewritten whole, under 150 lines.
+
+DELIVERABLES, in order:
+1. hook_facts.md: for the installed version (claude --version), when each relevant event fires, the stdin JSON fields, exit-code behavior, SessionStart additionalContext, and verdicts on each guide claim, with doc URLs.
+2. templates/primer.md and lint_primer.py (six headings, line cap, Next up item 1 contains a path or command, secret regex, Last updated stamp).
+3. hooks/primer_rewrite.sh and the settings.json block wiring it to SessionEnd and PreCompact with the guard, timeout, background run, and transcript_path from stdin.
+4. hooks/primer_inject.sh on SessionStart emitting primer.md as additional context.
+5. Auto-commit of primer.md after a successful lint, with a message naming the session id.
+6. trial.md: 5 sessions with primer versus 5 without on the same project state; minutes and clarifying questions until the first correct action; scored by a reviewer who did not write the primer.
+
+GAP ANALYSIS (built in): keep gaps.md. Record every behavior you could not observe directly (SessionEnd on terminal kill, PreCompact on auto-compaction) and fill by forcing the event (/compact, exit, kill -TERM) with --debug on. State the rest with the next action.
+
+SELF-QUESTIONS before finishing:
+- Does my rewrite fire once per session end and once per compaction, never per turn?
+- Does the child claude -p trigger any hook, and does the guard stop it?
+- Can the rewriter actually read the transcript at transcript_path, and is it large enough to need a summary step?
+- What happens when the session is killed rather than exited?
+- Does SessionStart injection duplicate the CLAUDE.md read instruction or replace it cleanly?
+- Is Next up item 1 executable by a fresh session with zero other context?
+- Did any rewrite drop a still-open blocker from the previous primer?
+- What does each rewrite cost in tokens and time?
+
+STOP CONDITIONS: stop if the rewrite fires per turn or recurses (fix before any trial); stop before editing any of Victor's real project settings; stop if the linter finds a secret in any rewrite.
+
+RETURN FORMAT: markdown report: Hook facts table, Config (full JSON), Scripts (paths), Debug evidence (hook fire counts), Linter results across 10 rewrites, Trial table, Gaps ranked, file paths.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: hook semantics for this version
+
+*Goal:* Replace the guide's hook assumptions with documented and observed behavior.
+
+```text
+Run claude --version and record it. Read the Claude Code hooks reference and hooks guide on docs.claude.com. For each event (SessionStart, Stop, SubagentStop, PreCompact, SessionEnd) record: when it fires, matcher support, stdin JSON fields (look for session_id, transcript_path, cwd, hook_event_name, reason, trigger), exit-code meanings, timeout default, and output options (additionalContext for SessionStart).
+
+Then observe: in a scratch project, register a logging hook for all five events that appends the stdin JSON plus env | grep -i claude output to hooks.log in the scratch project. Run a session with three turns, run /compact, then exit. Count events.
+
+Write hook_facts.md with a verdict per guide claim: Stop fires at session end (true or false, observed count), CLAUDE_TRANSCRIPT_PATH env var exists, hooks silently skip on invalid JSON, a child claude -p inherits project hooks. Cite doc URLs and log lines.
+```
+
+**Expect:** hook_facts.md with an event table and five claim verdicts; hooks.log showing event counts for a 3-turn session plus compaction plus exit.
+
+**Audit before moving on:** Event counts in hooks.log must match your table; if Stop appears 3 times for 3 turns, the guide's config is per-turn and must not be used. Any verdict without a doc URL or log line is unverified. Delete the logging hooks after the step.
+
+#### Step 2 — Template and linter
+
+*Goal:* Define what a valid primer is and enforce it mechanically.
+
+```text
+Write templates/primer.md with the six sections in order: Current status (one paragraph), What changed (bullets), Next up (numbered, item 1 immediately executable with a file path or command), Blockers, Open questions, Don't forget; plus a Last updated line with UTC timestamp and session id.
+
+Write lint_primer.py taking a path, exiting non-zero with messages on: missing or misordered headings; over 150 lines; Current status over 120 words; Next up item 1 lacking a path-like token or backticked command; secret-shaped strings (BEGIN PRIVATE KEY, sk-ant-, HL_PRIVATE_KEY=, 0x plus 64 hex, AKIA plus 16 uppercase alphanumerics); a Last updated stamp older than the file's mtime by more than a day.
+
+Write 8 fixture primers (2 valid, 6 each breaking one rule) and a test runner proving each fixture produces the expected result. Run the linter against Victor's existing primer.md in this repo, read-only, and report its findings without editing it.
+```
+
+**Expect:** templates/primer.md, lint_primer.py, fixtures/ with 8 files, test output showing 8/8 expected results, a findings list for the existing primer.md.
+
+**Audit before moving on:** All 8 fixtures must behave as expected; a valid fixture failing means the rules are too strict. Confirm the secret regex does not print the matched value, only the line number.
+
+#### Step 3 — Rewrite hook with guard
+
+*Goal:* Rewrite primer.md exactly once per session end and per compaction, safely.
+
+```text
+Write hooks/primer_rewrite.sh: read stdin JSON with jq; exit 0 immediately if PRIMER_REWRITE=1; extract transcript_path, session_id, cwd, hook_event_name; copy the current primer.md to primer.prev.md; launch in the background with nohup and timeout 120: PRIMER_REWRITE=1 claude -p with a prompt that reads primer.prev.md, the transcript at transcript_path (tail the last 400 lines if larger than 2 MB), and git log --oneline -20 output saved to a temp file, then rewrites primer.md whole per the template, keeping unresolved blockers from the previous version, with --allowedTools Read,Write,Glob,Grep. After the child exits, run lint_primer.py; on failure restore primer.prev.md and write the lint errors to primer.lint.log.
+
+Wire it in .claude/settings.json of the scratch project for SessionEnd and PreCompact only. Validate the JSON with jq before saving. Run three sessions with --debug, including one with /compact and one killed with kill -TERM.
+```
+
+**Expect:** hooks/primer_rewrite.sh, settings.json block, three debug logs, primer.md versions after each event, lint results.
+
+**Audit before moving on:** Count rewrites per debug log: exactly one per exit and one per compaction, zero per turn, zero from the child. If the killed session produced no rewrite, record it as a gap and document the manual /prime command at .claude/commands/prime.md as the fallback. Fail if a rewrite dropped an unresolved blocker; tighten the prompt.
+
+#### Step 4 — SessionStart injection and commit
+
+*Goal:* Make the next session see the primer without relying on instruction-following.
+
+```text
+Write hooks/primer_inject.sh for SessionStart: if primer.md exists in cwd, output the documented JSON with additionalContext containing the file content prefixed by a one-line instruction to start from Next up item 1 unless the user redirects; cap at 150 lines; exit 0 silently if absent. Register it in the scratch settings.json.
+
+Add to primer_rewrite.sh: after a passing lint, git add primer.md and commit with message primer: session <session_id> <event>, only if the working tree has no other staged changes (never sweep other files into the commit). Start a fresh session and ask: what is the first thing to do? Record the answer and whether it matches Next up item 1.
+
+Decide whether the CLAUDE.md Session continuity block stays (as a fallback) or is shortened, and justify the choice in one paragraph.
+```
+
+**Expect:** hooks/primer_inject.sh, updated settings.json, a commit history with primer-only commits, a transcript excerpt where the new session names Next up item 1.
+
+**Audit before moving on:** Run git show --stat on each primer commit: any file other than primer.md is a fail; fix the staging logic. If the new session does not reference the primer content, check the hook output format against hook_facts.md.
+
+#### Step 5 — Resume trial against a control
+
+*Goal:* Measure whether primer.md actually shortens cold starts.
+
+```text
+Prepare a project state with real mid-task work: a half-finished feature, one blocker, one gotcha outside the code (an env var that must be set). Snapshot the repo with git stash or a branch so every trial starts identical.
+
+Run 5 fresh sessions with the primer hooks enabled and 5 with primer.md removed and hooks disabled (control). In each, the first user message is only: continue. Record: minutes until the first correct action (an edit or command that advances Next up item 1), number of clarifying questions, files read before acting, whether the gotcha was respected, and tokens used. A reviewer who did not write the primer scores correct action from transcripts, blind to arm where possible.
+
+Write trial.md with a per-session table and medians per arm.
+```
+
+**Expect:** trial.md with 10 rows and arm medians; transcripts saved; reviewer name or id noted.
+
+**Audit before moving on:** Confirm both arms started from the identical commit. If the primer arm is not faster on median time and questions, the step does not fail silently: record it and inspect whether Next up item 1 was actually executable. Note that 5 per arm is a small sample and report ranges, not just medians.
+
+#### Step 6 — Validate against oracles, gap report
+
+*Goal:* Prove the setup works and list what remains.
+
+```text
+Run the oracles and record pass or fail with evidence: (1) debug logs show one rewrite per exit and per compaction, zero per turn, zero recursive; (2) lint_primer.py passes on 10 consecutive rewrites; (3) primer git history matches code history (each What changed list is consistent with that session's commits); (4) the resume trial shows the primer arm faster on median with fewer clarifying questions, scored by a reviewer who did not write it; (5) no secret pattern in any primer version (run the linter over git log -p primer.md).
+
+Write gap_report.md: every guide claim (Stop hook at session end, CLAUDE_TRANSCRIPT_PATH, additionalDirectories reading, hooks skipping on JSON errors, /prime fallback) and every deliverable, marked verified / unverified / false with evidence, ranked by impact. Fix the top three. Then write rollout.md: the exact settings block and files to copy into a real project, for Victor to approve.
+```
+
+**Expect:** oracles.md with five rows, gap_report.md ranked, rollout.md ready for approval.
+
+**Audit before moving on:** Any oracle without a log or file reference is unverified. Do not apply rollout.md to any real project in this step; it waits for Victor.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are reviewing a primer.md hook implementation you did not build. Read hook_facts.md, lint_primer.py, the hook scripts, settings.json, debug logs, primer git history, trial.md, oracles.md, and gap_report.md.
+
+1. Enumerate every claim: event semantics, rewrite counts, recursion guard, transcript access, injection working, lint pass rate, trial results, guide-claim verdicts. Mark each verified, unverified, or false. Re-run one session with --debug and count hook firings yourself.
+2. List missing pieces: killed-session behavior, very large transcripts, concurrent sessions in the same repo racing to rewrite, primer commits sweeping other files, blockers silently dropped across rewrites, token cost per rewrite.
+3. Rank by impact: anything that loses state or leaks secrets first, then wrong-event firing, then trial weakness.
+4. Fix the top three now and show evidence.
+5. Report what you could not fix and why, with the exact next action.
+Return a claim table (claim, status, evidence, fix) and the ranked gap list.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Does the guide's Stop hook fire once per session or once per turn on my installed version?
+- Does the child claude -p load the same project hooks, and does PRIMER_REWRITE=1 actually stop recursion?
+- Where does transcript_path come from, stdin JSON or an env var, and can the rewriter read it?
+- What happens on kill -TERM, a closed terminal, or a crash: does SessionEnd fire at all?
+- If two sessions run in the same repo, which rewrite wins, and is state lost?
+- Did any rewrite drop an unresolved blocker or a Don't forget item from the previous primer?
+- Is Next up item 1 truly executable cold, or vague like continue the thing?
+- Does the SessionStart injection make the CLAUDE.md read instruction redundant?
+- Could a secret from the transcript end up in primer.md and then in git?
+- Is the primer arm faster in the trial, and is 5 per arm enough to say so?
+- What does each rewrite cost in tokens, and is per-compaction rewriting worth it?
+
+### 5 · What proves it right
+
+- claude --debug logs across exit, /compact, and multi-turn sessions: exactly one rewrite per exit and per compaction, zero per turn, zero recursive.
+- lint_primer.py passes on 10 consecutive automatic rewrites, and its 8-fixture test suite returns 8/8 expected results.
+- git log -p primer.md: each version's What changed matches that session's code commits, and the linter finds no secret pattern in any version.
+- Blind resume trial, 5 sessions per arm on an identical commit, scored by a reviewer who did not write the primer: primer arm lower median time to first correct action and fewer clarifying questions.
+
+### 6 · Failure modes
+
+- Rewrite on every turn. Tell: debug log shows the hook after each response; token use balloons. Fix: move to SessionEnd and PreCompact.
+- Recursive rewrites. Tell: many claude processes spawn at exit. Fix: PRIMER_REWRITE=1 guard checked first in the script and set for the child.
+- Rewriter has no context. Tell: primer.md becomes generic or repeats the previous version. Fix: pass transcript_path from stdin and the git log into the prompt.
+- Blockers silently dropped. Tell: an open blocker disappears without a matching fix in git. Fix: prompt requires carrying forward unresolved items; diff check against primer.prev.md.
+- Primer commit sweeps other files. Tell: git show --stat lists code files. Fix: commit only when nothing else is staged and add primer.md by explicit path.
+- Session killed, no rewrite. Tell: Last updated stamp older than recent commits. Fix: /prime manual command and a SessionStart warning when the stamp is stale.
+- Primer grows into a log. Tell: line count creeps toward 150. Fix: linter cap and a retro when it is hit.
+
+### 7 · Agent direction (unattended runs)
+
+Do everything in a scratch project first; Victor's real projects get only an approved rollout.md. Reach first for the hooks docs and claude --debug; observed fire counts beat any blog post. Cache hook_facts.md and refer to it rather than re-reading docs. A sub-agent can write the linter and fixtures in parallel with hook research. Never git add -A; stage primer.md by path only. Never print secrets; the linter reports line numbers, not matches. Stop and ask Victor before editing any real project's settings.json or CLAUDE.md, and if hooks fire per turn or recurse after your fix. Write outputs to docs/primer_pattern/: hook_facts.md, lint_primer.py, fixtures/, hooks/, trial.md, oracles.md, gap_report.md, rollout.md. Return the oracle table, the gap list, and the rollout path.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -442,4 +801,26 @@ you already run a related but distinct pattern at `~/.claude/projects/<project>/
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

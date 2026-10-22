@@ -37,6 +37,22 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 .action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
 .action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
 .prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+
 </style>
 </head><body>
 <main class="deeper-wrap" data-pagefind-body data-pagefind-filter="kind:Deep dive">
@@ -52,9 +68,12 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 
 
-<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Prototype on a Pi Zero 2 or Pi 5: a Python player that recombines 8–12 stems of one song by seeded rules (order, mutes, tempo drift) so no two plays match; no ML yet, Add a local voice layer — Pocket TTS or a small cloned-voice model speaking or singing a variable spoken-word line — plus a memory LCD showing the play number and today's arrangement, Print 10 cases from the Gemma Translator STL as a base, price the run, and pre-sell to existing listeners, Falsifier: if listeners in a blind test prefer the fixed studio take every time, or the BOM forces a price above what 10 fans will pay, the format is a curio</p></div>
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Prototype on a Pi Zero 2 or Pi 5: a Python player that recombines 8–12 stems of one song by seeded rules (order, mutes, tempo drift) so no two plays match; no ML yet
+Add a local voice layer — Pocket TTS or a small cloned-voice model speaking or singing a variable spoken-word line — plus a memory LCD showing the play number and today's arrangement
+Print 10 cases from the Gemma Translator STL as a base, price the run, and pre-sell to existing listeners
+Falsifier: if listeners in a blind test prefer the fixed studio take every time, or the BOM forces a price above what 10 fans will pay, the format is a curio</p></div>
 
-<div class='prereqs'><strong>Prerequisites:</strong> A song with multitrack stems, Raspberry Pi and basic soldering, 3D printer access</div>
+
 
 <div class="dd-entries">
 <h2>Connected Posts (9)</h2>
@@ -142,8 +161,168 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 </div>
 
+<section class="ps" id="prompt-system"><h2>Prompt system — run this yourself</h2>
+<p class="ps-lead">Pasteable into Claude Code, Claude, or any agent. One-shot for the whole result, step prompts when you want to steer. Every step carries its own audit; the gap audit makes the agent find and fill what it missed.</p>
+<p><strong>Mission.</strong> Produces a song-as-object prototype: a Raspberry Pi player that recombines the artist&#x27;s own 8-12 stems by seeded rules so no two plays match, adds an optional local voice line, shows the play number on a Sharp memory LCD, and sits in a printed case with a priced bill of materials (BOM). For a musician with stems and a small listener base. Done means 1,000 logged plays with no duplicate arrangement or clipping, measured battery runtime, a blind test against the studio take, and a pre-sale result above BOM cost.</p>
+<h3>1 · Deeper, not bigger</h3><ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A generative composer in the Brian Eno / Tristan Perich line would design the variation space before any player code: a stem compatibility matrix (what may sound together, what carries the song&#x27;s identity), a tempo and key grid every variant respects, and loudness normalized so a sparse arrangement does not sound broken. They would treat the object as a release: boot-to-sound under 20 seconds, survives a yanked battery, plays forever offline. They would get written consent for any cloned voice and run a blind test against the studio master instead of trusting their own ears.</li>
+<li><strong>Rawest material to start from:</strong> 1) The multitrack session exported as per-stem WAV, 48 kHz / 24-bit, identical length from bar 1, plus the tempo map. 2) Google&#x27;s Gemma Translator repository: deployment script, parts list, STL files. 3) Kyutai&#x27;s Pocket TTS repository and model card: hardware targets, licence, cloning terms. 4) The datasheet for the exact Sharp memory LCD ordered (for example LS027B7DH01) and Adafruit&#x27;s driver source. 5) Tristan Perich&#x27;s notes on 1-Bit Symphony. 6) Pi Zero 2 W and Pi 5 power specifications.</li>
+<li><strong>Methods and tools:</strong> Python on Raspberry Pi OS Lite; numpy, soundfile and sounddevice for mixing and gapless output; pyloudnorm for EBU R128 loudness with a -1 dBTP true-peak target; rubberband for tempo drift without pitch change; numpy Generator(PCG64) seeded from device serial plus play counter; SHA-256 of the arrangement JSON as the uniqueness key; atomic counter writes; raspi-config overlay filesystem for a read-only root; systemd autostart; Adafruit Blinka with the Sharp memory display library; a PN532 NFC breakout; a USB power meter; CadQuery or OpenSCAD to adapt the Gemma Translator STL.</li>
+<li><strong>What proves it right:</strong> A blind ABX-then-preference test with at least 20 listeners comparing three random device takes against the studio master, scored outside the builder&#x27;s control. Ten pre-sales from existing listeners at a price at least 2.5x BOM. A scripted 1,000-play soak test log showing zero duplicate arrangement hashes, zero true-peak overs and zero audio underruns. A USB power meter reading that matches the claimed runtime within 10%.</li></ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>I want to release one song as an offline object that plays a different arrangement every time. Act as a generative composer and embedded engineer. Read the raw sources first: my stems, the Gemma Translator repo, Kyutai&#x27;s Pocket TTS model card, a Sharp memory LCD datasheet. Then: (1) build a stem compatibility matrix and a variation grammar (order, mutes, tempo drift within +/-3%, fixed key) and justify every rule musically; (2) write a Python player for Pi Zero 2 W and Pi 5 that renders a seeded arrangement, normalizes to -14 LUFS with true peak at or below -1 dBTP, and logs a SHA-256 of every arrangement; (3) test whether Pocket TTS runs fast enough on each Pi, and if not, fall back to a pre-rendered bank of voice lines; (4) drive a Sharp memory LCD showing play number and today&#x27;s arrangement; (5) adapt the Gemma Translator case and price a 10-unit BOM. Prove it with a 1,000-play soak log, measured battery runtime and a blind test against the studio master. List every claim you could not verify. Clone no voice without written consent.</pre></div>
+<h3>2 · One-shot prompt</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>ROLE AND STANCE
+You are a generative-music engineer building a one-song hardware edition: a Raspberry Pi object that performs the artist&#x27;s own stems in a different arrangement each play, with no network. You are skeptical of every speed and size claim in the source posts and you measure instead of repeating them.
+
+CONTEXT
+- Precedent: Tristan Perich&#x27;s 1-Bit Symphony, a composition shipped as a chip in a CD case. Code is the score; the object is the release.
+- Hardware recipe: Google&#x27;s Gemma Translator runs Moonshine, Gemma and a TTS voice offline on a Pi 5 at about 7 tokens per second; the repo ships code, parts list, deployment script and STL case.
+- Voice: Kyutai Pocket TTS, claimed 100M parameters, local voice cloning, 6x real time, one-command setup, on a desktop, not a Pi.
+- Display: Sharp memory LCDs hold pixel state, near e-paper power, about 50 fps on the Playdate.
+- NFC stickers as one-tap triggers (byjackprice); the Y-Pan&#x27;s open CAD plus BOM as product proof; khaen drones as recombination-safe material; Gould&#x27;s humming as a signature artifact.
+- User inputs: 8-12 stems, a target price, which Pi boards they own.
+
+HARD CONSTRAINTS
+- Offline at runtime. No API calls, no telemetry.
+- Every arrangement is reproducible from (device_id, play_number) and logged as a SHA-256 of its JSON.
+- Integrated loudness -14 LUFS +/-1, true peak at or below -1 dBTP, for every render.
+- Tempo drift limited to +/-3% and pitch never shifted.
+- Voice cloning only of the artist&#x27;s own voice with written consent stored in the repo; check the Pocket TTS licence before shipping.
+- The SD card must survive a yanked battery: read-only root, counter written atomically.
+
+DELIVERABLES, IN ORDER
+1. claims.md: each creator claim with its test.
+2. grammar.yaml: stem roles, compatibility matrix, mute, order and tempo rules, a musical reason per rule.
+3. player/: Python package with render(seed), play(), tests and a systemd unit.
+4. bench.md: render time, boot-to-sound, current draw, Pocket TTS real-time factor, per Pi.
+5. voice/: on-device TTS or a pre-rendered bank of 50+ lines selected by seed.
+6. display/ and nfc/: memory LCD showing play number and arrangement glyph; NFC tags mapped to moods.
+7. case/ plus BOM.csv at quantity 10 and minimum price at 2.5x BOM.
+8. soak_report.md: 1,000 renders, hash uniqueness, loudness, underruns.
+9. listening_protocol.md: blind test, 20+ listeners, against the studio master.
+
+GAP ANALYSIS (BUILT IN)
+Write gaps.md: claim or requirement, status (verified / unverified / false), evidence. Cover at least Pocket TTS speed on the actual Pi, whether it can sing, Zero 2 W RAM headroom with 12 stems, STL fit for your DAC and speaker, the LCD VCOM toggle, and rights to stems and voice. Fill what you can by measurement now; for the rest name the missing hardware or permission.
+
+SELF-QUESTIONS BEFORE STOPPING
+- Does the sparsest legal arrangement sound like the song or like a fault?
+- Can different seeds sound identical despite different hashes?
+- Does any rule run out of variety by play 10,000?
+- Is the variation audible in the first 20 seconds?
+- Would a fan pay the computed price, and what is the evidence?
+
+STOP CONDITIONS
+Stop and report if the stems are not time-aligned, if no consent exists for voice cloning, or if the minimum price exceeds the user&#x27;s target by more than 50%. Otherwise stop when all nine deliverables exist and gaps.md is complete.
+
+RETURN FORMAT
+A short summary table: deliverable, path, status. Then the bench numbers, the soak results, the minimum price, and the top five open gaps from gaps.md.</pre></div>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: stems, repos, claims</h4><p><em>Goal:</em> Inventory the raw material and turn every creator claim into a test.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>You are preparing a generative hardware edition of one song. Do not write player code yet.
+1. Inspect the stem folder the user provides. For each WAV report sample rate, bit depth, channels, duration in samples, peak dBFS and integrated LUFS (pyloudnorm). Fail the step if lengths differ by more than one sample or sample rates differ; ask the user for a re-export instead of resampling silently.
+2. Clone the Gemma Translator repository Google published. Record the exact parts list, the deployment script&#x27;s model downloads and sizes, and the STL file names and bounding boxes (use trimesh to print extents in mm).
+3. Read Kyutai&#x27;s Pocket TTS repository and model card. Record licence, supported hardware, whether voice cloning needs a reference clip and how long, and whether singing is supported at all.
+4. Fetch the datasheet for the Sharp memory LCD you plan to use and note resolution, interface (SPI), the VCOM/EXTCOMIN toggle requirement and current draw.
+5. Write claims.md quoting each creator claim with a test: &#x27;~7 tokens a second&#x27; (Gemma Translator), &#x27;6 times faster than real time ... literally one command&#x27; (Pocket TTS), &#x27;up to 50 frames per second&#x27; (memory display), &#x27;about $100 ... in a week&#x27; (Y-Pan cost benchmark).</pre></div>
+<p><strong>Expect:</strong> stems_report.csv with one row per stem, repo_notes.md for Gemma Translator and Pocket TTS, display_notes.md, claims.md with at least 6 claims each paired with a concrete test.</p>
+<p><strong>Audit before moving on:</strong> Recompute LUFS on two random stems to confirm the report. Every claim needs a numeric pass/fail threshold. If the Pocket TTS licence forbids commercial use or says nothing about ARM, mark the voice layer at-risk now.</p>
+<h4>Step 2 — Variation grammar</h4><p><em>Goal:</em> Define the musical rules that make every arrangement different and still the song.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Using stems_report.csv, write grammar.yaml for this song.
+- Assign each stem a role: identity (must always play, for example lead vocal or main hook), structural (drums, bass), colour (pads, drones, effects), ornament.
+- Write a compatibility matrix: pairs that clash (two competing leads), pairs that must co-occur (a kick and its sub layer).
+- Define section order rules using the session&#x27;s bar markers: which sections may be repeated, dropped or swapped, and which order is fixed (the ending stays the ending).
+- Define a tempo drift range no wider than +/-3% and forbid pitch change.
+- If the song has drone or chord material, treat it like a khaen: sustained free-reed layers that can enter and leave without breaking harmony; give them wider mute probability.
+- Add one &#x27;signature artifact&#x27; rule in the spirit of Glenn Gould&#x27;s humming: a quiet, varying human element (a breath, a count-in, a studio murmur stem) that appears in some plays and becomes the edition&#x27;s fingerprint.
+For every rule write a one-line musical reason. Then compute the size of the arrangement space by brute-force enumeration or a combinatorial formula and report it. Target at least 10,000 distinct legal arrangements.</pre></div>
+<p><strong>Expect:</strong> grammar.yaml with roles, matrix, order rules, tempo range and reasons; space_size.md giving the count and the method used.</p>
+<p><strong>Audit before moving on:</strong> Table the 20 sparsest legal arrangements. Any missing an identity stem or holding a clash pair means the grammar is wrong; fix and re-count. Under 10,000, loosen ornament rules first.</p>
+<h4>Step 3 — Seeded player and soak test</h4><p><em>Goal:</em> Ship a deterministic, gapless, loudness-safe renderer with no ML.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Write a Python package player/ that implements the grammar from grammar.yaml.
+- render(device_id: str, play_number: int) -&gt; (np.ndarray, dict): seeds numpy.random.Generator(PCG64) from SHA-256 of f&#x27;{device_id}:{play_number}&#x27;, samples a legal arrangement, mixes stems in float32, applies tempo drift with the rubberband CLI or pyrubberband, normalizes to -14 LUFS with pyloudnorm, applies a true-peak limiter to -1 dBTP, and returns audio plus the arrangement dict.
+- arrangement_hash = SHA-256 of the canonical JSON of the arrangement dict.
+- play(): reads the counter from /data/counter (atomic write: temp file, fsync, rename), renders, streams to sounddevice with a block size that does not underrun, increments the counter only after playback starts.
+- Log one JSON line per play: play_number, hash, LUFS, true peak, render_ms, underruns.
+- tests/: determinism (same inputs give byte-identical output), grammar legality on 500 random seeds, counter survives a simulated crash mid-write.
+Then run a soak: render plays 1-1000 without audio output and write soak_report.md with duplicate hash count, LUFS min/max, true-peak max and render time p50/p95.</pre></div>
+<p><strong>Expect:</strong> player/ package with passing pytest, soak.log of 1,000 lines, soak_report.md showing 0 duplicates, LUFS within -15 to -13, true peak at or below -1.0 dBTP.</p>
+<p><strong>Audit before moving on:</strong> Run pytest and paste the summary. Grep soak.log for any true peak above -1.0 or LUFS outside range; any hit fails the step. Listen to plays 1, 2, 500 and the sparsest seed found; if two sound identical by ear despite different hashes, add a perceptual distance rule (minimum number of changed stems between consecutive plays).</p>
+<h4>Step 4 — Pi bench and power budget</h4><p><em>Goal:</em> Measure the player on real hardware and pick the board.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Deploy player/ to Raspberry Pi OS Lite on each board you have (Pi Zero 2 W, Pi 5). Use a systemd unit with Restart=on-failure and enable the overlay filesystem via raspi-config so the root is read-only, with a small writable /data partition for the counter.
+Measure and write bench.md:
+- boot-to-first-sound in seconds (phone stopwatch, 5 runs, median)
+- render time for a full arrangement, p50 and p95 over 20 plays
+- peak RSS memory with all stems loaded (use /usr/bin/time -v); on the Zero 2 W&#x27;s 512 MB, test whether stems must be streamed from disk instead of held in RAM
+- current draw at idle, during render and during playback with a USB power meter, then runtime estimates for the battery in the Gemma Translator parts list
+- audio path: I2S DAC HAT or USB DAC, checked with a recorded 1 kHz tone for hum
+If render time exceeds the first section&#x27;s length, pre-render the next play in the background.</pre></div>
+<p><strong>Expect:</strong> bench.md with a table per board, a recommended board and audio path.</p>
+<p><strong>Audit before moving on:</strong> Pull power during playback 10 times; any SD corruption or counter reset fails. Compute runtime from measured mA, not marketing capacity.</p>
+<h4>Step 5 — Voice layer: on-device or pre-rendered</h4><p><em>Goal:</em> Add a variable spoken or sung line without breaking the offline promise.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Get written consent from the artist for cloning their voice and store it as consent.md. Install Kyutai Pocket TTS on the chosen Pi following its own README, and measure real-time factor for a 10-second line at the default settings. Compare against the claim of 6x faster than real time.
+- If RTF is at or below 0.5 on the Pi, integrate on-device generation: a text grammar of 20-50 fragments (dates, play number, lines from the lyric sheet) assembled by the same seed, synthesized during the previous play.
+- If RTF is worse, or the board runs out of RAM, pre-render a bank of at least 50 voice lines on a desktop with the same model and ship them as WAV, selected by seed.
+- Pocket TTS is a speech model. Test singing explicitly; if it cannot hold pitch, use speech only, or record the artist singing short variants instead.
+Place the voice by grammar rule (for example over the intro drone), duck colour stems 3 dB under it, re-normalize.</pre></div>
+<p><strong>Expect:</strong> voice/ (on-device integration or WAV bank), voice_bench.md with measured RTF, consent.md.</p>
+<p><strong>Audit before moving on:</strong> Any of 10 placements that clips, cuts mid-word or masks the identity stem fails. Re-run the soak with voice on.</p>
+<h4>Step 6 — Display, NFC and case</h4><p><em>Goal:</em> Make the object legible and touchable, and price it.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Display: wire the Sharp memory LCD over SPI, use Adafruit Blinka with adafruit-circuitpython-sharpmemorydisplay, and toggle VCOM per the datasheet. Show the play number, the date and a compact glyph of the arrangement (one column per stem, filled if playing). Update only at play start to keep power near zero.
+NFC: add a PN532 breakout, read tag UIDs with nfcpy or the Adafruit PN532 library, and map 3-5 tags to grammar presets (mood, movement, &#x27;drone only&#x27;). Ship the tags as printed cards.
+Case: start from the Gemma Translator STL. Load it in CadQuery or OpenSCAD, add openings for the display, speaker, NFC antenna area and USB-C, and print one test fit. Record print time and filament grams.
+BOM: write BOM.csv with part, supplier, quantity-10 unit price and URL for every item, packaging included. Compute unit cost and minimum price at 2.5x BOM; compare with the Y-Pan&#x27;s roughly $100 parts benchmark.</pre></div>
+<p><strong>Expect:</strong> display/ and nfc/ code, case/ source and STL, a test-fit photo, BOM.csv, pricing.md.</p>
+<p><strong>Audit before moving on:</strong> Every BOM row needs a live URL and a quantity-10 price. The display must show a fresh play number after 5 power cycles. If the case blocks NFC reads at 1-3 cm, thin the wall and reprint.</p>
+<h4>Step 7 — Validate and write the gap report</h4><p><em>Goal:</em> Prove the format is more than a curio or kill it honestly.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Run the falsifier from the dive: if listeners prefer the fixed studio take every time, or the BOM forces a price above what 10 fans will pay, the format is a curio.
+1. Blind listening test: recruit at least 20 listeners. For each, play the studio master and three random device takes in shuffled order, unlabeled. Ask: can you tell which is the studio take (ABX), and which do you prefer. Record raw answers in listening.csv. Report preference share with a binomial confidence interval.
+2. Pre-sale: offer 10 units to existing listeners at the price from pricing.md with a clear ship date. Record conversions and the price.
+3. Soak: re-run 1,000 plays on the final hardware with voice and display enabled; report duplicates, loudness, underruns and resets.
+4. Write gaps.md: each claim verified / unverified / false with evidence, deliverable status, risks ranked by impact. Fix what you can now; list the rest with reasons.</pre></div>
+<p><strong>Expect:</strong> listening.csv and listening_report.md, presale.md, final soak_report.md, gaps.md with a verdict line: product, curio, or needs another iteration.</p>
+<p><strong>Audit before moving on:</strong> Verify the listening test was actually blind: the person running playback must not know which file is which, or use a script that shuffles and logs. If fewer than 20 listeners or fewer than 10 pre-sale offers were made, the verdict must read &#x27;inconclusive&#x27;, not &#x27;product&#x27;.</p>
+<h3>4 · Gap analysis and audit</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>You are auditing a finished generative hardware music edition. You did not build it. Read claims.md, grammar.yaml, bench.md, voice_bench.md, BOM.csv, pricing.md, soak_report.md, listening_report.md and presale.md.
+1. List every factual claim in those files (speeds, sizes, prices, uniqueness, loudness, runtime, listener preference) as a numbered table.
+2. For each, mark verified, unverified or false, and cite the evidence: a log line, a measurement, a URL, a photo. A claim copied from a creator post with no local measurement is unverified.
+3. Re-check: Pocket TTS speed on the shipped board; unique hashes in soak.log; true peak at or below -1 dBTP; counter survives power loss; BOM sourced at quantity 10; blind test with 20+ people; voice consent exists.
+4. List what a 10-unit run still lacks: spares, shipping, returns, a firmware update path.
+5. Rank all gaps by impact on the falsifier (does it change the product-or-curio verdict).
+6. Fix the top three now where possible: rerun a measurement, correct a number, add a missing test.
+7. Report what you could not fix, why, and who or what would close it.</pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p><ul>
+<li>Does the sparsest legal arrangement still read as this song in its first 20 seconds?</li>
+<li>Are consecutive plays audibly different, or only hash-different?</li>
+<li>Does play 5,000 still differ from play 50?</li>
+<li>Did I measure Pocket TTS on the Pi, or did I repeat the 6x-real-time desktop claim?</li>
+<li>Can Pocket TTS sing at all, or did I assume it could?</li>
+<li>Does the Pi Zero 2 W&#x27;s 512 MB hold all stems, or must I stream from disk?</li>
+<li>Is the memory LCD&#x27;s VCOM toggle implemented, or will the image degrade over hours?</li>
+<li>Do I have written consent for the voice and the right to sell every stem?</li>
+<li>Is play one the strongest arrangement, or a random one?</li>
+</ul><h3>5 · What proves it right</h3><ul>
+<li>Twenty or more blind listeners: an ABX and preference test against the studio master, scripted shuffle, results in listening.csv with a binomial confidence interval.</li>
+<li>Ten existing listeners: pre-sale conversions at a price of at least 2.5x quantity-10 BOM cost.</li>
+<li>The soak script on final hardware: 1,000 plays, zero duplicate arrangement hashes, zero true-peak overs, zero underruns, zero counter resets.</li>
+<li>A USB power meter, cross-checked by ffmpeg&#x27;s ebur128 filter for loudness: runtime within 10% of the box claim, loudness within 0.5 LU of pyloudnorm on 20 renders.</li>
+</ul><h3>6 · Failure modes</h3><ul>
+<li>Inaudible variation. Tell: listeners cannot tell device takes apart. Fix: require a minimum number of changed stems between plays and vary section order.</li>
+<li>Sparse takes sound broken. Tell: &#x27;missing something&#x27;. Fix: identity stems always on; raise the floor on simultaneous stems.</li>
+<li>SD corruption on power loss. Tell: counter resets or no boot. Fix: read-only root, atomic counter writes, separate /data.</li>
+<li>On-device TTS too slow. Tell: stutter before the voice line. Fix: pre-render a seeded voice bank; still offline.</li>
+<li>BOM creep. Tell: minimum price passes what fans pay. Fix: Zero 2 W over Pi 5, no touchscreen, quote at quantity 10.</li>
+<li>Rights problem. Tell: a co-writer or session player objects. Fix: written clearance before pre-sale, kept in stems_rights.md.</li>
+</ul><h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with local stem inspection and the two repositories; no hardware work until the grammar exists and the soak passes on a desktop. Cache stems_report.csv and models/ so reruns do not refetch. After step 3, spawn parallel sub-agents for case-plus-BOM and for the voice benchmark; they share no files. Stop and ask the user when stems are misaligned, when voice consent is missing, when the computed minimum price exceeds their target by more than 50%, or when a hardware measurement needs a device they have not confirmed owning. Never fabricate a bench number; write &#x27;not measured: no device&#x27; instead. Return a top-level README.md that links claims.md, grammar.yaml, player/, bench.md, voice/, display/, case/, BOM.csv, pricing.md, soak_report.md, listening_report.md and gaps.md, with a one-line status for each and the final product-or-curio verdict.</p>
+<p class="ps-foot">Prompt system updated 2026-10-22 · <a href="../prompts.html">all prompt systems</a> · <a href="../api/prompts.json">JSON</a></p></section>
+
 <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
-  Deeper Dive generated 2026-10-22T00:39:52.740623 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
+  Deeper Dive generated 2026-10-22T10:32:34.983225 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
 </div>
 </main>
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script>
 </body></html>

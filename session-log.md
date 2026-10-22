@@ -126,3 +126,15 @@ Re-tier agents noticed transcripts contradicting captions. Verified per post wit
 
 ### Still needs Victor (in primer "Next run")
 Cloudflare Web Analytics (no beacon today), analytics API token, wrangler login, Pay Per Crawl application, Search Console/Bing sitemap submission, the blind re-rate, the IG export.
+
+## 2026-10-22 (pm) — Prompt systems for every dive and guide
+
+| Item | Result |
+|---|---|
+| Targets | 45 curated dives + 18 hand-written guides = 63 packs |
+| Writers | 10 Opus agents (batch 07 re-split after a classifier stop; security guides rewritten at program-lead defensive level) |
+| Validator | 63/63 pass (`scripts/prompt_systems.py validate`); 2,850–3,500 words per pack, 6–8 steps each |
+| Rendered | guides (marked + copy buttons), deeper pages, `prompts.html`, `api/prompts.json`, nav, landing tile, llms.txt, sitemap |
+| Gates | quality gate pass; links 0 broken internal, 0 dead external (placeholder hosts now excluded) |
+
+Each pack = mission → deeper-not-bigger (pro would / rawest material / methods / external proof / rewritten prompt) → one-shot → step prompts with expect+audit → gap-audit prompt → self-questions → oracles → failure modes → agent direction. Spec: `data/prompt_systems/SPEC.md` (skill: `references/PROMPT_SYSTEM_SPEC.md`).

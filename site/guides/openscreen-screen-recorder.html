@@ -123,6 +123,134 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Feed recordings into SentrySearch for a searchable internal demo library</p>
 <h2>Bottom line</h2>
 <p>OpenScreen is a legitimately useful free alternative to Screen Studio for the exact style of product demo everyone is making in 2026. The feature set is narrower than Cap but more focused on the cinematic-demo aesthetic, and it works on Windows and Linux where Screen Studio does not. Worth cloning, worth having installed, worth using for any public-facing recording that doesn't justify a Screen Studio license.</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Install or build OpenScreen (github.com/siddharthvaddem/openscreen, MIT, Electron + React + PixiJS) on Victor's Fedora Linux Wayland desktop, prove its capture path works with PipeWire, and produce one publish-ready Claude Code workflow demo with auto-zoom and an animated cursor in 16:9 and 9:16. Done means measured audio-video sync, loudness at target, an ffprobe-verified export, and a head-to-head against an OBS baseline recording of the same script.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): Write a recording spec before pressing record: resolution, frame rate, bitrate, loudness target (-14 LUFS integrated for YouTube and short-form, true peak -1 dBTP), and a shot list with click targets. Run a calibration take with a flash-and-beep sync test and a 10-minute drift check, because Electron MediaRecorder captures often drift or drop frames under load. Read the cursor-tracking and auto-zoom code before trusting it, so zooms land where attention should be rather than where the mouse wandered. Keep the raw recording and the project file, and post-process audio with ffmpeg loudnorm rather than trusting app levels. Rehearse with a clean desktop profile so no notifications, tokens, or private paths appear on screen.</p>
+<p>Rawest material to start from: - The repo: package.json (Electron version, scripts), the Electron main-process capture code using desktopCapturer, the cursor event recorder, the auto-zoom keyframe logic, the PixiJS compositor, the dnd-timeline integration, and the export pipeline (which encoder, which container).</p>
+<p>The GitHub Releases page (AppImage availability, version), and open issues filtered for Linux, Wayland, PipeWire, audio, export.</p>
+<p>Electron desktopCapturer and MediaRecorder docs; xdg-desktop-portal ScreenCast docs and PipeWire wpctl docs for Fedora.</p>
+<p>Screen Studio's own feature page for the target aesthetic, and Cap (cap.so) and OBS as comparators.</p>
+<p>Methods and tools: AppImage run with --verbose or npm run dev for logs; wpctl status and pw-top to see the capture nodes; pactl load-module module-null-sink for a virtual sink if system audio fails; a sync test clip (white flash plus 1 kHz beep every 2 s, generated with ffmpeg -f lavfi) played on screen and recorded; ffprobe -show_streams for codec, fps, duration; ffmpeg -af ebur128 for loudness and loudnorm two-pass for correction; ffmpeg framemd5 or the mpdecimate filter to count duplicated frames; ps -o rss for RAM; a recording-spec markdown file; OBS Studio with the PipeWire source as baseline.</p>
+<p>What proves it right (other than you or the model): ffprobe reports the expected codec, resolution, and constant frame rate within 1%. Measured audio-video offset under 45 ms at start and under 80 ms at 10 minutes in the sync test. ebur128 integrated loudness within 1 LU of target after processing. A viewer who did not record it watches the 9:16 export on a phone and can say which three things were clicked. YouTube or X accepts the upload and processes it without re-encode warnings.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Set up OpenScreen (github.com/siddharthvaddem/openscreen) on my Fedora Wayland desktop and get me one publish-ready Claude Code demo, with proof it is technically clean.</p>
+<p>First read the repo: package.json, the desktopCapturer capture code, the cursor tracking and auto-zoom logic, and the export encoder. Tell me which guide claims hold: PipeWire required and X11 unsupported, system audio on Linux via PipeWire, idle RAM 400-700 MB, about 1 GB per 5 minutes at 1440p, auto-zoom driven by cursor velocity and clicks.</p>
+<p>Then install the AppImage (or build from source if no release matches), confirm screen and system audio capture via the portal, and run a calibration take: an on-screen flash-and-beep sync clip for 10 minutes. Measure A/V offset at start and end, dropped or duplicated frames, file size per minute, and RAM.</p>
+<p>Write a recording spec (1440p or 1080p, 60 fps, -14 LUFS, -1 dBTP) and a shot list for a 90-second demo of a Claude Code workflow. Record it in OpenScreen and the same script in OBS as a baseline. Export 16:9 and 9:16, normalize loudness with ffmpeg, and verify with ffprobe and ebur128.</p>
+<p>Return: claims table, calibration numbers, spec, both exports, comparison notes, and the ranked list of what still fails.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE: You are a video production engineer who ships screen-recorded product demos and verifies every file technically before publishing. You test tools; you do not take README claims on faith.</p>
+<p>CONTEXT:</p>
+<p>Tool: OpenScreen, github.com/siddharthvaddem/openscreen, MIT, Electron + React + TypeScript + Vite + PixiJS + Tailwind, timeline on dnd-timeline. A free clone of Screen Studio's core loop: cursor-aware auto-zoom, synthetic animated cursor, backgrounds, motion blur, annotations, 16:9 / 9:16 / 1:1 exports.</p>
+<p>Machine: Fedora Linux (Wayland, PipeWire). The guide says X11-only systems will not work and Linux system audio is hit-or-miss across distros.</p>
+<p>Claims to test: idle RAM 400-700 MB; about 1 GB per 5 minutes at 1440p; auto-zoom analyzes cursor velocity and click events; system audio on Linux via PipeWire portal; build with npm install, npm run dev, npm run build into dist/.</p>
+<p>Baseline: OBS Studio with the PipeWire screen source. Alternative to note: Cap (cap.so).</p>
+<p>Demo subject: a 90-second Claude Code workflow (for example running a skill and showing the output file).</p>
+<p>HARD CONSTRAINTS:</p>
+<p>Use a clean desktop session: notifications off, no terminal history with tokens, no private paths or emails visible. Scan every exported frame sample for secrets before calling anything publishable.</p>
+<p>Keep raw recordings and project files; never overwrite the raw.</p>
+<p>Do not modify system PipeWire config permanently; virtual sinks are loaded per session and unloaded after.</p>
+<p>Building from source happens in repos/openscreen only.</p>
+<p>DELIVERABLES, in order:</p>
+<p>claims.md: each guide claim with status (confirmed / changed / false) and evidence (file path in repo, measurement, or issue link).</p>
+<p>capture_check.md: wpctl status excerpt, portal prompt behavior, whether system audio and mic both record.</p>
+<p>calibration/: a 10-minute take of an ffmpeg-generated flash-and-beep clip (flash plus 1 kHz beep every 2 s) played full screen. Report A/V offset at 0, 5, and 10 minutes, duplicated-frame count, MB per minute, and RSS of the app idle and recording.</p>
+<p>spec.md: resolution, fps, encoder settings, loudness target -14 LUFS integrated and -1 dBTP, shot list with exact click targets and on-screen text.</p>
+<p>Demo recorded in OpenScreen with auto-zoom on, plus manual zoom fixes where auto-zoom misfires; same script recorded in OBS.</p>
+<p>Exports: demo_16x9.mp4 and demo_9x16.mp4, loudness-normalized with ffmpeg loudnorm two-pass, verified by ffprobe and ebur128.</p>
+<p>compare.md: OpenScreen versus OBS on setup time, edit time, zoom quality, file size, sync, and what Screen Studio would still do better.</p>
+<p>GAP ANALYSIS (built in): keep gaps.md as you go. For every claim and deliverable record what you could not verify (no Linux release, portal refused system audio, export encoder unknown) and fill what you can: read source, try the virtual sink fallback, build from source. Anything left gets the exact next action.</p>
+<p>SELF-QUESTIONS before finishing:</p>
+<p>Which encoder and container does the export use, and is the frame rate constant or variable?</p>
+<p>Do auto-zoom keyframes follow clicks or just cursor speed, and did any zoom land on empty screen?</p>
+<p>Is the synthetic cursor aligned with the real click position at 2x zoom?</p>
+<p>Did system audio actually capture, or is the demo mic-only?</p>
+<p>Does sync hold at 10 minutes, not just at the start?</p>
+<p>Is any private information visible in any frame?</p>
+<p>Does the 9:16 crop keep the clicked element in frame?</p>
+<p>STOP CONDITIONS: stop and report if the portal cannot capture the screen at all, if A/V drift exceeds 200 ms at 10 minutes (recommend OBS for long takes), or if a secret appears in a recording (delete it, report, do not export).</p>
+<p>RETURN FORMAT: a markdown report with sections Claims, Capture, Calibration (numbers table), Spec, Demo, Exports (ffprobe and ebur128 output), Comparison, Gaps (ranked), plus the paths to every file.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth from the repo</h4>
+<p>Goal: Know how OpenScreen captures, zooms, and exports before trusting the guide.</p>
+<p>Clone github.com/siddharthvaddem/openscreen into repos/openscreen. Record the latest release tag and whether a Linux AppImage exists on the Releases page. Read package.json (Electron version, scripts, dependencies including pixi.js and dnd-timeline). Find and read: the main-process code using desktopCapturer, the code that records cursor positions and clicks (grep -ril cursor src head), the auto-zoom keyframe generator, and the export path (grep -ril 'MediaRecorder\ ffmpeg\ webcodecs' src head). Read open issues filtered for linux, wayland, pipewire, audio, export, crash.</p>
+<p>Write claims.md with rows for: PipeWire required and X11 unsupported; Linux system audio via portal; idle RAM 400-700 MB; about 1 GB per 5 minutes at 1440p; auto-zoom uses cursor velocity and clicks; manual zoom depth and duration; export formats MP4 and WebM; aspect ratios. Status confirmed / changed / false / untested, evidence path:line or issue URL. Also document in one paragraph how auto-zoom chooses targets.</p>
+<p>Expect: claims.md with 8+ rows and evidence, release tag, one-paragraph auto-zoom explanation, export encoder and container named.</p>
+<p>Audit before moving on: Every confirmed row must cite a file path and line or an issue. Rows about runtime resources stay untested until step 3 measures them. If the export path cannot be found in source, mark it unknown and plan to identify it with ffprobe in step 3.</p>
+<h4>Step 2 — Install and capture check on Fedora Wayland</h4>
+<p>Goal: Get screen, mic, and system audio capturing through the PipeWire portal.</p>
+<p>Install the latest AppImage from Releases (chmod +x, run from a terminal so logs print). If none exists or it fails, build from source in repos/openscreen with npm install and npm run dev, then npm run build. Record which path worked and the exact versions (Electron, Node, release tag).</p>
+<p>Run wpctl status before and during capture and save excerpts. Start a recording of the full screen and confirm the xdg-desktop-portal picker appears. Play a known tone from the browser and speak into the mic for 10 s. Inspect the result with ffprobe -show_streams: does it contain one audio stream, two, or none?</p>
+<p>If system audio is missing, load a per-session null sink with pactl load-module module-null-sink sink_name=demo, route the browser to it, select its monitor as the mic input, and retry. Unload it afterward. Write capture_check.md with what worked, what did not, and the exact working configuration.</p>
+<p>Expect: capture_check.md with install path, versions, wpctl excerpts, ffprobe stream listing, and a working audio routing recipe.</p>
+<p>Audit before moving on: Play back the test file and confirm both the tone and voice are audible; ffprobe stream presence alone is not proof. If the system was left with an extra sink, unload it. If only mic works after the fallback, record system audio as failed on this distro and continue mic-only rather than blocking.</p>
+<h4>Step 3 — Calibration take: sync, frames, size, RAM</h4>
+<p>Goal: Measure the tool's technical limits on this machine.</p>
+<p>Generate a sync clip: ffmpeg -f lavfi -i 'color=black:s=1920x1080:r=60' with a white flash frame every 2 s and a 1 kHz beep aligned to each flash, 10 minutes long (build it with lavfi color, drawbox or overlay, and sine with volume gating; verify alignment in the generated file first). Play it full screen and record 10 minutes in OpenScreen with the routing from step 2. Export at 1440p 60 fps or the closest available.</p>
+<p>Measure: A/V offset at 0, 5, and 10 minutes by finding flash frames (ffmpeg signalstats YAVG spikes) and beep onsets (silencedetect or astats) and differencing their timestamps; duplicated frames with mpdecimate or framemd5 counts; MB per minute; ffprobe fps and whether frame rate is variable; RSS of the app idle and while recording (ps -o rss -p). Repeat the 10-minute take in OBS for a baseline. Write calibration.md with a table OpenScreen versus OBS.</p>
+<p>Expect: calibration.md with offsets at three timestamps, duplicate-frame counts, MB/min, fps mode, RSS idle and recording, for both tools; raw files kept.</p>
+<p>Audit before moving on: Verify the reference clip itself has 0 ms offset before blaming the recorder. Fail if OpenScreen drift exceeds 80 ms at 10 minutes; then record the limit (maximum safe take length) in spec.md rather than abandoning the tool. Update claims.md RAM and file-size rows with measured values.</p>
+<h4>Step 4 — Spec, shot list, record the demo</h4>
+<p>Goal: Record a 90-second Claude Code demo that a stranger can follow.</p>
+<p>Write spec.md: resolution and fps chosen from calibration, safe maximum take length, loudness target -14 LUFS integrated and -1 dBTP true peak, cursor size and style, background, zoom depth defaults. Write a shot list for 90 seconds: open terminal, run one Claude Code command or skill, show the produced file, show the result in a browser. For each shot: action, exact click target, expected zoom target, on-screen text, narration line.</p>
+<p>Prepare a clean session: new desktop user or cleared terminal history, notifications off, no API keys or private paths visible, browser profile without personal bookmarks. Record in OpenScreen with auto-zoom on. Review every auto-zoom keyframe against the shot list: keep, adjust, or replace with a manual zoom. Record the identical script in OBS for comparison. Save the OpenScreen project file and the raw recording.</p>
+<p>Expect: spec.md, shotlist.md, raw OpenScreen recording plus project file, raw OBS recording, a keyframe review table (auto zoom time, target, kept or fixed).</p>
+<p>Audit before moving on: Scrub the raw recording at 1 frame per second (ffmpeg -vf fps=1 to PNGs) and inspect for tokens, emails, private paths, and notification popups; any hit means re-record that shot. Fail the step if more than one third of auto-zooms needed fixing; note it in claims.md as an auto-zoom quality finding.</p>
+<h4>Step 5 — Export, normalize, verify</h4>
+<p>Goal: Produce publish-ready 16:9 and 9:16 files with verified specs.</p>
+<p>Export from OpenScreen at 16:9 and 9:16 (re-frame zooms for 9:16 so clicked elements stay inside the crop). Normalize audio with ffmpeg loudnorm in two passes: first pass with print_format=json to measure, second pass applying measured_I, measured_TP, measured_LRA, measured_thresh to target I=-14, TP=-1, LRA=11; copy video without re-encoding where possible.</p>
+<p>Verify each final file: ffprobe -show_streams -show_format (codec, resolution, fps, constant frame rate, duration, bitrate), ffmpeg -af ebur128 -f null - (integrated loudness and true peak), and a frame grab at each shot timestamp to confirm the clicked element is visible in 9:16. Write exports.md with the outputs.</p>
+<p>Then write compare.md: OpenScreen versus OBS on setup time, edit time, auto-zoom quality, file size, sync, CPU and RAM, and what Screen Studio would still do better for this demo.</p>
+<p>Expect: demo_16x9.mp4, demo_9x16.mp4, exports.md with ffprobe and ebur128 output, frame grabs, compare.md.</p>
+<p>Audit before moving on: Fail if integrated loudness is outside -15 to -13 LUFS or true peak above -1 dBTP; rerun loudnorm. Fail if any 9:16 frame grab crops the click target; fix the zoom and re-export. Confirm the export matches the spec resolution and frame rate exactly.</p>
+<h4>Step 6 — Validate against oracles, gap report</h4>
+<p>Goal: Prove the demo is publishable and record what remains broken.</p>
+<p>Run the oracles and record pass or fail with evidence: (1) ffprobe shows spec resolution and constant frame rate within 1%; (2) A/V offset under 45 ms at start and under 80 ms at the end of the demo, using a clap or click sound matched to the visual click; (3) ebur128 integrated -14 plus or minus 1 LUFS, true peak at or below -1 dBTP; (4) a person who did not record it watches the 9:16 file on a phone and names the three things that were clicked; (5) a private upload to YouTube or X processes without warnings; (6) the 1 fps frame scan finds no secrets.</p>
+<p>Write gap_report.md: every row in claims.md and every deliverable marked verified / unverified / false with evidence. Rank open gaps by impact on publishing (privacy first, then sync, then audio, then polish). Fix the top three now. For each remaining gap give the blocker and the next action (file an upstream issue with repro steps, switch to OBS for long takes, use a virtual sink).</p>
+<p>Expect: oracles.md with six rows and evidence, gap_report.md ranked, list of fixes applied.</p>
+<p>Audit before moving on: Any oracle without a log, measurement, or named viewer is unverified, not passed. If the viewer test fails, revise zooms or narration and re-export before closing.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are reviewing an OpenScreen demo-production run you did not perform. Read claims.md, capture_check.md, calibration.md, spec.md, shotlist.md, exports.md, compare.md, oracles.md, and gap_report.md, and open the final exports.</p>
+<p>Enumerate every claim: versions, audio capture working, offsets, duplicate frames, MB per minute, RAM, loudness, ffprobe specs, viewer test, no secrets. Mark each verified, unverified, or false. Re-run ffprobe and ebur128 on both exports yourself, and re-scan the 9:16 export at 1 frame per second for private data.</p>
+<p>List missing pieces: no OBS baseline, no 10-minute drift measurement, mic-only audio disguised as full capture, auto-zoom review absent, raw files not kept.</p>
+<p>Rank by impact: privacy leaks, then sync, then loudness, then framing, then documentation.</p>
+<p>Fix the top three now (re-normalize, re-export, re-frame) and show before and after numbers.</p>
+<p>Report what you could not fix and why, with the exact next step (upstream issue text, tool switch, routing change).</p>
+<p>Return a claim table (claim, status, evidence, fix) and the ranked open-gap list.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Does the export use a constant or variable frame rate, and will that cause sync drift on upload?</p>
+<p>Did auto-zoom target clicks, or did it chase cursor movement onto empty areas?</p>
+<p>Is the synthetic cursor drawn exactly where the real click happened at high zoom levels?</p>
+<p>Did system audio really record through the PipeWire portal, or only the mic?</p>
+<p>How long can a single take run on this machine before drift exceeds 80 ms?</p>
+<p>Does the 9:16 export keep every click target inside the crop?</p>
+<p>Is any token, email, file path, or notification visible in any frame?</p>
+<p>Is the measured file size per minute close to the guide's 1 GB per 5 minutes at 1440p, and does disk space allow my longest planned take?</p>
+<p>What does the app's RAM look like while recording versus the 400-700 MB idle claim?</p>
+<p>Which encoder does the export use, and would a re-encode in ffmpeg improve quality per byte?</p>
+<p>Would OBS plus a manual edit have been faster for this exact demo?</p>
+<h3>5 · What proves it right</h3>
+<p>ffprobe on both exports: spec resolution, codec, and constant frame rate within 1%.</p>
+<p>Flash-and-beep calibration measured with ffmpeg signalstats and silencedetect: offset under 45 ms at start and under 80 ms at 10 minutes.</p>
+<p>ffmpeg ebur128: integrated loudness -14 plus or minus 1 LUFS and true peak at or below -1 dBTP.</p>
+<p>A viewer who did not record it watches the 9:16 export on a phone and correctly names the three clicked actions.</p>
+<p>Private upload to YouTube or X processes cleanly at full resolution.</p>
+<p>A 1 fps frame scan of the final exports finds no secrets or private data.</p>
+<h3>6 · Failure modes</h3>
+<p>Portal captures video but no system audio. Tell: ffprobe shows a single mic stream; tone missing on playback. Fix: per-session null sink and record its monitor, or record audio separately and mux with ffmpeg.</p>
+<p>Variable frame rate export drifts after upload. Tell: sync fine locally, off on YouTube. Fix: re-encode to constant frame rate with ffmpeg -fps_mode cfr at the spec rate.</p>
+<p>Auto-zoom lands on empty screen because the cursor moved while thinking. Tell: zooms between clicks. Fix: rehearse cursor paths, park the mouse, replace bad keyframes with manual zooms.</p>
+<p>Secrets on screen. Tell: frame scan shows an API key in a terminal or an email in a browser tab. Fix: delete the take, clean the session, re-record; never blur and publish.</p>
+<p>App crashes or drops frames on long takes. Tell: duplicate-frame count climbs with time, RSS grows. Fix: cap take length per spec, split into segments, or use OBS for long recordings.</p>
+<p>Loudness inconsistent across videos. Tell: ebur128 readings vary by more than 3 LU. Fix: always run two-pass loudnorm at -14 LUFS as the last step.</p>
+<p>9:16 crop cuts off the action. Tell: frame grabs show the click target outside the frame. Fix: re-key zooms specifically for the vertical export.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with source reading in repos/openscreen; it is fast and tells you the encoder and zoom logic before any recording. Use ffmpeg and ffprobe for every measurement and cache their raw text output under docs/openscreen/measurements/. The calibration clip generation is a good sub-agent task (pure ffmpeg filter work with a self-check). Never leave a virtual sink loaded or system PipeWire config modified. Stop and ask Victor before recording anything on his main desktop session that could show private windows, and before uploading anything even privately. Ask him to be the human viewer or to name one. Write outputs to docs/openscreen/: claims.md, capture_check.md, calibration.md, spec.md, shotlist.md, exports.md, compare.md, oracles.md, gap_report.md, and the final MP4s. Return the gap report, the oracle table, and paths.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># OpenScreen — Free Open-Source Screen Studio Alternative
 
@@ -251,6 +379,231 @@ The honest call: if you're already paying for Screen Studio, keep using it — i
 ## Bottom line
 
 OpenScreen is a legitimately useful free alternative to Screen Studio for the exact style of product demo everyone is making in 2026. The feature set is narrower than Cap but more focused on the cinematic-demo aesthetic, and it works on Windows and Linux where Screen Studio does not. Worth cloning, worth having installed, worth using for any public-facing recording that doesn't justify a Screen Studio license.
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Install or build OpenScreen (github.com/siddharthvaddem/openscreen, MIT, Electron + React + PixiJS) on Victor's Fedora Linux Wayland desktop, prove its capture path works with PipeWire, and produce one publish-ready Claude Code workflow demo with auto-zoom and an animated cursor in 16:9 and 9:16. Done means measured audio-video sync, loudness at target, an ffprobe-verified export, and a head-to-head against an OBS baseline recording of the same script.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** Write a recording spec before pressing record: resolution, frame rate, bitrate, loudness target (-14 LUFS integrated for YouTube and short-form, true peak -1 dBTP), and a shot list with click targets. Run a calibration take with a flash-and-beep sync test and a 10-minute drift check, because Electron MediaRecorder captures often drift or drop frames under load. Read the cursor-tracking and auto-zoom code before trusting it, so zooms land where attention should be rather than where the mouse wandered. Keep the raw recording and the project file, and post-process audio with ffmpeg loudnorm rather than trusting app levels. Rehearse with a clean desktop profile so no notifications, tokens, or private paths appear on screen.
+- **Rawest material to start from:** - The repo: package.json (Electron version, scripts), the Electron main-process capture code using desktopCapturer, the cursor event recorder, the auto-zoom keyframe logic, the PixiJS compositor, the dnd-timeline integration, and the export pipeline (which encoder, which container).
+- The GitHub Releases page (AppImage availability, version), and open issues filtered for Linux, Wayland, PipeWire, audio, export.
+- Electron desktopCapturer and MediaRecorder docs; xdg-desktop-portal ScreenCast docs and PipeWire wpctl docs for Fedora.
+- Screen Studio's own feature page for the target aesthetic, and Cap (cap.so) and OBS as comparators.
+- **Methods and tools:** AppImage run with --verbose or npm run dev for logs; wpctl status and pw-top to see the capture nodes; pactl load-module module-null-sink for a virtual sink if system audio fails; a sync test clip (white flash plus 1 kHz beep every 2 s, generated with ffmpeg -f lavfi) played on screen and recorded; ffprobe -show_streams for codec, fps, duration; ffmpeg -af ebur128 for loudness and loudnorm two-pass for correction; ffmpeg framemd5 or the mpdecimate filter to count duplicated frames; ps -o rss for RAM; a recording-spec markdown file; OBS Studio with the PipeWire source as baseline.
+- **What proves it right (other than you or the model):** ffprobe reports the expected codec, resolution, and constant frame rate within 1%. Measured audio-video offset under 45 ms at start and under 80 ms at 10 minutes in the sync test. ebur128 integrated loudness within 1 LU of target after processing. A viewer who did not record it watches the 9:16 export on a phone and can say which three things were clicked. YouTube or X accepts the upload and processes it without re-encode warnings.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Set up OpenScreen (github.com/siddharthvaddem/openscreen) on my Fedora Wayland desktop and get me one publish-ready Claude Code demo, with proof it is technically clean.
+
+First read the repo: package.json, the desktopCapturer capture code, the cursor tracking and auto-zoom logic, and the export encoder. Tell me which guide claims hold: PipeWire required and X11 unsupported, system audio on Linux via PipeWire, idle RAM 400-700 MB, about 1 GB per 5 minutes at 1440p, auto-zoom driven by cursor velocity and clicks.
+
+Then install the AppImage (or build from source if no release matches), confirm screen and system audio capture via the portal, and run a calibration take: an on-screen flash-and-beep sync clip for 10 minutes. Measure A/V offset at start and end, dropped or duplicated frames, file size per minute, and RAM.
+
+Write a recording spec (1440p or 1080p, 60 fps, -14 LUFS, -1 dBTP) and a shot list for a 90-second demo of a Claude Code workflow. Record it in OpenScreen and the same script in OBS as a baseline. Export 16:9 and 9:16, normalize loudness with ffmpeg, and verify with ffprobe and ebur128.
+
+Return: claims table, calibration numbers, spec, both exports, comparison notes, and the ranked list of what still fails.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE: You are a video production engineer who ships screen-recorded product demos and verifies every file technically before publishing. You test tools; you do not take README claims on faith.
+
+CONTEXT:
+- Tool: OpenScreen, github.com/siddharthvaddem/openscreen, MIT, Electron + React + TypeScript + Vite + PixiJS + Tailwind, timeline on dnd-timeline. A free clone of Screen Studio's core loop: cursor-aware auto-zoom, synthetic animated cursor, backgrounds, motion blur, annotations, 16:9 / 9:16 / 1:1 exports.
+- Machine: Fedora Linux (Wayland, PipeWire). The guide says X11-only systems will not work and Linux system audio is hit-or-miss across distros.
+- Claims to test: idle RAM 400-700 MB; about 1 GB per 5 minutes at 1440p; auto-zoom analyzes cursor velocity and click events; system audio on Linux via PipeWire portal; build with npm install, npm run dev, npm run build into dist/.
+- Baseline: OBS Studio with the PipeWire screen source. Alternative to note: Cap (cap.so).
+- Demo subject: a 90-second Claude Code workflow (for example running a skill and showing the output file).
+
+HARD CONSTRAINTS:
+- Use a clean desktop session: notifications off, no terminal history with tokens, no private paths or emails visible. Scan every exported frame sample for secrets before calling anything publishable.
+- Keep raw recordings and project files; never overwrite the raw.
+- Do not modify system PipeWire config permanently; virtual sinks are loaded per session and unloaded after.
+- Building from source happens in repos/openscreen only.
+
+DELIVERABLES, in order:
+1. claims.md: each guide claim with status (confirmed / changed / false) and evidence (file path in repo, measurement, or issue link).
+2. capture_check.md: wpctl status excerpt, portal prompt behavior, whether system audio and mic both record.
+3. calibration/: a 10-minute take of an ffmpeg-generated flash-and-beep clip (flash plus 1 kHz beep every 2 s) played full screen. Report A/V offset at 0, 5, and 10 minutes, duplicated-frame count, MB per minute, and RSS of the app idle and recording.
+4. spec.md: resolution, fps, encoder settings, loudness target -14 LUFS integrated and -1 dBTP, shot list with exact click targets and on-screen text.
+5. Demo recorded in OpenScreen with auto-zoom on, plus manual zoom fixes where auto-zoom misfires; same script recorded in OBS.
+6. Exports: demo_16x9.mp4 and demo_9x16.mp4, loudness-normalized with ffmpeg loudnorm two-pass, verified by ffprobe and ebur128.
+7. compare.md: OpenScreen versus OBS on setup time, edit time, zoom quality, file size, sync, and what Screen Studio would still do better.
+
+GAP ANALYSIS (built in): keep gaps.md as you go. For every claim and deliverable record what you could not verify (no Linux release, portal refused system audio, export encoder unknown) and fill what you can: read source, try the virtual sink fallback, build from source. Anything left gets the exact next action.
+
+SELF-QUESTIONS before finishing:
+- Which encoder and container does the export use, and is the frame rate constant or variable?
+- Do auto-zoom keyframes follow clicks or just cursor speed, and did any zoom land on empty screen?
+- Is the synthetic cursor aligned with the real click position at 2x zoom?
+- Did system audio actually capture, or is the demo mic-only?
+- Does sync hold at 10 minutes, not just at the start?
+- Is any private information visible in any frame?
+- Does the 9:16 crop keep the clicked element in frame?
+
+STOP CONDITIONS: stop and report if the portal cannot capture the screen at all, if A/V drift exceeds 200 ms at 10 minutes (recommend OBS for long takes), or if a secret appears in a recording (delete it, report, do not export).
+
+RETURN FORMAT: a markdown report with sections Claims, Capture, Calibration (numbers table), Spec, Demo, Exports (ffprobe and ebur128 output), Comparison, Gaps (ranked), plus the paths to every file.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth from the repo
+
+*Goal:* Know how OpenScreen captures, zooms, and exports before trusting the guide.
+
+```text
+Clone github.com/siddharthvaddem/openscreen into repos/openscreen. Record the latest release tag and whether a Linux AppImage exists on the Releases page. Read package.json (Electron version, scripts, dependencies including pixi.js and dnd-timeline). Find and read: the main-process code using desktopCapturer, the code that records cursor positions and clicks (grep -ril cursor src | head), the auto-zoom keyframe generator, and the export path (grep -ril 'MediaRecorder\|ffmpeg\|webcodecs' src | head). Read open issues filtered for linux, wayland, pipewire, audio, export, crash.
+
+Write claims.md with rows for: PipeWire required and X11 unsupported; Linux system audio via portal; idle RAM 400-700 MB; about 1 GB per 5 minutes at 1440p; auto-zoom uses cursor velocity and clicks; manual zoom depth and duration; export formats MP4 and WebM; aspect ratios. Status confirmed / changed / false / untested, evidence path:line or issue URL. Also document in one paragraph how auto-zoom chooses targets.
+```
+
+**Expect:** claims.md with 8+ rows and evidence, release tag, one-paragraph auto-zoom explanation, export encoder and container named.
+
+**Audit before moving on:** Every confirmed row must cite a file path and line or an issue. Rows about runtime resources stay untested until step 3 measures them. If the export path cannot be found in source, mark it unknown and plan to identify it with ffprobe in step 3.
+
+#### Step 2 — Install and capture check on Fedora Wayland
+
+*Goal:* Get screen, mic, and system audio capturing through the PipeWire portal.
+
+```text
+Install the latest AppImage from Releases (chmod +x, run from a terminal so logs print). If none exists or it fails, build from source in repos/openscreen with npm install and npm run dev, then npm run build. Record which path worked and the exact versions (Electron, Node, release tag).
+
+Run wpctl status before and during capture and save excerpts. Start a recording of the full screen and confirm the xdg-desktop-portal picker appears. Play a known tone from the browser and speak into the mic for 10 s. Inspect the result with ffprobe -show_streams: does it contain one audio stream, two, or none?
+
+If system audio is missing, load a per-session null sink with pactl load-module module-null-sink sink_name=demo, route the browser to it, select its monitor as the mic input, and retry. Unload it afterward. Write capture_check.md with what worked, what did not, and the exact working configuration.
+```
+
+**Expect:** capture_check.md with install path, versions, wpctl excerpts, ffprobe stream listing, and a working audio routing recipe.
+
+**Audit before moving on:** Play back the test file and confirm both the tone and voice are audible; ffprobe stream presence alone is not proof. If the system was left with an extra sink, unload it. If only mic works after the fallback, record system audio as failed on this distro and continue mic-only rather than blocking.
+
+#### Step 3 — Calibration take: sync, frames, size, RAM
+
+*Goal:* Measure the tool's technical limits on this machine.
+
+```text
+Generate a sync clip: ffmpeg -f lavfi -i 'color=black:s=1920x1080:r=60' with a white flash frame every 2 s and a 1 kHz beep aligned to each flash, 10 minutes long (build it with lavfi color, drawbox or overlay, and sine with volume gating; verify alignment in the generated file first). Play it full screen and record 10 minutes in OpenScreen with the routing from step 2. Export at 1440p 60 fps or the closest available.
+
+Measure: A/V offset at 0, 5, and 10 minutes by finding flash frames (ffmpeg signalstats YAVG spikes) and beep onsets (silencedetect or astats) and differencing their timestamps; duplicated frames with mpdecimate or framemd5 counts; MB per minute; ffprobe fps and whether frame rate is variable; RSS of the app idle and while recording (ps -o rss -p). Repeat the 10-minute take in OBS for a baseline. Write calibration.md with a table OpenScreen versus OBS.
+```
+
+**Expect:** calibration.md with offsets at three timestamps, duplicate-frame counts, MB/min, fps mode, RSS idle and recording, for both tools; raw files kept.
+
+**Audit before moving on:** Verify the reference clip itself has 0 ms offset before blaming the recorder. Fail if OpenScreen drift exceeds 80 ms at 10 minutes; then record the limit (maximum safe take length) in spec.md rather than abandoning the tool. Update claims.md RAM and file-size rows with measured values.
+
+#### Step 4 — Spec, shot list, record the demo
+
+*Goal:* Record a 90-second Claude Code demo that a stranger can follow.
+
+```text
+Write spec.md: resolution and fps chosen from calibration, safe maximum take length, loudness target -14 LUFS integrated and -1 dBTP true peak, cursor size and style, background, zoom depth defaults. Write a shot list for 90 seconds: open terminal, run one Claude Code command or skill, show the produced file, show the result in a browser. For each shot: action, exact click target, expected zoom target, on-screen text, narration line.
+
+Prepare a clean session: new desktop user or cleared terminal history, notifications off, no API keys or private paths visible, browser profile without personal bookmarks. Record in OpenScreen with auto-zoom on. Review every auto-zoom keyframe against the shot list: keep, adjust, or replace with a manual zoom. Record the identical script in OBS for comparison. Save the OpenScreen project file and the raw recording.
+```
+
+**Expect:** spec.md, shotlist.md, raw OpenScreen recording plus project file, raw OBS recording, a keyframe review table (auto zoom time, target, kept or fixed).
+
+**Audit before moving on:** Scrub the raw recording at 1 frame per second (ffmpeg -vf fps=1 to PNGs) and inspect for tokens, emails, private paths, and notification popups; any hit means re-record that shot. Fail the step if more than one third of auto-zooms needed fixing; note it in claims.md as an auto-zoom quality finding.
+
+#### Step 5 — Export, normalize, verify
+
+*Goal:* Produce publish-ready 16:9 and 9:16 files with verified specs.
+
+```text
+Export from OpenScreen at 16:9 and 9:16 (re-frame zooms for 9:16 so clicked elements stay inside the crop). Normalize audio with ffmpeg loudnorm in two passes: first pass with print_format=json to measure, second pass applying measured_I, measured_TP, measured_LRA, measured_thresh to target I=-14, TP=-1, LRA=11; copy video without re-encoding where possible.
+
+Verify each final file: ffprobe -show_streams -show_format (codec, resolution, fps, constant frame rate, duration, bitrate), ffmpeg -af ebur128 -f null - (integrated loudness and true peak), and a frame grab at each shot timestamp to confirm the clicked element is visible in 9:16. Write exports.md with the outputs.
+
+Then write compare.md: OpenScreen versus OBS on setup time, edit time, auto-zoom quality, file size, sync, CPU and RAM, and what Screen Studio would still do better for this demo.
+```
+
+**Expect:** demo_16x9.mp4, demo_9x16.mp4, exports.md with ffprobe and ebur128 output, frame grabs, compare.md.
+
+**Audit before moving on:** Fail if integrated loudness is outside -15 to -13 LUFS or true peak above -1 dBTP; rerun loudnorm. Fail if any 9:16 frame grab crops the click target; fix the zoom and re-export. Confirm the export matches the spec resolution and frame rate exactly.
+
+#### Step 6 — Validate against oracles, gap report
+
+*Goal:* Prove the demo is publishable and record what remains broken.
+
+```text
+Run the oracles and record pass or fail with evidence: (1) ffprobe shows spec resolution and constant frame rate within 1%; (2) A/V offset under 45 ms at start and under 80 ms at the end of the demo, using a clap or click sound matched to the visual click; (3) ebur128 integrated -14 plus or minus 1 LUFS, true peak at or below -1 dBTP; (4) a person who did not record it watches the 9:16 file on a phone and names the three things that were clicked; (5) a private upload to YouTube or X processes without warnings; (6) the 1 fps frame scan finds no secrets.
+
+Write gap_report.md: every row in claims.md and every deliverable marked verified / unverified / false with evidence. Rank open gaps by impact on publishing (privacy first, then sync, then audio, then polish). Fix the top three now. For each remaining gap give the blocker and the next action (file an upstream issue with repro steps, switch to OBS for long takes, use a virtual sink).
+```
+
+**Expect:** oracles.md with six rows and evidence, gap_report.md ranked, list of fixes applied.
+
+**Audit before moving on:** Any oracle without a log, measurement, or named viewer is unverified, not passed. If the viewer test fails, revise zooms or narration and re-export before closing.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are reviewing an OpenScreen demo-production run you did not perform. Read claims.md, capture_check.md, calibration.md, spec.md, shotlist.md, exports.md, compare.md, oracles.md, and gap_report.md, and open the final exports.
+
+1. Enumerate every claim: versions, audio capture working, offsets, duplicate frames, MB per minute, RAM, loudness, ffprobe specs, viewer test, no secrets. Mark each verified, unverified, or false. Re-run ffprobe and ebur128 on both exports yourself, and re-scan the 9:16 export at 1 frame per second for private data.
+2. List missing pieces: no OBS baseline, no 10-minute drift measurement, mic-only audio disguised as full capture, auto-zoom review absent, raw files not kept.
+3. Rank by impact: privacy leaks, then sync, then loudness, then framing, then documentation.
+4. Fix the top three now (re-normalize, re-export, re-frame) and show before and after numbers.
+5. Report what you could not fix and why, with the exact next step (upstream issue text, tool switch, routing change).
+Return a claim table (claim, status, evidence, fix) and the ranked open-gap list.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Does the export use a constant or variable frame rate, and will that cause sync drift on upload?
+- Did auto-zoom target clicks, or did it chase cursor movement onto empty areas?
+- Is the synthetic cursor drawn exactly where the real click happened at high zoom levels?
+- Did system audio really record through the PipeWire portal, or only the mic?
+- How long can a single take run on this machine before drift exceeds 80 ms?
+- Does the 9:16 export keep every click target inside the crop?
+- Is any token, email, file path, or notification visible in any frame?
+- Is the measured file size per minute close to the guide's 1 GB per 5 minutes at 1440p, and does disk space allow my longest planned take?
+- What does the app's RAM look like while recording versus the 400-700 MB idle claim?
+- Which encoder does the export use, and would a re-encode in ffmpeg improve quality per byte?
+- Would OBS plus a manual edit have been faster for this exact demo?
+
+### 5 · What proves it right
+
+- ffprobe on both exports: spec resolution, codec, and constant frame rate within 1%.
+- Flash-and-beep calibration measured with ffmpeg signalstats and silencedetect: offset under 45 ms at start and under 80 ms at 10 minutes.
+- ffmpeg ebur128: integrated loudness -14 plus or minus 1 LUFS and true peak at or below -1 dBTP.
+- A viewer who did not record it watches the 9:16 export on a phone and correctly names the three clicked actions.
+- Private upload to YouTube or X processes cleanly at full resolution.
+- A 1 fps frame scan of the final exports finds no secrets or private data.
+
+### 6 · Failure modes
+
+- Portal captures video but no system audio. Tell: ffprobe shows a single mic stream; tone missing on playback. Fix: per-session null sink and record its monitor, or record audio separately and mux with ffmpeg.
+- Variable frame rate export drifts after upload. Tell: sync fine locally, off on YouTube. Fix: re-encode to constant frame rate with ffmpeg -fps_mode cfr at the spec rate.
+- Auto-zoom lands on empty screen because the cursor moved while thinking. Tell: zooms between clicks. Fix: rehearse cursor paths, park the mouse, replace bad keyframes with manual zooms.
+- Secrets on screen. Tell: frame scan shows an API key in a terminal or an email in a browser tab. Fix: delete the take, clean the session, re-record; never blur and publish.
+- App crashes or drops frames on long takes. Tell: duplicate-frame count climbs with time, RSS grows. Fix: cap take length per spec, split into segments, or use OBS for long recordings.
+- Loudness inconsistent across videos. Tell: ebur128 readings vary by more than 3 LU. Fix: always run two-pass loudnorm at -14 LUFS as the last step.
+- 9:16 crop cuts off the action. Tell: frame grabs show the click target outside the frame. Fix: re-key zooms specifically for the vertical export.
+
+### 7 · Agent direction (unattended runs)
+
+Start with source reading in repos/openscreen; it is fast and tells you the encoder and zoom logic before any recording. Use ffmpeg and ffprobe for every measurement and cache their raw text output under docs/openscreen/measurements/. The calibration clip generation is a good sub-agent task (pure ffmpeg filter work with a self-check). Never leave a virtual sink loaded or system PipeWire config modified. Stop and ask Victor before recording anything on his main desktop session that could show private windows, and before uploading anything even privately. Ask him to be the human viewer or to name one. Write outputs to docs/openscreen/: claims.md, capture_check.md, calibration.md, spec.md, shotlist.md, exports.md, compare.md, oracles.md, gap_report.md, and the final MP4s. Return the gap report, the oracle table, and paths.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -258,4 +611,26 @@ OpenScreen is a legitimately useful free alternative to Screen Studio for the ex
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

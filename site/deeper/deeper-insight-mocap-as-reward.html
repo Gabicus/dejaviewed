@@ -37,6 +37,22 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 .action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
 .action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
 .prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+
 </style>
 </head><body>
 <main class="deeper-wrap" data-pagefind-body data-pagefind-filter="kind:Deep dive">
@@ -52,9 +68,12 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 
 
-<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Reproduce the Microduck standing run in its sim with 4,096 envs; confirm the reward hack., Record a 10-second webcam clip of a 'bob and look around' motion with FreeMoCap (or generate one with HY-Motion), retarget to Microduck's joints, and add a pose-tracking imitation term to the reward., Compare policies: reward-only vs reward + imitation, scored by a blind viewer on 'looks intentional' and by joint-tracking error; deploy the winner to hardware if you have it., Falsifier: if retargeting human motion to a duck-scale robot body produces infeasible joint targets that the policy can't track better than the plain reward, the motion prior is the wrong shape for small robots.</p></div>
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Reproduce the Microduck standing run in its sim with 4,096 envs; confirm the reward hack.
+Record a 10-second webcam clip of a 'bob and look around' motion with FreeMoCap (or generate one with HY-Motion), retarget to Microduck's joints, and add a pose-tracking imitation term to the reward.
+Compare policies: reward-only vs reward + imitation, scored by a blind viewer on 'looks intentional' and by joint-tracking error; deploy the winner to hardware if you have it.
+Falsifier: if retargeting human motion to a duck-scale robot body produces infeasible joint targets that the policy can't track better than the plain reward, the motion prior is the wrong shape for small robots.</p></div>
 
-<div class='prereqs'><strong>Prerequisites:</strong> GPU for parallel sim (Isaac/MuJoCo), Comfort with RL training configs, Optional: Microduck hardware build</div>
+
 
 <div class="dd-entries">
 <h2>Connected Posts (7)</h2>
@@ -124,8 +143,145 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 </div>
 
+<section class="ps" id="prompt-system"><h2>Prompt system — run this yourself</h2>
+<p class="ps-lead">Pasteable into Claude Code, Claude, or any agent. One-shot for the whole result, step prompts when you want to steer. Every step carries its own audit; the gap audit makes the agent find and fill what it missed.</p>
+<p><strong>Mission.</strong> Running this system replaces reward-function trial and error with &#x27;show it what you mean&#x27; on a cheap open robot. It reproduces the Microduck reward hack, captures or generates a reference motion (FreeMoCap from a webcam or HY-Motion from text), retargets it to Microduck&#x27;s joints, adds an imitation term to the reward, and compares reward-only against reward-plus-imitation. It is for a hobbyist or artist with a GPU who wants expressive small robots or animatronics. Done means two trained policies, a joint-tracking error table, a blind &#x27;looks intentional&#x27; rating, and a falsifier verdict on whether human motion is the wrong shape for a duck-scale body.</p>
+<h3>1 · Deeper, not bigger</h3><ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A legged-robotics researcher would recognize this as the DeepMimic and Adversarial Motion Priors (AMP) problem and follow the closest real precedent: Disney Research&#x27;s bipedal character work, where artists animate the target motion and RL learns to track it, which the open duck designs imitate. They would retarget with kinematic constraints and joint limits first, check feasibility of the reference before training, and use a phase-conditioned tracking reward with domain randomization so the policy survives sim-to-real. They would measure tracking error, foot slip, torque and survival per episode, run several seeds, and get a blind rating from viewers who did not train the policy.</li>
+<li><strong>Rawest material to start from:</strong> 1) The Microduck repository and its training configs, reward terms and robot description (MJCF or URDF with joint limits). 2) The Open Duck Mini project it descends from, for hardware and sim-to-real notes. 3) Peng et al., DeepMimic (2018) and AMP (2021) papers for the imitation reward forms. 4) Disney Research&#x27;s paper on design and control of a bipedal robotic character (2024). 5) FreeMoCap repository and docs: output formats and landmark sets. 6) Tencent Hunyuan HY-Motion-1.0 on Hugging Face: skeleton format and licence. 7) The MuJoCo or Isaac Lab documentation for the sim the repo uses.</li>
+<li><strong>Methods and tools:</strong> The repo&#x27;s own trainer (PPO in MuJoCo Playground or Isaac Lab; confirm in step 1) with 4,096 parallel envs; FreeMoCap with one or two webcams exporting 3D landmarks; HY-Motion for text prompts like &#x27;bob and look around&#x27;; retargeting by inverse kinematics with joint limits (for example Pink or a scipy least-squares IK over the robot&#x27;s kinematic chain), scaling root height and stride to the duck&#x27;s leg length; a DeepMimic-style reward exp(-k * sum of squared joint errors) plus end-effector and root-velocity terms, phase-conditioned; AMP as an alternative when exact tracking is infeasible; domain randomization on friction, mass and motor latency; Blender rigid bodies and motors (Ian Hubert&#x27;s method) to preview the retargeted motion physically; metrics in numpy; seeds 3 per configuration.</li>
+<li><strong>What proves it right:</strong> Joint-tracking RMSE and foot-slip measured in sim across 3 seeds per arm. A blind rating by at least 10 viewers who see shuffled clips of both policies and rate &#x27;looks intentional&#x27; on a 1-5 scale. If hardware exists, the policy running on the physical Microduck for 60 seconds without falling. Reproduction of the original reward hack from the repo&#x27;s config as a sanity baseline.</li></ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>I want a small open robot, Microduck, to move with intent instead of reward-hacking a loose objective. Act as a legged-robotics researcher. Read the Microduck repo&#x27;s configs and robot description, DeepMimic and AMP, and Disney Research&#x27;s bipedal character paper first. Then: (1) reproduce the standing reward hack with 4,096 envs and record what the policy actually does; (2) capture a 10-second &#x27;bob and look around&#x27; clip with FreeMoCap from my webcam, or generate it with HY-Motion, and retarget it to Microduck&#x27;s joints with inverse kinematics respecting joint limits, reporting any frames that violate limits; (3) preview the retargeted motion in Blender or the sim with physics on to check feasibility before training; (4) add a phase-conditioned imitation term to the reward and train reward-only versus reward-plus-imitation, 3 seeds each, with domain randomization; (5) score joint-tracking error, foot slip, survival and a blind viewer rating. If retargeted targets are infeasible and the imitation policy tracks no better than the plain reward, report that the motion prior is the wrong shape for small robots. Deploy to hardware only if sim passes.</pre></div>
+<h3>2 · One-shot prompt</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>ROLE AND STANCE
+You are a legged-robotics researcher running a controlled comparison on a small open robot. You assume the reward will be exploited and that human motion may not fit a duck-shaped body. You measure feasibility before training.
+
+CONTEXT
+- summerr.exe trains Pollen Robotics&#x27; open-source Microduck to stand: a reward for target body height, 4,096 parallel simulated robots, PPO updating the policy. The result &#x27;stands&#x27; in an unintended way: classic reward hacking.
+- marc.kaz: FreeMoCap turns ordinary webcams into markerless 3D motion capture with 500+ body, hand and face landmarks per frame, open source, with Blender, Unity and Unreal export.
+- HY-Motion 1.0 from Tencent Hunyuan: billion-parameter text-to-motion, 200+ action types, trained on 700 hours of mocap, works on human and robot skeletons, free on Hugging Face.
+- ianhubertz: Blender rigid bodies, hinge and spring constraints and motor constraints driven by custom properties, useful for previewing motion physically.
+- ppf-contact-solver from ZOZO: GPU contact simulation for soft and cloth contact, relevant if the robot wears a costume or skin.
+- s_sapphire_robotics: a running robot that self-stabilizes mechanically with no sensors; design the body first.
+- miselyum.art: an animatronic eye sculpture as the target use: motion that reads as intent.
+
+HARD CONSTRAINTS
+- Use the repo&#x27;s own sim and trainer; do not swap frameworks without a reason written down.
+- Retargeted reference must respect joint limits and velocity limits from the robot description; clip and report violations.
+- Same seeds, env count, training steps and domain randomization for both arms.
+- 3 seeds per arm minimum.
+- Hardware deployment only after sim survival above 95% over 100 episodes with randomization.
+
+DELIVERABLES, IN ORDER
+1. baseline/: reproduced reward-hack run with video and a one-paragraph description of the exploit.
+2. reference/: the FreeMoCap or HY-Motion clip, the raw landmark or skeleton file, and the retargeted joint trajectory at the sim&#x27;s control rate.
+3. feasibility.md: joint-limit violations, max joint velocity versus motor limit, and a physics playback in sim or Blender showing whether the motion is dynamically plausible.
+4. reward/: the imitation term (phase-conditioned exp of negative squared joint error, plus root orientation and foot contact terms) and its weight, added to the existing reward.
+5. runs/: reward-only and reward-plus-imitation, 3 seeds each, with configs and logs.
+6. eval.md: joint-tracking RMSE, foot slip, survival, energy proxy, and a blind &#x27;looks intentional&#x27; rating by 10+ viewers.
+7. hardware.md if hardware exists: 60-second run result.
+
+GAP ANALYSIS (BUILT IN)
+Keep gaps.md: which sim the repo uses and its version; whether the robot description&#x27;s limits match the real servos; whether FreeMoCap from one webcam gives stable depth; HY-Motion&#x27;s licence and skeleton mapping; retargeting choices that changed the motion&#x27;s meaning (head motion carried by neck versus body); unmeasured sim-to-real factors. Fill what you can now.
+
+SELF-QUESTIONS
+- What exactly did the baseline exploit, and does my imitation term close that loophole or open a new one?
+- Which human joints have no duck counterpart, and where did their motion go?
+- Is the retargeted motion feasible at the servos&#x27; speed limits?
+- Does the imitation weight dominate so much that the robot falls while tracking?
+- Would a blind viewer pick the imitation policy as intentional, or just as different?
+
+STOP CONDITIONS
+Stop and report if more than 20% of reference frames violate joint limits after scaling, if the baseline cannot be reproduced, or if training diverges in both arms. Otherwise stop when all deliverables exist.
+
+RETURN FORMAT
+Table of deliverable, path, status; the eval table per arm with mean and spread across seeds; the blind rating result; the falsifier verdict; top five gaps.</pre></div>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: repo, robot model, baseline hack</h4><p><em>Goal:</em> Reproduce the reward hack from the repo&#x27;s own configs.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Clone the Microduck repository (and Open Duck Mini if Microduck references it). Identify: the simulator and version (MuJoCo Playground, MJX, Isaac Lab or other), the PPO implementation, the standing task&#x27;s reward terms with weights, observation and action spaces, control frequency, and the robot description file with joint names, limits, velocity limits and actuator gains. Write repo_notes.md.
+Run the standing task with 4,096 parallel envs and the repo&#x27;s default steps. Record a video of the final policy and describe in one paragraph exactly what it does to satisfy the height reward. Log reward curves.
+Also read DeepMimic, AMP and Disney Research&#x27;s bipedal character paper; summarize each one&#x27;s reward form and how they handle infeasible reference motion in papers.md.
+Finally note GPU, VRAM and wall-clock time for the baseline run, so later runs can be budgeted, and record the exact commit hash of the repo you trained from.</pre></div>
+<p><strong>Expect:</strong> repo_notes.md, papers.md, baseline/ with video, logs and an exploit description.</p>
+<p><strong>Audit before moving on:</strong> If the baseline does not reproduce a hack, document what it does and re-run with a second seed; the comparison needs a known failure to improve on. Confirm joint limits in the description against the servo datasheet if hardware exists.</p>
+<h4>Step 2 — Capture or generate the reference motion</h4><p><em>Goal:</em> Get a 10-second &#x27;bob and look around&#x27; motion in a usable skeleton format.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Option A, FreeMoCap: record 10 seconds of yourself doing a small &#x27;bob and look around&#x27; motion with one or ideally two calibrated webcams. Export 3D landmarks. Smooth with a Butterworth low-pass at 6 Hz. Report landmark jitter (frame-to-frame std of a static point).
+Option B, HY-Motion 1.0: from Hugging Face, check licence, then generate from the text &#x27;a small creature bobs up and down and looks around curiously, standing in place&#x27; at several seeds. Export the skeleton sequence.
+Pick the better clip by eye and by smoothness. Save raw output, the processed sequence, frame rate and skeleton definition in reference/.
+Write down what the motion should communicate, so the blind rating later has a target. Keep the clip short and in place: no walking, no turning more than 45 degrees, feet planted, because a standing duck-scale body cannot follow locomotion it was never trained for.</pre></div>
+<p><strong>Expect:</strong> reference/ with raw and processed motion, jitter or smoothness metrics, and intent.md.</p>
+<p><strong>Audit before moving on:</strong> Play the processed sequence on a stick figure; any foot sliding, popping joints or depth flips mean re-record or re-generate. Confirm frame rate and units (metres, radians).</p>
+<h4>Step 3 — Retarget and check feasibility</h4><p><em>Goal:</em> Map the motion to Microduck joints without breaking limits.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Write retarget.py: define correspondences from the reference skeleton to Microduck (pelvis to base, hips, knees and ankles to leg joints, neck and head to the duck&#x27;s neck and head joints). Scale root height and stride by the ratio of leg lengths. Solve inverse kinematics per frame for foot and head targets with joint limits as bounds (scipy least-squares or a robotics IK library). Resample to the sim&#x27;s control rate.
+Write feasibility.md: percentage of frames hitting a joint limit, max joint velocity versus the actuator velocity limit, and a list of human motions that have no duck equivalent and where you mapped them.
+Play the retargeted trajectory in the sim with physics on and a PD controller tracking it, and optionally in Blender with rigid bodies and motor constraints. Record whether the robot stays up.</pre></div>
+<p><strong>Expect:</strong> retarget.py, reference/retargeted.npy at control rate, feasibility.md, a physics playback video.</p>
+<p><strong>Audit before moving on:</strong> If more than 20% of frames hit limits or velocities exceed motor limits, slow the clip or reduce amplitude and re-run before training. If PD playback falls immediately, the reference is dynamically infeasible; note it and consider AMP instead of exact tracking.</p>
+<h4>Step 4 — Imitation reward and matched training runs</h4><p><em>Goal:</em> Train reward-only and reward-plus-imitation under identical conditions.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Add an imitation term to the existing task: r_imit = w_q * exp(-k_q * sum((q_ref(phase) - q)^2)) + w_root * exp(-k_r * root orientation error^2) + w_contact * foot contact match. Add phase (sin and cos of clip time) to observations. Keep the original height and alive terms.
+Start with imitation weight equal to the sum of existing terms; sweep two other weights (0.5x and 2x) on one seed first, then fix it.
+Enable domain randomization on friction, link masses, motor strength and action latency, same for both arms.
+Train reward-only and reward-plus-imitation, 3 seeds each, 4,096 envs, the same number of steps. Save configs, checkpoints and logs in runs/.
+Generate both configs from one template with a single use_imitation flag. Log each reward term separately so you can see which term the policy is earning from, and save a video every 20% of training to catch a new exploit early.</pre></div>
+<p><strong>Expect:</strong> reward/ code diff, runs/ with 6 completed trainings and configs, the weight sweep result.</p>
+<p><strong>Audit before moving on:</strong> Diff the two arms&#x27; configs; any difference other than the imitation term and phase observation invalidates the comparison. Watch for a new hack: high imitation reward while falling or sliding the feet; check videos, not just curves.</p>
+<h4>Step 5 — Evaluate with metrics and blind viewers</h4><p><em>Goal:</em> Score both arms on numbers and on perceived intent.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>For each policy run 100 randomized episodes. Measure: joint-tracking RMSE against the reference (computed for both arms, even reward-only), foot slip (horizontal foot velocity during contact), survival rate, mean torque squared as an energy proxy, and head motion amplitude.
+Render 10-second clips of each policy from the same camera. Shuffle and label them A to F with a script that keeps the key hidden. Ask at least 10 viewers who did not train the policies to rate &#x27;looks intentional&#x27; 1-5 and say what the robot seems to be doing. Compare answers with intent.md.
+Report means and spread across seeds. Include one clip of the raw retargeted reference played kinematically, so viewers&#x27; ratings of the policies can be compared with the ceiling set by the reference itself. Use a Mann-Whitney U test on ratings between the two arms.</pre></div>
+<p><strong>Expect:</strong> eval.md with the metrics table, the blind rating table and viewer descriptions.</p>
+<p><strong>Audit before moving on:</strong> Confirm the key was hidden until ratings were in. If seed spread overlaps heavily between arms, state that the difference is not established.</p>
+<h4>Step 6 — Validate, deploy if earned, write the gap report</h4><p><em>Goal:</em> Answer the falsifier and record what remains unknown.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Apply the falsifier: if retargeting produced infeasible targets and the imitation policy does not track better than the plain reward (lower joint RMSE and higher blind rating, outside seed spread), the motion prior is the wrong shape for small robots. Write the verdict.
+If the imitation arm wins and survival exceeds 95% over 100 randomized episodes, deploy to the physical Microduck if available: export the policy, run 60 seconds on a soft surface with a spotter, film it, and log falls.
+If it loses, try AMP style imitation as a single follow-up and record whether it changes the verdict.
+Write gaps.md: each claim from the source posts (4,096 envs, 500+ landmarks, 200+ HY-Motion actions, robot-skeleton support) checked or not; sim-to-real factors unmeasured; retargeting choices that changed meaning; anything not reproduced. Fix what you can now.</pre></div>
+<p><strong>Expect:</strong> verdict.md, hardware.md if applicable, gaps.md.</p>
+<p><strong>Audit before moving on:</strong> Confirm the verdict uses the pre-stated criteria, not a new metric chosen after seeing results. Confirm hardware ran only after the sim gate passed.</p>
+<h3>4 · Gap analysis and audit</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>You are auditing a mocap-as-reward experiment you did not run. Read repo_notes.md, baseline/, reference/, feasibility.md, reward/, runs/, eval.md, verdict.md and hardware.md.
+1. List every claim: baseline exploit, reference quality, retargeting feasibility, tracking error, survival, blind ratings, hardware result.
+2. Mark each verified, unverified or false with evidence: a video, a log, a metric file, a config diff.
+3. Re-check: both arms share every setting except the imitation term and phase; 3 seeds per arm exist; joint limits were enforced; the blind test key was hidden; hardware ran only after the 95% sim gate; HY-Motion&#x27;s licence permits the use.
+4. List missing pieces: servo latency measurement, real joint limits, foot contact sensing, a second reference motion.
+5. Rank gaps by whether they could change the falsifier verdict.
+6. Fix the top three now.
+7. Report what you could not fix and why.</pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p><ul>
+<li>What exactly did the baseline policy exploit in the height reward?</li>
+<li>Which human joints have no Microduck counterpart, and where did I put their motion?</li>
+<li>Does the retargeted motion exceed actuator velocity limits anywhere?</li>
+<li>Did PD playback of the reference stay upright before I trained anything?</li>
+<li>Is the imitation weight so high that the robot tracks the head and falls?</li>
+<li>Did the imitation policy find a new hack, like sliding its feet while matching joint angles?</li>
+<li>Are my two arms identical except for the imitation term?</li>
+<li>Is the difference between arms larger than the spread across seeds?</li>
+<li>Did viewers describe the motion I intended, or something else?</li>
+<li>Would AMP fit better than exact tracking for a body this different from a human?</li>
+</ul><h3>5 · What proves it right</h3><ul>
+<li>The repo&#x27;s own baseline: the reward hack reproduced from its default config as the reference failure.</li>
+<li>Sim metrics over 100 randomized episodes and 3 seeds per arm: joint-tracking RMSE, foot slip and survival, with seed spread reported.</li>
+<li>Ten or more blind viewers rating shuffled clips 1-5 on &#x27;looks intentional&#x27;, key hidden by script.</li>
+<li>The physical Microduck, if available: 60 seconds without a fall on a filmed run after the sim gate.</li>
+<li>DeepMimic and AMP papers: reward forms and feasibility handling matched, so the method is the published one, not an improvisation.</li>
+</ul><h3>6 · Failure modes</h3><ul>
+<li>Infeasible reference. Tell: many joint-limit hits and PD playback falls. Fix: slow and shrink the clip, or switch to AMP.</li>
+<li>New reward hack. Tell: imitation reward high while feet slide or the body leans on a joint limit. Fix: add foot-slip penalty and contact matching; review videos every run.</li>
+<li>Unmatched arms. Tell: config diff shows other changes. Fix: regenerate configs from one template with a single flag.</li>
+<li>Single-seed conclusions. Tell: one run per arm. Fix: 3 seeds minimum and report spread.</li>
+<li>Noisy webcam capture. Tell: jitter and depth flips in landmarks. Fix: two calibrated cameras, better light, low-pass filter, or use HY-Motion.</li>
+<li>Premature hardware. Tell: robot falls immediately. Fix: enforce the 95% randomized survival gate and add actuator latency randomization.</li>
+</ul><h3>7 · Agent direction (unattended runs)</h3>
+<p>Begin by reading the Microduck repo and reproducing the baseline; every later comparison depends on that. Cache the robot description, reference clips and retargeted arrays under reference/, and checkpoints under runs/. Run the weight sweep and the 6 training runs as background jobs; spawn a sub-agent to build the blind-rating harness while training runs, since it touches only eval/. Stop and ask when the sim stack in the repo needs hardware or licences you lack, when more than 20% of frames violate limits, or before any hardware run. Never run the physical robot without a spotter. If FreeMoCap capture quality is poor after two attempts, switch to HY-Motion rather than spending the session on camera calibration. Return README.md linking repo_notes.md, baseline/, reference/, feasibility.md, reward/, runs/, eval.md, verdict.md and gaps.md, each with a one-line status and the falsifier verdict.</p>
+<p class="ps-foot">Prompt system updated 2026-10-22 · <a href="../prompts.html">all prompt systems</a> · <a href="../api/prompts.json">JSON</a></p></section>
+
 <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
-  Deeper Dive generated 2026-10-22T00:39:52.744684 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
+  Deeper Dive generated 2026-10-22T10:32:34.987234 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
 </div>
 </main>
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script>
 </body></html>

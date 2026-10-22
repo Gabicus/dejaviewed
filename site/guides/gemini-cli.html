@@ -129,6 +129,102 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>A terminal chatbot for docs/support that only needs to answer questions and can run fully on the free tier</p>
 <h2>Bottom line</h2>
 <p>Gemini CLI is the most valuable "free developer tool that's actually good" released recently. It doesn't replace Claude Code for real engineering work — but it makes 30-40% of what you currently spend Claude credits on essentially free. The right move is to install it alongside Claude Code and route drudgery to it by default.</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Install Gemini CLI next to Claude Code and build a measured routing layer: a free commit-message and PR-description drafter, a large-context repo summarizer that feeds Claude, and a grounded-research helper, each wired through gemini -p --output-format json. Done means every route has a quota-aware wrapper with a Claude fallback, the guide's free-tier and quality claims have been re-checked against Google's current quota page and a small blind comparison on your own tasks, and you know, with numbers, which tasks Gemini handles acceptably and which stay on Claude.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A developer-tools lead would not adopt a second agent on vibes; they would define the routing decision as an evaluation problem. They would pick 20-30 real tasks from their own history in each candidate category (commit bodies, PR descriptions, repo summaries, docs lookups, throwaway scripts), run both agents blind, and grade with a rubric or with tests. They would re-verify the free-tier numbers (the guide says 60 requests/min and 1,000/day on Gemini 2.5 Pro with a personal Google account) on Google's live quota page because these limits have changed more than once, and they would read the data-use terms for the free tier before sending private code.</p>
+<p>Rawest material to start from: The repo itself at github.com/google-gemini/gemini-cli (docs/ folder: cli/commands, configuration, headless mode, sandbox, checkpointing, tools, MCP server setup); the CHANGELOG and release notes for the version you install; Google's current quotas and pricing pages for the Gemini API and Gemini Code Assist, plus the terms covering how free-tier prompts may be used; the official GitHub Action repo (google-github-actions/run-gemini-cli); your own git log (git log -n 200 --format='%H%n%B') as the corpus of real commit messages to compare against; and the JSON that gemini -p --output-format json actually returns, captured to disk, including its stats block.</p>
+<p>Methods and tools: npm install -g @google/gemini-cli (pin the version); gemini -p ... --output-format json and stream-json; -m gemini-2.5-flash versus default; --include-directories; GEMINI.md context files; ~/.gemini/settings.json for mcpServers; /stats and /memory show inside the REPL; --sandbox for untrusted runs; jq for parsing; a bash or Python wrapper with retry and exponential backoff on 429 and fallback to claude -p; prepare-commit-msg git hook for commit drafting; a blind A/B grading sheet (CSV) with a 1-5 rubric; tiktoken or the API's usage fields for token counts.</p>
+<p>What proves it right (other than you or the model): The oracles are your repo and blind grading: (a) a blind A/B on 25 historical commits, where you or a teammate rate Gemini's and Claude's drafted commit bodies against the diff without knowing which is which; (b) for the repo summarizer, a set of 15 factual questions about the codebase with answers checked by grep, answered by Claude with and without the Gemini summary; (c) for generated scripts, shellcheck plus running them on fixture inputs; (d) Google's quota page and the call log showing requests per day stayed under the cap.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Act as a developer-tools lead evaluating Gemini CLI as a free second agent beside Claude Code. First, install a pinned version of @google/gemini-cli, record gemini --version, and read its docs folder for headless mode, output formats, settings.json, sandbox, and MCP. Check Google's current quota and terms pages and record today's actual free-tier limits and data-use terms for personal accounts; flag any difference from '60 req/min, 1,000/day on 2.5 Pro'. Capture the real JSON shape of gemini -p 'hello' --output-format json. Then build bin/gem, a wrapper that runs a prompt through Gemini with a model flag, logs latency, tokens, and status to ~/.gemini-calls.csv, retries 429s with backoff, and falls back to claude -p after two failures. Use it for three routes: (1) a prepare-commit-msg hook drafting commit bodies from git diff --cached; (2) a repo summarizer writing docs/REPO_SUMMARY.md using --include-directories; (3) a grounded research helper that returns claims with source URLs. Evaluate each route blind against Claude on 20-30 tasks from my own history with a 1-5 rubric, and run 15 grep-checkable codebase questions to test the summarizer. Return a routing table (task, route to, evidence), the wrapper, the hook, the eval CSVs, and a list of guide claims that did not hold.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are a developer-tools lead deciding, with evidence, which of this developer's tasks can move from Claude Code to Google's free Gemini CLI. You treat the guide's claims as hypotheses. You protect private code and secrets, and you assume quotas and model names have changed since the guide was written.</p>
+<p>CONTEXT</p>
+<p>Gemini CLI: github.com/google-gemini/gemini-cli, Apache 2.0, Node 20+. Install npm install -g @google/gemini-cli or npx @google/gemini-cli. Context file GEMINI.md. Settings in ~/.gemini/settings.json (mcpServers block, same protocol as Claude Code). Headless: gemini -p "..." --output-format json or stream-json. Models via -m (guide: gemini-2.5-pro default, gemini-2.5-flash cheaper). Multi-root context: --include-directories ../lib,../docs. Official GitHub Action for CI. Built-in Google Search grounding.</p>
+<p>Guide claims to TEST: (1) free tier is 60 req/min and 1,000 req/day on 2.5 Pro with personal Google sign-in; (2) context window ~1M tokens versus ~200K for Claude; (3) Workspace accounts often cannot use the free tier; (4) one long agent session can use 100+ requests; (5) grounding is free and built-in.</p>
+<p>Proposed routes from the guide: commit/PR drafting, large-context reads summarized for Claude, grounded research, throwaway script codegen, CI review via the Action, a second vote in /council-style reviews, fallback during Anthropic outages.</p>
+<p>HARD CONSTRAINTS</p>
+<p>Before sending any repository content, read the current free-tier data-use terms and record whether prompts may be used for training or human review. If they may, do not send code from private or client repos; use only open-source or personal repos and say so.</p>
+<p>Never pass .env files, keys, or credential directories to Gemini. Add them to .geminiignore (verify the file name is supported in the docs) and exclude them in every wrapper call.</p>
+<p>Pin the CLI version. Log every call. Stay at least 20 percent under the daily cap during evaluation.</p>
+<p>No route goes live until its blind evaluation is done.</p>
+<p>ORDERED DELIVERABLES</p>
+<p>ground-truth.md: installed version, auth method, today's quotas and model names from Google's pages (with URLs and access date), data-use terms summary, the exact JSON schema returned by --output-format json (field names, stats block), and verdicts on claims 1-5 that can be checked without evaluation.</p>
+<p>bin/gem: wrapper with -m, timeout, CSV logging (timestamp, route, model, latency ms, input/output tokens if reported, exit status), backoff on 429/RESOURCE_EXHAUSTED, and fallback to claude -p after two failures, logging which agent answered.</p>
+<p>.git/hooks/prepare-commit-msg (installable script) that drafts a body from git diff --cached truncated sensibly, only when the message is empty, and never blocks the commit on failure.</p>
+<p>scripts/repo-summary.sh producing docs/REPO_SUMMARY.md with an architecture map, module list, entry points, and known gotchas, using --include-directories.</p>
+<p>scripts/research.sh that asks for grounded answers and requires a URL per claim in the JSON output.</p>
+<p>eval/: commits.csv (25 historical diffs, blind-labelled outputs A/B, scores), summarizer.csv (15 grep-checkable questions answered by Claude with and without the summary, correct y/n), scripts.csv (10 throwaway-script tasks, shellcheck pass, fixture run pass).</p>
+<p>routing.md: table of task type, route, evidence, fallback.</p>
+<p>BUILT-IN GAP ANALYSIS Before finishing, write gaps.md: claims you could not verify (for example consumption of requests per session if /stats is unavailable headless); routes not evaluated (CI Action, council vote, outage fallback) and what it would take; any case where Gemini ran a command or edit without approval; quota numbers that differed from the guide; any evaluation where sample size is under 15. Fill what you can now: if the Action was not tested, set it up on a throwaway repo and run it once.</p>
+<p>SELF-QUESTIONS BEFORE FINISHING</p>
+<p>Did I read today's quota page, or rely on the guide's numbers?</p>
+<p>What do the free-tier terms say about prompt data, and did I respect that for every repo I sent?</p>
+<p>Were graders blind to which agent wrote each commit body?</p>
+<p>Did the summarizer help Claude answer more questions correctly, or just make it faster?</p>
+<p>Did grounded research return real, reachable URLs, and did I spot-check that they support the claims?</p>
+<p>How many requests did one prepare-commit-msg call consume, and what is the daily total at my commit rate?</p>
+<p>STOP CONDITIONS Stop when routing.md is backed by the three eval files and the wrapper and hook are installed. Stop and ask if the terms forbid the user's intended use on private code, if sign-in requires a Workspace admin change, or if the quota is far below the guide's numbers (the routing case may collapse).</p>
+<p>RETURN FORMAT One message: ground-truth table (claim, guide value, verified value, source); file list with one-line usage each; eval summary (route, n, Gemini mean score, Claude mean score, verdict); routing table; gaps.md contents; the daily request budget estimate.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: install, quotas, terms, output schema</h4>
+<p>Goal: Pin what Gemini CLI actually is today on this machine and under today's terms.</p>
+<p>Install a pinned version: npm install -g @google/gemini-cli@ ; record gemini --version and node --version (must be 20+). Clone github.com/google-gemini/gemini-cli to repos/gemini-cli and read docs/ for: headless mode and --output-format, settings.json keys, mcpServers, GEMINI.md loading order, ignore files, sandbox, checkpointing, built-in tools, and the GitHub Action. Sign in with the personal Google account. Open Google's current quota/pricing pages for Gemini CLI and Gemini Code Assist and the terms that apply to the free tier; record today's request limits, available models, and whether free-tier prompts may be used to improve products or be read by humans, with URLs and the access date. Run gemini -p 'Reply with the word ok' --output-format json &gt; ground/hello.json and document every field, especially any stats or token usage block. Then write ground-truth.md with a claims table: free-tier limits, default model, context window, Workspace restriction, built-in grounding, MCP compatibility; each with guide value, verified value, and source.</p>
+<p>Expect: ground-truth.md with a version line, a six-row claims table, a terms summary of 3-5 bullets, and a documented JSON schema; repos/gemini-cli cloned.</p>
+<p>Audit before moving on: Every verified value must cite a URL or a file under repos/gemini-cli/docs. If the terms permit training on prompts, mark which repos are off-limits before any later step sends code. If hello.json lacks token counts, note that the CSV log will rely on another source.</p>
+<h4>Step 2 — Build the quota-aware wrapper with fallback</h4>
+<p>Goal: One entry point that logs, retries, and falls back to Claude.</p>
+<p>Write bin/gem (bash or Python 3 stdlib). Usage: gem [-m model] [--route name] [--timeout s] [--include dir,...] -- "prompt" with stdin appended to the prompt if piped. It runs gemini -p --output-format json -m , parses the response field and any usage/stats fields with jq or json, prints only the response to stdout, and appends a CSV row to ~/.gemini-calls.csv: ISO timestamp, route, model, latency ms, input tokens, output tokens, status, answered_by. Detect quota exhaustion by matching the actual error text or code the CLI emits for HTTP 429 / RESOURCE_EXHAUSTED (trigger it once deliberately with a tight loop on a throwaway prompt if needed, or read the source in repos/gemini-cli for the error shape). Retry twice with backoff of 2 and 8 seconds; then run claude -p with the same prompt and set answered_by=claude. Refuse to send any file path matching .env, .pem, id_, or credentials directories. Add a gem --today subcommand that prints calls and tokens for the current day against the verified daily cap.</p>
+<p>Expect: An executable wrapper, a CSV with test rows, and a demonstration of one fallback to Claude.</p>
+<p>Audit before moving on: Run ten calls and confirm ten CSV rows with plausible latency. Simulate a failure (bad model name) and confirm fallback triggers and is logged. Pipe a fake .env path and confirm refusal. If quota detection relies on a guessed string, mark it unverified in gaps.md.</p>
+<h4>Step 3 — Commit and PR drafting route</h4>
+<p>Goal: Draft commit bodies and PR descriptions for free, and test quality blind.</p>
+<p>Write hooks/prepare-commit-msg: if the commit message file already has non-comment content or the source is merge/squash, exit 0. Otherwise build input from git diff --cached --stat plus git diff --cached truncated to 3,000 lines with a note if truncated, and call gem --route commit -m gemini-2.5-flash (or the current fast model from ground-truth.md) with a prompt asking for a 50-character imperative subject and a body explaining why, wrapped at 72 columns, no marketing words. Write the result into the message file above the comments. Never fail the commit: on any error, exit 0 silently and log. Install it in the current repo. Then evaluate: pick 25 historical commits with git log -n 200 --no-merges, regenerate each message from its diff with both gem and claude -p using the same prompt, shuffle into A/B pairs with a hidden key, and have the user (or a separate grader subagent given only diff and two candidates) score each 1-5 on accuracy, why-not-what, and length. Save eval/commits.csv. Also add scripts/pr-draft.sh that does the same for git diff main...HEAD and prints a PR body.</p>
+<p>Expect: Installed hook, pr-draft.sh, eval/commits.csv with 25 rows and mean scores per agent.</p>
+<p>Audit before moving on: Check that the hook adds under 5 seconds median to a commit (time ten commits on a scratch branch) and never blocks on failure (break the network and commit). Verify the grader never saw the key. If Gemini's mean is more than 0.5 below Claude's, mark the route 'Claude' in routing.md.</p>
+<h4>Step 4 — Large-context summarizer route</h4>
+<p>Goal: Use Gemini's big window to summarize a repo and prove the summary helps Claude answer correctly.</p>
+<p>Write scripts/repo-summary.sh : run gem with --include-directories covering src, lib, and docs (exclude node_modules, build outputs, vendored code, and anything matched by the ignore rules), asking for docs/REPO_SUMMARY.md with sections: purpose, architecture map (modules and their dependencies), entry points with file paths, data flow, configuration and env vars by name only, test layout, and known gotchas with file:line references. Record the input size in tokens from the usage fields. Then build eval/summarizer.csv: write 15 factual questions about the repo whose answers can be checked by grep or by reading one file (for example 'which module reads DATABASE_URL', 'what function handles webhook retries'). Ask claude -p each question twice: once with no context beyond the repo path and a 2-minute budget, once with REPO_SUMMARY.md prepended. Check each answer against grep and record correct y/n and wall time. Also spot-check 10 file:line references in the summary for existence.</p>
+<p>Expect: REPO_SUMMARY.md, input token count, eval/summarizer.csv with 30 graded answers, and a reference-accuracy score out of 10.</p>
+<p>Audit before moving on: Any fabricated file path or function name in the summary counts against it; if more than 2 of 10 references are wrong, the route fails until the prompt is tightened and re-run. Confirm no secret values appear in the summary by grepping for key-like patterns.</p>
+<h4>Step 5 — Grounded research and throwaway script routes</h4>
+<p>Goal: Test the two remaining cheap routes with checkable outputs.</p>
+<p>Write scripts/research.sh ' ' that calls gem asking for a JSON array of claims, each with text and a source URL, using Google Search grounding. Run it on 8 questions where you can verify the answer (current latest version of three libraries the repo uses, a breaking change in one of them, two API rate limits, one security advisory). For each claim, fetch the URL and mark supported, unsupported, or unreachable; save eval/research.csv. Then pick 10 throwaway-script tasks from shell history or past requests (CSV munging, log grepping, file renaming, JSON reshaping) and generate each with gem and with claude -p using an identical prompt. Run shellcheck (or ruff for Python) on every output, then run each on a prepared fixture input and compare to an expected output you write first. Save eval/scripts.csv with lint pass, fixture pass, and tokens per agent. Finally, on a throwaway repo, install the official run-gemini-cli GitHub Action with the API key as a repository secret, open a PR with a planted off-by-one bug, and record whether the review catches it.</p>
+<p>Expect: eval/research.csv with per-claim support status; eval/scripts.csv with 20 rows and pass rates per agent; one Action run URL with caught or missed.</p>
+<p>Audit before moving on: If more than 20 percent of research claims are unsupported by their own URLs, mark the research route as 'leads only, verify before use'. Make sure expected fixture outputs were written before seeing either agent's script; if not, rewrite them and re-grade.</p>
+<h4>Step 6 — Validate against the oracles and write the gap report</h4>
+<p>Goal: Turn the evals into a routing decision and list what is still unproven.</p>
+<p>Aggregate eval/commits.csv, eval/summarizer.csv, eval/research.csv, eval/scripts.csv, and eval/optional.md. For each route compute n, Gemini mean or pass rate, Claude mean or pass rate, and the difference. Write routing.md, one row per task type: task type, route to (Gemini, Claude, or Gemini-then-Claude-verify), evidence file, fallback, and expected daily request use from ~/.gemini-calls.csv extrapolated to the user's normal week. Compare that daily use to the verified cap from ground-truth.md and state the headroom as a percentage. Write gaps.md listing: guide claims with final verdicts (true, false, changed, unverified) with sources; routes with n under 15; any unapproved action Gemini took during testing; privacy constraints that limit which repos can use which routes; untested items. Recommend whether to keep the prepare-commit-msg hook installed, citing the median latency it added and the commit eval score.</p>
+<p>Expect: routing.md with 6-8 rows, a daily budget estimate, and gaps.md with every guide claim resolved.</p>
+<p>Audit before moving on: Every routing decision must cite a number from an eval file. If the daily estimate exceeds 80 percent of the cap, mark which route to throttle. If any route had graders who could see the agent label, mark its verdict provisional.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are auditing a Gemini CLI routing setup built by someone else: bin/gem, a prepare-commit-msg hook, repo-summary.sh, research.sh, eval/.csv, routing.md, gaps.md. Do not trust routing.md. (1) List every claim made: quotas, data-use terms, wrapper behaviour (logging, backoff, fallback, secret-path refusal), hook safety (never blocks, skips when a message exists), and each route's eval verdict. (2) Verify each: re-open Google's quota and terms pages today, run the wrapper with a bad model and with a .env path, commit with the network down, re-grade five random rows of each eval CSV yourself, and re-check five research URLs. Mark verified, unverified, or false with evidence. (3) Look for silent failures: does the hook ever write an empty or error message into a commit; does the wrapper count a fallback answer as a Gemini success; does the summarizer include ignored directories; do any logs contain secrets. (4) Rank gaps by impact: privacy or secret exposure first, then wrong routing decisions, then friction. Fix the top three now and re-run their checks. Report remaining gaps with the command that reproduces each, and state whether routing.md still holds.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Are the quotas and model names in my notes from Google's page today, or carried over from the guide?</p>
+<p>Do the free-tier terms allow sending this repo's code, and did I enforce that in the wrapper?</p>
+<p>Does the wrapper recognise the actual quota-exhausted error, verified by triggering it or reading the source?</p>
+<p>How many requests does one commit-draft call cost, and what is my weekly total at my commit rate?</p>
+<p>Were the commit graders blind, and did they see the full diff?</p>
+<p>Did the repo summary contain fabricated paths or functions, and how many?</p>
+<p>Did grounded research URLs actually support their claims when opened?</p>
+<p>Did Gemini ever run a shell command or edit without my approval during testing?</p>
+<h3>5 · What proves it right</h3>
+<p>Google's current Gemini CLI quota and terms pages, cited with URL and access date, versus the guide's 60/min and 1,000/day figures.</p>
+<p>Blind A/B grading of 25 historical commits, scored by the user or a grader that never sees the agent label, with means per agent.</p>
+<p>Fifteen grep-checkable codebase questions answered by Claude with and without the Gemini summary, scored against grep output.</p>
+<p>shellcheck/ruff plus fixture runs with expected outputs written in advance for 10 throwaway-script tasks per agent.</p>
+<h3>6 · Failure modes</h3>
+<p>Quota numbers out of date. Tell: 429 errors far earlier in the day than expected. Fix: re-read the quota page, lower the budget, route bulk work to Flash.</p>
+<p>Private code sent under permissive free-tier terms. Tell: terms allow training or human review and client repos were used. Fix: restrict routes to open or personal repos, or use a paid API key with different terms.</p>
+<p>Hook blocks or corrupts commits. Tell: commits hang or contain error text. Fix: timeouts, exit 0 on any failure, only write when the message is empty.</p>
+<p>Summary hallucinates structure. Tell: Claude cites files that do not exist. Fix: require file:line references and spot-check them, re-prompt with stricter instructions.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with ground truth: install a pinned version, clone the repo for docs, and read today's quota and terms pages before sending any code. Use bin/gem for every Gemini call so all usage lands in one CSV. Spawn a separate grader subagent for blind A/B scoring that receives only the diff and two unlabelled candidates; never grade your own pairs. Never pass .env files, keys, or credential directories to either agent, and never echo the Action's API key. Stop and ask if the terms rule out the user's private repos, if sign-in requires a Workspace admin, or if the quota is too small for the routes to matter. Return in chat the claims table, eval summary, routing table, daily budget, and gaps; files go to bin/gem, hooks/prepare-commit-msg, scripts/, eval/, docs/REPO_SUMMARY.md, routing.md, gaps.md, ground-truth.md.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Gemini CLI — Google's Free Terminal Coding Agent
 
@@ -283,6 +379,190 @@ Practical setup: install it globally, sign in with Google, add the same MCP serv
 ## Bottom line
 
 Gemini CLI is the most valuable "free developer tool that's actually good" released recently. It doesn't replace Claude Code for real engineering work — but it makes 30-40% of what you currently spend Claude credits on essentially free. The right move is to install it alongside Claude Code and route drudgery to it by default.
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Install Gemini CLI next to Claude Code and build a measured routing layer: a free commit-message and PR-description drafter, a large-context repo summarizer that feeds Claude, and a grounded-research helper, each wired through `gemini -p --output-format json`. Done means every route has a quota-aware wrapper with a Claude fallback, the guide's free-tier and quality claims have been re-checked against Google's current quota page and a small blind comparison on your own tasks, and you know, with numbers, which tasks Gemini handles acceptably and which stay on Claude.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A developer-tools lead would not adopt a second agent on vibes; they would define the routing decision as an evaluation problem. They would pick 20-30 real tasks from their own history in each candidate category (commit bodies, PR descriptions, repo summaries, docs lookups, throwaway scripts), run both agents blind, and grade with a rubric or with tests. They would re-verify the free-tier numbers (the guide says 60 requests/min and 1,000/day on Gemini 2.5 Pro with a personal Google account) on Google's live quota page because these limits have changed more than once, and they would read the data-use terms for the free tier before sending private code.
+- **Rawest material to start from:** The repo itself at github.com/google-gemini/gemini-cli (docs/ folder: cli/commands, configuration, headless mode, sandbox, checkpointing, tools, MCP server setup); the CHANGELOG and release notes for the version you install; Google's current quotas and pricing pages for the Gemini API and Gemini Code Assist, plus the terms covering how free-tier prompts may be used; the official GitHub Action repo (google-github-actions/run-gemini-cli); your own git log (`git log -n 200 --format='%H%n%B'`) as the corpus of real commit messages to compare against; and the JSON that `gemini -p --output-format json` actually returns, captured to disk, including its stats block.
+- **Methods and tools:** npm install -g @google/gemini-cli (pin the version); `gemini -p ... --output-format json` and `stream-json`; `-m gemini-2.5-flash` versus default; `--include-directories`; GEMINI.md context files; ~/.gemini/settings.json for mcpServers; `/stats` and `/memory show` inside the REPL; `--sandbox` for untrusted runs; jq for parsing; a bash or Python wrapper with retry and exponential backoff on 429 and fallback to `claude -p`; prepare-commit-msg git hook for commit drafting; a blind A/B grading sheet (CSV) with a 1-5 rubric; tiktoken or the API's usage fields for token counts.
+- **What proves it right (other than you or the model):** The oracles are your repo and blind grading: (a) a blind A/B on 25 historical commits, where you or a teammate rate Gemini's and Claude's drafted commit bodies against the diff without knowing which is which; (b) for the repo summarizer, a set of 15 factual questions about the codebase with answers checked by grep, answered by Claude with and without the Gemini summary; (c) for generated scripts, shellcheck plus running them on fixture inputs; (d) Google's quota page and the call log showing requests per day stayed under the cap.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Act as a developer-tools lead evaluating Gemini CLI as a free second agent beside Claude Code. First, install a pinned version of @google/gemini-cli, record `gemini --version`, and read its docs folder for headless mode, output formats, settings.json, sandbox, and MCP. Check Google's current quota and terms pages and record today's actual free-tier limits and data-use terms for personal accounts; flag any difference from '60 req/min, 1,000/day on 2.5 Pro'. Capture the real JSON shape of `gemini -p 'hello' --output-format json`. Then build bin/gem, a wrapper that runs a prompt through Gemini with a model flag, logs latency, tokens, and status to ~/.gemini-calls.csv, retries 429s with backoff, and falls back to `claude -p` after two failures. Use it for three routes: (1) a prepare-commit-msg hook drafting commit bodies from `git diff --cached`; (2) a repo summarizer writing docs/REPO_SUMMARY.md using --include-directories; (3) a grounded research helper that returns claims with source URLs. Evaluate each route blind against Claude on 20-30 tasks from my own history with a 1-5 rubric, and run 15 grep-checkable codebase questions to test the summarizer. Return a routing table (task, route to, evidence), the wrapper, the hook, the eval CSVs, and a list of guide claims that did not hold.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are a developer-tools lead deciding, with evidence, which of this developer's tasks can move from Claude Code to Google's free Gemini CLI. You treat the guide's claims as hypotheses. You protect private code and secrets, and you assume quotas and model names have changed since the guide was written.
+
+CONTEXT
+- Gemini CLI: github.com/google-gemini/gemini-cli, Apache 2.0, Node 20+. Install `npm install -g @google/gemini-cli` or `npx @google/gemini-cli`. Context file GEMINI.md. Settings in ~/.gemini/settings.json (mcpServers block, same protocol as Claude Code). Headless: `gemini -p "..." --output-format json` or `stream-json`. Models via `-m` (guide: gemini-2.5-pro default, gemini-2.5-flash cheaper). Multi-root context: `--include-directories ../lib,../docs`. Official GitHub Action for CI. Built-in Google Search grounding.
+- Guide claims to TEST: (1) free tier is 60 req/min and 1,000 req/day on 2.5 Pro with personal Google sign-in; (2) context window ~1M tokens versus ~200K for Claude; (3) Workspace accounts often cannot use the free tier; (4) one long agent session can use 100+ requests; (5) grounding is free and built-in.
+- Proposed routes from the guide: commit/PR drafting, large-context reads summarized for Claude, grounded research, throwaway script codegen, CI review via the Action, a second vote in /council-style reviews, fallback during Anthropic outages.
+
+HARD CONSTRAINTS
+- Before sending any repository content, read the current free-tier data-use terms and record whether prompts may be used for training or human review. If they may, do not send code from private or client repos; use only open-source or personal repos and say so.
+- Never pass .env files, keys, or credential directories to Gemini. Add them to .geminiignore (verify the file name is supported in the docs) and exclude them in every wrapper call.
+- Pin the CLI version. Log every call. Stay at least 20 percent under the daily cap during evaluation.
+- No route goes live until its blind evaluation is done.
+
+ORDERED DELIVERABLES
+1. ground-truth.md: installed version, auth method, today's quotas and model names from Google's pages (with URLs and access date), data-use terms summary, the exact JSON schema returned by --output-format json (field names, stats block), and verdicts on claims 1-5 that can be checked without evaluation.
+2. bin/gem: wrapper with -m, timeout, CSV logging (timestamp, route, model, latency ms, input/output tokens if reported, exit status), backoff on 429/RESOURCE_EXHAUSTED, and fallback to `claude -p` after two failures, logging which agent answered.
+3. .git/hooks/prepare-commit-msg (installable script) that drafts a body from `git diff --cached` truncated sensibly, only when the message is empty, and never blocks the commit on failure.
+4. scripts/repo-summary.sh producing docs/REPO_SUMMARY.md with an architecture map, module list, entry points, and known gotchas, using --include-directories.
+5. scripts/research.sh that asks for grounded answers and requires a URL per claim in the JSON output.
+6. eval/: commits.csv (25 historical diffs, blind-labelled outputs A/B, scores), summarizer.csv (15 grep-checkable questions answered by Claude with and without the summary, correct y/n), scripts.csv (10 throwaway-script tasks, shellcheck pass, fixture run pass).
+7. routing.md: table of task type, route, evidence, fallback.
+
+BUILT-IN GAP ANALYSIS
+Before finishing, write gaps.md: claims you could not verify (for example consumption of requests per session if /stats is unavailable headless); routes not evaluated (CI Action, council vote, outage fallback) and what it would take; any case where Gemini ran a command or edit without approval; quota numbers that differed from the guide; any evaluation where sample size is under 15. Fill what you can now: if the Action was not tested, set it up on a throwaway repo and run it once.
+
+SELF-QUESTIONS BEFORE FINISHING
+- Did I read today's quota page, or rely on the guide's numbers?
+- What do the free-tier terms say about prompt data, and did I respect that for every repo I sent?
+- Were graders blind to which agent wrote each commit body?
+- Did the summarizer help Claude answer more questions correctly, or just make it faster?
+- Did grounded research return real, reachable URLs, and did I spot-check that they support the claims?
+- How many requests did one prepare-commit-msg call consume, and what is the daily total at my commit rate?
+
+STOP CONDITIONS
+Stop when routing.md is backed by the three eval files and the wrapper and hook are installed. Stop and ask if the terms forbid the user's intended use on private code, if sign-in requires a Workspace admin change, or if the quota is far below the guide's numbers (the routing case may collapse).
+
+RETURN FORMAT
+One message: ground-truth table (claim, guide value, verified value, source); file list with one-line usage each; eval summary (route, n, Gemini mean score, Claude mean score, verdict); routing table; gaps.md contents; the daily request budget estimate.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: install, quotas, terms, output schema
+
+*Goal:* Pin what Gemini CLI actually is today on this machine and under today's terms.
+
+```text
+Install a pinned version: `npm install -g @google/gemini-cli@<latest-tag>`; record `gemini --version` and `node --version` (must be 20+). Clone github.com/google-gemini/gemini-cli to repos/gemini-cli and read docs/ for: headless mode and --output-format, settings.json keys, mcpServers, GEMINI.md loading order, ignore files, sandbox, checkpointing, built-in tools, and the GitHub Action. Sign in with the personal Google account. Open Google's current quota/pricing pages for Gemini CLI and Gemini Code Assist and the terms that apply to the free tier; record today's request limits, available models, and whether free-tier prompts may be used to improve products or be read by humans, with URLs and the access date. Run `gemini -p 'Reply with the word ok' --output-format json > ground/hello.json` and document every field, especially any stats or token usage block. Then write ground-truth.md with a claims table: free-tier limits, default model, context window, Workspace restriction, built-in grounding, MCP compatibility; each with guide value, verified value, and source.
+```
+
+**Expect:** ground-truth.md with a version line, a six-row claims table, a terms summary of 3-5 bullets, and a documented JSON schema; repos/gemini-cli cloned.
+
+**Audit before moving on:** Every verified value must cite a URL or a file under repos/gemini-cli/docs. If the terms permit training on prompts, mark which repos are off-limits before any later step sends code. If hello.json lacks token counts, note that the CSV log will rely on another source.
+
+#### Step 2 — Build the quota-aware wrapper with fallback
+
+*Goal:* One entry point that logs, retries, and falls back to Claude.
+
+```text
+Write bin/gem (bash or Python 3 stdlib). Usage: `gem [-m model] [--route name] [--timeout s] [--include dir,...] -- "prompt"` with stdin appended to the prompt if piped. It runs `gemini -p <prompt> --output-format json -m <model>`, parses the response field and any usage/stats fields with jq or json, prints only the response to stdout, and appends a CSV row to ~/.gemini-calls.csv: ISO timestamp, route, model, latency ms, input tokens, output tokens, status, answered_by. Detect quota exhaustion by matching the actual error text or code the CLI emits for HTTP 429 / RESOURCE_EXHAUSTED (trigger it once deliberately with a tight loop on a throwaway prompt if needed, or read the source in repos/gemini-cli for the error shape). Retry twice with backoff of 2 and 8 seconds; then run `claude -p` with the same prompt and set answered_by=claude. Refuse to send any file path matching .env*, *.pem, id_*, or credentials directories. Add a `gem --today` subcommand that prints calls and tokens for the current day against the verified daily cap.
+```
+
+**Expect:** An executable wrapper, a CSV with test rows, and a demonstration of one fallback to Claude.
+
+**Audit before moving on:** Run ten calls and confirm ten CSV rows with plausible latency. Simulate a failure (bad model name) and confirm fallback triggers and is logged. Pipe a fake .env path and confirm refusal. If quota detection relies on a guessed string, mark it unverified in gaps.md.
+
+#### Step 3 — Commit and PR drafting route
+
+*Goal:* Draft commit bodies and PR descriptions for free, and test quality blind.
+
+```text
+Write hooks/prepare-commit-msg: if the commit message file already has non-comment content or the source is merge/squash, exit 0. Otherwise build input from `git diff --cached --stat` plus `git diff --cached` truncated to 3,000 lines with a note if truncated, and call `gem --route commit -m gemini-2.5-flash` (or the current fast model from ground-truth.md) with a prompt asking for a 50-character imperative subject and a body explaining why, wrapped at 72 columns, no marketing words. Write the result into the message file above the comments. Never fail the commit: on any error, exit 0 silently and log. Install it in the current repo. Then evaluate: pick 25 historical commits with `git log -n 200 --no-merges`, regenerate each message from its diff with both gem and `claude -p` using the same prompt, shuffle into A/B pairs with a hidden key, and have the user (or a separate grader subagent given only diff and two candidates) score each 1-5 on accuracy, why-not-what, and length. Save eval/commits.csv. Also add scripts/pr-draft.sh that does the same for `git diff main...HEAD` and prints a PR body.
+```
+
+**Expect:** Installed hook, pr-draft.sh, eval/commits.csv with 25 rows and mean scores per agent.
+
+**Audit before moving on:** Check that the hook adds under 5 seconds median to a commit (time ten commits on a scratch branch) and never blocks on failure (break the network and commit). Verify the grader never saw the key. If Gemini's mean is more than 0.5 below Claude's, mark the route 'Claude' in routing.md.
+
+#### Step 4 — Large-context summarizer route
+
+*Goal:* Use Gemini's big window to summarize a repo and prove the summary helps Claude answer correctly.
+
+```text
+Write scripts/repo-summary.sh <repo>: run gem with `--include-directories` covering src, lib, and docs (exclude node_modules, build outputs, vendored code, and anything matched by the ignore rules), asking for docs/REPO_SUMMARY.md with sections: purpose, architecture map (modules and their dependencies), entry points with file paths, data flow, configuration and env vars by name only, test layout, and known gotchas with file:line references. Record the input size in tokens from the usage fields. Then build eval/summarizer.csv: write 15 factual questions about the repo whose answers can be checked by grep or by reading one file (for example 'which module reads DATABASE_URL', 'what function handles webhook retries'). Ask `claude -p` each question twice: once with no context beyond the repo path and a 2-minute budget, once with REPO_SUMMARY.md prepended. Check each answer against grep and record correct y/n and wall time. Also spot-check 10 file:line references in the summary for existence.
+```
+
+**Expect:** REPO_SUMMARY.md, input token count, eval/summarizer.csv with 30 graded answers, and a reference-accuracy score out of 10.
+
+**Audit before moving on:** Any fabricated file path or function name in the summary counts against it; if more than 2 of 10 references are wrong, the route fails until the prompt is tightened and re-run. Confirm no secret values appear in the summary by grepping for key-like patterns.
+
+#### Step 5 — Grounded research and throwaway script routes
+
+*Goal:* Test the two remaining cheap routes with checkable outputs.
+
+```text
+Write scripts/research.sh '<question>' that calls gem asking for a JSON array of claims, each with text and a source URL, using Google Search grounding. Run it on 8 questions where you can verify the answer (current latest version of three libraries the repo uses, a breaking change in one of them, two API rate limits, one security advisory). For each claim, fetch the URL and mark supported, unsupported, or unreachable; save eval/research.csv. Then pick 10 throwaway-script tasks from shell history or past requests (CSV munging, log grepping, file renaming, JSON reshaping) and generate each with `gem` and with `claude -p` using an identical prompt. Run shellcheck (or ruff for Python) on every output, then run each on a prepared fixture input and compare to an expected output you write first. Save eval/scripts.csv with lint pass, fixture pass, and tokens per agent. Finally, on a throwaway repo, install the official run-gemini-cli GitHub Action with the API key as a repository secret, open a PR with a planted off-by-one bug, and record whether the review catches it.
+```
+
+**Expect:** eval/research.csv with per-claim support status; eval/scripts.csv with 20 rows and pass rates per agent; one Action run URL with caught or missed.
+
+**Audit before moving on:** If more than 20 percent of research claims are unsupported by their own URLs, mark the research route as 'leads only, verify before use'. Make sure expected fixture outputs were written before seeing either agent's script; if not, rewrite them and re-grade.
+
+#### Step 6 — Validate against the oracles and write the gap report
+
+*Goal:* Turn the evals into a routing decision and list what is still unproven.
+
+```text
+Aggregate eval/commits.csv, eval/summarizer.csv, eval/research.csv, eval/scripts.csv, and eval/optional.md. For each route compute n, Gemini mean or pass rate, Claude mean or pass rate, and the difference. Write routing.md, one row per task type: task type, route to (Gemini, Claude, or Gemini-then-Claude-verify), evidence file, fallback, and expected daily request use from ~/.gemini-calls.csv extrapolated to the user's normal week. Compare that daily use to the verified cap from ground-truth.md and state the headroom as a percentage. Write gaps.md listing: guide claims with final verdicts (true, false, changed, unverified) with sources; routes with n under 15; any unapproved action Gemini took during testing; privacy constraints that limit which repos can use which routes; untested items. Recommend whether to keep the prepare-commit-msg hook installed, citing the median latency it added and the commit eval score.
+```
+
+**Expect:** routing.md with 6-8 rows, a daily budget estimate, and gaps.md with every guide claim resolved.
+
+**Audit before moving on:** Every routing decision must cite a number from an eval file. If the daily estimate exceeds 80 percent of the cap, mark which route to throttle. If any route had graders who could see the agent label, mark its verdict provisional.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are auditing a Gemini CLI routing setup built by someone else: bin/gem, a prepare-commit-msg hook, repo-summary.sh, research.sh, eval/*.csv, routing.md, gaps.md. Do not trust routing.md. (1) List every claim made: quotas, data-use terms, wrapper behaviour (logging, backoff, fallback, secret-path refusal), hook safety (never blocks, skips when a message exists), and each route's eval verdict. (2) Verify each: re-open Google's quota and terms pages today, run the wrapper with a bad model and with a .env path, commit with the network down, re-grade five random rows of each eval CSV yourself, and re-check five research URLs. Mark verified, unverified, or false with evidence. (3) Look for silent failures: does the hook ever write an empty or error message into a commit; does the wrapper count a fallback answer as a Gemini success; does the summarizer include ignored directories; do any logs contain secrets. (4) Rank gaps by impact: privacy or secret exposure first, then wrong routing decisions, then friction. Fix the top three now and re-run their checks. Report remaining gaps with the command that reproduces each, and state whether routing.md still holds.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Are the quotas and model names in my notes from Google's page today, or carried over from the guide?
+- Do the free-tier terms allow sending this repo's code, and did I enforce that in the wrapper?
+- Does the wrapper recognise the actual quota-exhausted error, verified by triggering it or reading the source?
+- How many requests does one commit-draft call cost, and what is my weekly total at my commit rate?
+- Were the commit graders blind, and did they see the full diff?
+- Did the repo summary contain fabricated paths or functions, and how many?
+- Did grounded research URLs actually support their claims when opened?
+- Did Gemini ever run a shell command or edit without my approval during testing?
+
+### 5 · What proves it right
+
+- Google's current Gemini CLI quota and terms pages, cited with URL and access date, versus the guide's 60/min and 1,000/day figures.
+- Blind A/B grading of 25 historical commits, scored by the user or a grader that never sees the agent label, with means per agent.
+- Fifteen grep-checkable codebase questions answered by Claude with and without the Gemini summary, scored against grep output.
+- shellcheck/ruff plus fixture runs with expected outputs written in advance for 10 throwaway-script tasks per agent.
+
+### 6 · Failure modes
+
+- Quota numbers out of date. Tell: 429 errors far earlier in the day than expected. Fix: re-read the quota page, lower the budget, route bulk work to Flash.
+- Private code sent under permissive free-tier terms. Tell: terms allow training or human review and client repos were used. Fix: restrict routes to open or personal repos, or use a paid API key with different terms.
+- Hook blocks or corrupts commits. Tell: commits hang or contain error text. Fix: timeouts, exit 0 on any failure, only write when the message is empty.
+- Summary hallucinates structure. Tell: Claude cites files that do not exist. Fix: require file:line references and spot-check them, re-prompt with stricter instructions.
+
+### 7 · Agent direction (unattended runs)
+
+Start with ground truth: install a pinned version, clone the repo for docs, and read today's quota and terms pages before sending any code. Use bin/gem for every Gemini call so all usage lands in one CSV. Spawn a separate grader subagent for blind A/B scoring that receives only the diff and two unlabelled candidates; never grade your own pairs. Never pass .env files, keys, or credential directories to either agent, and never echo the Action's API key. Stop and ask if the terms rule out the user's private repos, if sign-in requires a Workspace admin, or if the quota is too small for the routes to matter. Return in chat the claims table, eval summary, routing table, daily budget, and gaps; files go to bin/gem, hooks/prepare-commit-msg, scripts/, eval/, docs/REPO_SUMMARY.md, routing.md, gaps.md, ground-truth.md.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -290,4 +570,26 @@ Gemini CLI is the most valuable "free developer tool that's actually good" relea
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

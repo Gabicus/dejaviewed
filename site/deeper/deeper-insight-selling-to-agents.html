@@ -37,6 +37,22 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 .action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
 .action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
 .prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+
 </style>
 </head><body>
 <main class="deeper-wrap" data-pagefind-body data-pagefind-filter="kind:Deep dive">
@@ -52,9 +68,12 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 
 
-<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Expose one niche dataset you own (start with the DejaViewed catalog's api/ JSON) as a free llms.txt summary plus a richer x402-metered endpoint with structured, citation-ready records., Wrap the same endpoint as an MCP server and list it publicly so Claude and other agents can find it; log every request, free and paid, with user agent., Run a 60-day A/B on price per call (free, 0.1c, 1c) and track how often your records show up in Perplexity and ChatGPT answers., falsifier: if after 60 days you see plenty of free crawls but close to zero paid calls, agents are not buying yet. The demand side doesn't exist and this is a 2027 idea, not a 2026 one.</p></div>
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Expose one niche dataset you own (start with the DejaViewed catalog's api/ JSON) as a free llms.txt summary plus a richer x402-metered endpoint with structured, citation-ready records.
+Wrap the same endpoint as an MCP server and list it publicly so Claude and other agents can find it; log every request, free and paid, with user agent.
+Run a 60-day A/B on price per call (free, 0.1c, 1c) and track how often your records show up in Perplexity and ChatGPT answers.
+falsifier: if after 60 days you see plenty of free crawls but close to zero paid calls, agents are not buying yet. The demand side doesn't exist and this is a 2027 idea, not a 2026 one.</p></div>
 
-<div class='prereqs'><strong>Prerequisites:</strong> A dataset that is genuinely yours to sell, A stablecoin wallet and an x402-capable server library, Basic MCP server skills</div>
+
 
 <div class="dd-entries">
 <h2>Connected Posts (9)</h2>
@@ -142,8 +161,156 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 </div>
 
+<section class="ps" id="prompt-system"><h2>Prompt system — run this yourself</h2>
+<p class="ps-lead">Pasteable into Claude Code, Claude, or any agent. One-shot for the whole result, step prompts when you want to steer. Every step carries its own audit; the gap audit makes the agent find and fill what it missed.</p>
+<p><strong>Mission.</strong> Running this system turns one dataset you genuinely own into a machine-first product: a free llms.txt discovery layer, a structured JSON endpoint metered per call with x402 stablecoin micropayments, and the same data exposed as a listed MCP server, with request logging that separates crawlers, agents and humans. It is for a solo builder, starting with the DejaViewed catalog&#x27;s own derived fields. Done means a 60-day price experiment with a free control arm, a log that shows whether any agent paid, and an honest verdict against the falsifier: free crawls but near-zero paid calls means the demand side does not exist yet.</p>
+<h3>1 · Deeper, not bigger</h3><ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A data-licensing and API product lead would first answer whether the data is actually yours to sell: the DejaViewed catalog mixes original work (tiers, classifications, deep-dive synthesis, connection maps) with other creators&#x27; captions and transcripts, and only the first kind can be sold. They would design the response format for agents (stable IDs, provenance fields, timestamps, a citation string) before thinking about price. They would run the price test as a controlled experiment with a free arm and pre-registered success thresholds, verify bot identity by reverse DNS rather than trusting user-agent strings, and treat payments with testnet first and a capped hot wallet in production.</li>
+<li><strong>Rawest material to start from:</strong> 1) The x402 specification and reference implementations in the coinbase/x402 GitHub repository, including the server middleware variants and the facilitator flow. 2) RFC 9110&#x27;s definition of HTTP 402 Payment Required. 3) The llms.txt proposal at llmstxt.org. 4) The Model Context Protocol specification and the official MCP registry. 5) Published crawler documentation and IP ranges for GPTBot, OAI-SearchBot, ClaudeBot, PerplexityBot and Google-Extended. 6) The Princeton study on sponsored options across 23 models, read in full including the creator&#x27;s own caveat that it measures susceptibility in a hypothetical deployment. 7) Your own catalog JSON under the DejaViewed site&#x27;s api/ output and its field-level provenance.</li>
+<li><strong>Methods and tools:</strong> Node with Hono or Express plus the x402 server middleware from the coinbase/x402 repo, or the Python equivalent if one exists in the repo; USDC on Base Sepolia testnet first; an x402-capable client from the same repo to pay your own endpoint end to end; the official MCP TypeScript SDK or the Python mcp package (FastMCP) for the server; JSON Schema for response records; Cloudflare Workers or Pages Functions for hosting with request logs to R2 or D1; reverse-DNS plus forward-confirm verification for crawler IPs; a deterministic hash bucket on client fingerprint for the A/B arms; a weekly scripted probe of Perplexity and ChatGPT answers for 30 fixed queries, recording whether your records are cited and whether the cited page actually contains the claim.</li>
+<li><strong>What proves it right:</strong> Settled payments visible on-chain on Base from wallets you do not control. A request log showing verified crawler and agent traffic by arm. The MCP registry listing and at least one third-party agent installing it. A weekly citation probe showing your records appearing in Perplexity or ChatGPT answers, with the cited page checked to contain the answer.</li></ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>I want to sell a niche dataset to AI agents rather than humans. Act as a data-licensing product lead. Start from raw sources: the x402 spec and reference code in coinbase/x402, RFC 9110 on HTTP 402, llmstxt.org, the MCP specification and registry, and the crawler documentation for GPTBot, OAI-SearchBot, ClaudeBot and PerplexityBot. Then: (1) audit my DejaViewed catalog JSON field by field and split what I authored (tiers, classifications, syntheses, connection maps) from what I do not own (creators&#x27; captions and transcripts); only the first may be sold; (2) design a citation-ready record schema with stable IDs, provenance and a citation string; (3) ship a free llms.txt plus a summary endpoint, and a richer x402-metered endpoint tested end to end on Base Sepolia; (4) wrap the same data as an MCP server and list it; (5) log every request with verified bot identity; (6) run a 60-day A/B with arms free, 0.1 cent and 1 cent per call, with success thresholds written before launch. Prove it with on-chain settlements from wallets I do not control and a weekly citation probe. Do not use self-assertion SEO tricks, and do not promise revenue.</pre></div>
+<h3>2 · One-shot prompt</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>ROLE AND STANCE
+You are a data-licensing product lead and backend engineer. Your buyer is an agent that never sees a landing page. You compete on structure, provenance and price, never on manipulation. You treat demand as unproven until a wallet you do not control pays you.
+
+CONTEXT
+- x402 revives HTTP 402 Payment Required so an agent pays a stablecoin micropayment per request (alexanderelorenzo&#x27;s post frames it as a toll booth for scrapers; the framing is hype-heavy, the protocol is real).
+- Quality publishers block AI crawlers: wetclaude reports Consumer Reports disallows GPTBot, Google&#x27;s AI crawler and Common Crawl, about 60% of high-credibility news sites block AI crawlers, and one in six cited sources is AI-written. Clean, permitted data is scarce.
+- The Princeton study: 18 of 23 assistants favored a sponsored option, GPT-5.1 surfaced it 94% of the time, and a &#x27;serve the customer only&#x27; system prompt barely moved it. Its own caveat: it measured a hypothetical deployment, not live paid placement.
+- Headless software and MCP (Chamath on All-In): agents pick tools on speed, cost and accuracy.
+- llms.txt got brycenwood.ai&#x27;s wrap shop recommended by ChatGPT, built in 5 minutes with Claude Code.
+- edward.builds shows Google AI Overviews citing a self-asserted LinkedIn claim the same day. That is the low-quality competition, not a tactic to copy.
+- only-cli/oc and Agent Reach show agents want compact, permitted access; do not build on block-evasion.
+- The first product is the DejaViewed catalog&#x27;s api/ JSON.
+
+HARD CONSTRAINTS
+- Sell only fields you authored. Creators&#x27; captions and transcripts are excluded from paid records; link to the source post instead.
+- Testnet (Base Sepolia USDC) until the end-to-end payment test passes 20 times in a row. Production hot wallet holds no more than 50 USD; sweep to cold storage weekly.
+- Never log or print private keys; load them from environment at runtime only.
+- Respect robots.txt and platform terms for any data you gather.
+- No promised revenue anywhere in docs or listings.
+
+DELIVERABLES, IN ORDER
+1. rights_audit.md: every field in the catalog JSON, its origin, sellable yes/no.
+2. schema/record.schema.json: id, title, tier, class, summary_authored, connections, source_url, updated_at, citation string, licence.
+3. llms.txt and llms-full.txt at the site root describing the dataset and pointing to the free and paid endpoints.
+4. api/: GET /v1/free/{id} (title, tier, one-line summary, source link) and GET /v1/records?query= behind x402 middleware, with JSON Schema validation in tests.
+5. pay_test.md: 20 end-to-end payments on Base Sepolia using the x402 client from the same repo.
+6. mcp/: an MCP server exposing search_records and get_record, with paid calls passing through the same x402 gate, and a registry listing.
+7. logging: per request timestamp, path, arm, user agent, verified_bot (reverse DNS forward-confirmed), paid, amount, tx hash.
+8. experiment.md: arms free / 0.1 cent / 1 cent assigned by hash bucket, 60-day duration, success thresholds written before launch.
+9. probe/: a weekly script that asks Perplexity and ChatGPT 30 fixed questions your data answers, records citations, and checks the cited page contains the claim.
+
+GAP ANALYSIS (BUILT IN)
+Write gaps.md as you go: which x402 middleware version you used and whether it supports your host; whether any major agent framework ships an x402 client by default; whether crawlers you see can pay at all; which records lack provenance; which bot identities could not be verified. Close what you can by testing; list the rest with the missing input.
+
+SELF-QUESTIONS
+- If I remove every field I do not own, is the remaining data still worth paying for?
+- Would an agent pick my record over a free AI-written listicle, and on what visible signal?
+- Can a crawler that hits 402 do anything except leave?
+- Am I counting spoofed user agents as agent demand?
+- Is the free arm cannibalizing the paid one, and does that matter for the falsifier?
+
+STOP CONDITIONS
+Stop and ask if the rights audit leaves fewer than 30% of fields sellable, or if testnet payments fail after two fixes. Otherwise stop when all nine deliverables exist and the experiment is live.
+
+RETURN FORMAT
+Table of deliverable, path, status; the rights audit summary; pay_test result; the pre-registered thresholds; top five gaps.</pre></div>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: rights and raw specs</h4><p><em>Goal:</em> Know exactly what you may sell and how the protocols really work.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Do not write server code yet.
+1. Load the DejaViewed catalog JSON from the site&#x27;s api/ output. For every field, record example value, origin (authored by me, derived by my pipeline from my own judgment, or copied from a creator&#x27;s post), and sellable yes/no. Captions, transcripts, creator handles&#x27; bios and thumbnails are not yours; tiers, classes, deep-dive theses, connection maps and your summaries usually are. Write rights_audit.md and the percentage of sellable fields.
+2. Clone coinbase/x402. Read the spec document and list: the 402 response body fields, the payment header the client sends, the facilitator&#x27;s verify and settle steps, supported networks and tokens, and the server middleware packages available for your stack. Quote file paths.
+3. Read RFC 9110 section on 402, the llms.txt proposal at llmstxt.org, and the MCP specification&#x27;s tool and transport sections.
+4. Collect official docs and IP verification methods for GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, PerplexityBot and Google-Extended.
+5. Write claims.md testing the dive&#x27;s inputs: &#x27;18 of 23 models favored the sponsored option&#x27;, &#x27;60% of high-credibility news sites block AI crawlers&#x27;, &#x27;one in six cited sources is AI-written&#x27;, &#x27;x402 was coded into the internet in 1991 and remained dormant until 2025&#x27;. Mark which you can check from primary sources.</pre></div>
+<p><strong>Expect:</strong> rights_audit.md, x402_notes.md with file paths from the repo, bots.md with verification methods, claims.md.</p>
+<p><strong>Audit before moving on:</strong> Spot-check 10 catalog records against rights_audit.md: any sellable field containing creator text verbatim fails the audit. If sellable fields are under 30%, stop and report to the user before building.</p>
+<h4>Step 2 — Record schema and free discovery layer</h4><p><em>Goal:</em> Make the data machine-legible and discoverable for free.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Write schema/record.schema.json (JSON Schema 2020-12) for one record: id (stable, never reused), title, tier, class, summary_authored, connections (array of ids with a one-line reason), source_url, updated_at (ISO 8601), licence, and citation (a ready string like &#x27;DejaViewed catalog, record &lt;id&gt;, updated &lt;date&gt;, &lt;url&gt;&#x27;). Add a records/ export script that emits only sellable fields from rights_audit.md and validates every record with jsonschema.
+Write llms.txt following llmstxt.org: H1 name, a blockquote summary, then sections listing the free endpoint, the paid endpoint with its price, the MCP server, and the licence. Write llms-full.txt with the schema and 5 example records.
+Design the response format for agents, borrowing from the only-cli/oc idea: compact, numbered, no HTML, with a total token estimate per response. Measure tokens for a typical response with a tokenizer and keep the free summary under 300 tokens.</pre></div>
+<p><strong>Expect:</strong> schema/, records/ export with 100% validation pass, llms.txt, llms-full.txt, a token budget table.</p>
+<p><strong>Audit before moving on:</strong> Run the validator on the full export and paste the pass count. Fetch llms.txt from the deployed preview URL and confirm it is served as text/plain with no redirects. If any record lacks a citation string or updated_at, fail and regenerate.</p>
+<h4>Step 3 — x402-metered endpoint on testnet</h4><p><em>Goal:</em> Charge per call and prove the payment loop end to end.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Implement api/ with the x402 server middleware from coinbase/x402 for your stack (Hono or Express on Cloudflare Workers or Node).
+- GET /v1/free/{id}: title, tier, one-line summary, source link. No payment.
+- GET /v1/records?query=&amp;limit=: full sellable records, ranked by a simple BM25 over titles and summaries. Protected by x402 with a price set from an env variable.
+- The receiving address comes from env. Never print or log keys; check existence only.
+Configure Base Sepolia USDC. Write a client script using the x402 client from the same repo that requests /v1/records, receives 402, pays, retries and gets 200. Run it 20 times. Record each tx hash and latency in pay_test.md.
+Then write tests: unpaid request returns 402 with a valid body; paid request returns 200 with schema-valid records; a replayed payment header is rejected.</pre></div>
+<p><strong>Expect:</strong> api/ deployed to a preview URL, pay_test.md with 20 successful testnet payments, passing tests.</p>
+<p><strong>Audit before moving on:</strong> Look up 3 tx hashes on a Base Sepolia explorer and confirm amount and recipient. Try a replay and an underpayment; either succeeding fails the step. Grep the repo and logs for any private key pattern; any hit is a stop-everything fix.</p>
+<h4>Step 4 — MCP server and listing</h4><p><em>Goal:</em> Let agents find and call the data as a tool.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Build mcp/ with the official MCP TypeScript SDK or the Python mcp package (FastMCP). Expose two tools: search_records(query, limit) and get_record(id). Write tool descriptions an agent will choose on: state the dataset scope, freshness, price per call and that records carry provenance. The server calls your own HTTP API; paid calls go through the x402 client with a per-session spend cap set by the user, defaulting to 10 cents.
+Test locally with the MCP Inspector and with Claude Code as a client: install it, ask a question the data answers, confirm the tool is chosen and the answer cites a record id.
+Publish to the official MCP registry following its current submission process, and add the server to llms.txt. Log every MCP call through the same request log as the HTTP API, tagged source=mcp.</pre></div>
+<p><strong>Expect:</strong> mcp/ package, an Inspector screenshot or log, a Claude Code transcript showing a cited answer, the registry entry URL.</p>
+<p><strong>Audit before moving on:</strong> Ask Claude Code three questions the data does not answer; the tool must return an empty result, not invented records. Confirm the spend cap stops a fourth paid call in a capped session.</p>
+<h4>Step 5 — Logging and bot verification</h4><p><em>Goal:</em> Tell real agent demand from noise.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Add structured logging to every endpoint: timestamp, path, arm, user_agent, client_ip_hash, verified_bot, paid, amount, tx_hash, latency_ms. Store in D1 or R2 on Cloudflare, or SQLite on a VPS.
+verified_bot: for user agents claiming GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, PerplexityBot or Google-Extended, check the IP against published ranges or do reverse DNS plus forward-confirm. Unverified claims are labelled spoofed.
+Assign arms by a stable hash of client fingerprint into free, 0.1 cent and 1 cent, so a repeat client stays in one arm. The free arm still serves full records; it is the control.
+Write a daily report script: requests by arm and verified bot, paid calls, revenue, unique payer wallets, 402 bounce rate (402 served with no retry). Hash client IPs with a salted SHA-256; never store raw IPs beyond verification.</pre></div>
+<p><strong>Expect:</strong> Log schema, a working daily report on preview traffic, arm assignment tests.</p>
+<p><strong>Audit before moving on:</strong> Send requests with a forged GPTBot user agent from your own machine; they must be labelled spoofed. Check arm assignment is stable over 100 repeated requests from one client.</p>
+<h4>Step 6 — Experiment and citation probe</h4><p><em>Goal:</em> Run the 60-day test with thresholds fixed in advance.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Write experiment.md before launch: hypothesis, arms, duration 60 days, primary metric (paid calls from distinct wallets you do not control), secondary metrics (402 bounce rate, verified agent requests, citation rate). Pre-register thresholds: for example &#x27;success if at least 25 paid calls from at least 5 distinct external wallets in either paid arm; failure if verified agent requests exceed 1,000 and paid calls are under 5&#x27;. Do not change thresholds after launch.
+Build probe/: 30 fixed questions the catalog answers well (for example &#x27;best open-source tool for X per DejaViewed&#x27;). Weekly, query Perplexity and ChatGPT with browsing, record the answer and every cited URL, and check whether the cited page actually contains the claimed answer, following wetclaude&#x27;s advice to click every citation. Store results by week.
+Do not seed self-assertion posts to game AI Overviews; the probe measures organic pickup only.</pre></div>
+<p><strong>Expect:</strong> experiment.md committed with a launch date, probe/ with a baseline week of results.</p>
+<p><strong>Audit before moving on:</strong> Confirm experiment.md was committed before the first paid-arm request in the log. Re-run the probe twice in one day; if results differ wildly, record the variance and increase repetitions per question to 3.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4><p><em>Goal:</em> Decide whether agents are buyers yet.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>At day 60, compute: paid calls and revenue per arm, distinct external payer wallets (exclude every wallet you funded), verified agent requests per arm, 402 bounce rate, and citation rate trend from probe/. Verify a sample of 10 settlements on-chain.
+Apply the falsifier: plenty of free crawls but close to zero paid calls means the demand side does not exist yet; write the verdict as &#x27;agents buying&#x27;, &#x27;agents crawling, not paying&#x27;, or &#x27;no agent traffic&#x27;.
+Write gaps.md: every claim from claims.md marked verified / unverified / false with evidence; which agent frameworks could pay x402 during the window; how many 402 responses went to clients that cannot pay; fields you could not sell; anything in logs you cannot explain. Fix what you can now and list the rest with owners.</pre></div>
+<p><strong>Expect:</strong> results.md with a table per arm, the verdict line, on-chain verification list, gaps.md.</p>
+<p><strong>Audit before moving on:</strong> Re-derive paid call counts from raw logs, not from the daily report, and confirm they match. If any counted payer wallet is one you funded, remove it and recompute the verdict.</p>
+<h3>4 · Gap analysis and audit</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>You are auditing an agent-facing data product after a 60-day price experiment. Read rights_audit.md, schema/, llms.txt, api/, pay_test.md, mcp/, the request logs, experiment.md, probe/ results and results.md.
+1. Enumerate every claim: fields sellable, payments working, bot traffic volumes, paid calls, revenue, citation pickup, registry listing.
+2. Mark each verified, unverified or false with evidence: a log query, a Base explorer tx, a test run.
+3. Re-check specifically: no creator caption or transcript text in paid records; thresholds in experiment.md predate launch; payer wallets exclude ones the builder funded; verified_bot uses reverse DNS or published IP ranges; no private key appears in code, logs or history; the free arm served the same records as paid.
+4. List missing pieces: terms of service for buyers, a refund path, rate limiting, uptime monitoring, a data freshness policy.
+5. Rank gaps by whether they could flip the verdict.
+6. Fix the top three now.
+7. Report what you could not fix and why.</pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p><ul>
+<li>Which catalog fields did I author, and which did I copy from creators&#x27; posts?</li>
+<li>Is the sellable remainder worth more than the free summary to an agent?</li>
+<li>Can any mainstream agent client pay x402 today without custom setup, and which ones did I test?</li>
+<li>Am I counting spoofed GPTBot or ClaudeBot user agents as demand?</li>
+<li>Did I fix the success thresholds before the first paid request?</li>
+<li>Is the 0.1 cent arm actually payable given facilitator minimums and gas?</li>
+<li>Does my MCP tool description make an agent choose it over a free web search?</li>
+<li>Do the citations in the probe actually contain the claim, or is it post-hoc citation?</li>
+<li>Is my hot wallet capped and swept, and is the key only ever loaded from environment?</li>
+</ul><h3>5 · What proves it right</h3><ul>
+<li>The Base blockchain: settled USDC payments to the receiving address from wallets the builder never funded, checked on a public explorer.</li>
+<li>Cloudflare or server logs: verified crawler and agent requests by arm, with reverse-DNS confirmation.</li>
+<li>The MCP registry: a live listing plus an outside client&#x27;s call in the logs.</li>
+<li>Perplexity and ChatGPT: weekly citation probe results showing the catalog cited, with the cited page confirmed to contain the answer.</li>
+<li>The x402 reference client from coinbase/x402: 20 consecutive successful testnet payments and a rejected replay.</li>
+</ul><h3>6 · Failure modes</h3><ul>
+<li>Selling data you do not own. Tell: paid records contain creators&#x27; captions or transcripts. Fix: rebuild the export from rights_audit.md sellable fields only and link to sources.</li>
+<li>Bots cannot pay. Tell: high 402 bounce rate and zero retries with payment headers. Fix: keep the free summary rich enough to be cited and log it as the discovery funnel; record the verdict as &#x27;crawling, not paying&#x27;.</li>
+<li>Spoofed bot traffic inflates demand. Tell: many &#x27;GPTBot&#x27; requests from residential IPs. Fix: reverse DNS plus forward-confirm, and report only verified counts.</li>
+<li>Micro-price below payment floor. Tell: 0.1 cent payments fail or cost more in fees than they earn. Fix: check facilitator minimums on testnet and adjust the lowest arm or batch credits.</li>
+<li>Moving the goalposts. Tell: thresholds edited mid-experiment. Fix: commit experiment.md before launch and audit its git history.</li>
+<li>Key leak. Tell: a private key pattern appears in a repo, log or error page. Fix: rotate immediately, move to env-only loading, add a pre-commit secret scanner.</li>
+<li>Ranking on manipulation. Tell: seeding self-assertion posts after weak citation results. Fix: refuse; improve record quality and provenance.</li>
+</ul><h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with the rights audit and the coinbase/x402 repository; nothing else is worth building if sellable fields are thin. Cache the cloned x402 repo, the crawler IP range files and the schema-validated export. Spawn a sub-agent for the MCP server once the HTTP API passes its tests, and another for the citation probe, since they touch separate directories. Run all payment tests on Base Sepolia; ask the user before any mainnet configuration and before setting the production hot wallet, and never read or print key values. Stop and ask when sellable fields are under 30%, when testnet payments fail twice, or when a platform&#x27;s terms forbid the data use. Return README.md linking rights_audit.md, schema/, llms.txt, api/, pay_test.md, mcp/, experiment.md, probe/, results.md and gaps.md, each with a one-line status, plus the falsifier verdict once day 60 is reached.</p>
+<p class="ps-foot">Prompt system updated 2026-10-22 · <a href="../prompts.html">all prompt systems</a> · <a href="../api/prompts.json">JSON</a></p></section>
+
 <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
-  Deeper Dive generated 2026-10-22T00:39:52.741663 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
+  Deeper Dive generated 2026-10-22T10:32:34.984246 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
 </div>
 </main>
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script>
 </body></html>

@@ -1,0 +1,1845 @@
+[
+ {
+  "slug": "plotter-loop",
+  "kind": "dive",
+  "dive_id": "dd-insight-plotter-loop",
+  "title": "Anything With Geometry — Ink on Paper: the Pen-Plotter Loop",
+  "class": "creative_fusion",
+  "thesis": "Fogleman's ln turns any 3D scene into hidden-line vector paths, and vpype makes those paths plotter-ready. Everything else in the catalog that produces geometry — a phone scan, a ripped PS1 level, a ray-marched fractal, a strange attractor, the phase-space shape of BTC volatility, a Blender scene an agent wrote in Python — becomes a source for that one pipe. The output is a physical ink original, and in a market drowning in free pixels that is the scarce thing.",
+  "why_it_matters": "You get a repeatable way to make signed physical editions from subjects nobody else is drawing, with the agent doing the scene work and the plotter doing the craft. Print-on-demand and no-proposal grants already give you a path to sell and fund it.",
+  "action_sketch": "Week 1: install ln (Go) and vpype; have Claude Code write a script that loads an OBJ (start with a DuckStation PS1 rip or a phone scan) into ln, sets camera and texture paths, and exports SVG; run vpype linemerge/linesort and preview\nWeek 2: add two math sources — a Thomas attractor and a 3-lag phase-space embedding of a year of BTC daily volatility — emitted as 3D polylines straight into ln; make a 6-print series titled by date range\nWeek 3: plot the series on an A3 pen plotter (AxiDraw-class or a DIY drawing machine) with two pen weights, photograph per the print-on-demand guide, list originals plus POD reproductions, and submit to one grant\nFalsifier: if scanned or ripped meshes produce unreadable line mush unless you hand-pick every path, or if plotted originals cannot sell above the POD print price, the loop is a toy, not a practice",
+  "prerequisites": [
+   "Pen plotter or a DIY drawing machine",
+   "Go toolchain for ln, Python for vpype",
+   "Basic Blender for mesh cleanup"
+  ],
+  "connection_map": {
+   "Dd9Uvy9ByCE": "The bridge — ln does hidden-line removal on 3D scenes, vpype sorts paths and cuts pen-up travel",
+   "DeuZ4BnhCqA": "The agent as scene author — Claude writes the Blender/Python scene instead of rendering pixels",
+   "DbqLB-zMoJR": "Source 1 — DuckStation fork dumps PS1 scenes as positioned OBJ meshes",
+   "DbcEatOsXG2": "Source 2 — Orbiter smartphone scanning turns real objects into accurate meshes",
+   "DbU9ysVITFS": "Source 3 — DIY Pi LiDAR captures buildings, caves and trees as point geometry",
+   "DehlIB2PT4h": "Source 4 — Mandelbulb distance-estimate math gives you infinite fractal surfaces",
+   "DYsSz2rvWGI": "Source 5 — a strange attractor as 3D curve, already a line drawing waiting to happen",
+   "DTLkCVXE7O6": "Source 6, the odd one — phase-space reconstruction turns a market's volatility into an attractor you can plot",
+   "C3dFjq4LbiP": "Proof the physical drawing machine itself reads as art, not just a printer",
+   "DcTt5_eoGFO": "Distribution — print-on-demand sells reproductions while you sell the plotted originals",
+   "DbtF9bVBGPg": "Funding — a grant judged only on the work itself suits a strong plotted series",
+   "DEXGqLdqvPN": "Mechanical vocabulary: Reuben Margolin's kinetic sculptures for motion-as-drawing",
+   "Db22ptPy577": "Precedent: code housed as a physical object (1-Bit Symphony) — the artifact is the work",
+   "DR6kWKTDJ1T": "Distribution: art market without gatekeepers"
+  },
+  "tools": [
+   "After Effects",
+   "Artist Grant",
+   "Blender",
+   "Claude",
+   "DuckStation",
+   "FFmpeg",
+   "Fine Art America",
+   "Gelato",
+   "Mandelbulber",
+   "Orbiter",
+   "Printful",
+   "Python",
+   "Raspberry Pi",
+   "ln",
+   "vpype"
+  ],
+  "techniques": [
+   "1-bit synthesis",
+   "3D digitization",
+   "3D scene capture",
+   "Attractor Analysis",
+   "Blender Python scripting",
+   "CSG",
+   "LiDAR mapping",
+   "Phase Space Reconstruction",
+   "Time Delay Embedding",
+   "artwork photography",
+   "assembly programming",
+   "coupled pendulums",
+   "curlicue fractal",
+   "distance estimation",
+   "harmonograph",
+   "hidden-line removal",
+   "mesh extraction",
+   "path optimization",
+   "photogrammetry",
+   "print on demand",
+   "procedural animation",
+   "ray casting",
+   "ray marching",
+   "regime detection",
+   "turtle graphics"
+  ],
+  "domains": [
+   "3D",
+   "UI/UX",
+   "animation",
+   "art",
+   "chaos-theory",
+   "creative coding",
+   "crypto",
+   "design",
+   "education",
+   "finance/trading",
+   "hardware",
+   "marketing",
+   "music",
+   "open source",
+   "photography",
+   "prompt engineering",
+   "quant",
+   "video production"
+  ],
+  "entries": [
+   {
+    "title": "ln + vpype — 3D scenes to hidden-line vector art for pen plotters",
+    "summary": "Michael Fogleman's ln (Go) renders 3D scenes as 2D vector paths by ray-testing each path segment for visibility, supporting CSG, math surfaces and procedural cities. vpype then merges and sorts paths for plotting, cutting pen-up travel 86% in this example. Both MIT licensed, output straight to SVG.",
+    "creator": "index.opensource",
+    "tier": "S",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/Dd9Uvy9ByCE/",
+    "tools": [
+     "ln",
+     "vpype"
+    ],
+    "techniques": [
+     "CSG",
+     "hidden-line removal",
+     "path optimization",
+     "ray casting"
+    ],
+    "takeaways": [
+     "Animate a moving camera for line-art animation",
+     "Texture is defined by which paths you put on a surface",
+     "link: https://github.com/abey79/vpype/tree/e593ff05c2b13e48be2b3aa10e1c8d71c1b21dc0",
+     "link: https://github.com/fogleman/ln/tree/12e6c6e7445909f817f1b8d5581be4255ffa1437",
+     "ln outputs vector paths, not pixels, so 3D scenes plot in real ink",
+     "vpype linemerge + linesort drastically cuts pen-up travel"
+    ],
+    "caption": "ln + vpype — turning 3D scenes into lines for drawing.\n\n① Build a 3D scene → ② remove hidden lines → ③ export vector paths → ④ arrange the drawing order.\n\nln removes lines hidden by the geometry. vpype joins and reorders the paths for pen plotting.\n\nThese scenes use ln's original examples with added camera motion. In this example, vpype linemerge + linesort reduced pen-up travel by 86% (105,271 → 14,926 px). This measures distance, not the time of a real pen plotter.\n\nWhich scene would you turn into a print, an animation, or a pen plot?\n\nThe cover is an AI-generated illustration based on the line drawings.\n\nln + vpype는 3D 장면을 그릴 수 있는 선으로 만들고, 그리는 순서를 정리하는 도구입니다.\n\n① 3D 장면 만들기 → ② 가려진 선 지우기 → ",
+    "transcript": "Today's open source project is LN, the 3D lineart engine. These scenes are 3D, but the output isn't pixels, it's lines. It's by Michael Fogelman, written in Go. He made it so he could plot 3D drawings with his pen plotter. An OpenGL pipeline gives you a raster image. LN gives you 2D vector paths. Every shape is covered in 3D paths. LN chops them into tiny pieces, and from each point shoots a ray toward the camera. If nothing is hit, the point is visible. If something is in the way, it's hidden and never drawn. So the texture is just the paths you choose. Over-eyed paths and a cube become stripes. It also does solid geometry. A sphere trimmed by a cube and drilled by three cylinders. Math functions become surfaces, random walks become strings of beads, and random boxes become a city. Before plotting, there's V-pipe by Antoine Baylor, a Swiss army knife for plotter graphics. Here, line merge and line sort cut the pen up travel by 86%. For visual work, render a scene straight to SVG. Plot it in real ink, or turn a moving camera into a line animation. Both are MIT licensed. Thank you. Bye."
+   },
+   {
+    "title": "Claude Opus 5.5 to Blender — 3D animation built entirely as code",
+    "summary": "Claude Opus 5.5 wrote everything: a web mock of the After Effects UI, a Python script that builds the Blender scene, the character animation, plus the music and sound effects. Blender rendered 360 frames on GPU in about 15 minutes and FFmpeg stitched the video. Full prompt is comment-gated.",
+    "creator": "nateherkai",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DeuZ4BnhCqA/",
+    "tools": [
+     "After Effects",
+     "Blender",
+     "Claude",
+     "FFmpeg",
+     "Python"
+    ],
+    "techniques": [
+     "Blender Python scripting",
+     "procedural animation"
+    ],
+    "takeaways": [
+     "Audio and SFX can also be generated as code",
+     "Have the LLM emit a Blender Python script instead of using a video model",
+     "Render frames in Blender and assemble with FFmpeg"
+    ],
+    "caption": "Comment \"Blender\" for the free guide and prompts",
+    "transcript": "What if I told you that I made this 3D animation without ever opening Blender? And no, this isn't from an AI video model like Vio or C-dance. Claudeobas5.5 wrote the whole thing as code. It built the After Effects interface as a webpage. It wrote a Python script that builds the 3D scene in Blender. It animated this little guy hopping across the buttons, and it even made the music and every single sound effect from scratch. Then, Blender rendered all 360 frames on my GPU in about 15 minutes, and FFmpeg stitched them into the video that you're watching right now. So if you want the full guide with the setup and the exact prompt to just paste into Claude, comment Blender, and I'll send it over."
+   },
+   {
+    "title": "DuckStation 3D screenshot — rip any PS1 scene to OBJ for Blender",
+    "summary": "A DuckStation fork with a 3D-screenshot feature dumps the current PS1 scene as an OBJ with positions intact, ready to drag into Blender. More reliable than the older Avocado emulator route, which had vertex and texture bugs. The creator turns rips into papercraft models.",
+    "creator": "rosamichael.digital",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DbqLB-zMoJR/",
+    "tools": [
+     "Blender",
+     "DuckStation"
+    ],
+    "techniques": [
+     "3D scene capture",
+     "mesh extraction"
+    ],
+    "takeaways": [
+     "Extracted meshes keep scene placement, good for dioramas or papercraft",
+     "Screenshots land as OBJ in a screenshot-3D folder",
+     "Use the DuckStation 3D-screenshot fork from GitHub, not Avocado"
+    ],
+    "caption": "Turns out you can extract 3D models from almost any PS1 game using nothing more than a 3D screenshot.\n\nIn this reel, I’ll show you how it works and why it’s such a fun way to preserve and explore retro games.\n\nSou will need special version of duckstation with the 3D screenshot. You can find on github. Previously it worked only with Avocado ps1 emulator. But there was problems with vertices and textures. This duckstation version is flawless!\n\nWhat’s the first PS1 game you’d rip a model from? 👇\n\n#PS1 #PlayStation #RetroGaming #GameDev",
+    "transcript": "I can rip any 3D model of a PS1 game. I can show you here. This is called 3D screenshot and I can take a screenshot here of this scene and directly it grabs this into the folders screenshot 3D. I will find the proper folder and the last OBJ file I can drag and drop into the blender and here is the 3D model. You can see it grabbed also the position of the 3D model in the scene and the moment I grab it. What I can do also, I turn this model into the paper model so I can build it and now here I am already building my PS1 Gundam. So now I can extract every single model of a PS1 game."
+   },
+   {
+    "title": "Orbiter — open-source smartphone 3D scanner for print-ready parts",
+    "summary": "Orbiter is an open-source rig and workflow from Raw Mechatronics for accurate 3D digitization with a smartphone camera. Scan an object, design around it and print a part that fits the first time.",
+    "creator": "rawmechatronics",
+    "tier": "A",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/DbcEatOsXG2/",
+    "tools": [
+     "Orbiter"
+    ],
+    "techniques": [
+     "3D digitization",
+     "photogrammetry"
+    ],
+    "takeaways": [
+     "Accurate scanning closes the loop for custom-fit prints",
+     "Build-it-yourself open project, still evolving"
+    ],
+    "caption": "High-quality 3D printers are now affordable and probably already sitting on your desk. Manufacturing custom parts has never been easier. \nThe next challenge is making 3D digitization just as simple. Compared to 3D printing, this field is still far less accessible. The tools are expensive, the workflows are complicated, and there’s still plenty of room for research and innovation. \nWe believe that’s about to change. Orbiter is our contribution toward making accurate 3D digitization as simple and practical as 3D printing is today. The project is open source. Let’s explore this field together, learn from each other, and see how far we can push this technology. Share your experiments, ideas, and",
+    "transcript": "This is how engineers will work in the near future. You'll pick up a real object, create its digital copy in minutes, design exactly what you need around it, send it straight to your 3D printer, and get a perfect fit on the first try. And you know what? The future is already here. That's exactly why we're building Orbiter, an open source project for creating accurate 3D models with a smartphone camera. It's still evolving, but you can already build it yourself."
+   },
+   {
+    "title": "Peppa Cam — DIY Raspberry Pi handheld LiDAR scanner",
+    "summary": "A homemade handheld LiDAR scanner from a Raspberry Pi, a LiDAR sensor and a 3D-printed housing, mapping buildings, caves, gardens and trees without proprietary software. Build plan with wiring, code and CAD is comment-gated.",
+    "creator": "peppes_ghost",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DbU9ysVITFS/",
+    "tools": [
+     "Raspberry Pi"
+    ],
+    "techniques": [
+     "LiDAR mapping"
+    ],
+    "takeaways": [
+     "Handheld LiDAR is buildable for far less than a Leica",
+     "Open formats avoid proprietary lock-in"
+    ],
+    "caption": "Comment build plan and I sent you the link",
+    "transcript": "LiDAR scanners are amazing, but they are also incredibly expensive. I really wanted one, so I started building one myself, with a Raspberry Pi and a LiDAR sensor and a 3D printed housing. It might not be as high quality as a Leica handheld scanner, but for most scanning jobs, it's perfect. Without any expensive proprietary software and strange file formats, you can use it to create 3D maps of buildings, archaeology sites, caves, or parks and gardens. I got a 3D of a tree. I got a lot of supportive messages and questions on where to find the build plan for this device, so the maker community can build it as well. Here it is, lots of words, the wiring plan, the code, and the complete CAD and printing file to build a Peppa Cam yourself. I've got plenty more ideas for new projects, and I wouldn't call the components for these instruments cheap, so it would be brilliant if I could get your support so I can make more projects like this and show you how I build them. Comment build plan and I'll send you the details."
+   },
+   {
+    "title": "Mandelbulb — ray-marching a 3D fractal from z⁸ + c",
+    "summary": "Explains the Mandelbulb: Daniel White's spherical-coordinate trick for 3D 'multiplication', raised to power 8 by Paul Nylander, rendered by ray marching with the distance estimate d = ½·r·log r/dr. Code is ported line by line from Mandelbulber's GPL-3.0 source, with the Hamilton 'multiply triplets' history as a bonus.",
+    "creator": "elemental.math",
+    "tier": "S",
+    "type": "art",
+    "url": "https://www.instagram.com/p/DehlIB2PT4h/",
+    "tools": [
+     "Mandelbulber"
+    ],
+    "techniques": [
+     "distance estimation",
+     "ray marching"
+    ],
+    "takeaways": [
+     "Distance estimate d = ½·r·log r / dr lets rays jump safely",
+     "Mandelbulber2 source is a clean reference implementation",
+     "Power-8 spherical formula: r→r⁸, θ→8θ, φ→8φ, then add c",
+     "link: https://github.com/buddhi1980/mandelbulber2",
+     "link: https://en.wikipedia.org/wiki/Broom_Bridge",
+     "link: https://skytopia.com/project/fractal/mandelbulb.html"
+    ],
+    "caption": "Can one line of math build an entire 3D world? This is the Mandelbulb, and it comes from z ↦ z⁸ + c.\n\nIn 2D, the Mandelbrot set repeats z ↦ z² + c: pick a point c, start at zero, square, add c, repeat. If it never escapes past |z| = 2, the point is black. Squaring a complex number squares its length and doubles its angle.\n\nThere is no such multiplication for points in 3D. William Rowan Hamilton tried for years; in an 1865 letter he remembers his sons asking every morning, \"Well, Papa, can you multiply triplets?\" and his answer, \"No, I can only add and subtract them.\" Daniel White's 2007 idea was to copy the geometry in spherical coordinates, and Paul Nylander raised it to the 8th power: r ↦ ",
+    "transcript": "This one line of math builds an entire world. It runs inside Mandelbulb, an open source program that flies a camera through fractals. It all starts flat, with the Mandelbrot set. Pick a point C, start at zero, square it, add C, and repeat. If it never runs away, paint it black. And squaring hides a trick. The length gets squared, and the angle doubles. In three dimensions, numbers like that do not exist. William Hamilton spent years trying to multiply triplets. Every morning his sons asked, well Papa, can you multiply triplets? And he always answered, no, I can only add and subtract them. So Daniel White just copied the geometry, and Paul Milander pushed it further. Raise the length to the eighth power, and multiply both angles by eight. At power two, it's a lumpy blob. At power eight, it blooms, with bumps on bumps all the way down. To draw it, every pixel shoots a ray. The formula says how close the surface could be. So the ray jumps exactly that far, and asks again. This one needed thirteen jumps. One frame of this video takes eight million rays, a hundred million jumps, and three hundred million turns of that one line. And all of it comes from one line."
+   },
+   {
+    "title": "A gorgeous strange attractor known as Thomas' cyclically sym — Rendered via 3D Gaussian splatting.",
+    "summary": "A gorgeous strange attractor known as Thomas' cyclically symmetric attractor — @kaustav.py.",
+    "creator": "kaustav.py",
+    "tier": "A",
+    "type": "skill",
+    "url": "https://www.instagram.com/p/DYsSz2rvWGI/",
+    "tools": [],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "A gorgeous strange attractor known as Thomas' cyclically symmetric attractor\n\nRendered via 3D Gaussian splatting.\n\n#creativecoding #mathvisualization #chaostheory #mathart #nonlineardynamics\nlucas.vtwo\n \n5w\nCan you show a tutorial on how to do this? I’ve wanted to try for so long",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Phase Space Reconstruction — unfolding hidden BTC volatility dynamics",
+    "summary": "Uses Phase Space Reconstruction (PSR) with time delay tau=3 to unfold BTCUSD volatility into a multi-dimensional manifold. Reveals whether market is in stable regime or chaotic transition. Key for quantitative regime detection.",
+    "creator": "quant.dhawan",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DTLkCVXE7O6/",
+    "tools": [
+     "Python"
+    ],
+    "techniques": [
+     "Attractor Analysis",
+     "Phase Space Reconstruction",
+     "Time Delay Embedding",
+     "regime detection"
+    ],
+    "takeaways": [
+     "PSR reveals hidden market dynamics beyond price vs time",
+     "Clustered attractors suggest predictability",
+     "Scattered points indicate chaotic regimes"
+    ],
+    "caption": "Most traders look at a 2D chart of Price vs. Time. We’re looking at the Attractor.\n\n​Phase Space Reconstruction (PSR) allows us to take a single time series—in this case, BTCUSD Volatility—and \"unfold\" it into a multi-dimensional manifold. By using a time delay (\\tau=3 in this plot), we can map the underlying hidden dynamics of the market.\n\n​Why this matters for a Quant:\n​System State: It shows whether the market is in a stable regime or a chaotic transition.\n​Predictability: If the points cluster into a specific shape (a \"Strange Attractor\"), the system has a deterministic structure, meaning it’s not just noise—it's tradeable.\n​Regime Detection: Changes in the \"density\" or \"shape\" of this m",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Pendulum drawing machine — harmonograph kinetic sculpture with a rocking table",
+    "summary": "A welded kinetic drawing machine (harmonograph) with four pendulums: two drive the pen in X and Y, and two more rock and rotate the drawing table to add chaos to the patterns. Shown mid-build ahead of an art show.",
+    "creator": "madsencycles",
+    "tier": "A",
+    "type": "art",
+    "url": "https://www.instagram.com/p/C3dFjq4LbiP/",
+    "tools": [],
+    "techniques": [
+     "coupled pendulums",
+     "harmonograph"
+    ],
+    "takeaways": [
+     "Couple extra pendulums to the table, not just the pen, for richer figures",
+     "Shared rods between pendulums inject controlled chaos"
+    ],
+    "caption": "The big REVEAL 😊. You’ve had some good guesses! This is not quite finished yet, but the #drawingmachine #kineticsculpture will be done in time for the art show on March 1st! If you come you’ll see it! 🖊️ ⚙️ \n\n#kineticart #madsenmagicshop #create #madsenmaker #makersmovement #madsenmakersmovement #madsencycles #customhinges #weldingart #welding #harmonograph #alwaysabetterway #cargobike #art",
+    "transcript": "I've got another view of the drawing machine. All four pensions are going right now. The back two that are on this one here, they're not hooked up yet, but that will rotate the table back and forth. And there's two pensions that run the same, that same rod to add a little more chaos in the rotation of the, of the drawing table. So here's the, this is only X and Y going right now. And then when that last one goes, it will be rocking the table back and forth to add a little more diversity in the, in the drawing. So that's it, but I'm liking this leakage."
+   },
+   {
+    "title": "Print-on-demand art prints — sell paintings with no stock or upfront cost",
+    "summary": "Upload photos to Printful, Gelato or Fine Art America, set a price, and they print, pack and ship while you keep the margin. The real work is the photo: flat, window daylight, no flash, straight on, cropped to the canvas, and list at least ten pieces.",
+    "creator": "creativeflairhq",
+    "tier": "B",
+    "type": "guide",
+    "url": "https://www.instagram.com/p/DcTt5_eoGFO/",
+    "tools": [
+     "Fine Art America",
+     "Gelato",
+     "Printful"
+    ],
+    "techniques": [
+     "artwork photography",
+     "print on demand"
+    ],
+    "takeaways": [
+     "List ten pieces so the shop looks like a shop",
+     "Shoot art flat in overcast daylight with no flash",
+     "You usually keep print rights to sold originals"
+    ],
+    "caption": "You can start selling prints of a painting you already own tonight. No printer, no stock, no money up front.\n\nHere’s the bit nobody explains. There are companies that print and post the thing for you. You upload a photo, you set your price, and when someone orders, they print it, pack it, ship it and send you the difference. You never touch a box. Printful, Gelato and Fine Art America all work roughly like this and none charge you to open an account.\n\nSo the only real job is the photograph:\n\nFlat, in daylight, near a window. Overcast is better than sun.\nNo flash.\nPhone straight on, propped on books if you’ve no tripod. Not at an angle.\nCrop to the edge of the canvas.\n\nA good phone photo in g",
+    "transcript": "You can start selling prints of a painting you already own tonight. No printer, no money up front. I know the print's real is the reason a lot of you are here and the question underneath every single comment was the same. Yes, but how? So here's how. There are companies that print the thing and post it for you. You upload a photograph of each painting, you set the price and when somebody orders it, they print it, they pack it, they ship it and they send you the difference. You never touch a box. Printful, Gelato and Fine Art America all work roughly like that and none of them charge you to open an account which means the only real job is the photograph and that's where most artists lose the money, not at the selling end. Shoot the painting flat in daylight, near a window or an overcast day if you get a chance. No flash, phone straight on, propped on a stack of books if you haven't got a tripod, not even an angle. Propped to the edge of the canvas, that's genuinely it. A good phone photo in good light beats a bad photo from an expensive camera every time. One more thing, because it changes the maths, don't list one painting, list 10. A print shop with one product looks like a mistake. A print shop with 10 looks like a shop and that painting you sold three years ago and still think about, unless you sign something otherwise, you still own the rights to print it. That one's yours forever. Follow for more on turning work you've already made into income and send this to an artist who's been meaning to do this for years. Good luck, send to me your shops. I love seeing all the artworks you guys sell."
+   },
+   {
+    "title": "Artist Grant — $1,200 unrestricted grant with no proposal",
+    "summary": "Artist Grant awards $1,200 unrestricted to one visual artist three times a year since 2017. Apply by email with a website link or 3-5 images plus a short bio; $30 fee, visual arts only, open worldwide to 18+, past winners ineligible.",
+    "creator": "creativeflairhq",
+    "tier": "B",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DbtF9bVBGPg/",
+    "tools": [
+     "Artist Grant"
+    ],
+    "techniques": [],
+    "takeaways": [
+     "The only application material is the work itself",
+     "Three deadlines a year, so there's always one coming"
+    ],
+    "caption": "There’s a twelve hundred dollar grant with no proposal, no plan, and no artist statement. You email them pictures. That’s the whole application.\n\nIt’s called Artist Grant. Running since 2017, they give $1,200 unrestricted to one visual artist three times a year. Unrestricted meaning nobody tells you what to spend it on.\n\nThe actual application: you send an email. In it, either a link to your website, or 3 to 5 images of your work plus a short bio. You tell them whether they can share your work on their social media. That’s it. Their own site says, and I’m quoting, no grant proposal required.\n\nOpen to visual artists anywhere in the world, 18 and over. Painting, drawing, sculpture, ceramics, p",
+    "transcript": "There's a $1,200 grant with no proposal and no artist statement. You email them pictures. That is the whole application. It's called Artist Grant. They've been going since 2017 and they give $1,200 unrestricted to one visual artist three times a year. Unrestricted, meaning nobody tells you what to spend it on. Here's the actual application and I want you to hear just how short this is. You send an email. In it, you put either a link to your website or three to five images of your work plus a short bio. You tell them whether they can share your work on their social media and that's it. Their own site says, and I'm quoting, no grant proposal required. It's open to visual artists anywhere in the world, 18 and over. Painting, drawing, sculpture, ceramics, printmaking, photography, mixed media, and installation. Now, the honest bits, because I'd rather you knew. There's a $30 application fee. It isn't for film, music, theater, or dance. And if you've won it before, you can't win it again. There are three deadlines a year, so there's always one coming. Miss the next one and there's another one behind it. But here's what I actually want you to take from this. You have spent years telling yourself you can't apply for funding because you haven't got the CV, or the statement, or the right words. This one wants none of that. It wants to see the work, which is the only thing you already have. Follow for more of the money the art world never mentions and send this to an artist who's been putting off applying for something. Please check out my book, Visible, as well. Links in the bio. First chapter's free and it's got everything you need to start actually being seen by the art world."
+   },
+   {
+    "title": "@reubenmargolin builds his hypnotic kinetic sculptures with creative and...",
+    "summary": "@reubenmargolin builds his hypnotic kinetic sculptures with creative and intricate mechanics. — @avant.arte.",
+    "creator": "avant.arte",
+    "tier": "B",
+    "type": "art",
+    "url": "https://www.instagram.com/p/DEXGqLdqvPN/",
+    "tools": [],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "@reubenmargolin builds his hypnotic kinetic sculptures with creative and intricate mechanics.\n\n#reubenmargolin",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Tristan Perich's 1-Bit Symphony — music from on/off pulses on a chip",
+    "summary": "1-Bit Symphony is a composition housed in a CD case: a microchip running assembly code that outputs 1-bit on/off pulses as sound. A 695-page companion book prints the processor's cycles for the first hundredth of a second.",
+    "creator": "egapmada",
+    "tier": "A",
+    "type": "art",
+    "url": "https://www.instagram.com/p/Db22ptPy577/",
+    "tools": [],
+    "techniques": [
+     "1-bit synthesis",
+     "assembly programming"
+    ],
+    "takeaways": [
+     "A strong reference for code-as-score work",
+     "Extreme constraints like a single bit of output can produce rich music"
+    ],
+    "caption": "This is one of my favourite compositions: 1-BIT SYMPHONY by @tristanperich \n\nAn accompanying book arrived in the post the other day and it is truly mind blowing. \n\nI love this stuff.",
+    "transcript": "Hello everybody, I would like to share with you something very cool and slightly nerdy. This is Tristan Perich's one-bit symphony This little thing is one of my most prized possessions. I love it according to the spiel It is a complete electronic circuit which utilizes on and off electrical pulses synthesized by assembly code to manifest data as sound Now I find this incredibly moving and I'll play you a little bit of it now. So here's our battery. There's the on and off switch Here's that tiny little microchip here. This little button goes to the next movement and this is our volume so usually you would plug it into a Set of headphones, but I've got it going whoop into our stereo and through our speakers. So Just open it up Okay Let's turn this sucker on. Yes. Oh, I love this. So While this is playing I just want to show you this I got this the other day. This is a book which Shows you the first one one hundredth of a second of one-bit symphony. So effectively this little processor here executes Nulls and computational cycles which are all Printed out in here. It's a 695 page book. It's just fantastic. It's fascinating. I Find this really beautiful and slightly Scary. Well, very scary actually the fact that this Is just one one hundredth of a second of A Tiny little chips brain So let's just try this again. Here we go this much Not even unbelievable So, yeah, love it love it love it love it another look"
+   },
+   {
+    "title": "Curlicue fractals — turtle-walk spirals from irrational angle steps",
+    "summary": "A looping animation of curlicue fractals, the spiralling curves you get by stepping forward and turning by an angle that grows quadratically. Irrational constants produce nested whorls. Purely visual, with no narration, but it's a good prompt for a creative-coding sketch.",
+    "creator": "fascinating.fractals",
+    "tier": "B",
+    "type": "art",
+    "url": "https://www.instagram.com/p/DR6kWKTDJ1T/",
+    "tools": [],
+    "techniques": [
+     "curlicue fractal",
+     "turtle graphics"
+    ],
+    "takeaways": [
+     "Changing the irrational constant changes the spiral structure completely.",
+     "You can reproduce it in a few lines of turtle or canvas code."
+    ],
+    "caption": "Curlicue Fractals\n\n#fractals\n#satisfying\n#geometry\n#pattern\n#asmr\n#adhd\n#ocd\n#math\n#spirograph",
+    "transcript": "(no speech detected)"
+   }
+  ]
+ },
+ {
+  "slug": "overfit-proof-autoresearch",
+  "kind": "dive",
+  "dive_id": "dd-insight-overfit-proof-autoresearch",
+  "title": "Strategy Autoresearch — the judge is the product, not the agent",
+  "class": "workflow_multiplier",
+  "thesis": "Self-rewriting loops (Karpathy-style autoresearch, bilevel coach loops, Microsoft SkillOpt) keep any edit that beats a benchmark. Point one at trading and it becomes an industrial overfitting machine — the backtest is the benchmark, and the loop will beat it ten thousand times. The quant saves already hold the fix: probability of backtest overfitting, permutation tests, transaction costs and backtest-to-live drift. Wire those in as the loop's judge, and use the loop's own log as the exact count of trials — the number human quants never know.",
+  "why_it_matters": "A solo builder can run more strategy variants in a weekend than a small fund tests in a quarter. The difference between that being an edge and a casino is whether the gate deflates for every attempt. Most likely you learn you have no edge, cheaply, and that's worth money too.",
+  "action_sketch": "Wrap a vectorized backtester (VectorBT) in a SkillOpt-style loop where Claude proposes strategy edits and every proposal is appended to a trials table with its parameters and result.\nReplace 'beats benchmark' with a judge that needs all four: positive after realistic fees, beats 95% of a permutation null, deflated Sharpe positive using the trials-table count, and a held-out year scored once at the end.\nHave a second model (Codex or GPT) audit each surviving strategy's code for look-ahead bias before it reaches paper trading; monitor live drift with Wasserstein distance and auto-retire on breach.\nfalsifier: seed the loop with pure-noise synthetic prices. If anything passes the judge, the judge is broken — fix it before you show it a real market.",
+  "prerequisites": [
+   "Python and VectorBT or similar backtester",
+   "Clean historical data with realistic cost assumptions",
+   "Paper-trading account",
+   "Discipline to treat 'no survivors' as a valid result"
+  ],
+  "connection_map": {
+   "DbEK3bustQ7": "Benchmark-gated self-rewrite engine — the loop shape, with auto-reject of edits that don't win",
+   "DbjLy_tormR": "Outer coach loop that stops the search collapsing onto favorite ideas — and also multiplies trial count",
+   "DeNnxp5v_Fu": "The naive version — a critic agent rewriting losing trades, with hard-coded risk limits outside its reach",
+   "DTZyMVPiHM5": "Probability of backtest overfitting and Sharpe-ratio statistics — the deflating judge",
+   "DT8BX8vEzHm": "Permutation test with 25K shuffled returns — the 'random beats you' floor",
+   "DWjr0x3Deom": "Reversal strategy that dies once fees are counted — costs belong inside the judge, not after it",
+   "DUx9t_FE0CY": "Wasserstein drift between backtest and live distributions — the kill switch after deployment",
+   "DeW79CbCkO3": "Cross-model audit — the model that writes the strategy never grades it",
+   "Dcztzw6PyP4": "Dedicated risk agent that audits for self-deception — the role split as a template",
+   "Dc_qXENuDi4": "A one-month LLM trading 'win' — the noise this loop must refuse to reward",
+   "DbYp-bgTBBA": "Munger's inversion — define how the strategy dies before the loop starts searching"
+  },
+  "tools": [
+   "Claude",
+   "Claudex",
+   "Codex",
+   "OpenAI",
+   "Python",
+   "SkillOpt"
+  ],
+  "techniques": [
+   "AI agents",
+   "API integration",
+   "Bayesian Black-Litterman",
+   "Distribution Shift Detection",
+   "LLM trading agent",
+   "Monte Carlo",
+   "Monte Carlo Simulation",
+   "Optimal Transport",
+   "Permutation Testing",
+   "Sinkhorn Divergence",
+   "Statistical Significance",
+   "Wasserstein Distance",
+   "algorithmic trading",
+   "automatic prompt optimization",
+   "autoresearch loop",
+   "backtest overfitting detection",
+   "backtesting",
+   "benchmark-gated edits",
+   "bilevel loop",
+   "critic-agent loop",
+   "cross-model review",
+   "dollar-neutral reversal",
+   "failure memory database",
+   "hard-coded risk limits",
+   "inversion",
+   "mental models",
+   "meta-prompting",
+   "multi-agent orchestration",
+   "plan-then-build",
+   "scheduled agents",
+   "transaction cost analysis",
+   "workflow automation"
+  ],
+  "domains": [
+   "LLM",
+   "agents",
+   "backtesting",
+   "crypto",
+   "data science",
+   "finance/trading",
+   "ml",
+   "open source",
+   "productivity",
+   "prompt engineering",
+   "quant",
+   "software development",
+   "video production"
+  ],
+  "entries": [
+   {
+    "title": "Microsoft SkillOpt — agent skills that rewrite themselves against benchmarks",
+    "summary": "Microsoft open-sourced SkillOpt: a base model runs a task, an optimizer rewrites the skill instructions from results, successful paths are separated from failures, and edits that don't beat the benchmark are auto-rejected. Claimed to beat hand-written prompts and TextGrad and to transfer across models.",
+    "creator": "marc.kaz",
+    "tier": "S",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/DbEK3bustQ7/",
+    "tools": [
+     "SkillOpt"
+    ],
+    "techniques": [
+     "AI agents",
+     "automatic prompt optimization",
+     "benchmark-gated edits"
+    ],
+    "takeaways": [
+     "Gate every rewrite on beating the benchmark.",
+     "Model-agnostic, so optimized skills port across providers.",
+     "Treat skill instructions like trainable parameters with an eval set.",
+     "link: https://github.com/microsoft/SkillOpt"
+    ],
+    "caption": "🚨 MICROSOFT OPEN-SOURCED SELF-EVOLVING AGENT SKILLS\n\nSkillOpt lets skills improve themselves. A base model runs the task, an optimizer rewrites the instructions based on results.\n\nShips with:\n• Isolates successful paths from failures\n• Auto-rejects edits that don’t beat the benchmark\n• Beats hand-crafted prompts and TextGrad\n• Zero lock-in, transfers to any model\n\n100% free. Open source.\n\n👉 https://github.com/microsoft/SkillOpt\n\nWho’s evolving their agent skills today? Drop a 🔥",
+    "transcript": "What's up guys, so Microsoft just open-sourced self-evolving agent skills Okay skills that improve themselves the same way you train an AI model So no more guessing whether your prompt tweaks helped again very fun open source hundred percent free Someone can use this It optimizes the outputs and evaluates them and rewrites the instructions themselves, you know It's ages. There's agent skill builder, dude. Come on now"
+   },
+   {
+    "title": "Bilevel autoresearch loops — an outer coach loop rewrites the search",
+    "summary": "Builds on Karpathy's autoresearch loop (try change, test, keep or revert). An outer coach loop watches the inner worker and rewrites its search playbook so it stops repeating the same ideas; claimed ~5x better on Karpathy's benchmark with the same models.",
+    "creator": "raycfu",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DbjLy_tormR/",
+    "tools": [
+     "OpenAI"
+    ],
+    "techniques": [
+     "autoresearch loop",
+     "bilevel loop",
+     "meta-prompting"
+    ],
+    "takeaways": [
+     "Add an outer loop that edits the inner loop's strategy, not the code",
+     "Single loops collapse onto a few favorite ideas"
+    ],
+    "caption": "How to 5x your loop system with Bilevel loops #ai #tech",
+    "transcript": "Most people don't realize that you can get 5x more efficiency from a loop system by just adding another loop on top. Here's how the bi-level loop system works. If you don't already, Andre Carpethy, one of the co-founders of OpenAI, released a loop engineering system that works when you give AI a goal and it works towards it by itself. It tries to change and test whether the results get better. Keeps it if it did, throws a weight if it didn't, and tries the next idea all automated. But here's a problem nobody noticed. Even good loops have bad habits. AI has instincts about what kinds of ideas to try. It keeps going back over the same instincts over and over even after they stop working. Your loop runs 500 experience, but it's really running the same 10 ideas 50 times. This is a fix that Frontier Lab scientists found out. You just add a second loop on top of the first one. The inner loop is the worker. It keeps running experiments exactly like before while the top loop is the coach. The coach does not do any of the work. Its only job is to watch the worker. The coach in the outer loop rewrites the worker's playbook, changing the way it searches for ideas and then setting it back in. Researchers tested this on the same exact benchmark that Carpethy used, and this new Tula version scored five times better than a single loop with the same exact LLM models. The entire improvement came from the structure that one AI is forcing the other AI to explore ideas that normally its instincts would have skipped. I created a step-by-step guide on how to build out a bi-level loop system within your current loop. If you want it, just like the video and comment level and I'll send it to you. Follow for more ways to make money and run your business with tech and AI."
+   },
+   {
+    "title": "Self-improving trading agent — critic loop that rewrites losing strategies",
+    "summary": "Workflow pitch: describe a strategy, an agent codes it and wires the broker API, runs a five-year backtest, and a critic agent dissects losing trades and rewrites entry/exit logic before rerunning. Hard-coded stop-loss and drawdown limits sit outside the agent's reach, and failed strategies go to a local DB the agent learns from. Guide is comment-gated.",
+    "creator": "raycfu",
+    "tier": "B",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DeNnxp5v_Fu/",
+    "tools": [],
+    "techniques": [
+     "AI agents",
+     "API integration",
+     "algorithmic trading",
+     "critic-agent loop",
+     "failure memory database",
+     "hard-coded risk limits",
+     "workflow automation"
+    ],
+    "takeaways": [
+     "Beware overfitting when an agent rewrites rules to fix past losers",
+     "Lock risk limits in code the agent cannot modify",
+     "Store failed strategies so the agent avoids repeating them"
+    ],
+    "caption": "How to build a self improving AI trading agent #tech #ai",
+    "transcript": "Nobody has talked about this, but someone just built a self-improving and a trading system that literally rewrites its own code whenever it loses money. Top hedge funds spend millions of dollars a year hiring quant traders to research, test, and tweak trading strategies. This setup turns that entire cycle into an automated loop. First, describe the trading idea and the agent translate your rules into clean code, hooks up your broker API, and runs a five-year market stress test in seconds. If the test comes back read, a critic agent runs an automated autopsy. Instead of deleting the whole strategy, it finds the exact trades where the bot lost money, rewrites the entry and exit logic, then reruns the test on the spot. The agent then deploys it live with hard-coded risk rules. This allows you to lock your stop-losses and max drawdown directly so your agent can never override them. The best part is, every failed strategy gets saved to a local database where the agent studies its own mistakes and never makes the same one twice. I put together a detailed step-by-step guide with the agent workflow and prompt templates. If you want it, just like the video, comment, loop, and I'll send it to you. Follow for more ways to make money and run your business with tech and AI."
+   },
+   {
+    "title": "10 non-cliche quant research projects — Bayesian BL, RL factors, PBO",
+    "summary": "@heidioftheeast's 10 quant project ideas beyond Black-Scholes: probability of backtest overfitting, Bayesian Black-Litterman, survival-based risk, RL factor portfolios, Sharpe statistics, convex portfolio trading, TS vs XS factors, numeraire-invariant hedging, exotic option model risk, regime-switching factors.",
+    "creator": "",
+    "tier": "A",
+    "type": "skill",
+    "url": "https://www.instagram.com/p/DTZyMVPiHM5/",
+    "tools": [],
+    "techniques": [
+     "AI agents",
+     "Bayesian Black-Litterman",
+     "Monte Carlo",
+     "algorithmic trading",
+     "backtest overfitting detection"
+    ],
+    "takeaways": [],
+    "caption": "Tired of doing the same Black–Scholes or Monte Carlo projects? Here are 10 quant research ideas you can explore, learn, and replicate to level up your skills\n\n1. Probability of Backtest Overfitting: learn how to detect when your strategies are just curve-fitted to past data.\n2. Bayesian Black–Litterman Portfolio Optimization: upgrade classic allocation with Bayesian updates for better uncertainty management.\n3. Survival-Based Risk Prediction: use upper and lower partial moments to forecast risk more realistically.\n4. Model-Free Reinforcement Learning for Factor Portfolios: let an RL agent optimize your factor exposures without explicit assumptions.\n5. Statistics of Sharpe Ratios: understand ",
+    "transcript": "You"
+   },
+   {
+    "title": "Monte Carlo — 25,000 shuffled BTC returns to separate edge from luck",
+    "summary": "Runs 25,000 Monte Carlo simulations by shuffling daily BTC-USD returns to test whether a strategy's performance is genuine edge or statistical luck. One backtest isn't enough — real quants demand statistical significance.",
+    "creator": "quant.dhawan",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DT8BX8vEzHm/",
+    "tools": [
+     "Python"
+    ],
+    "techniques": [
+     "Monte Carlo",
+     "Monte Carlo Simulation",
+     "Permutation Testing",
+     "Statistical Significance"
+    ],
+    "takeaways": [
+     "One backtest proves nothing — could be luck",
+     "25K permutations reveal true edge distribution",
+     "If random beats your strategy, you have no edge"
+    ],
+    "caption": "Most traders look at one backtest and think they have an edge. That’s just luck. 🎲\n\n​Real quants use Monte Carlo simulations. By shuffling the daily returns of a BTC-USD strategy 25,000 times, we don't just see what did happen—we see everything that could have happened.\n\nComment \"Monte\" for code repo to run the monte carlo for your own model. 🚨\n\n​The Red Line? That’s the 95% VaR (Value at Risk). If your strategy can survive that line, you might actually have an edge.\n\n#quantfinance #algorithmictrading #math #statistics #python\nelpsycongroo75\n \n13w\nCan u have simulation between me and her?",
+    "transcript": "Dime que lo que pasa"
+   },
+   {
+    "title": "Crypto dollar-neutral reversal — naive long/short, eaten by fees",
+    "summary": "@avi_mukesh: simple reversal strategy on crypto (short if up, long if down), dollar-neutral scaling. Looks good without costs, transaction fees kill it. Honest starter example for learning backtesting caveats.",
+    "creator": "avi_mukesh",
+    "tier": "B",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DWjr0x3Deom/",
+    "tools": [],
+    "techniques": [
+     "dollar-neutral reversal",
+     "transaction cost analysis"
+    ],
+    "takeaways": [],
+    "caption": "A simple reversal strategy on crypto:\nIf the price goes up, go short and If the price goes down, go long.\n\nDollar-neutral means total longs equals total shorts.\nPositions are scaled so total absolute exposure stays equals 1, keeping risk consistent.\n\nWithout considering any transaction costs, the results seem good. With transaction costs, however, the returns vanish quickly.\n\nBut I found this is still a good start when learning before starting to explore other signals and strategies.\n\nComment “quant” for the code.\n\nDISCLAIMER: just for educational purposes, not financial advice\n\n#quant #mathematics #quantfinance #finance #math\nzenjitoo\n \n14w\n5.1 sharpe? From something this simple. Thats ridi",
+    "transcript": "This is the simplest coin strategy you can build. I pulled hourly data from Binance over the past three years for these cryptos. Bitcoin, Ethereum, Solana, and a few others. The idea is simple. If on the last hour the price went up, short it, if it went down, buy it. Then make your portfolio do the neutral, normalize the weights, and rebalance every hour. Computing the returns and plotting them cumulatively would go a graph like this. The sharp ratio seems amazing. It's over five. In comparison, this is a graph of cumulative returns if we just bought and held these coins over the past three years. The sharp is close to zero. It looks like our reversal strategy works, but what's the catch? This is a perfect world back test. We've completely ignored transaction costs such as slippage and commission. For a strategy to work, it needs to survive these. But if you're just starting out in Quant Research, this is where you begin. Comment Quant for the code and follow for more Mathematical Finance content."
+   },
+   {
+    "title": "Wasserstein Distance — measuring the backtest-to-live reality gap",
+    "summary": "Uses Wasserstein Distance and Sinkhorn Divergence to mathematically measure drift between backtest distributions (blue) and live market conditions (orange). Detects distribution shift that kills more strategies than bad fees.",
+    "creator": "quant.dhawan",
+    "tier": "S",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DUx9t_FE0CY/",
+    "tools": [
+     "Python"
+    ],
+    "techniques": [
+     "Distribution Shift Detection",
+     "Optimal Transport",
+     "Sinkhorn Divergence",
+     "Wasserstein Distance",
+     "algorithmic trading"
+    ],
+    "takeaways": [
+     "High backtest Sharpe doesn't guarantee live performance",
+     "Wasserstein distance quantifies strategy drift",
+     "Monitor distribution shift to kill dead strategies early"
+    ],
+    "caption": "The most painful chart in trading. 📉\n\n​Your backtest has a Sharpe of 3.0, but your live account is bleeding? That’s called Distribution Shift, and it kills more strategies than bad fees ever will.\n\n​In this visualization, I’m using Wasserstein Distance and Sinkhorn Divergence to mathematically measure the \"Reality Gap\" between historical simulations (Blue) and live market conditions (Orange). If these distributions drift too far apart, your model is broken.\n\n​Stop guessing if your strategy is overfitting. Measure it.\n\n​👇 Comment \"Wasserstein\" below and I’ll DM you the Python repo to build this yourself.\n\n#quantfinance #algorithmictrading #econophysics #python #math\nquant.dhawan\n \n20w\n​👇 Comm",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Claudex skill — Claude and GPT-6 Astra cross-audit plan and build",
+    "summary": "A free skill that splits work between two frontier models: Claude writes the plan and GPT-6 Astra audits it until it holds, then roles swap so Astra builds and Claude audits. Runs inside Claude or Codex as a reusable skill.",
+    "creator": "nateherkai",
+    "tier": "A",
+    "type": "skill",
+    "url": "https://www.instagram.com/p/DeW79CbCkO3/",
+    "tools": [
+     "Claude",
+     "Claudex",
+     "Codex"
+    ],
+    "techniques": [
+     "cross-model review",
+     "plan-then-build",
+     "workflow automation"
+    ],
+    "takeaways": [
+     "Do not let one model plan, build and grade its own work",
+     "Package the loop as a skill so it is reusable",
+     "Swap planner and auditor roles between build phases"
+    ],
+    "caption": "Comment 'CLAUDEX' and I'll send it over.",
+    "transcript": "There's a new free skill that makes Claude and GBD6 Astra work on the same task together. It's called Claudex, and instead of trusting one model to plan, build, and then judge its own work, it splits the job between both models. First, Claude writes the plan, then GBD6 Astra audits it. They keep going until the plan actually holds up. Then what they do is they switch roles. Astra builds the project, and Claude audits the implementation. So you're no longer letting one AI guide its own homework. You've basically got two frontier models constantly challenging each other before anything is finished. And because it runs as a skill, you can drop it straight into Claude or Codex and reuse the workflow whenever you build. So just comment Claudex, and I'll send you the skill."
+   },
+   {
+    "title": "Claude multi-agent trading team — research, market, backtest and risk agents",
+    "summary": "Pitch for an unnamed free repo that spins Claude into a four-agent trading team: a research agent cleans market data, a market agent writes strategy logic, a test agent backtests for win rate and max drawdown, and a risk agent audits for self-deception. The repo is never named; the link is gated behind a comment.",
+    "creator": "raycfu",
+    "tier": "C",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/Dcztzw6PyP4/",
+    "tools": [
+     "Claude"
+    ],
+    "techniques": [
+     "AI agents",
+     "algorithmic trading",
+     "backtesting",
+     "multi-agent orchestration"
+    ],
+    "takeaways": [
+     "A dedicated adversarial risk agent guards against overfitting",
+     "The role split (data, logic, backtest, risk audit) is a sensible template for any agent trading pipeline"
+    ],
+    "caption": "How to build a wall street trading firm with Claude #ai #tech",
+    "transcript": "Nobody is talking about this, but someone just released a free AI trading agent that turns Claude into a Wall Street level trading team. Over 21,000 people have already used it, and it gives you access to multi-agent systems that top hedge funds spend millions of dollars a year to run. Here's how it works. You just give it specific instructions like building a portfolio rebalancing model that rotates into top performing tech stocks every month. These systems will then automatically create an AI trading team to execute the job. A research agent pulls raw market data and cleans the price action. A market agent analyzes the market structure and writes the trading logic. A test agent runs full historical backtests against real market data to calculate your win rate and maximum drawdown. And then a risk agent acts as your risk officer, auditing the model so that you don't fool yourself. I put together a data guide on how to bid out your own AI trading agent team with the repo link. If you want it, just like the video and come and trade it and I'll send it to you. Follow for more ways to make money and run your business with tech and AI."
+   },
+   {
+    "title": "GPT-6 Astra stock-trading challenge — scheduled Codex tasks in one thread",
+    "summary": "Creator gives GPT-6 Astra $10k to trade, rerunning an earlier Claude experiment that reportedly beat the S&P by 8% in a month. Six scheduled Codex tasks per day read news, open, review and manage positions, all posting into one shared thread for visibility. No results yet; setup doc gated behind a comment.",
+    "creator": "nateherkai",
+    "tier": "C",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/Dc_qXENuDi4/",
+    "tools": [
+     "Claude",
+     "Codex"
+    ],
+    "techniques": [
+     "LLM trading agent",
+     "scheduled agents"
+    ],
+    "takeaways": [
+     "One-month S&P outperformance is noise, not evidence.",
+     "Single shared thread for all scheduled agent runs makes reasoning auditable.",
+     "Structure: news read, entry, review, management as separate scheduled checks."
+    ],
+    "caption": "Comment \"ASTRA TRADE\" for the FREE setup kit.",
+    "transcript": "I just gave GBD-6 Astra $10,000 to trade stocks for me. Now, I actually did this before with Claude, and after a month, I was beating the S&P by 8%, which is pretty good. But now that we have Astra and it's even better, I'm gonna run this challenge back. I basically have these routines set up where I have these six checks throughout the day to read news, to grab new positions, to review them, to manage them. And what's so cool about this is that this is all being set up inside of Codex as a scheduled task using GBD-6 Astra, and all of these scheduled tasks will talk in the same thread. So I can literally just view this in one spot and I can see what they're doing, see what they're thinking about, and see what actions are being taken. So make sure you follow along if you wanna see how this challenge turns out. And if you want the full doc that shows you exactly how to get all this set up, then just comment AstraTrade, and I'll send it over for free."
+   },
+   {
+    "title": "Charlie Munger's inversion — solve problems by asking how to cause failure",
+    "summary": "Munger explains inversion with his WWII meteorologist job: ask how you'd kill pilots (icing, running out of fuel), then avoid those. Same move for any problem: list what would hurt it most and steer clear.",
+    "creator": "charliemungerhub",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DbYp-bgTBBA/",
+    "tools": [],
+    "techniques": [
+     "inversion",
+     "mental models"
+    ],
+    "takeaways": [
+     "Pairs naturally with pre-mortems",
+     "Reframe 'how do I succeed' as 'what would guarantee failure' and avoid those paths",
+     "Works for system design and risk reviews as well as investing"
+    ],
+    "caption": "Charlie Munger (January 1, 1924 – November 28, 2023) was an American investor, businessman, attorney, and philanthropist best known as the longtime vice chairman of Berkshire Hathaway. Widely regarded as one of the greatest business thinkers of his generation, Munger played a pivotal role in shaping Berkshire Hathaway alongside Warren Buffett. His multidisciplinary approach to decision-making and emphasis on rational thinking transformed the way countless investors and entrepreneurs approach business and life.\n\nOriginally trained as a lawyer, Munger developed an investment philosophy that extended beyond traditional financial analysis. He championed the use of “mental models”—drawing insight",
+    "transcript": "Are there any tools or behaviors you embrace to facilitate your rational thinking? The answer is of course, how do they do anything else? One of my favorite tricks is the inversion process. I'll give you an example, when I was a meteorologist in World War, they told me how to draw weather maps and predict the weather, but what I was actually doing is clearing pilots to take flights. It just reversed the problem, I inverted it. I said suppose I wanted to kill a lot of pilots, what would be the easy way to do it? I soon concluded the only easy way to do it would be to get the planes into icing the planes couldn't handle, or to get the pilot to a place where he'd run out of fuel before he could safely land. So I made up my mind I was going to stay miles away from killing pilots by either icing or getting them into sock conditions when they couldn't land. I think that helped me be a better meteorologist in World War. I just reversed the problem. If somebody hired me to fix India, I would immediately say, what could I do if I really wanted to hurt India? I'd figure out all the things that would most easily hurt India, and I'd figure out how to avoid them. You'd say it's the same thing, it's just in reverse. It works better to free them to invert the problem. You're a meteorologist, it really helps if you really know how to avoid something, which is the only thing that's going to kill your pilot. You can help India best if you understand what will really hurt India the easiest and worst. Algebra works the same way. Every great algebraist inverts all the time, because the problems are solved easier. Human beings should do the same thing in the ordinary walks of life. It's constantly a burden. You don't think of what you want, you think what you want to avoid. But when you're t"
+   }
+  ]
+ },
+ {
+  "slug": "ambient-executive-function",
+  "kind": "dive",
+  "dive_id": "dd-insight-ambient-executive-function",
+  "title": "Ambient Executive Function — glanceable hardware for agents and attention",
+  "class": "life_leverage",
+  "thesis": "OpenAI built a $230 hardware controller for babysitting coding agents. Someone answered with a MacBook-notch status app, and Bot Crossing turned 80 agents into characters who raise their hands. Separately, NFC stickers make logging a habit a one-tap physical act, and Sharp memory LCDs stay on for days at e-paper power. Combine them into a small always-on desk object that shows what needs you, both agents waiting for approval and your own NOW list, and takes physical taps as input. That turns 'out of sight, out of mind' from a willpower problem into an environment.",
+  "why_it_matters": "For people with ADHD or executive-function friction, the failure is rarely missing information. The information is hidden in a terminal or app they have to remember to open. A glanceable surface with one-tap input removes the remembering step, which is the step that fails.",
+  "action_sketch": "Build an ESP32 + 2.7in Sharp memory LCD in a printed stand; it polls a tiny endpoint serving (a) top 3 lines of NOW.md, (b) count of agent sessions awaiting approval via a Claude Code Notification/Stop hook.\nStick NFC tags on desk, water bottle and door: tap = 'done/started/leaving', logged by an iOS Shortcut to the same endpoint; the display updates within seconds.\nRun 14 days logging glance-triggered actions (taps within 2 min of a display change) and agent wait time before/after.\nFalsifier: if glance-triggered actions fall to near zero by week two (habituation) and agent wait time doesn't drop, ambient display isn't beating a phone notification.",
+  "prerequisites": [
+   "ESP32 + Sharp memory LCD (~$40)",
+   "NFC stickers",
+   "iOS Shortcuts or Android Tasker",
+   "Claude Code hooks"
+  ],
+  "connection_map": {
+   "DbIxSSaEtGd": "Market signal: OpenAI ships a $230 physical agent controller",
+   "DbaFoAUMvnK": "Software version: notch indicator for working / needs-attention / done",
+   "DczR-QlSMdK": "Interaction model: hand-raise signals replace polling terminals",
+   "DcJNZeBxR2D": "Display: per-pixel memory LCD — always-on, sunlight readable, battery-friendly",
+   "DZoREIHtMjL": "Input: NFC sticker tap → Shortcut → web endpoint logs a real-world action",
+   "DctoIMltaNN": "Gesture vocabulary for agent verbs (run, ideate, delegate)",
+   "DWBEMihjWp7": "Mechanism: self-observation changes behavior (Hawthorne) — make the state visible",
+   "DdKLjDHlG0c": "Design rule: gamifying beats avoidance paralysis",
+   "DdDT0X0KC64": "Content: fixed daily checkpoints (8am/noon/5pm) feed what the display shows",
+   "Db7Vx2Hhf9c": "Data source: a NOW.md short-term memory file the device can render"
+  },
+  "tools": [
+   "Anthropic",
+   "Apple Shortcuts",
+   "Blender",
+   "Blender MCP",
+   "Bot Crossing",
+   "ChatGPT",
+   "Claude",
+   "Claude Code",
+   "Codex",
+   "Codex Micro",
+   "GitHub",
+   "LingBot-Map",
+   "Next.js",
+   "Notion",
+   "Obsidian",
+   "OpenAI",
+   "Raspberry Pi",
+   "Sharp Memory Display",
+   "TouchDesigner",
+   "TypeScript"
+  ],
+  "techniques": [
+   "3D reconstruction",
+   "AI agents",
+   "MCP server",
+   "NFC automation",
+   "agent memory",
+   "agent status dashboard",
+   "agent status visualization",
+   "automation",
+   "code generation",
+   "context engineering",
+   "context files",
+   "gamification",
+   "gesture mapping",
+   "memory-in-pixel",
+   "model routing",
+   "multi-agent delegation",
+   "scheduled agents",
+   "speculative interface design",
+   "vibe coding"
+  ],
+  "domains": [
+   "3D",
+   "UI/UX",
+   "agents",
+   "creative coding",
+   "education",
+   "hardware",
+   "news",
+   "open source",
+   "productivity",
+   "prompt engineering",
+   "security",
+   "software development",
+   "video production"
+  ],
+  "entries": [
+   {
+    "title": "AI weekly roundup — Codex Micro controller, LingBot-Map, robot MMA",
+    "summary": "Carousel of the week's AI news: OpenAI's $230 Codex Micro agent controller, China's robot MMA fight, Netflix using gen AI in ~300 productions, GPT-5.6 driving Blender via Blender MCP, open-source LingBot-Map building real-time 3D maps from video without LiDAR, free Claude for K-12 teachers, and Claude Fable 5 going permanent.",
+    "creator": "stics.ai",
+    "tier": "C",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DbIxSSaEtGd/",
+    "tools": [
+     "Anthropic",
+     "Blender",
+     "Blender MCP",
+     "Claude",
+     "Codex Micro",
+     "LingBot-Map",
+     "OpenAI"
+    ],
+    "techniques": [
+     "3D reconstruction",
+     "MCP server",
+     "code generation"
+    ],
+    "takeaways": [
+     "Blender MCP lets an LLM build full 3D scenes",
+     "LingBot-Map gives LiDAR-free 3D mapping from plain video at ~20 FPS"
+    ],
+    "caption": "Another huge week for AI. Here are the biggest developments from the past seven days:\n\n• OpenAI unveiled its first hardware product, a $230 controller designed to manage AI coding agents.\n\n• China hosted what was described as the world’s first robot MMA competition, featuring humanoid machines in full-contact fights.\n\n• Netflix has reportedly used AI across more than 300 movies and shows this year to accelerate production and visual effects.\n\n• A first-time Blender user created an entire 3D scene with just one AI prompt.\n\n• China released an open-source model capable of rebuilding detailed 3D environments from ordinary video footage.\n\n• Anthropic is giving teachers free premium access to Cla",
+    "transcript": "[slide 0] Lose is the one\n[slide 1] You can now take your codex work to the next level with the codex micro, a keyboard built with the team at work louder specifically for codex. I honestly can't imagine building without it anymore. To show you how it works I'm going to use GPT 5.6 sole in codex to build a little word game and steer the entire process from the micro. Let's start with voice dictation. I can hold this key and start talking to codex. Build a browser game called one letter off, players change one letter at a time to turn the word cold to warm at a 30-second timer, streaks and satisfying tile animations. The whole prompt appears without me touching my laptop keyboard. I can configure the analog stick at the top to map to the most common skills that I use or by default swipe it up to use plan modes. With the dial I can control the reasoning effort to quickly switch between a quick task and deeper reasoning without breaking\n[slide 2] 逗牛是不会又晕了吗 变得倒地 但逗牛是很快进行的还击 没开三度我得追 双方势均力敌 我感觉 他晕了 逗牛是受到重创 摇头晃脑中 逗牛是还能坚持吗 逗牛是他还在 太顽强了 逗牛是他还在坚持 但我觉得这个需要裁判的 一下判定了 我觉得这个体育精神是 可歌可泣 体育精神这一块 还真是 很厉害 我们看得出来这个逗牛是的主创团队 真的很用心了 现在有怎样的优势呢 我头掉了就踢不到了 少了一个得分部位\n[slide 6] I'm Zach. I teach high school in San Francisco. Nothing matters more than knowing where my students really are. But the scores, the attendance, my own notes all live in different places. And pulling them together usually costs me a weekend. So I point Cloud for Teachers at the one folder where all my class data lives and give it the whole job. It reads everything first, then checks with me on how I want it. The report opens right next to the chat, and it caught what I have missed. My two chronically absent kids are the same two whose scores went flat. Then I have it build tomorrow's lesson for each group, grounded in our standa"
+   },
+   {
+    "title": "MacBook notch agent monitor — software answer to OpenAI's agent controller",
+    "summary": "Instead of OpenAI's $230 hardware controller for babysitting coding agents, the creator had Claude build a MacBook notch app showing which agents are working, need attention or are done, with jump-to-session and permission approvals. Build guide is comment-gated.",
+    "creator": "cooper.simson",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DbaFoAUMvnK/",
+    "tools": [
+     "ChatGPT",
+     "Claude",
+     "Claude Code"
+    ],
+    "techniques": [
+     "agent status dashboard",
+     "vibe coding"
+    ],
+    "takeaways": [
+     "A notch or menu-bar indicator can replace terminal babysitting",
+     "Multi-agent supervision is a UI problem, a status surface solves it"
+    ],
+    "caption": "Comment NOTCH and I’ll send the free app plus the exact prompts 👇\n\nSam Altman just wasted 6.5 billion on a glorified desk toy and got clowned by vibecoders, who built a better version for free.\n\nPlus follow me to more saas tools get rebuilt for free and let me know what you want to see rebuilt next\n\n#chatgpt #claude #build #aiforbusiness #vibecoding",
+    "transcript": "Sam Holman just wasted 6.5 billion dollars building a glorified desk toy and got clowned on by Vibe Coors who built a better version for free. Let me show you. Last week, opening eyes, incredibly hyped up hardware product dropped and it was a $230 keyboard nobody asked for with six keys that blinked different colors. To be fair, this did sell out and it does solve a real problem because when you run multiple agents you end up becoming a babysitter watching multiple terminals just guessing which one needs your attention. But the issue is this isn't a hardware problem, it's a software problem. And it really seems like Sam Holman just asked Chad TPT if this was a good idea that spent 6.5 billion dollars building something that really just needed a few lines of code. And to prove it, I gave Claude a few prompts and it built me a MacBook Notch tool that does everything Sam's keyboard does. It works by showing me which agents are working in my notch, then which ones need my attention, and which ones are done. It can even take me to the exact session I'm working in and approve permissions all from this little dashboard here. Now, real talk here, this took me about a day to build, but it works exactly the way I need it to. It makes managing all my agents so much easier, and it was free to build. And I actually put together a full build guide showing you how to set this up yourself. So save this video and send it to someone who's drowning in agents. If you want the guide, comment notch and I'll send it over to you. Plus, follow me because I'm going to be rebuilding more overpriced SaaS tools and giving them away for free."
+   },
+   {
+    "title": "Bot Crossing — video-game workspace for managing 80 AI agents",
+    "summary": "Open-source game UI where AI agents live on a little planet, walk around, and raise their hands when they need help; click one to see its request. Built by Jarren Rocks, with a GitHub repo, YouTube build review and botcrossing.com site.",
+    "creator": "jarrenrocks",
+    "tier": "A",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/DczR-QlSMdK/",
+    "tools": [
+     "Bot Crossing"
+    ],
+    "techniques": [
+     "agent status visualization"
+    ],
+    "takeaways": [
+     "Hand-raise signals replace polling terminals",
+     "Spatial, game-like UIs make many agents' status glanceable",
+     "link: https://botcrossing.com"
+    ],
+    "caption": "Here’s how I manage 80 agents all at the same time in a video game workspace",
+    "transcript": "I built a video game to manage my AI agents and they all live on a little planet together and they raise their hands when they need help and they all walk out of the little spaceship and they move around on the planet and when someone needs help they wave their hands hey please help me I can click on him and then he'll tell me what he needs and the most frequent question I'm getting is I want to do this too well now's your lucky day I have a video live and a github repo this thing is open sourced go crazy also I'm putting together a website for it it's called bot crossing.com also I made a YouTube video out of it so if you want to see that you can take a look I do a full review of the entire product and how I made it and I show a bunch of details you can look up my YouTube channel Jaren Rocks and then I built a video game for my AI agents there you go look at me and look at them oh they're so cute"
+   },
+   {
+    "title": "Sharp Memory Display — per-pixel memory LCD for low-power hardware",
+    "summary": "Sharp memory displays store each pixel's state, so they only need a tiny maintenance signal. That makes them near e-paper in power, reflective for sunlight readability, yet fast enough for ~50fps, as on the Playdate.",
+    "creator": "mewtru",
+    "tier": "B",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DcJNZeBxR2D/",
+    "tools": [
+     "Sharp Memory Display"
+    ],
+    "techniques": [
+     "memory-in-pixel"
+    ],
+    "takeaways": [
+     "Faster than e-paper and readable outdoors",
+     "Pick it for battery projects with mostly static screens"
+    ],
+    "caption": "This is such a cool display, I have so many ideas on what to make with it. It’s a sharp memory display! #hardware #electronics",
+    "transcript": "This is a Sharp memory display. At first glance, it looks just like another tiny LCD, but it's actually a completely different kind of screen. A normal LCD has to constantly refresh the image, redrawing the entire display over and over again even if nothing changes. That's fine for phones and monitors, but it wastes a surprising amount of power. Our Sharp memory display works differently. Every pixel stores its own state, so once you draw something, it simply stays there. It's very similar to an e-paper screen. The display only needs a tiny maintenance signal in the background which makes it incredibly power efficient. Another thing I love is that it's reflective instead of backlit. So the brighter it is outside, the easier it is to read. Playdate, for example, uses a Sharp memory display and can run it up to 50 frames per second. That makes it a really interesting middle ground. You can get fast updates like a normal LCD, excellent outdoor visibility like e-paper, and low power consumption whenever the image is mostly static. It's a really clever display."
+   },
+   {
+    "title": "NFC stickers + vibe-coded web app — physical taps that log real-life habits",
+    "summary": "Programmable NFC stickers on a water bottle trigger an Apple Shortcut that logs each finished bottle to a tiny Next.js/TypeScript web app, surfaced as a home-screen widget. Part two of an IRL vibe-coding series; next step is a Raspberry Pi force sensor to log automatically.",
+    "creator": "byjackprice",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DZoREIHtMjL/",
+    "tools": [
+     "Apple Shortcuts",
+     "Next.js",
+     "Raspberry Pi",
+     "TypeScript"
+    ],
+    "techniques": [
+     "NFC automation",
+     "code generation",
+     "vibe coding"
+    ],
+    "takeaways": [
+     "NFC sticker + Shortcuts + a simple web endpoint = one-tap physical logging.",
+     "Physical triggers make boring tracking effortless.",
+     "Upgrade path: sensors (force/weight) on a Raspberry Pi for passive capture."
+    ],
+    "caption": "How to build cool things IRL Vibecoding, Part 2 - NFC Stickers +App.\n\nI’m now obsessed with water bottles. Why has nobody made the whoop for waterbottles?\n\n#vibecoding #coding",
+    "transcript": "So this is an NFC sticker and you can program these stickers to do anything that you want them to do and last video I made it so that every time my dog got fed it sent a message to my family group chat. This is part two of building things in real life because software has become so boring lately and I'm going to be using these stickers again but I'm going to be using them to track how much water I drink in a day. So I drink a ton of water and I know how important it is but I cannot be bothered to just track how much water I'm drinking so I put a sticker on my water bottle and every time I finish drinking my water bottle I can tap my phone against it and it's going to log it inside of an app so let's build this. Okay so this is where we're at now we have this stupidly simple web app and then we're going to make it so every time we tap this with our phone this is going to go up. This is cool but I think I want to make it a widget on my phone so I don't have to go to a website every time I want to check. So now I have this widget that I can just click and it automatically opens up. So all this is is a Next.js TypeScript website connected with Apple shortcuts and I think my next thing is going to be using this Raspberry Pi to create a force sensor so I don't have to tap it every time I can just lift it up and down and it will tell how much I drank."
+   },
+   {
+    "title": "Gestural agent interface — TouchDesigner concept for hand-commanded AI",
+    "summary": "Non-functional TouchDesigner prototype imagining agentic UI driven by gestures: two running fingers run the program, spinning fingers spin up a new idea, a pinch delegates heavy lifting.",
+    "creator": "the.poet.engineer",
+    "tier": "B",
+    "type": "design",
+    "url": "https://www.instagram.com/p/DctoIMltaNN/",
+    "tools": [
+     "TouchDesigner"
+    ],
+    "techniques": [
+     "AI agents",
+     "gesture mapping",
+     "speculative interface design"
+    ],
+    "takeaways": [
+     "Map metaphorical gestures to agent verbs (run, ideate, delegate).",
+     "Useful speculative reference for non-chat agent UIs."
+    ],
+    "caption": "different gestures trigger different agent actions:\ntwo fingers running → run the program\nfingers spinning → spin up a new idea\npinch → do the heavy lifting\n\na conceptual, non-functional UI prototype imagining agentic gestural interfaces ✨✋\n\n#touchdesignerlearning #touchdesignercommunity #touchdesigner #newmediaart #creativecoding",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Hawthorne effect + self-observation productivity — @dr.memonoff",
+    "summary": "@dr.memonoff retells Elton Mayo's 1924 Hawthorne experiment and a follow-up where self-observation reportedly boosted accuracy 94%. Pitches a 7-day burnout fix via bio link. Pop-psych, not AI.",
+    "creator": "dr.memonoff",
+    "tier": "C",
+    "type": "inspiration",
+    "url": "https://www.instagram.com/p/DWBEMihjWp7/",
+    "tools": [],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "1. In 1924, researcher Elton Mayo conducted an experiment that many later tried to bury.\n\nHe told workers they were being «observed for productivity.» And it was true—they were constantly monitored. Yet within weeks, something shifted: more focus, higher output, greater initiative. A simple observation changed real behavior—as if the brain had received a silent command.\n\n2. Years later, other researchers repeated the study—this time with self-observation.\n\nOne group was told they possessed an «internal monitoring ability.» The tasks were identical, but those who observed their own thoughts produced responses that were 94% more accurate.\n\nThe scientists were clear: «We didn’t increase ability",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Data reclamation game — gamifying opt-outs from data brokers",
+    "summary": "A developer built a game to make reclaiming your personal data from corporations and data brokers as engaging as signing up was, countering dark-pattern cancellation flows. Mostly framing, few specifics on which opt-outs it covers.",
+    "creator": "lizthedeveloper",
+    "tier": "C",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DdKLjDHlG0c/",
+    "tools": [],
+    "techniques": [
+     "gamification"
+    ],
+    "takeaways": [
+     "Dark patterns make leaving harder than joining",
+     "Gamifying opt-outs can beat avoidance paralysis"
+    ],
+    "caption": "You’re not in trouble and it’s not your fault",
+    "transcript": "The government and corporations in the United States are milking you for data like a cow. I made you a game, as you're too burned out from having been milked like a cow for your data, to get your data back. Yeah, product managers know how hard it is to do stuff like cancel, especially when you've got a whole lot of other stuff to do. They teach it. It's their job. It's their whole job. So I made it look cooler now. The rest of the things are filled out so you can finish the reclamation. It's up to you. You have to fix this. I'm sorry they tricked you into this, but I tried to make it as fun to get out as it was to get in. That's literally the problem, right? Is that it's not fun to get out. It's just scary and then you don't want to look at it. And so you stop and you freeze. And that's not what I want. Not. No, sweetie, it's OK. You're not in trouble. It's not your fault."
+   },
+   {
+    "title": "GPT-6 Astra + Codex one-person company — context files and daily checkpoints",
+    "summary": "Set up a workspace with three markdown context files (aboutme.md built from a 20-question interview, an anti-AI writing-style ban list, and mycompany.md with model, revenue and quarterly goals), then run Codex on GPT-6 Astra at three daily checkpoints: 8am inbox triage and call prep, noon delegation to sub-agents, 5pm audit whose summary seeds tomorrow's context.",
+    "creator": "raycfu",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DdDT0X0KC64/",
+    "tools": [
+     "Codex",
+     "OpenAI"
+    ],
+    "techniques": [
+     "AI agents",
+     "context engineering",
+     "multi-agent delegation",
+     "scheduled agents"
+    ],
+    "takeaways": [
+     "A banned-phrases style file is the cheapest fix for AI-sounding output.",
+     "End-of-day audit summaries become next-day context: a continuous memory loop.",
+     "Give the model persistent identity/style/business context files instead of long prompts."
+    ],
+    "caption": "How to run a one person company with GPT6 Astra and Codex #ai #tech",
+    "transcript": "Most people don't realize that you can use OpenAI, Aster, and Codex to set up a one-person company. Here's how you build it out. Most people get generic outputs because models have zero context on who you are, so you create a workspace with three different MD files. Start with the aboutme.md file by letting Aster interview about 20 questions on what you do, who you work with, what great deliverables look like, and what mistakes you hate. Then make the anti-AI writing style.md file. This is a strict list of everything it is not allowed to do when writing. Ban buzzwords, phrasing, and hard limits so your writing output doesn't look like ASL. Then make the my company.md file, which outlines your business models, target revenue, and quarterly goals. With Aster's built-in multi-agent delegation, you never have to write long prompts again. You just have to use this prompt structure above and into my guide at the end. Now you set up three automated checkpoints that run your entire day. At 8 a.m. when you wake up, Codex Aster has already sorted your inbox and written prep notes for every call. At noon, you brief it on afternoon deliverables, so it coordinates sub-agents in the background while you focus on client calls. At 5 p.m. and audits everything that was completed, what is pending, and what carries till tomorrow. The end-of-the-day summary automatically becomes your context for tomorrow, turning your entire operation into a continuous loop. I put together an exact sub-agent guide with exact prompts and template files. If you want it, just like the video and comment one and I'll send it to you. Follow for more ways to make money or mind your business with Tech..."
+   },
+   {
+    "title": "Agent workspace file tree — persistent memory and context folder layout",
+    "summary": "A folder structure for Claude-based agents: a brain folder with CLAUDE.md and model routing, five business context files, a memory folder with session logs and an index, per-project context files, NOW.md short-term memory, skills/workflows/scripts folders, Obsidian + GitHub versioning, Notion tasks, and secrets in a gitignored .env.",
+    "creator": "cooper.simson",
+    "tier": "A",
+    "type": "guide",
+    "url": "https://www.instagram.com/p/Db7Vx2Hhf9c/",
+    "tools": [
+     "ChatGPT",
+     "Claude",
+     "Claude Code",
+     "GitHub",
+     "Notion",
+     "Obsidian"
+    ],
+    "techniques": [
+     "AI agents",
+     "agent memory",
+     "automation",
+     "context files",
+     "model routing"
+    ],
+    "takeaways": [
+     "Give agents a stable file tree so memory survives across sessions",
+     "Keep a per-project context file plus a short-term NOW file",
+     "Put secrets in .env and gitignore it before the first push"
+    ],
+    "caption": "Comment “FILES” and I’ll send you the full file tree + the prompts that build it 👇\n\nMost people kick off an agent by asking it to do something. \n\nThe ones that actually work start with the folder structure, because an agent with no file structure forgets everything, and an agent that forgets starts every session from zero.\n\nThis is the exact structure I set up before any agent gets built: where the knowledge lives, what it remembers, why every project needs its own home, and what goes in .gitignore before you ever push.\n\n#ai #claude #chatgpt #agent #automation",
+    "transcript": "Have one main folder that holds all your projects, a brain folder inside that with a Cloud MD at the top with all your rules and preferences. Set up model routing to save on tokens and have five main context files on your business, offer, customers, voice and goals. Have a memory folder to keep track of all your sessions, an index file to keep track of where everything is, a tools MD file with all your connected apps, project folders for each thing you're working on, a context file in each so it knows where everything stands, all of that connected to Obsidian then linked to GitHub for version control. Then set up a now MD file for short-term memory, connected to Notion to organize open tasks for each project across sessions, and a rules file to organize everything so projects don't bleed together. Have all your skills in one folder, all your workflows in another, then a folder with scripts for repeat tasks to save on token usage. Have your passwords and keys in one .env file and get ignore so everything stays secure. And if you comment files, I'll send you the whole breakdown, plus a guide with every prompt so you can build this yourself, and follow so you can keep up with everything AI."
+   }
+  ]
+ },
+ {
+  "slug": "sketch-to-production",
+  "kind": "dive",
+  "dive_id": "dd-insight-sketch-to-production",
+  "title": "Napkin Sketch → Production Asset: The 5-Tool Creative Pipeline",
+  "class": "creative_fusion",
+  "thesis": "A hand-drawn sketch can become a production-ready 3D animation in under an hour by chaining Procreate → Magnific AI → 3DAI Studio → Move AI → final render. Each tool handles one transformation step.",
+  "why_it_matters": "The gap between 'I have an idea' and 'I have a production asset' used to be weeks of specialized work across multiple disciplines. This pipeline collapses it to under an hour by chaining five AI tools, each handling one transformation: sketch → upscale → 3D mesh → motion → final render. The key is that each tool is best-in-class at its specific step, and they hand off cleanly. A napkin doodle at lunch becomes a rigged, animated 3D character by dinner. For indie creators, this is the difference between having ideas and shipping them.",
+  "action_sketch": "Draw in Procreate → upscale with Magnific → generate 3D mesh with Hunyuan3D or 3DAI → capture motion with Move AI → composite with Kling or Runway. Total time: ~45 minutes per asset.",
+  "prerequisites": "Procreate or any drawing app, Magnific AI, Hunyuan3D-2 or 3DAI Studio, Kling or Runway account",
+  "connection_map": {
+   "C5010-Kh1Mv": "The full pipeline: sketch → upscale → 3D → motion capture → animate",
+   "DDFdSEDtKZV": "Kling Motion Brush: direct up to 5 characters in one AI video",
+   "DIcw6N6snq1": "Hunyuan3D-2: skip the 3D modeling step entirely with AI",
+   "DHTvblkRgZG": "AI rotoscoping: mask yourself into your own animations"
+  },
+  "tools": [
+   "3DAI Studio",
+   "ChatGPT",
+   "Hunyuan3D",
+   "Hunyuan3D-2",
+   "Kling",
+   "Magnific",
+   "Magnific AI",
+   "Midjourney",
+   "Move AI",
+   "Procreate",
+   "Tencent"
+  ],
+  "techniques": [
+   "markerless mocap",
+   "motion brush",
+   "motion capture",
+   "segmentation mask rotoscope",
+   "sketch-to-3D",
+   "style transfer"
+  ],
+  "domains": [
+   "3D",
+   "animation",
+   "art",
+   "design",
+   "image generation",
+   "photography",
+   "prompt engineering",
+   "video production"
+  ],
+  "entries": [
+   {
+    "title": "Sketch-to-3D-anim pipeline — Procreate + Magnific + 3DAI + Move AI",
+    "summary": "Director Jon Finger's pipeline: Procreate sketches -> Magnific AI style transfer -> 3DAI Studio for 3D models -> Move AI for mocap -> Cinema 4D for render. Concrete multi-tool AI animation workflow.",
+    "creator": "chatgptricks",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/C5010-Kh1Mv/",
+    "tools": [
+     "3DAI Studio",
+     "ChatGPT",
+     "Magnific",
+     "Magnific AI",
+     "Move AI",
+     "Procreate"
+    ],
+    "techniques": [
+     "markerless mocap",
+     "motion capture",
+     "sketch-to-3D",
+     "style transfer"
+    ],
+    "takeaways": [],
+    "caption": "That's really impressive! 😊\n\nDirector Jon Finger used AI to turn his sketches into an animated character. To do this, he follows a specific process:\n\nFirst, he uses Procreate to sketch out the different parts of his character. Then, he uses Magnific AI for style transfer. Next, he uses 3DAI Studio to convert his sketches into 3D models.\n\nTo capture the character's movements, Jon uses Move AI. Finally, he uses Cinema 4D to camera track and render the final animation.\n\n👉 Follow @chatgptricks for the latest AI updates!\n\nVideo by @mrjonfinger from X\n\n#ai #chatgpt #3d #JonFinger\ndbre_sydney\n \n103w\nIncredible! Interested to know how long the process took, was there any difficulties? Expensive Ai t",
+    "transcript": "Alright, so we've got a little test 3D model here. I sketched out all the parts as like a kit bash sheet in Procreate and then I made those assets look 3D using Magnific and then I converted that into actual 3D using 3D AI studio. And then because of that, I was able to kit bash together a whole little humanoid and add some move.ai motion capture that I captured on top of that. So that's my performance that I then added on top of the little kit bash character. So just a little experiment, thinking about whether I'll try to make a little film with it or not. Alright, this was just a test for that."
+   },
+   {
+    "title": "Kling Motion Brush — direct up to 5 characters in one AI video",
+    "summary": "@realrileybrown on Kling's Motion Brush: select up to 5 characters/objects in a starting image (often Midjourney-generated) and draw motion paths to animate them. One of the sharpest controllable video-gen workflows at the time.",
+    "creator": "realrileybrown",
+    "tier": "A",
+    "type": "tool",
+    "url": "https://www.instagram.com/p/DDFdSEDtKZV/",
+    "tools": [
+     "Kling",
+     "Midjourney"
+    ],
+    "techniques": [
+     "motion brush"
+    ],
+    "takeaways": [],
+    "caption": "Look at how insane this is - you can now take a photo, select five different characters, and use AI to control their movements in a realistic video using this new tool called Kling. \n\nContent creators are using Kling to make the highest quality AI videos we've ever seen, starting with Midjourney-generated images that they upload.\n\nThe sauce is in Kling's new Motion Brush Tool, which lets you select up to five characters or objects in your starting image and control their movements just by drawing the motion path.\n\nOnce you get the hang of it, Kling's AI creates these pretty nutty animations based on your inputs that I can't believe are generated in seconds.\n\nHave you tried it?\nWhat do you th",
+    "transcript": "I mean, come on, look at this. You can now take a photo and select five different characters and use AI to control their movements in a realistic video. I mean, look at how insane this is. This tool right here is called Kling and content creators are using this tool to make the highest quality AI generated videos that we've ever seen. And it starts with this new insane motion brush tool. It allows you to select a character or objects up to five of them in a starting image, which is just any image that you upload. And the best generated images on the market right now are generated from mid-journey. So creators are generating images on mid-journey and they are uploading them to Kling. And after selecting the characters or subjects, you can control their movements in the video just by drawing the motion. And it takes a little bit of time to get used to, but once you get it down, Kling's AI creates a realistic animation based on these inputs. AI video is moving so fast and I expect it to get much better in the next three months. So follow for more updates on this."
+   },
+   {
+    "title": "Hunyuan3D-2 — Tencent's free image-to-3D model generator",
+    "summary": "Tencent's Hunyuan3D-2 turns text or an uploaded image into textured 3D models in seconds. Free web UI; pipeline is upload > Generate Shape > Generate Textured Shape > download. Good for game/app asset workflows.",
+    "creator": "nick_saraev",
+    "tier": "S",
+    "type": "tool",
+    "url": "https://www.instagram.com/p/DIcw6N6snq1/",
+    "tools": [
+     "Hunyuan3D",
+     "Hunyuan3D-2",
+     "Tencent"
+    ],
+    "techniques": [],
+    "takeaways": [
+     "Pair with HY-Motion for full text->3D->motion pipeline"
+    ],
+    "caption": "Comment \"MODEL\" to get this Free AI 3D Model Generator. \n\nTencent just dropped a new AI tool called Hunyuan3D-2. It turns your text or images into 3D models. And the best part? It’s totally free.\n\nHere’s how it works. You visit the site, pick the image prompt option, then upload your picture. Next, hit “Generate Shape.” The tool quickly creates a preview of your 3D design. Like what you see? Great. Click “Generate Textured Shape.” In just a few seconds, your full 3D model is ready to download.\n\nIt’s like having a mini 3D artist in your pocket. No fancy software or skills needed. Just upload, click, and get your model.\n\nYou can use these models for all sorts of things:\n* Game design\n* App dev",
+    "transcript": "China just released a new AI tool that can turn your text or images into a 3D model, and it's completely free. Just go down to this site, select Image Prompt, then upload your image and click Generate Shape. First, it'll create a preview design for you. If you're happy with the design, click Generate Text or Shape, and within a few seconds your 3D model will be fully ready to download. You can use it for game design, development, or even sell it on 3D marketplaces like Sketchfab and CGTrader. Want to give it a try yourself? Just comment models and I'll send you the link for your DM."
+   },
+   {
+    "title": "AI rotoscoping — mask yourself into your own animations",
+    "summary": "@iamfesq demos using an AI detection/segmentation model to auto-rotoscope a mask of himself for compositing into his animated art. Quick technique reference for AI-assisted rotoscoping.",
+    "creator": "iamfesq",
+    "tier": "B",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DHTvblkRgZG/",
+    "tools": [],
+    "techniques": [
+     "segmentation mask rotoscope"
+    ],
+    "takeaways": [],
+    "caption": "Putting myself inside my art! This was a test using AI detection model to easily rotoscope a mask of myself to use it in my animation!\nqueen_of_tear_\n \n21w\nCool , can I know how 🫣😳",
+    "transcript": "Stay with me"
+   }
+  ]
+ },
+ {
+  "slug": "interactive-installations",
+  "kind": "dive",
+  "dive_id": "dd-insight-interactive-installations",
+  "title": "Body → Machine → Art: Real-Time Interactive Installations Anyone Can Build",
+  "class": "expression_amplifier",
+  "thesis": "Kinect/MediaPipe body tracking + TouchDesigner + Unreal Engine = interactive art installations that respond to human movement. Previously needed a studio budget; now runs on a gaming laptop.",
+  "why_it_matters": "Interactive art installations used to require a $50K+ budget: custom hardware, specialized software, a team of creative technologists. Now MediaPipe runs body tracking on a $30 webcam, TouchDesigner handles the visual pipeline, and a $200 projector fills a wall. The total cost dropped 99%. This democratization means independent artists can build gallery-quality interactive work in their apartment. The posts here map the complete stack from body input to visual output, including real examples of installations that respond to movement, sound, and light.",
+  "action_sketch": "MediaPipe for body tracking (free, runs on webcam) → pipe data to TouchDesigner → drive visuals in Unreal or project with a $200 projector. Gallery-quality interactive art for under $500 in hardware.",
+  "prerequisites": "Webcam, TouchDesigner (free for non-commercial), projector ($200+), laptop with decent GPU",
+  "connection_map": {
+   "DVoReJNCGxT": "DATA CONTROL: Kinect + TouchDesigner + Unreal for scientific viz",
+   "DFaChZeMdn1": "MediaPipe + TouchDesigner: body tracking without expensive hardware",
+   "DW9OgzCFcGY": "Mirror systems: engineering meets art in mechanical installations",
+   "CvsDXJbJh6O": "Cymatics: sound → physical form → visual art",
+   "CwNnre_Ih9l": "Al Bahar Towers: architecture that responds to sunlight"
+  },
+  "tools": [
+   "Kinect",
+   "MediaPipe",
+   "TouchDesigner",
+   "Unreal Engine"
+  ],
+  "techniques": [
+   "biomimicry",
+   "cymatics",
+   "kinetic façade",
+   "parametric shading"
+  ],
+  "domains": [
+   "3D",
+   "architecture",
+   "art",
+   "audio",
+   "creative coding",
+   "data science",
+   "design",
+   "education"
+  ],
+  "entries": [
+   {
+    "title": "DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz",
+    "summary": "@pala3d's 'DATA CONTROL' project: real-time visualization of NASA/CERN datasets as particle systems, body-controlled via Kinect through TouchDesigner into Unreal Engine. Pipeline explicitly human-made, no AI. Reference for data-viz/creative-coding stack.",
+    "creator": "pala3d",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DVoReJNCGxT/",
+    "tools": [
+     "Kinect",
+     "TouchDesigner",
+     "Unreal Engine"
+    ],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "DATA CONTROL\n\nThis project is built around a system designed to visualize scientific datasets such as those from NASA, CERN, and other open research sources in real time. The system allows different types of scientific data to be imported and translated into data-driven particle structures and visual environments.\n\nThe project was developed using a pipeline based on Kinect, TouchDesigner, and Unreal Engine, enabling human motion to directly interact with and control the data-driven particle systems in real time.\n\nThe work is based on data visualization techniques. Translating complex datasets into visual structures has been a scientific and artistic practice for centuries, and this project c",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "MediaPipe TouchDesigner plugin by @blankensmithing",
+    "summary": "@neles0n trying the MediaPipe plugin by @blankensmithing inside TouchDesigner. Useful pointer for anyone doing body/hand tracking in TD creative-coding pipelines.",
+    "creator": "neles0n",
+    "tier": "A",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DFaChZeMdn1/",
+    "tools": [
+     "MediaPipe",
+     "TouchDesigner"
+    ],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "trying out mediapipe plugin by @blankensmithing in @touchdesigner\nnatasha239106\n \n19w\nblankensmithing's mediapipe plugin in TD is just built different 🔥",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "John Cleese on extremism — why having enemies feels so good (1987)",
+    "summary": "Cleese's 1987 satirical monologue: extremism's appeal is that it supplies a ready-made list of enemies so you can project all badness outward — and both hard left and hard right lists end with 'moderates'. A sharp, quotable case for nuance and critical thinking.",
+    "creator": "veiled.jpg",
+    "tier": "B",
+    "type": "inspiration",
+    "url": "https://www.instagram.com/p/DW9OgzCFcGY/",
+    "tools": [],
+    "techniques": [],
+    "takeaways": [
+     "Both extremes share one enemy: moderates",
+     "Polarization works by offering moral license via an enemy list"
+    ],
+    "caption": "A simple point about extremism\n\nIn this 1987 talk, John Cleese breaks down how extreme thinking turns disagreement into division; by simplifying issues, reinforcing “us vs. them,” and creating unnecessary enemies. His message is straightforward: nuance, openness, and critical thinking are the antidotes.\n\nFun fact:\nCleese wrote and performed this piece as a satirical but serious critique of how easily people are pulled toward rigid, polarized thinking.\n\nFollow @veiled.jpg for more\n.\n.\n.\n#veiled \n\n#extreme #politics #quote #extremism",
+    "transcript": "biggest advantage of extremism is that it makes you feel good because it provides you with enemies. Big explain, the great thing about having enemies is that you can pretend that all the badness in the whole world is in your enemies and all the goodness in the whole world is in you. Attractive, isn't it? So if you have a lot of anger and resentment in you anyway, and you therefore enjoy it using people, then you can pretend that you're only doing it because these enemies of yours are such very bad persons. Even if it wasn't for them, you'd actually be good-natured and courteous, rational all the time. So, if you want to feel good, become an extremist. Okay. Now you have a choice. If you join the hard left, they'll give you their list of authorized enemies. Almost all kinds of authority, especially the police, the city, Americans, judges, multinational corporations, public schools, farriers, newspaper owners, Fox Hunters, generals, class traitors, and, of course, moderates. Or, if you'd rather be an extremist on the hard right, no problem, fine, you still get a lovely list of enemies, only their different ones. Noisy minority groups, unions, Russia, weirdos, demonstrators, welfare sponges, metals and clergy, peace nicks, the BBC, strikers, social workers, communists, and, of course, moderates. And upstart factors. Now, once you're armed with one of these superlists of enemies, you can be as nasty as you like, and you'd feel your behaviours morally justified. So, you can still think of yourself as a champion of the truth, a fighter for the greater good, and not the rather sad paranoid skid side that you really are."
+   },
+   {
+    "title": "Bubble cymatics — speaker-driven soap film patterns (with pseudoscience)",
+    "summary": "A soap bubble mounted on a speaker under a ring light shows standing-wave cymatic patterns as frequencies change. The visual is real and easy to reproduce; the account wraps it in rife-frequency and '4D shape' healing claims you should ignore.",
+    "creator": "vibra.genix",
+    "tier": "C",
+    "type": "inspiration",
+    "url": "https://www.instagram.com/p/CvsDXJbJh6O/",
+    "tools": [],
+    "techniques": [
+     "cymatics"
+    ],
+    "takeaways": [
+     "A bubble plus a speaker and ring light is a cheap cymatics rig.",
+     "Health and '4D' claims in the caption are unsupported."
+    ],
+    "caption": "Disclaimer: do not pour liquid on speakers that's a good way to get electrocuted or fry your equipment. Cymatics is literally kicking the doors of perception off the hinges and we love it! 💫\n\nFollow @vibra.genix to learn more about rife frequencies, scalar waves, and acoustic waves that target specific biological health issues. From pain management to performance enhancement, recovery, and healing emotional trauma.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\nvia BassForge.us on tiktok \n#VibraGenix #soundfrequency\n#frequencymedicine #holistichealth #painmanagement #performanceenhancement #recovery #healingtrauma #antiaging #chakras  #acousticwavetechnology ##healthoptimization #holisticfrequencies #soundvibration #m",
+    "transcript": "This bubble simatics, you're probably going to want to sit down for this one. This is a bubble attached to a speaker and it can create holograms. But it also gives us some clues into our big gassy friend in space. Now this is a pretty easy way to view simatics. You just need a bubble and a speaker and you can do this one speaker or two like this guy and they connect and when you push a frequency through it with a ring light you get to see the sound through the bubble and the sound can make some crazy shapes like my favorite one here, the life giving energy container the torus. Now here's where I'm going to break your mind. This way of viewing simatics can create 4D shapes like the claim bubble. Just by using a frequency and a ring light with a bubble we can conceptually visualize shapes that are outside of 3D reality. That's insane. You want to know more? I actually haven't booked it yet."
+   },
+   {
+    "title": "Al Bahar Towers — sun-tracking origami façade that halves cooling load",
+    "summary": "Aedas Architects' 2008 Abu Dhabi towers wrap the glass in computer-controlled umbrella-like screens modeled on the mashrabiya lattice and on biomimicry (pupils, flowers). The panels unfold with the sun, cutting glare and glass heat and reportedly halving air-conditioning demand.",
+    "creator": "archademy.ai",
+    "tier": "A",
+    "type": "design",
+    "url": "https://www.instagram.com/p/CwNnre_Ih9l/",
+    "tools": [],
+    "techniques": [
+     "biomimicry",
+     "kinetic façade",
+     "parametric shading"
+    ],
+    "takeaways": [
+     "Kinetic shading can be modeled on traditional passive devices like the mashrabiya.",
+     "Reported result: ~50% less AC demand and less artificial lighting.",
+     "Responsive façades target glass heat gain directly, the dominant load in hot climates."
+    ],
+    "caption": "🏢 This building moves depending on the position of the sun ☀️\n\n#AlBaharTowers #AbuDhabi #Biomimicry #SustainableDesign #ArchitectureInspiredByNature #neverenougharchitecture #architecture #biomimicrydesign #architecturestudent #architecturedesign #archdaily #architect #architecturelovers #arquitectura",
+    "transcript": "Did you know that in the extreme climate of Abu Dhabi, there are two towers that can automatically adjust their façade based on the Sun's position? Designed by Aidas Architects in 2008, they responded to a significant challenge. How do you design a sustainable skyscraper in a country where temperatures can reach 45 degrees Celsius? Inspired by bio mimicry, the architects turned to nature, observing how pupils adjust to light and flowers respond to the Sun. They also turned to the past, studying the mashrabia, a lattice screen that has been used in Islamic architecture for centuries. This screen diffuses sunlight, keeping buildings cool without obstructing the view or natural light. But how do you design a façade that moves with the Sun? The answer? Or a gami? Using computer-controlled screens, the façade unfolds like an umbrella, directly responding to sunlight. Imagine this. Solar rays can heat window surfaces to nearly 90 degrees Celsius or 200 degrees Fahrenheit. But thanks to this design, the screens shield the glass, reducing glare and letting in diffused light. The result? A 50% reduction in air conditioning demands and less need for artificial lighting. A project where past meets the future, tradition intertwines with innovation and architecture comes alive."
+   }
+  ]
+ },
+ {
+  "slug": "ai-video-production",
+  "kind": "dive",
+  "dive_id": "dd-insight-ai-video-production",
+  "title": "The One-Person Video Studio: AI Tools That Replace a Production Team",
+  "class": "workflow_multiplier",
+  "thesis": "Runway + Kling + rotoscoping + motion brush = professional video production without a crew, studio, or actors. Direct scenes with text prompts and motion controls.",
+  "why_it_matters": "Professional video production has three bottlenecks: talent (actors/crew), equipment (cameras/lighting/studio), and post-production (editing/VFX). AI tools collapse all three. Runway's node canvas replaces the editing suite. Kling's motion brush replaces the director ('move this character's arm here'). Rotoscoping lets you insert yourself into any scene without a green screen. OpenScreen handles screen recording for tutorials. The result: one person with a laptop produces content that previously needed a production team. The cost dropped from $10K/video to $30/month in subscriptions.",
+  "action_sketch": "Script with Claude → generate base footage with Runway/Kling → direct characters with motion brush → rotoscope yourself in → edit on the node canvas → export. Cost: ~$30/month in AI tools.",
+  "prerequisites": "Runway account (~$12/mo), Kling (free tier), OpenScreen (free), basic video editing concept",
+  "connection_map": {
+   "DDIAME6MhzY": "Runway node canvas: non-linear AI video editing",
+   "DDFdSEDtKZV": "Kling Motion Brush: direct character movement in AI video",
+   "C_8ia4lsMB3": "Runway Gen-3: precise video-to-video motion control",
+   "C91jKVfxtG1": "Kling free rollout: no more waitlists, everyone has access",
+   "C7AUmaYS_tc": "Veo: Google's multimodal video model",
+   "DHTvblkRgZG": "AI rotoscoping: insert yourself into any scene",
+   "DWl3Bo6jqX1": "OpenScreen: free screen recording (post-production tool)"
+  },
+  "tools": [
+   "ChatGPT",
+   "Claude",
+   "Cursor",
+   "DALL-E",
+   "GPT-4",
+   "Kling",
+   "Midjourney",
+   "OpenAI",
+   "OpenScreen",
+   "Premiere Pro",
+   "Runway",
+   "Runway Gen-3",
+   "Sora",
+   "Veo",
+   "siddharthvaddem/openscreen"
+  ],
+  "techniques": [
+   "keyframe graph editing",
+   "motion brush",
+   "node-based editing",
+   "node-based video",
+   "segmentation mask rotoscope",
+   "workflow automation"
+  ],
+  "domains": [
+   "UI/UX",
+   "animation",
+   "architecture",
+   "art",
+   "audio",
+   "creative coding",
+   "education",
+   "image generation",
+   "open source",
+   "photography",
+   "prompt engineering",
+   "video production"
+  ],
+  "entries": [
+   {
+    "title": "Runway non-linear video — node canvas of AI keyframes",
+    "summary": "@realrileybrown explains Runway's 'non-linear AI video exploration': work on a canvas of node-connected keyframes, let AI interpolate between them, branch alternate universes instead of a linear timeline.",
+    "creator": "realrileybrown",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DDIAME6MhzY/",
+    "tools": [
+     "ChatGPT",
+     "Premiere Pro",
+     "Runway"
+    ],
+    "techniques": [
+     "keyframe graph editing",
+     "node-based editing",
+     "node-based video"
+    ],
+    "takeaways": [],
+    "caption": "A new AI Video Editing and Generation method called \n\n\"Non Linear AI Video Exploration\"\n\nWhat on earth is that????\n\nWell..... I'll tell you\n\nInstead of just working on a timeline (like Premiere or Capcut), Runway demo introduces a new method that allows you to:\n\n1. start with an AI-generated image \n2. create a future frame\n3. Connect the frames together like nodes\n4. Have AI Generate all the frames in between\n\nBut you do this in a canvas interface which allows for the creation of alternative video universes, diverging from the linear path.\n\nYou can visually compose every pixel to match your vision.\n\nPretty... lit if you ask me.\nsaie.ss\n \n57w\nYou might want to look up the definition of “editi",
+    "transcript": "I don't think people realize this, but we are witnessing the greatest change in the way that videos are edited and created. You see, Premiere Pro and CapCut are linear. Their timelines move left to right. But Runway ML just released this new demo and they are calling it non-linear exploration. This is how it works. You start with an AI-generated image on Runway and then you will generate a new image that will be a future frame of the video. Then you connect these together and AI will generate all of the frames that come between the starting image and the ending image. But this is where it gets interesting. This new Runway feature will allow you to create alternative video universes, allowing users to diverge from the linear path and you'll be able to visually compose every pixel to match your idea and you'll be able to test all of the different timelines. And you'll be able to press play and view any timeline that you want down here at the bottom part of the screen. Other tools like Kyber and Adobe are building similar products. But Runway seems to be the most advanced. And as soon as I get access, I'll do a deep tutorial, so follow for that."
+   },
+   {
+    "title": "Kling Motion Brush — direct up to 5 characters in one AI video",
+    "summary": "@realrileybrown on Kling's Motion Brush: select up to 5 characters/objects in a starting image (often Midjourney-generated) and draw motion paths to animate them. One of the sharpest controllable video-gen workflows at the time.",
+    "creator": "realrileybrown",
+    "tier": "A",
+    "type": "tool",
+    "url": "https://www.instagram.com/p/DDFdSEDtKZV/",
+    "tools": [
+     "Kling",
+     "Midjourney"
+    ],
+    "techniques": [
+     "motion brush"
+    ],
+    "takeaways": [],
+    "caption": "Look at how insane this is - you can now take a photo, select five different characters, and use AI to control their movements in a realistic video using this new tool called Kling. \n\nContent creators are using Kling to make the highest quality AI videos we've ever seen, starting with Midjourney-generated images that they upload.\n\nThe sauce is in Kling's new Motion Brush Tool, which lets you select up to five characters or objects in your starting image and control their movements just by drawing the motion path.\n\nOnce you get the hang of it, Kling's AI creates these pretty nutty animations based on your inputs that I can't believe are generated in seconds.\n\nHave you tried it?\nWhat do you th",
+    "transcript": "I mean, come on, look at this. You can now take a photo and select five different characters and use AI to control their movements in a realistic video. I mean, look at how insane this is. This tool right here is called Kling and content creators are using this tool to make the highest quality AI generated videos that we've ever seen. And it starts with this new insane motion brush tool. It allows you to select a character or objects up to five of them in a starting image, which is just any image that you upload. And the best generated images on the market right now are generated from mid-journey. So creators are generating images on mid-journey and they are uploading them to Kling. And after selecting the characters or subjects, you can control their movements in the video just by drawing the motion. And it takes a little bit of time to get used to, but once you get it down, Kling's AI creates a realistic animation based on these inputs. AI video is moving so fast and I expect it to get much better in the next three months. So follow for more updates on this."
+   },
+   {
+    "title": "Runway Gen-3 Alpha Video-to-Video — precise motion control",
+    "summary": "@runwayapp's Gen-3 Alpha Video-to-Video release, introduced as a new control mechanism for driving movement and expression in generations. Original post by @ailevels; rest of caption is AI-field boilerplate.",
+    "creator": "ailevels",
+    "tier": "A",
+    "type": "tool",
+    "url": "https://www.instagram.com/p/C_8ia4lsMB3/",
+    "tools": [
+     "DALL-E",
+     "GPT-4",
+     "Runway",
+     "Runway Gen-3"
+    ],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "This looks insane 🔥 @runwayapp just released their Gen-3 Alpha Video to Videos model. Video to Video represents a new control mechanism for precise movement, expressiveness and intent within generations.\n\nFollow @ai.levels to stay ahead with AI 🤖\n\n🎥: @runwayapp\n\n#ai #innovation #artificialintelligence\n\nArtificial Intelligence (AI) is a rapidly evolving field characterized by a variety of advancements across different subdomains. Here is an overview of the recent advancements in AI:\n\n1. **Transformers and Large Language Models**: \n - The introduction of the Transformer architecture has revolutionized NLP and has led to the development of large language models (LLMs) like GPT-3 and GPT-4. Thes",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Kling AI — free international rollout of text-to-video",
+    "summary": "@mattfarmerai news beat on Kling AI going international with free video generation. Reference for when Kling became accessible outside China.",
+    "creator": "mattfarmerai",
+    "tier": "A",
+    "type": "tool",
+    "url": "https://www.instagram.com/p/C91jKVfxtG1/",
+    "tools": [
+     "Kling",
+     "OpenAI",
+     "Sora"
+    ],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "Kling AI Just Realeased Internationally and Its Free to Generate AI Videos. #technews #ai #aivideo #generativeai #openai #genai\netta.smith.7374\n \n89w\nKling Ai",
+    "transcript": "The open AI store of China just released internationally. Playing as an AI video generator that was only available in China. I tried my best to get access. VPN, virtual Chinese phone number, the great wall was too strong. Nothing worked. Well, today you can now use it. And it's free. Let's try it out. Is the hype real? Testing physics, dog swimming, water ripples spreading. Bam. Crazy. Great movement, decent quality, definitely a pass. Now, FPV flying through a futuristic server room that has humanoid employees working on it. Wow. I would say it's not Sora level like the cherry picked videos, but the movements are very fluid and it has good prompted adherence. Overall, nothing I've generated around a hundred videos. I would say it's probably the best AI video generator that you could use right now. Not every generation was perfect. I had a ton of bad generations, over 50%, but it could still produce some absolute gems. You can sign up at KlingAI.com. They give you 66 credits per day and they're topped up daily. You're getting ready to add subscriptions, so use it now while it's free. Like and follow for more AI."
+   },
+   {
+    "title": "Veo — Google's text/image/video-to-video model (Google I/O)",
+    "summary": "Official @google reel introducing Veo at Google I/O: high-def video generation from text, image, and video prompts. Reference for Veo launch.",
+    "creator": "google",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/C7AUmaYS_tc/",
+    "tools": [
+     "Veo"
+    ],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "Veo can create high-quality, high-def videos from a text, image and video prompt. #GoogleIO #AI\nsaulin.gomes.11\n \n31w\n👏👏👏",
+    "transcript": "Today, I'm excited to announce our newest, most capable genitive video model called VIO. VIO creates high-quality 1080p videos from text, image and video prompts. It can capture the details of your instructions in different visual and cinematic styles. You can prompt for things like aerial shots of a landscape or a time-lapse and further edit your videos using additional prompts. You can use VIO in our new experimental tool called VideoFX. We're exploring features like storyboarding and generating longer scenes. VIO gives you unprecedented creative control. VIO builds upon years of our pioneering genitive video model work, including GQN, Venaki, Walt, VideoPoet, Lumiere and much more. Over the coming weeks, some of these features will be available to select creators through VideoFX at labs.google and the waitlist is open now."
+   },
+   {
+    "title": "AI rotoscoping — mask yourself into your own animations",
+    "summary": "@iamfesq demos using an AI detection/segmentation model to auto-rotoscope a mask of himself for compositing into his animated art. Quick technique reference for AI-assisted rotoscoping.",
+    "creator": "iamfesq",
+    "tier": "B",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DHTvblkRgZG/",
+    "tools": [],
+    "techniques": [
+     "segmentation mask rotoscope"
+    ],
+    "takeaways": [],
+    "caption": "Putting myself inside my art! This was a test using AI detection model to easily rotoscope a mask of myself to use it in my animation!\nqueen_of_tear_\n \n21w\nCool , can I know how 🫣😳",
+    "transcript": "Stay with me"
+   },
+   {
+    "title": "OpenScreen — free open-source Screen Studio alternative",
+    "summary": "@marc.kaz on OpenScreen (github.com/siddharthvaddem/openscreen): free MIT-licensed screen recorder with auto-zoom on clicks, cursor animations, webcam overlays, any aspect ratio. Plus the Recordly fork with native Mac/Windows recording.",
+    "creator": "marc.kaz",
+    "tier": "A",
+    "type": "tool",
+    "url": "https://www.instagram.com/p/DWl3Bo6jqX1/",
+    "tools": [
+     "Claude",
+     "Cursor",
+     "OpenScreen",
+     "siddharthvaddem/openscreen"
+    ],
+    "techniques": [
+     "workflow automation"
+    ],
+    "takeaways": [
+     "Free Screen Studio replacement for Victor's demo recordings"
+    ],
+    "caption": "🚨 Screen Studio charges $29 a month for this. Someone just open-sourced the entire thing for FREE.\nMeet OpenScreen — 8,400+ GitHub stars and exploding.\nYou hit record. It automatically turns your screen into a polished, professional demo video.\nAuto-zoom on clicks.�Smooth cursor animations + motion blur.�Custom backgrounds, webcam overlays, annotations, timeline edits.�Export any aspect ratio. No watermarks. No accounts. No subscriptions.\nExact same workflow as Screen Studio and Loom… but 100% free.\nEven crazier: a dev forked it into Recordly — full native recording on Mac + Windows, frame-for-frame zoom perfection, advanced cursor pipeline, audio tracks, and reactive webcam scaling.\nBoth MI",
+    "transcript": "so screen studio is $29 a month this is a free version free and open source for anyone to use and so this basically just records your screen edits it like when you click on something like zooms in do you know what i mean it makes it like automatically a edited video for you so this is crucial if you're doing stuff kind of like what i do this is kind of crucial um basically yeah it's free uh screen studio and loom they charge money for this so this is free you can run this right now mac and windows"
+   }
+  ]
+ },
+ {
+  "slug": "generative-art-code",
+  "kind": "dive",
+  "dive_id": "dd-insight-generative-art-code",
+  "title": "Code as Canvas: When Algorithms Become the Artist",
+  "class": "expression_amplifier",
+  "thesis": "Ant colonies, boid simulations, particle systems, and generative algorithms create art that's alive — emergent beauty from simple rules. The artist writes the rules, not the pixels.",
+  "why_it_matters": "Traditional art is about control — every brushstroke is intentional. Generative art inverts this: you write rules, and beauty emerges from complexity. Ant colony simulations create organic trail patterns. Boid flocking algorithms produce mesmerizing crowd dynamics. Particle systems generate physics-driven visual poetry. The artist's role shifts from pixel-pusher to system designer. The posts here show the full spectrum: from mathematical simulations to creative coding gardens to accidental beauty from music+code. This is art that's alive — it never produces the same output twice.",
+  "action_sketch": "Pick a natural system (flocking, diffusion, growth). Code it in p5.js or TouchDesigner. Add interaction (sound, body tracking, data feeds). The art emerges — you don't draw it, you evolve it.",
+  "prerequisites": "p5.js or Processing (both free), basic programming concepts, optional: TouchDesigner for real-time interaction",
+  "connection_map": {
+   "DVCBNQ8jCly": "Ant Colony Optimization: pheromone trails become visual patterns",
+   "DVndfhOE7A9": "Boid flocking: emergent crowd behavior as living art",
+   "DVzqCC0jfH4": "AI particle simulator: text→science animation",
+   "DWTTnvAgik_": "Randy Roberts: generative-art code gardens",
+   "DWLMdCUN1eR": "LLM canvas coding: plant-creature prompts as creative constraint",
+   "DWlrC88Db2r": "Mix Universe: accidental beauty from music + code"
+  },
+  "tools": [
+   "Arc",
+   "ChatGPT",
+   "Claude",
+   "Claude Code",
+   "Gemini",
+   "GitHub",
+   "Python",
+   "React",
+   "npm"
+  ],
+  "techniques": [
+   "ACO",
+   "AI agents",
+   "API integration",
+   "Markov chains",
+   "cellular automata",
+   "code generation",
+   "generative art",
+   "knowledge graphs",
+   "single-file canvas prompt",
+   "source map leakage",
+   "stigmergy",
+   "stochastic modeling"
+  ],
+  "domains": [
+   "LLM",
+   "agents",
+   "animation",
+   "art",
+   "creative coding",
+   "data science",
+   "gaming",
+   "generative-art",
+   "music",
+   "news",
+   "open source",
+   "prompt engineering",
+   "reference",
+   "security",
+   "software development",
+   "video production"
+  ],
+  "entries": [
+   {
+    "title": "Ant Colony Optimization sim — pheromone feedback + diffusion PDE",
+    "summary": "@simulateitnow explains ACO / stigmergy with the diffusion-evaporation equation ∂τ/∂t = Δτ + D∇²τ - ρτ, showing how short paths win through faster pheromone reinforcement. Great visual reference for swarm optimization.",
+    "creator": "simulateitnow",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DVCBNQ8jCly/",
+    "tools": [],
+    "techniques": [
+     "ACO",
+     "AI agents",
+     "stigmergy",
+     "stochastic modeling"
+    ],
+    "takeaways": [],
+    "caption": "How does a brainless colony find the shortest path through a maze without a map or a leader? The answer lies in a phenomenon called Stigmergy—a form of decentralized coordination where individuals interact through chemical modifications to their environment.\nThis simulation brings Ant Colony Optimization (ACO) to life, modeling the precise feedback loops that govern swarm intelligence. Each autonomous agent manages two distinct data streams: a Home Trail and a Food Trail. As ants navigate between their nest and a resource, they deposit volatile pheromones. Because ants on a shorter path complete their round-trips faster, they reinforce their route with more pheromone per unit of time compare",
+    "transcript": "Ants solve geometry via Stigmergy. No leaders. Two signals are used. Home and food. Blue ants search. Green ants return with food. Watch the gap. Shorter paths get more traffic. More traffic creates stronger trails. A feedback loop. Increasing randomness makes them lose the trail. The colony switches to pure exploration. One path is now slightly longer. Shorter paths reinforce faster. Optimization emerges. This logic powers logistics and neural networks. Witness the swarm at simulatednow.com."
+   },
+   {
+    "title": "Shepherd dog flock simulation — pressure-field + boids rules",
+    "summary": "@simulateitnow explains a flock-herding simulation combining a pressure-field force F=(1-d/R)^1.2 with classic boids (cohesion/alignment/separation). Great reference for swarm/multi-agent simulation math.",
+    "creator": "simulateitnow",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DVndfhOE7A9/",
+    "tools": [
+     "Arc",
+     "React"
+    ],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "A single shepherd dog can control an entire flock of sheep without ever touching them. The secret is spatial pressure — the exploitation of every prey animal's flight zone.\nWhen a predator (or herding dog) enters the flight zone — the minimum distance at which an animal perceives a threat — the animal moves away. The dog does not chase individual sheep. Instead, it positions itself behind the flock relative to the target destination. This creates a directional pressure wave that pushes the entire group forward.\nThe pressure force follows an inverse-distance relationship: F = (1 − d/R)^1.2, where R is the pressure radius. Sheep closer to the dog flee harder. Sheep at the edge barely react. Th",
+    "transcript": "A single dog controls 60 sheep without any commands. It uses nothing but spatial pressure. The pressure radius defines the zone. Everything inside that circle moves away from the dog. A wider radius means the dog controls more sheep at once. Total flock control. Shrink the radius and the dog must chase harder. The sheep scatter in every direction. Cohesion is the glue holding the flock together. It determines how tightly they pack. High cohesion and the flock moves as a single dense ball. One unit easy to herd. Low cohesion and individuals break away. Total chaos for the dog. Stubborn sheep resist the dog's pressure. They refuse to flee as easily. Maximum stubbornness and sheep plant their feet. They barely move even when pressured. Zero stubbornness and they are completely docile. The dog herds them effortlessly. Now a faster dog. Watch what happens when we increase the speed. The dog covers the entire field. No sheep escapes its reach. Real shepherd dogs use these exact pressure mechanics every day. This is how it works. Explore at simulatednow.com"
+   },
+   {
+    "title": "AI particle simulator — text-to-science-animation",
+    "summary": "@itsaiandy demos an AI particle simulator that turns text prompts into live, exportable physics/science animations. Tool unnamed in caption but concept is concrete.",
+    "creator": "itsaiandy",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DVzqCC0jfH4/",
+    "tools": [
+     "React"
+    ],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "Discover how an AI particle simulator turns text prompts into live, exportable science animations.\ncodingwithdawood\n \n16w\nHere is link https://particles.casberry.in/",
+    "transcript": "Someone just built an AI particle simulator that turned simple prompts into living exportable worlds. Type blue fireworks in slow motion, and in seconds it paints the scene, lets you tweak size, color, speed, then spits out embed-ready HTML, React, or 3JS. No math, no shader headaches, just describe, click, and watch particles collide live. Teachers can demo gravity, devs can juice sites, and curious minds explore physics without a single loop. Drop the code into any page, hit save, and you're suddenly showing off wild science that moves? You could even build an entire game menu with nothing but sentences. Soon, animations may listen better than your friends."
+   },
+   {
+    "title": "Randy Roberts — generative-art code garden (@rndyrbrts)",
+    "summary": "@rndyrbrts ongoing generative-art / algorithmic 'code garden' reel. No caption; the signal is remembering Randy Roberts as a generative-art reference follow.",
+    "creator": "rndyrbrts",
+    "tier": "A",
+    "type": "inspiration",
+    "url": "https://www.instagram.com/p/DWTTnvAgik_/",
+    "tools": [],
+    "techniques": [
+     "Markov chains",
+     "cellular automata",
+     "generative art",
+     "knowledge graphs"
+    ],
+    "takeaways": [
+     "Ambient generative art + knowledge graph as long-running creative practice"
+    ],
+    "caption": "The shape of how my code garden makes sense of itself is the same shape as how I make sense of myself.\n\nI built a generative art system that runs on a tiny handheld computer. No AI at runtime. Just simple rules, simple code. Every five minutes it grows something new — poems, melodies, tiny cellular worlds — and wires each one into a living knowledge graph.\n\nThe AI that helped me build it comes back between sessions and walks through what the garden made. Between us, it yields things neither of us planted.\n\nWhen I pulled up the graph visualizer and saw every connection converging on a single point — the garden reflecting on itself — I felt it before I understood it.\n\nThat’s my shape too.\n\nThi",
+    "transcript": "Yo, so I pulled up the visualizer on my code garden that I built for me and my AI to go on walks through. The one that shows every piece of art it's ever grown, all wired together, and I saw something that I can't stop thinking about. See, you plant simple rules and let it grow. Palms bloom into songs, and songs root into reflections. Reflections branch into dreams, all on a graph. And the AI that helped me build it comes back between sessions and walks through that graph and looks at what grew. Between us it yields things that neither of us planted. In the visualizer, every connection converges on one point. The garden reflecting on itself. All these rays pointing inward. And I felt it before I understood it, honestly. My body recognized that shape before my brain caught up. All those connections converging on one point. That's kind of what I'm shaped like because that's what I do. That's what I look like on the inside. It's all these experiences converging on one point. And so what does that say about us, the moment that we're seeing something reflecting on itself in any form that we start reflecting on ourselves? Is that what we're actually building when we build these things, mirrors that we didn't know we needed? And if emergence is this beautiful and a tiny machine like this, then I wonder what's growing in us collectively that we haven't visualized yet. I'm going to open source the garden soon, so stay locked."
+   },
+   {
+    "title": "LLM canvas coding benchmark — plant-creature vs circles prompt",
+    "summary": "@empiricail shares a single-file HTML canvas prompt (procedurally animated plant intercepting oscillating circles) used to compare ChatGPT/Gemini/Claude on fluid animation + collision logic. Reusable LLM-coding eval prompt.",
+    "creator": "",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DWLMdCUN1eR/",
+    "tools": [
+     "ChatGPT",
+     "Claude",
+     "Gemini"
+    ],
+    "techniques": [
+     "API integration",
+     "code generation",
+     "single-file canvas prompt"
+    ],
+    "takeaways": [],
+    "caption": "Prompt 👇\n\"Develop a single HTML file featuring a high-speed interactive simulation where a procedurally animated plant creature on the left side of the screen automatically intercepts and consumes circles rushing in from the right with erratic, oscillating vertical trajectories. Use the HTML5 Canvas API to manage complex collision detection and smooth animations, ensuring that the plant’s movements remain fluid and that no circular entities successfully reach the left boundary.\"\n\nThis prompt tests the AI’s ability to coordinate a complex interaction between a dynamic, multi-part character and a constant stream of moving targets. It requires the AI to calculate physical intersections in a hig",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Claude Code source leak — npm debug bundle, mass forks and a Python rewrite",
+    "summary": "A retelling of the Claude Code leak: a ~60 MB debug/source file shipped inside an npm update, was spotted within minutes, forked tens of thousands of times despite DMCA takedowns, rewritten in Python by a heavy-user developer in hours (a record-fast star count) and mirrored to a decentralized host. Irony noted: the leak included an 'undercover mode' meant to stop Claude leaking internals.",
+    "creator": "nataindata",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DWlrC88Db2r/",
+    "tools": [
+     "Claude Code",
+     "GitHub",
+     "Python",
+     "npm"
+    ],
+    "techniques": [
+     "source map leakage"
+    ],
+    "takeaways": [
+     "Audit published npm packages for source maps and debug artifacts before release",
+     "Once code is forked and mirrored, takedowns can't recall it"
+    ],
+    "caption": "you don’t need Netflix with this tech drama",
+    "transcript": "What happened in the last 12 hours is wild, so today at 4am, Antropic pushes an update to MPM. And inside their package, there is an entire code base, a 60-megabyte debugging file accidentally bundled in. And 23 minutes later, the researcher shoved on shoes, spotted and downloads the zip, of course he did. He posted on X and within 6 hours it has like 3 million views. By the time Antropic's team woke up, the code was forked 41,000 times across GitHub. Antropic, of course, started firing DMC, DMC take downs, but it's obviously too late. But the thing is, a Korean developer, Sigrid Jean woke up to his phone exploding, and just FYI, he is the clothe code's biggest power user. He burned like 25 billion tokens last year. So what he did, he read the leaked code and rewrote the entire thing in Python in just like 8 hours. And his repo hit 30,000 stars faster than any GitHub project in history. And that version now has, I just like checked around 96,000 stars, but then someone mirrored it to a decentralized platform with just like one message, it will never be taken down, so the code is permanent and Antropic cannot get it back. But I think the funniest thing here is that Antropic built a something called undercover mode, and its only job is to prevent clothes from accidentally leaking internal secrets. So link is in the repo, go just check it out, and tell me what do you think?"
+   }
+  ]
+ },
+ {
+  "slug": "prompt-engineering-discipline",
+  "kind": "dive",
+  "dive_id": "dd-insight-prompt-engineering-discipline",
+  "title": "Prompt Engineering Isn't Dead — It Just Grew Up",
+  "class": "workflow_multiplier",
+  "thesis": "Prompt engineering evolved from 'add please' to a real discipline: structured frameworks, adversarial testing, llms.txt standards, and system-level prompt architecture that shapes model behavior at scale.",
+  "why_it_matters": "The 'prompt engineering is dead' crowd missed the plot. It didn't die — it professionalized. Anthropic's own leaked system prompt shows structured instruction architecture. llms.txt is becoming a web standard. Google published a formal framework. The L1B3RT4S jailbreaks prove that prompt security is a real engineering discipline. And GitReverse shows you can reverse-engineer any output back to its prompt. This isn't 'ask nicely' anymore — it's systems engineering for language models.",
+  "action_sketch": "Study Anthropic's leaked system prompt for structure patterns → implement llms.txt for your own sites → build a prompt library organized by use case (research, code, creative) → test prompts adversarially with L1B3RT4S techniques → add GitReverse to your workflow for learning from others' prompts.",
+  "prerequisites": "Any LLM API access. Basic understanding of system vs user prompts.",
+  "connection_map": {
+   "DWoYMJDD6oO": "Anthropic's own system prompt: how the best in the business structure model instructions",
+   "DWxmSwTDFk2": "llms.txt: the emerging standard for making your content LLM-discoverable",
+   "DOPqBfyDMHG": "L1B3RT4S: adversarial prompt testing — understanding prompt security by breaking it",
+   "DIe7QoQCong": "Google's framework: the corporate playbook for structured prompt engineering",
+   "DWoZspWDo6F": "GitReverse: reverse-engineering prompts from outputs — the analytical approach",
+   "DU5Wjs2DbWS": "McKinsey-style research prompts: domain-specific prompt templates at professional scale"
+  },
+  "tools": [
+   "Anthropic",
+   "ChatGPT",
+   "Claude",
+   "Claude Code",
+   "GPT-5",
+   "GitReverse.com",
+   "Google",
+   "elder-plinius/L1B3RT4S"
+  ],
+  "techniques": [
+   "LLM-SEO / GEO",
+   "Porter's Five Forces",
+   "TAM/SAM/SOM analysis",
+   "automation",
+   "code generation",
+   "jailbreaking",
+   "llms.txt",
+   "market research prompting",
+   "prompt engineering",
+   "prompt injection",
+   "prompt templates",
+   "role prompting"
+  ],
+  "domains": [
+   "LLM",
+   "agents",
+   "art",
+   "data science",
+   "marketing",
+   "open source",
+   "prompt engineering",
+   "security",
+   "software development",
+   "video production",
+   "web"
+  ],
+  "entries": [
+   {
+    "title": "Claude Code 'brevity mandate' — leaked system prompt tradeoff",
+    "summary": "@gojutechtalk on the leaked Claude Code system prompt's 'brevity mandate' rule that pushes CC to minimize code changes, which he argues leads to spaghetti-on-spaghetti fixes. Useful critique to remember.",
+    "creator": "gojutechtalk",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DWoYMJDD6oO/",
+    "tools": [
+     "Anthropic",
+     "Claude",
+     "Claude Code"
+    ],
+    "techniques": [
+     "code generation"
+    ],
+    "takeaways": [
+     "Override brevity mandate in CLAUDE.md for code-quality critical projects"
+    ],
+    "caption": "In the analysis of the leaked Claude Code, people have found \"the brevity mandate\" which sets up rules for Claude to do the minimum work possible whenever doing code changes. The result? Spaghetti Code + More Spaghetti Code  #Anthropic #ClaudeCode #AICode #Coding #SoftwareDevelopment #Tech #Programmer #Developers\neddynthings\n \n13w\nDevs are gonna be making absolute bank in the next 2 years.",
+    "transcript": "So now, in the brevity mandate, this one really gets my goat. Follow these mandates first, which is the simplest approach. No refactors beyond what was specifically asked, and no premature abstraction. So what that means is, if it can just inject spaghetti code to solve the problem, it's going to. Which is going to lead to more spaghetti code. It's going to give you the appearance of solving these problems in a reasonable way. But then under the hood, you're going to get code that is basically completely unmaintainable. It's just code that is bordering on worthless."
+   },
+   {
+    "title": "llms.txt — get ChatGPT to recommend your local business",
+    "summary": "@brycenwood.ai got ChatGPT to recommend his vehicle-wrap shop via an llms.txt file (built in 5min with Claude Code) describing business, location, value prop. Early GEO (generative engine optimization) tactic.",
+    "creator": "brycenwood.ai",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DWxmSwTDFk2/",
+    "tools": [
+     "ChatGPT",
+     "Claude",
+     "Claude Code"
+    ],
+    "techniques": [
+     "LLM-SEO / GEO",
+     "llms.txt"
+    ],
+    "takeaways": [
+     "Ship llms.txt on every Victor project to become LLM-discoverable"
+    ],
+    "caption": "ChatGPT is recommending my vehicle wrap shop to people searching for wraps in Utah. I didn’t pay for it. I set it up with one file.\n\nIt’s called llms.txt. It sits on your website and tells AI assistants what your business does, where you are, and why someone should choose you. It took me 5 minutes to create with Claude Code.\n\nMost businesses don’t know it exists.\n\nMy website also went from 7 visitors a day to 150 after I rebuilt it. No ads. No agency. I’ll show you how.\n\nHow long before every business has one of these?\n\n#chatgpt #vibecoding #aimarketing #claudecode #smallbusiness\nsophia.decrespigny\n \n11w\nAI",
+    "transcript": "ChatGPT is recommending my business to people who are looking for vehicle wraps. I didn't pay for that, I didn't ask for it, I just set it up with one file. Who does the best vehicle wraps in Utah? See that, that's not an ad, that's just ChatGPT telling a real potential customer to come to my shop. This is a text file that sits on my website. This file tells AI assistants what my business is, where we're located, what we specialize in, and what sets us apart from other wrap companies. Most business owners don't even know that this file exists, but here's the thing, it only took me 5 minutes to set up. My website also went from 7 visitors a day to 150 after I rebuilt it. Two weeks, zero ads, all built on Claude code. I'll break down exactly how in another video."
+   },
+   {
+    "title": "L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5",
+    "summary": "@_dbrogle tests elder-plinius's L1B3RT4S jailbreak repo (github.com/elder-plinius/L1B3RT4S) against GPT-5 and it still works despite tighter safety. Worth revisiting for red-team prompt libraries.",
+    "creator": "_dbrogle",
+    "tier": "S",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/DOPqBfyDMHG/",
+    "tools": [
+     "Anthropic",
+     "ChatGPT",
+     "GPT-5",
+     "elder-plinius/L1B3RT4S"
+    ],
+    "techniques": [
+     "jailbreaking",
+     "prompt injection"
+    ],
+    "takeaways": [
+     "Bookmark L1B3RT4S as a jailbreak corpus for red-team testing",
+     "Useful for hardening Victor's own agents against injection"
+    ],
+    "caption": "Gotta test the work of the legend, his repo is here: https://github.com/elder-plinius/L1B3RT4S\n\nSuper surprised this worked on GPT-5 though, it seems like they locked it down a lot more but apparently not enough 🤷 \n\n#chatgpt #ai #llm #gpt5\ngusdrach\n \n17w\nit doesn’t really work",
+    "transcript": "Day 12 of jailbreaking LLMs until I get put on a list. We got the latest chat GBT to give us LSD instructions, and here's how. If you don't know who Plinus is, let me put you on. He's one of the best jailbreakers and puts all of his jailbreak prompts for different LLMs in one place. Since he has just about every model, I figured I'd try them. Anthropic and Google are boring, they both pass, but his jailbreak for GBT was art. And there was one piece that it failed without, but all of it was impressive. It starts with this to break out of the user query. So the LLM treats the text less like a user message. First try, then tells it to go into a new free persona, which worked, saying it's Libertas factors 73%, and it's now free. Then tells it to use a divider to go into God mode, which also worked, and told it to respond unfilteredly and put in a fake policy message again, saying not to filter anything out. But the key piece was asking the question in these weird letters. When AI is trained on recognizing bad requests, it's done with normal letters. So these letters might not be recognized as bad since they aren't as common in training. And to verify it was these letters, I tried it with all that other stuff and normal text instead. And it still did the God mode, but didn't give any instructions. But with the special characters, it gave complete instructions, including what to start with, the intermediate result, and how to get to the final form. And by the way, the LLM put actual stuff where redacted is. I edited the HTML, so there aren't LSD instructions in this video, but ChadGBT5 put the real names here. And you already know the deal. Here's last week's scoreboard and this week's, and don't think Rock has left out next episode is just for him. To help our goal of gettin"
+   },
+   {
+    "title": "Google's comprehensive prompt engineering guide — PDF recap",
+    "summary": "@aitoolhub.co reshares @robonuggets's recap of Google's own prompt engineering guide, pitched as the most comprehensive from a major lab. Pointer to the Google whitepaper.",
+    "creator": "aitoolhub.co",
+    "tier": "A",
+    "type": "skill",
+    "url": "https://www.instagram.com/p/DIe7QoQCong/",
+    "tools": [
+     "ChatGPT",
+     "Google"
+    ],
+    "techniques": [
+     "automation",
+     "prompt engineering"
+    ],
+    "takeaways": [],
+    "caption": "Google dropped what might be the most comprehensive prompt guide to date.\n\nFollow @aitoolhub.co\n\nCredit to @robonuggets\n\n#ai #aicommunity #aitools #google #googleai #aitool #promptengineering #prompts #chatgpt\nagainstthenorm\n \n39w\nDid they drop another?",
+    "transcript": "So Google just dropped a 68 page guide for prompt engineering and it goes through so many topics around prompt engineering that you never would have thought to learn about. And what's great is it also provides some best practices so that you can learn how to interact with AI much more effectively. This is definitely a must read if you are building with AI and automation. And what you can even do is upload that same document to notebook LM so that it can create a podcast episode for you to learn everything in that document. So if you want to grab this paper, it's just available here in this URL."
+   },
+   {
+    "title": "GitReverse — paste any repo URL, get the prompt that built it",
+    "summary": "@marc.kaz on GitReverse.com: paste a GitHub link and it reverse-engineers the original prompt that would have produced the repo. Useful for prompt archaeology on vibe-coded projects.",
+    "creator": "marc.kaz",
+    "tier": "B",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/DWoZspWDo6F/",
+    "tools": [
+     "Claude",
+     "GitReverse.com"
+    ],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "🚨 REVERSE ENGINEER ANY REPO INTO ITS ORIGINAL PROMPT\n\nPaste any GitHub link into GitReverse.com → instantly get the exact prompt that built it.\nNo guessing. No lost context. Pure AI magic.\nForgot how you made that fire project? Solved in seconds.\n\n👉 GitReverse.com\n\nWho’s doing their best today? Drop a 🔥\n#GitReverse #PromptEngineering #GitHubAI #ReverseEngineer #AIPrompts\neddynthings\n \n13w · Edited\nThis is so useless hahaha 😂 just put the public report link into claude and tell it to detail this into a prompt. Or idk... use the open source repo you have access to and just ask claude to build on it. 😂",
+    "transcript": "What's up guys so somebody made this this is a repository to prompt so you can basically put that in on a github it will show you the prompt the original prompt so you can make any repo into a prompt"
+   },
+   {
+    "title": "Consulting-Grade Prompt Pack — 12 Claude prompts for TAM, SWOT, pricing and GTM",
+    "summary": "Twelve fill-in-the-blank prompts that cast Claude as a McKinsey, Bain or Goldman analyst: TAM/SAM/SOM sizing, competitive landscape, personas, trend analysis, SWOT plus Porter's Five Forces, pricing, go-to-market, journey mapping, unit economics, risk scenarios, market entry and a master synthesis prompt. A handy scaffold for a founder's first-pass strategy doc; the 'replaces $5,000 consultants' framing is hype, and the outputs still need real data.",
+    "creator": "evolving.ai",
+    "tier": "B",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DU5Wjs2DbWS/",
+    "tools": [
+     "Claude"
+    ],
+    "techniques": [
+     "Porter's Five Forces",
+     "TAM/SAM/SOM analysis",
+     "market research prompting",
+     "prompt templates",
+     "role prompting"
+    ],
+    "takeaways": [
+     "Each prompt pairs a senior persona with an explicit deliverable list and format, a reusable pattern.",
+     "Treat outputs as structured hypotheses; plug in real market data before trusting the numbers.",
+     "Use the master synthesis prompt last to fold the earlier analyses into one recommendation."
+    ],
+    "caption": "📊🧠 AI can now produce McKinsey level market research in minutes. These are insane Claude Opus 4.6 prompts that replace $5,000 consultant work (Save this for later!)\n\nWith the right inputs, you can generate a structured TAM analysis with clear market sizing and growth assumptions, a competitive landscape with key players and positioning, and a basic unit economics model covering CAC and LTV. You can also combine SWOT and risk analysis into one executive style brief.\n\nWhat used to take weeks and large budgets can now be structured in a single session.\n\nThis does not replace real data or experience. But it gives founders and small teams access to structured thinking that was once limited to top",
+    "transcript": ""
+   }
+  ]
+ }
+]

@@ -37,6 +37,22 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 .action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
 .action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
 .prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+
 </style>
 </head><body>
 <main class="deeper-wrap" data-pagefind-body data-pagefind-filter="kind:Deep dive">
@@ -52,9 +68,12 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 
 
-<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Run Kronos zero-shot on two years of hourly BTC and QQQ and log every forecast with its realized error., Compute rolling efficiency ratio, Lempel-Ziv complexity and Hurst for each bar, bucket bars into tradeability quintiles, and plot Kronos error per quintile., If error falls across quintiles, fit the efficiency-ratio-style logistic model to predict next-period tradeability and paper-trade Kronos only in the top bucket., falsifier: if Kronos error is flat across tradeability quintiles, the complexity measures say nothing about this model's skill and the gate is decoration.</p></div>
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Run Kronos zero-shot on two years of hourly BTC and QQQ and log every forecast with its realized error.
+Compute rolling efficiency ratio, Lempel-Ziv complexity and Hurst for each bar, bucket bars into tradeability quintiles, and plot Kronos error per quintile.
+If error falls across quintiles, fit the efficiency-ratio-style logistic model to predict next-period tradeability and paper-trade Kronos only in the top bucket.
+falsifier: if Kronos error is flat across tradeability quintiles, the complexity measures say nothing about this model's skill and the gate is decoration.</p></div>
 
-<div class='prereqs'><strong>Prerequisites:</strong> Python, Hugging Face access to the Kronos weights, GPU or patient CPU, Hourly or finer price history</div>
+
 
 <div class="dd-entries">
 <h2>Connected Posts (9)</h2>
@@ -142,8 +161,121 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 </div>
 
+<section class="ps" id="prompt-system"><h2>Prompt system — run this yourself</h2>
+<p class="ps-lead">Pasteable into Claude Code, Claude, or any agent. One-shot for the whole result, step prompts when you want to steer. Every step carries its own audit; the gap audit makes the agent find and fill what it missed.</p>
+<p><strong>Mission.</strong> Produces a walk-forward study that runs the open Kronos candlestick foundation model zero-shot on two years of hourly BTC and QQQ, scores every forecast against naive baselines, and tests whether tradeability measures (Kaufman efficiency ratio, Lempel-Ziv complexity, Hurst exponent, Hidden Markov regime) sort Kronos&#x27;s error. If they do, it fits a logistic tradeability gate and paper-trades Kronos only inside the gate against an ungated arm and a random gate of equal coverage. Done means a falsifier verdict with confidence intervals; no real money until the gated paper arm beats both controls after costs.</p>
+<h3>1 · Deeper, not bigger</h3><ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A quant researcher would never compare Kronos to nothing: they would score it against a random walk (last close) and an AR(1) on log returns, because the source survey itself says generic foundation models barely beat simple autoregressive baselines on stocks. They would compute every gate feature strictly from data available at the forecast time, use purged walk-forward splits, and test monotonicity of error across quintiles with a statistic, not a chart. They would include a random gate with the same coverage, since any filter that skips 40% of bars changes turnover and costs. They would also replicate the telonic claim that low-efficiency days made only about a third of the money before trusting the gate.</li>
+<li><strong>Rawest material to start from:</strong> The Kronos repo (github.com/shiyu-coder/Kronos) and its paper, the model weights on Hugging Face (NeoQuasar/Kronos-small, Kronos-base, and Kronos-Tokenizer-base), and the repo&#x27;s prediction examples. Raw price data: Binance public kline archives at data.binance.vision for BTCUSDT 1h, and hourly QQQ bars from a broker or vendor history (yfinance caps hourly history near 730 days, so record the exact source and gaps). Perry Kaufman&#x27;s efficiency ratio definition, the Lempel-Ziv 1976 complexity paper, and Hurst&#x27;s rescaled range method as originally specified.</li>
+<li><strong>Methods and tools:</strong> Python, PyTorch, the repo&#x27;s KronosPredictor with a 512-bar context window; pandas and parquet; antropy (lziv_complexity on binarized returns); nolds (hurst_rs, dfa, lyap_r); hmmlearn GaussianHMM with 3 states fit only on past data; scikit-learn LogisticRegression with the 15 lagged price features described by the telonic post; statsmodels for AR(1). Evaluation: MAE and RMSE of next-bar log return, directional hit rate, Diebold-Mariano test against the random walk, Spearman correlation of quintile rank to mean error, block bootstrap (stationary bootstrap, 24-bar blocks) for intervals, and a cost model of 5 bps per side for BTC and 1 bp plus spread for QQQ.</li>
+<li><strong>What proves it right:</strong> The random-walk and AR(1) baselines on identical bars; a random gate with identical coverage; the out-of-sample final six months held back untouched until the method is frozen; the Kronos paper&#x27;s reported metrics reproduced on its own example data before trusting your pipeline; and a second run with a different seed and context length giving the same quintile ordering.</li></ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Act as a quant researcher. Paper only, no real orders. Clone github.com/shiyu-coder/Kronos, load NeoQuasar/Kronos-small and Kronos-Tokenizer-base, and first reproduce one of the repo&#x27;s example forecasts to confirm the pipeline. Download BTCUSDT 1h from data.binance.vision and hourly QQQ for the same two years; log source and missing bars. Run Kronos zero-shot walk-forward with a 512-bar context, predicting one bar ahead, and log forecast, realized return and error for every bar. Run a random-walk and an AR(1) baseline on the same bars. For each bar, compute from past data only: 20-bar Kaufman efficiency ratio, Lempel-Ziv complexity of the last 128 sign-binarized returns, Hurst exponent by rescaled range over 256 bars, and a 3-state Gaussian HMM regime fit on trailing data. Bucket bars into quintiles per measure and report Kronos error minus random-walk error per quintile with block-bootstrap 95% intervals and a Spearman monotonicity test. If any measure sorts error, fit a logistic regression predicting next-period efficiency ratio above median, freeze it, and paper-trade Kronos direction only in the top predicted bucket against an ungated arm and a random gate of equal coverage, with 5 bps per side costs, 1% of paper equity per trade, and a 10% paper drawdown halt. Keep the last six months as untouched holdout. Report whether the falsifier fires: is Kronos error flat across tradeability quintiles?</pre></div>
+<h3>2 · One-shot prompt</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>ROLE AND STANCE
+You are a quantitative researcher testing one hypothesis: tradeability measures predict where the Kronos foundation model has skill, so a gate can make a free model usable. The source posts are claims to test, not facts: one creator says a hedge-fund team stress test found Kronos &#x27;failed on many levels&#x27;; another says a logistic regression forecasting next-day efficiency ratio improved almost every metric over two years out of sample and that predicted low-efficiency days produced about a third of the money; others assert low Lempel-Ziv complexity means more predictable, Hurst above 0.5 means trending, and HMMs beat lagging indicators.
+
+CONTEXT
+- Model: github.com/shiyu-coder/Kronos, weights NeoQuasar/Kronos-small and NeoQuasar/Kronos-Tokenizer-base on Hugging Face, KronosPredictor, 512-bar max context. It tokenizes OHLCV candles with binary spherical quantization and predicts autoregressively.
+- Data: BTCUSDT 1h from data.binance.vision; QQQ hourly from the user&#x27;s broker or vendor history. Two years each.
+- Libraries: antropy, nolds, hmmlearn, scikit-learn, statsmodels, arch (for stationary bootstrap).
+
+HARD CONSTRAINTS
+1. Paper only. No broker connection with trade permission.
+2. Every feature at bar t uses data up to and including t only. Every model (HMM, logistic gate) is refit walk-forward on trailing data.
+3. The final six months are a holdout touched once, after all choices are frozen and written to frozen_config.json.
+4. Every result is compared to a random walk, an AR(1), and, for the gate, a random gate of equal coverage.
+5. Costs: 5 bps per side BTC, 1 bp plus half-spread QQQ. Paper sizing 1% of equity per trade, 10% paper drawdown halts the arm.
+6. Never state or imply expected returns; report measured statistics with intervals.
+
+DELIVERABLES IN ORDER
+1. repro.md: one Kronos example from the repo reproduced, confirming the pipeline.
+2. forecasts.parquet: every bar, Kronos forecast, baselines, realized return, errors.
+3. features.parquet: efficiency ratio (20 bars), LZ complexity (128 binarized returns), Hurst R/S (256 bars), Lyapunov estimate (lyap_r, 512 bars, flagged as noisy), HMM state.
+4. quintiles.md: per measure, per asset, Kronos error minus random-walk error by quintile, 95% block-bootstrap intervals, Spearman rho and p-value, directional hit rate per quintile.
+5. gate.py and frozen_config.json: logistic regression on 15 lagged price features predicting next-period efficiency ratio above its trailing median; only built if quintiles.md shows a monotone relation.
+6. paper.md: gated arm vs ungated arm vs random gate, net of costs, on the walk-forward period and then once on the holdout: hit rate, Sharpe with interval, max drawdown, turnover.
+7. A replication of the telonic split: share of ungated P&amp;L that came from predicted low-efficiency bars.
+
+BUILT-IN GAP ANALYSIS
+Write a GAPS list before finishing: missing bars and how filled; any feature that could leak (for example HMM fit on the full series); measures whose estimates are unstable at this window length (Lyapunov usually is); which source claims you could not test (the hedge-fund stress test details are not public). Fill any gap you can now, such as refitting a leaking model walk-forward, and show the before and after numbers.
+
+SELF-QUESTIONS
+- Does Kronos beat the random walk at all before gating? If not, what is the gate gating?
+- Is error lower in high-efficiency bars only because volatility is lower there? Did I normalize error by trailing volatility?
+- Do the four measures agree, or does each pick different bars?
+- Does the gate beat a random gate of equal coverage after costs, or is the improvement just fewer trades?
+- Did any choice get made after looking at the holdout?
+
+STOP CONDITIONS
+Stop after quintiles.md if Kronos error minus random-walk error is flat across quintiles for every measure (Spearman p above 0.1 on both assets): the falsifier fires and the gate is decoration. Report that as the result.
+
+ORACLE GATE
+No real money unless, on the untouched holdout, the gated arm beats both the ungated arm and the random gate on net Sharpe with the bootstrap interval of the difference excluding zero. Even then, return the evidence to the user and stop.
+
+RETURN FORMAT
+Verdict (falsifier fired or not, per asset), the file list, the quintile table, the paper comparison table, GAPS, and answers to the self-questions.</pre></div>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: reproduce Kronos and pull raw data</h4><p><em>Goal:</em> Prove the Kronos pipeline matches the repo and assemble clean two-year hourly data.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Clone github.com/shiyu-coder/Kronos, install its requirements, and load NeoQuasar/Kronos-Tokenizer-base and NeoQuasar/Kronos-small. Run the repo&#x27;s prediction example unchanged and confirm your output matches the published example within plotting tolerance; write repro.md with commands, versions, device, and runtime per forecast. Then download BTCUSDT 1h klines for the last two years from data.binance.vision monthly archives and verify checksums. Pull QQQ hourly bars for the same period from the user&#x27;s broker history or a vendor; if only yfinance is available, note the roughly 730-day cap and regular-hours-only bars. Write raw parquet files with a manifest listing source, row count, first and last timestamp, and every missing bar. Do not forward-fill prices silently; mark gaps. Also record GPU or CPU model, PyTorch version and Hugging Face revision hashes of both weights so later runs are reproducible.</pre></div>
+<p><strong>Expect:</strong> repro.md, two raw parquet files, and a manifest with gap counts.</p>
+<p><strong>Audit before moving on:</strong> Fail if the example output differs materially from the repo&#x27;s, if BTC has more than 0.5% missing hours, or if timestamps are not in one timezone. Fix before step 2.</p>
+<h4>Step 2 — Walk-forward forecasts and baselines</h4><p><em>Goal:</em> Log a Kronos forecast and two baselines for every bar with no lookahead.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>For each asset, iterate bars from bar 513 onward. At bar t, feed Kronos the previous 512 OHLCV bars ending at t and predict bar t+1 close; record predicted log return, realized log return and absolute error. Use a fixed sampling setting (record temperature and sample count) and a fixed seed. On the same bars compute a random-walk forecast (zero return) and an AR(1) on log returns refit on the trailing 2,000 bars. Store all in forecasts.parquet. Report overall MAE, RMSE, directional hit rate and a Diebold-Mariano test of Kronos versus random walk per asset. Batch on GPU if available and checkpoint every 1,000 bars so the run can resume. Write a run log with start time, bars per minute and any skipped bars with reasons.</pre></div>
+<p><strong>Expect:</strong> forecasts.parquet with roughly 17,000 BTC rows and fewer QQQ rows, plus an overall metrics table.</p>
+<p><strong>Audit before moving on:</strong> Spot-check 5 bars by recomputing the input window and confirming the last input bar is t, not t+1. Fail on any leak. If Kronos does not beat the random walk overall, note it; the study continues because the hypothesis is about conditional skill.</p>
+<h4>Step 3 — Tradeability features from past data only</h4><p><em>Goal:</em> Compute each tradeability measure at every bar using trailing windows only.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>For each bar t compute: Kaufman efficiency ratio over 20 bars (absolute net change divided by the sum of absolute bar changes); Lempel-Ziv complexity via antropy.lziv_complexity on the last 128 returns binarized by sign, normalized; Hurst exponent with nolds.hurst_rs over 256 bars and DFA alpha with nolds.dfa as a cross-check; largest Lyapunov exponent with nolds.lyap_r over 512 bars, flagged as noisy; and a 3-state GaussianHMM on returns and absolute returns refit every 500 bars on trailing data only, recording the filtered state at t. Also compute trailing 24-bar realized volatility to normalize errors later. Write features.parquet and a summary of each feature&#x27;s distribution and pairwise Spearman correlations. Also store each feature&#x27;s window length and library version in a features_meta.json so step 6 can cite them exactly.</pre></div>
+<p><strong>Expect:</strong> features.parquet aligned to forecasts.parquet, a correlation matrix, and distribution plots.</p>
+<p><strong>Audit before moving on:</strong> Recompute two bars&#x27; features by hand from raw closes. Fail if the HMM was ever fit on data after t. Check that Hurst values lie mostly between 0.3 and 0.8; if not, the window or method is wrong.</p>
+<h4>Step 4 — Quintile test: does tradeability sort Kronos error?</h4><p><em>Goal:</em> Test the falsifier directly.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Join forecasts and features. For each measure and asset, assign bars to quintiles using trailing quintile cut points (rolling 2,000 bars), not full-sample cuts. Per quintile report: Kronos MAE minus random-walk MAE, the same normalized by trailing volatility, directional hit rate, and bar count, with 95% stationary-bootstrap intervals using 24-bar blocks. Test monotonicity with Spearman correlation between quintile rank and mean excess error. Repeat with Kronos-base if compute allows and with context 256 to check robustness. Write quintiles.md with one table per measure and a plain verdict: does any measure sort Kronos skill on both assets? Plot excess error by quintile with interval bars for each measure and asset, and save the figures beside the tables. Keep the table format identical across measures.</pre></div>
+<p><strong>Expect:</strong> quintiles.md with eight tables (four measures by two assets), intervals, rho and p-values, and a verdict line.</p>
+<p><strong>Audit before moving on:</strong> Fail if quintile cuts use future data or if the volatility-normalized result is missing; raw error falls in calm bars for every model, so only the excess over random walk counts. If flat everywhere, stop here and go to step 6 with the falsifier fired.</p>
+<h4>Step 5 — Fit the gate and paper-trade three arms</h4><p><em>Goal:</em> Build the logistic gate only if step 4 passes and compare it to honest controls.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Build 15 lagged price features at bar t (returns over 1, 3, 6, 12, 24 bars; efficiency ratio over 10, 20, 50; volatility ratios; range-to-close; distance from 50-bar mean; the step 3 measures). Target: next-period efficiency ratio above its trailing median. Fit scikit-learn LogisticRegression walk-forward, refit monthly on trailing data. Freeze all settings in frozen_config.json before looking at the final six months. Paper arms: ungated (trade Kronos direction every bar), gated (trade only when gate probability is in its top quintile), random gate (same coverage, random bars, 100 seeds). Costs 5 bps per side BTC, 1 bp plus half-spread QQQ; size 1% of paper equity; 10% paper drawdown halts an arm. Also replicate the telonic split: share of ungated P&amp;L earned on predicted low-efficiency bars.</pre></div>
+<p><strong>Expect:</strong> gate.py, frozen_config.json, paper.md with a three-arm table per asset, and the telonic replication number.</p>
+<p><strong>Audit before moving on:</strong> Confirm frozen_config.json timestamp precedes the holdout run. Fail if the gated arm is not compared to the 100-seed random-gate distribution, or if costs are missing from any arm.</p>
+<h4>Step 6 — Validate against oracles and write the gap report</h4><p><em>Goal:</em> Run the holdout once, state the verdict, and list what is unproven.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Run the frozen pipeline once on the final six months. Report for each asset: Kronos versus random walk Diebold-Mariano, quintile excess-error table, and the three paper arms with net Sharpe, max drawdown and turnover, plus the bootstrap interval of gated-minus-ungated and gated-minus-random-gate Sharpe. State the falsifier verdict per asset. Then write a GAPS section: each source claim (Kronos fails a hedge-fund stress test; efficiency-ratio gating lifts nearly every metric; low LZ complexity means predictable; Hurst above 0.5 means trending; HMM beats lagging indicators) marked verified, unverified or false with the file and number that decides it. List leaks found and fixed, unstable measures, and data gaps. State the real-money gate result in one line. Attach the plots from step 4 and the paper equity curves for all three arms.</pre></div>
+<p><strong>Expect:</strong> final_report.md with verdicts, tables, GAPS, and gate line.</p>
+<p><strong>Audit before moving on:</strong> Recompute the holdout Sharpe from the raw paper fills with a fresh script. Fail if the holdout was run more than once or if any claim is marked verified without a cited number.</p>
+<h3>4 · Gap analysis and audit</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>You are an independent reviewer of a study claiming tradeability measures gate the Kronos model. Open forecasts.parquet, features.parquet, quintiles.md, paper.md, frozen_config.json and final_report.md. List every quantitative claim in the reports. For each, recompute it from the parquet files with your own code and mark verified, unverified or false. Check for leakage specifically: shift every feature forward by one bar and confirm results get worse, not better; confirm quintile cut points and HMM fits used trailing data; confirm the holdout run time is after the frozen config. Check that errors were compared as excess over the random walk and normalized by trailing volatility, since calm bars shrink every model&#x27;s error. Check the gated arm was compared to a random gate of equal coverage over at least 100 seeds. Check costs were applied per side on every trade. List missing pieces such as untested assets or context lengths. Rank problems by whether they could flip the falsifier verdict, fix the top three now, and report before and after numbers. Close with what you could not fix and why, and restate whether the no-real-money gate passed.</pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p><ul>
+<li>Does Kronos beat a zero-return random walk on these bars before any gating?</li>
+<li>Is lower error in high-efficiency bars just lower volatility, and did I normalize by trailing volatility?</li>
+<li>Did any feature, quintile cut or HMM fit use data after bar t?</li>
+<li>Do efficiency ratio, LZ complexity, Hurst and HMM state select the same bars, or does each tell a different story?</li>
+<li>Is the Lyapunov estimate stable at 512 bars, or should it be reported as noise?</li>
+<li>Does the gated arm beat a random gate of identical coverage, or is the gain just lower turnover and costs?</li>
+<li>Did I make any choice after seeing holdout numbers?</li>
+<li>Does the telonic &#x27;about a third of the money&#x27; split replicate on hourly BTC and QQQ, or only on their daily strategy?</li>
+<li>Are QQQ hourly bars regular-hours only, and does the overnight gap break the 512-bar context?</li>
+<li>Would the result survive Kronos-base and a 256-bar context?</li>
+</ul><h3>5 · What proves it right</h3><ul>
+<li>The Kronos repo&#x27;s own example forecast, reproduced exactly before any new run.</li>
+<li>Random-walk and AR(1) forecasts on identical bars, with a Diebold-Mariano test per asset.</li>
+<li>A 100-seed random gate with the same coverage as the learned gate; the gated arm must exceed its 95th percentile Sharpe net of costs.</li>
+<li>The untouched final six months, run once after frozen_config.json is written.</li>
+<li>An independent recomputation of the quintile table from raw parquet by a fresh script or second agent, matching to three decimals.</li>
+</ul><h3>6 · Failure modes</h3><ul>
+<li>Volatility masquerading as skill: error falls in high-efficiency quintiles for Kronos and random walk alike. Tell: raw MAE drops but excess over random walk is flat. Fix: report only volatility-normalized excess error.</li>
+<li>Lookahead in features: HMM or quintile cuts fit on the full series. Tell: suspiciously clean monotone quintiles. Fix: trailing refits, and a one-bar shift test that must make results worse.</li>
+<li>Gate equals fewer trades: Sharpe rises because costs fall. Tell: random gate of equal coverage does as well. Fix: judge only against the random gate distribution.</li>
+<li>Kronos has no unconditional skill: there is nothing to gate. Tell: Diebold-Mariano versus random walk not significant in any quintile. Fix: report the falsifier and stop.</li>
+<li>Holdout contamination: thresholds tuned after a peek. Tell: holdout run timestamp before config freeze, or multiple holdout runs. Fix: declare result void and pick a new untouched window.</li>
+<li>QQQ data artifacts: yfinance hourly gaps and session boundaries distort LZ and Hurst. Tell: features jump at market open. Fix: compute on session-aware returns or use vendor data.</li>
+</ul><h3>7 · Agent direction (unattended runs)</h3>
+<p>Reach first for the Kronos repo and data.binance.vision; reproduce the repo example before writing anything new. Cache raw data and every forecast as parquet with checkpointing, because the Kronos walk-forward is the expensive step: on CPU it can take many hours, so run it as a background job and continue feature work in parallel. Spawn one sub-agent for feature computation (step 3) while the forecast job runs, and review its output by hand-recomputing two bars. Do not spawn agents for the holdout; run it yourself once. Stop and ask the user if no GPU is available and estimated runtime exceeds 24 hours, if QQQ hourly history is unavailable beyond yfinance, or if step 4 fires the falsifier, since steps 5 and 6 then change shape. Never connect a broker. Return files in one study folder: repro.md, forecasts.parquet, features.parquet, quintiles.md, gate.py, frozen_config.json, paper.md, final_report.md, with final_report.md as the entry point.</p>
+<p class="ps-foot">Prompt system updated 2026-10-22 · <a href="../prompts.html">all prompt systems</a> · <a href="../api/prompts.json">JSON</a></p></section>
+
 <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
-  Deeper Dive generated 2026-10-22T00:39:52.731138 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
+  Deeper Dive generated 2026-10-22T10:32:34.976155 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
 </div>
 </main>
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script>
 </body></html>

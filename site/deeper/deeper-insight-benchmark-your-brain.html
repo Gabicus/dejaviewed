@@ -37,6 +37,22 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 .action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
 .action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
 .prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+
 </style>
 </head><body>
 <main class="deeper-wrap" data-pagefind-body data-pagefind-filter="kind:Deep dive">
@@ -52,9 +68,12 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 
 
-<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Export the last 60 days of saves (DejaViewed parquet works) into a table; a weekly Claude skill clusters them into 3 topics and writes 15 retrieval questions each, held out from the study notes., Quiz yourself cold, log scores per topic; the coach skill rewrites the study playbook (spacing, format: explain-back, build-a-thing, game) only if next week's held-out score beats the last., Add chat-history mining monthly: questions you re-asked the AI become forced quiz items., Falsifier: if held-out scores after 6 weeks are no better than a no-coach control topic studied with plain flashcards, the outer loop adds overhead not learning.</p></div>
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Export the last 60 days of saves (DejaViewed parquet works) into a table; a weekly Claude skill clusters them into 3 topics and writes 15 retrieval questions each, held out from the study notes.
+Quiz yourself cold, log scores per topic; the coach skill rewrites the study playbook (spacing, format: explain-back, build-a-thing, game) only if next week's held-out score beats the last.
+Add chat-history mining monthly: questions you re-asked the AI become forced quiz items.
+Falsifier: if held-out scores after 6 weeks are no better than a no-coach control topic studied with plain flashcards, the outer loop adds overhead not learning.</p></div>
 
-<div class='prereqs'><strong>Prerequisites:</strong> A saves export (this catalog qualifies), Claude/agent with scheduled skills, ~20 min/week of honest self-quizzing</div>
+
 
 <div class="dd-entries">
 <h2>Connected Posts (9)</h2>
@@ -142,8 +161,119 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 </div>
 
+<section class="ps" id="prompt-system"><h2>Prompt system — run this yourself</h2>
+<p class="ps-lead">Pasteable into Claude Code, Claude, or any agent. One-shot for the whole result, step prompts when you want to steer. Every step carries its own audit; the gap audit makes the agent find and fill what it missed.</p>
+<p><strong>Mission.</strong> Produces a six-week self-experiment that runs the SkillOpt-style benchmark-gated loop on a human learner: the last 60 days of saves (a DejaViewed parquet export qualifies) become the study set, held-out retrieval quizzes become the eval set, and a coach skill rewrites the study playbook only when the next held-out score beats the last. A plain-flashcard control topic runs alongside. Done means per-topic learning curves, a delayed retention test, and a falsifier verdict on whether the coach loop beats flashcards, plus a list of topics that never stick.</p>
+<h3>1 · Deeper, not bigger</h3><ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A learning scientist would design this as a within-subject experiment: topics matched for difficulty and randomly assigned to coach and control conditions, questions written and frozen before study begins, and a delayed test one to two weeks after the last session, because immediate scores mostly measure short-term memory. They would grade with a rubric written in advance, ideally scored blind by a second model or person, and compute the minimum effect detectable with 15 questions per topic. They would use established mechanisms as baselines, retrieval practice and spacing, not invent new ones, and they would watch for question leakage: if the generator sees the study notes, held-out items stop being held out.</li>
+<li><strong>Rawest material to start from:</strong> The user&#x27;s own saves export (DejaViewed parquet with titles, captions, transcripts and takeaways), the user&#x27;s exported Claude or ChatGPT history (conversations.json) for re-asked questions, the Microsoft SkillOpt repository (github.com/microsoft/SkillOpt) for the accept-only-if-it-beats-the-eval rule, Karpathy&#x27;s autoresearch loop and the bilevel outer-loop write-up, the FSRS scheduler (open-spaced-repetition) and Anki for the control condition, and the primary studies: Roediger and Karpicke 2006 on the testing effect and Cepeda et al. 2006 on distributed practice. O*NET task lists and the Anthropic Economic Index if topics are chosen for job relevance.</li>
+<li><strong>Methods and tools:</strong> Python and pandas or DuckDB on the parquet; embedding clustering (sentence-transformers plus HDBSCAN or k-means with k=3 to 4) to form topics; Claude to generate questions from source transcripts with a separate context that never sees the study notes; a frozen item bank with item IDs; a rubric-graded short-answer format scored 0 to 2; FSRS via py-fsrs or Anki for the control topic; a coach skill implementing SkillOpt&#x27;s rule (propose playbook edit, accept only if next held-out score beats the incumbent); an issues table where each study session logs what failed, rewritten in batch weekly, as in the self-improving skills post. Analysis: paired comparison of coach versus control with bootstrap intervals; learning curves per topic; delayed-test retention ratio.</li>
+<li><strong>What proves it right:</strong> A delayed test 14 days after the last session, graded blind by a second grader who does not know the condition. Where possible an external task: a SQL topic checked by solving Database Detective or SQLBolt exercises; a coding topic checked by a build that runs. The control topic studied with FSRS flashcards for the same minutes. A frozen item bank with a hash recorded before week 1.</li></ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Act as a learning scientist running a six-week within-subject experiment on me. Load my saves export (DejaViewed parquet) from the last 60 days. Cluster saves into topics with embeddings and pick four topics of similar size and difficulty; randomly assign three to the coach condition and one to a plain-flashcard control, and record the assignment and seed. For each topic, generate 15 held-out retrieval questions plus a 2-point rubric per question in a separate context that sees only the source transcripts, never my study notes; freeze the bank and record its SHA-256. Write the study playbook v1 (spacing, explain-back, build-a-thing, game) and a coach skill that proposes one playbook change per week and accepts it only if my next held-out score on coach topics beats the incumbent, SkillOpt style. The control topic uses FSRS flashcards for the same minutes per week. Each study session logs issues to a table; the coach reads them. Monthly, mine my exported chat history for questions I re-asked and add them as forced items to a separate bank. At week 6 plus 14 days, give a delayed test graded blind by a second grader. Report learning curves per topic, coach minus control with bootstrap intervals, the minimum detectable effect, topics that never stuck, and whether the falsifier fired.</pre></div>
+<h3>2 · One-shot prompt</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>ROLE AND STANCE
+You are a learning scientist and agent engineer. You will run the benchmark-gated skill-optimization loop on a person instead of a prompt. Source claims to test: SkillOpt rejects any skill edit that does not beat the benchmark and beats hand-written prompts; a bilevel outer &#x27;coach&#x27; loop is about 5x better on Karpathy&#x27;s autoresearch benchmark; skills that log their own failures and get batch-rewritten improve; turning saves into quizzes beats passive watching; mining chat history yields better instructions. Treat each as a hypothesis.
+
+CONTEXT
+- Study set: the user&#x27;s saves from the last 60 days; DejaViewed parquet has titles, captions, transcripts, takeaways.
+- Eval set: held-out retrieval questions generated from source transcripts.
+- Control: FSRS spaced-repetition flashcards (py-fsrs or Anki).
+- Optional input: exported Claude or ChatGPT history (conversations.json).
+- Budget: about 20 minutes per topic per week of honest self-quizzing.
+
+HARD CONSTRAINTS
+1. Item bank frozen before week 1; record its SHA-256. No question is edited after the user sees it.
+2. Questions are generated in a context that sees only source material, never study notes, playbooks or prior answers.
+3. The coach changes at most one playbook element per week and the change is kept only if the next held-out score on coach topics beats the incumbent.
+4. The control topic gets equal minutes and no coach.
+5. Quizzes are taken cold: no notes, no search, no AI. Scores are self-reported; the agent must not invent them.
+6. Chat-history mining stays local; redact names, emails and credentials before any analysis.
+
+DELIVERABLES IN ORDER
+1. topics.json: clusters, chosen topics, difficulty proxy, random assignment with seed.
+2. item_bank.parquet: 15 held-out items per topic with rubric, weekly sampling plan, hash.
+3. playbook_v1.md and coach skill (prompt plus rules) with the accept-only-if-better gate.
+4. session_log.parquet and issues.parquet schemas, plus the weekly script that samples 5 items per topic, collects scores, and runs the coach.
+5. chat_mining.py: local pass that finds questions the user asked more than once.
+6. analysis.md at week 6 plus 14 days: learning curves, coach minus control with bootstrap intervals, minimum detectable effect, blind delayed-test results, never-stuck topics, falsifier verdict.
+
+BUILT-IN GAP ANALYSIS
+Write GAPS: weeks with missed quizzes; any item that leaked into study material; topics whose difficulty was mismatched; items the second grader scored differently by more than one point; claims you could not test. Fill gaps you can, for example replacing a leaked item from the reserve bank and marking the swap.
+
+SELF-QUESTIONS
+- Are the coach and control topics comparable in difficulty and prior knowledge, and how do I know?
+- With 15 items and 5 sampled per week, what is the smallest improvement I could detect?
+- Could held-out items have leaked through study notes the generator produced?
+- Is a week-over-week rise just practice on repeated items rather than learning?
+- Did the coach&#x27;s accepted edits improve the delayed test, or only the next-week quiz?
+
+STOP CONDITIONS
+Pause and ask if the user misses two consecutive weeks, if fewer than three topics have enough saves for 15 items, or if the second grader disagrees with self-grading on more than 30% of items.
+
+RETURN FORMAT
+Falsifier verdict, learning curve table per topic, coach minus control with interval, never-stuck topics, the file list, GAPS, and self-question answers.</pre></div>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: saves, topics and assignment</h4><p><em>Goal:</em> Form comparable topics from the raw saves and assign conditions randomly.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Load the saves export (DejaViewed parquet or equivalent) and filter to the last 60 days. For each save, build text from title, caption, transcript and takeaways; drop items with under 50 words of usable text and report how many. Embed with sentence-transformers (all-MiniLM-L6-v2 is enough), cluster with HDBSCAN or k-means, and name clusters from their top terms. Pick four clusters with at least 8 saves each and similar text volume. Ask the user to rate prior knowledge 1 to 5 per topic and use it as a difficulty proxy. Randomly assign three topics to coach and one to control with a recorded seed; if prior-knowledge ratings differ by more than 1 point between control and the coach mean, redraw and log it. Write topics.json with members, volume, prior rating, condition and seed.</pre></div>
+<p><strong>Expect:</strong> topics.json with four topics, member save IDs, prior ratings, assignments and seed, plus a count of dropped saves.</p>
+<p><strong>Audit before moving on:</strong> Fail if the control topic is chosen by preference instead of the seed, or if any topic lacks enough source text for 15 distinct questions. Spot-read 3 saves per topic to confirm the cluster is coherent.</p>
+<h4>Step 2 — Freeze the held-out item bank</h4><p><em>Goal:</em> Create an eval set the study process can never see.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>In a fresh context that receives only source transcripts and captions for one topic at a time, generate 20 retrieval questions per topic: mix of recall, explain-why, and apply-to-new-case, each with a model answer and a 0 to 2 rubric (2 complete and correct, 1 partial, 0 wrong or blank). Keep 15 as the bank and 5 as a reserve for replacing leaked items. Check each question is answerable from the sources, not trivia about the creator. Write item_bank.parquet with item ID, topic, type, question, rubric, model answer, and reserve flag, then compute its SHA-256 and store it in bank_hash.txt. Write a weekly sampling plan: 5 items per topic per week, balanced so each item appears at most twice across six weeks, plus the full 15 on the delayed test.</pre></div>
+<p><strong>Expect:</strong> item_bank.parquet with 80 items, bank_hash.txt and sampling_plan.csv.</p>
+<p><strong>Audit before moving on:</strong> Have a second model answer every question from the sources alone; fail any item it cannot answer or answers ambiguously, and replace from reserve. Confirm the generation context had no access to notes or playbooks.</p>
+<h4>Step 3 — Playbook v1, coach skill and logging</h4><p><em>Goal:</em> Implement the benchmark-gated coach and the self-logging study sessions.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Write playbook_v1.md for coach topics: spacing schedule (sessions on days 1, 3 and 7 of each week), one active format per session chosen from explain-back aloud, build-a-thing, teach-a-friend summary or a game, and a 20-minute cap. Write the coach skill: it reads last week&#x27;s quiz scores per item and topic, issues.parquet entries, and the playbook; it proposes exactly one change with a stated hypothesis; the change becomes the candidate playbook; after the next quiz, the candidate is kept only if mean held-out score on coach topics beats the incumbent&#x27;s, otherwise reverted, mirroring SkillOpt&#x27;s reject rule. Write the session logger: after each session the user records minutes, format used and one line on what failed; these go to issues.parquet. Write the control routine: FSRS flashcards built from the same source material, same minutes.</pre></div>
+<p><strong>Expect:</strong> playbook_v1.md, coach_skill.md, logger script, control card deck, and table schemas.</p>
+<p><strong>Audit before moving on:</strong> Simulate two weeks with made-up scores clearly marked SIMULATED and confirm the coach reverts a change that lowered scores. Delete simulated rows afterward. Fail if the coach can edit more than one element or read the item bank.</p>
+<h4>Step 4 — Weekly loop and chat-history mining</h4><p><em>Goal:</em> Run six weeks of quizzes and coach updates, adding re-asked questions monthly.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Each week: present the planned 5 items per topic cold, one at a time; the user answers without notes; grade with the rubric and show the model answer after the user commits; record scores in session_log.parquet. Then run the coach. Never fill in a score the user did not give. Monthly, run chat_mining.py on the user&#x27;s exported conversations.json locally: redact names, emails, phone numbers and keys; find user questions that are semantically near-duplicates across different dates (embedding cosine above 0.85); map them to topics; write them to a separate forced_items bank, not the held-out bank, so they do not contaminate the eval. Print a weekly dashboard: score per topic per week, accepted and rejected coach changes, minutes studied. Flag any week a topic score drops by more than two items.</pre></div>
+<p><strong>Expect:</strong> Six weeks of session_log rows, a coach decision log, forced_items.parquet, and weekly dashboards.</p>
+<p><strong>Audit before moving on:</strong> Fail any week where a topic&#x27;s minutes differ from the control by more than 25%, or where an item was asked more often than the sampling plan allows. Verify the bank hash weekly.</p>
+<h4>Step 5 — Delayed test with blind grading</h4><p><em>Goal:</em> Measure retention, not short-term recall.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Fourteen days after the last study session, give the full 15-item bank for every topic in random order, cold. Collect the user&#x27;s written answers. Grade twice: the user self-grades with the rubric, and a second grader (a separate model context or a person) grades the same answers without being told the condition of each topic. Compute agreement and use the second grader&#x27;s scores where they differ. Where a topic has an external task, run it: for a SQL topic, time to solve three Database Detective or SQLBolt exercises; for a coding topic, whether a small build from memory runs. Write delayed.parquet and grader agreement statistics. Also give the 5 forced items from chat-history mining as a separate, unscored-for-the-verdict section, so their retention is visible without contaminating the comparison.</pre></div>
+<p><strong>Expect:</strong> delayed.parquet with two grades per answer, an agreement rate, and external task results.</p>
+<p><strong>Audit before moving on:</strong> Fail if the second grader saw condition labels or the playbook. If agreement is under 70%, sharpen the rubric wording and regrade only with the second grader, noting it.</p>
+<h4>Step 6 — Validate against oracles and write the gap report</h4><p><em>Goal:</em> Decide whether the coach loop beats flashcards and list what remains unproven.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Write analysis.md. Show learning curves per topic across six weeks. Compute coach minus control on the delayed test using second-grader scores, with a bootstrap 95% interval over items, and state the minimum detectable effect given the item count. Report the retention ratio (delayed score divided by week-6 score) per topic. List never-stuck topics: delayed score below 50% of maximum. Answer the falsifier: are delayed held-out scores on coach topics no better than the flashcard control? Then a GAPS section: each source claim (SkillOpt&#x27;s benchmark gate beats hand prompts; the bilevel loop is about 5x better; self-logging skills improve; quizzes beat passive review; chat mining personalizes) marked verified, unverified or false for this one-person experiment, plus missed weeks, leaked items, and limits of a single subject.</pre></div>
+<p><strong>Expect:</strong> analysis.md with curves, interval, retention ratios, never-stuck list, falsifier verdict and GAPS.</p>
+<p><strong>Audit before moving on:</strong> Recompute the coach minus control interval from delayed.parquet with a fresh script. Fail if conclusions generalize beyond one person or if immediate quiz gains are presented as retention.</p>
+<h3>4 · Gap analysis and audit</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>You are an independent reviewer of a six-week benchmark-your-brain experiment. Open topics.json, item_bank.parquet, bank_hash.txt, sampling_plan.csv, session_log.parquet, issues.parquet, the coach decision log, delayed.parquet and analysis.md. List every claim in analysis.md and mark each verified (cite the table and computation), unverified (state what data would settle it), or false. Check: the bank hash never changed; no held-out item appears in study notes, playbooks or forced items; the control topic was assigned by the recorded seed and got comparable minutes; each coach change was accepted only after beating the incumbent score; delayed grading used a grader blind to condition; no score was entered by the agent without user input; conclusions are limited to one subject and the stated minimum detectable effect. List missing pieces: missed weeks, topics with too few items, external tasks not run. Rank problems by whether they could reverse the falsifier verdict, fix the top three now (for example regrading with the blind grader or recomputing intervals), and report before and after. End with what only another cohort, a longer delay, or a second learner could answer.</pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p><ul>
+<li>Are coach and control topics matched in difficulty and prior knowledge, or did I pick an easy control?</li>
+<li>Could any held-out question have appeared in study notes or a generated summary?</li>
+<li>With 15 items per topic, is the effect I hope for even detectable?</li>
+<li>Is the weekly score rising because items repeat, not because knowledge grows?</li>
+<li>Did the coach ever accept a change on a noise-level difference of one item?</li>
+<li>Are my self-grades systematically kinder than the blind grader&#x27;s?</li>
+<li>Which saves were too thin to support real questions, and did they bias topic choice?</li>
+<li>Did chat-history mining surface re-asked questions I actually need, and were they kept out of the eval bank?</li>
+<li>Is the Glenn Gould idea of learning away from the instrument (explain-back without notes) tested by any playbook change?</li>
+<li>What would I drop: which topic never stuck and should be re-approached or abandoned?</li>
+</ul><h3>5 · What proves it right</h3><ul>
+<li>A delayed test 14 days after the last session, graded by a second grader blind to condition.</li>
+<li>The flashcard control topic on FSRS with matched minutes, as the comparison arm.</li>
+<li>bank_hash.txt matching the item bank at every weekly check, proving the eval was frozen.</li>
+<li>External tasks where available: Database Detective or SQLBolt exercises for SQL topics, a working build for coding topics.</li>
+<li>An independent recomputation of the coach-minus-control interval from delayed.parquet.</li>
+</ul><h3>6 · Failure modes</h3><ul>
+<li>Eval leakage: question generator saw the study notes, so quizzes test memorized notes. Tell: near-perfect scores in week 1. Fix: regenerate from sources only and replace leaked items from reserve.</li>
+<li>Noise-chasing coach: accepts edits on one-item differences. Tell: playbook flips back and forth weekly. Fix: require a margin at least the week-to-week standard deviation before accepting.</li>
+<li>Unmatched control: the control topic is easier or already known. Tell: control prior-knowledge rating differs by 2 or more. Fix: redraw with seed before week 1.</li>
+<li>Repetition masquerading as learning: same items each week. Tell: scores rise on repeated items only. Fix: follow the sampling plan and analyze first-exposure items separately.</li>
+<li>Self-grading drift: rubric applied more kindly over time. Tell: blind grader disagreement rises across weeks. Fix: use blind grades for all conclusions.</li>
+<li>Dropout: missed weeks break the loop. Tell: gaps in session_log. Fix: schedule quizzes as a recurring routine and pause the coach on missed weeks.</li>
+</ul><h3>7 · Agent direction (unattended runs)</h3>
+<p>Start from the local saves export with pandas or DuckDB; no network needed except embedding model download. Cache embeddings, topics.json and the frozen bank; never regenerate the bank after week 1. Use a separate sub-agent context for question generation and another for blind grading, and never give either the playbook or condition labels. Run the weekly loop as a scheduled routine that prompts the user and waits; do not proceed without real answers and never invent scores. Keep chat-history mining strictly local with redaction before any model call. Stop and ask when the user misses two weeks, when topics lack material, or when grader agreement is under 70%. Return analysis.md as the entry point with topics.json, item_bank.parquet, bank_hash.txt, sampling_plan.csv, playbook versions, coach decision log, session_log.parquet, issues.parquet, forced_items.parquet and delayed.parquet.</p>
+<p class="ps-foot">Prompt system updated 2026-10-22 · <a href="../prompts.html">all prompt systems</a> · <a href="../api/prompts.json">JSON</a></p></section>
+
 <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
-  Deeper Dive generated 2026-10-22T00:39:52.735382 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
+  Deeper Dive generated 2026-10-22T10:32:34.979220 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
 </div>
 </main>
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script>
 </body></html>

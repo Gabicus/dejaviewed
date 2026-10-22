@@ -205,6 +205,139 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>sohaibelkarmi/High-Frequency-Trading-Simulator</p>
 <p>hmmlearn/hmmlearn</p>
 <p>Forecasting high-frequency OFI using Hawkes processes (arxiv)</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Turn the 15-project quant list (seeded by @heidioftheeast's thread) into the one build that makes every later project trustworthy: a validation gate (Probability of Backtest Overfitting via CSCV, Probabilistic and Deflated Sharpe Ratios, Minimum Track Record Length, purged and embargoed cross-validation), proven against known answers, then used to judge one real strategy from the list, Ornstein-Uhlenbeck pairs with a Kalman-filter hedge ratio on Hyperliquid perps, with a paper arm and a control. Done means the gate reproduces published examples and catches planted overfitting, and the pairs strategy either passes the gate and a paper run or is rejected with numbers. No real money in this run.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): Build the measuring instrument before any strategy, and prove the instrument on synthetic data where the answer is known: pure-noise strategy sets must look overfit, a planted signal must pass, and the Deflated Sharpe Ratio must reproduce the paper's worked example. They count every variant tried, because the deflation needs the number of trials. They check licenses before depending on a library: mlfinlab moved to a paid, closed distribution, so the purged CV may need to be written from the book. For pairs, they test cointegration out of sample with Engle-Granger and Johansen, fit the OU half-life, include funding and fees, and compare against a static-beta version and a do-nothing control before believing the Kalman filter adds anything.</p>
+<p>Rawest material to start from: - Bailey, Borwein, Lopez de Prado, Zhu, The Probability of Backtest Overfitting (CSCV algorithm and examples).</p>
+<p>Bailey and Lopez de Prado, The Deflated Sharpe Ratio (2014) and The Sharpe Ratio Efficient Frontier (2012) for PSR and MinTRL formulas and worked numbers.</p>
+<p>Lopez de Prado, Advances in Financial Machine Learning, chapters on purged K-fold with embargo and combinatorial purged CV.</p>
+<p>Repos: esvhd/pypbo, hudson-and-thames/mlfinlab (check license and installability), cantaro86/Financial-Models-Numerical-Methods OU notebook, david-alber OU pairs repo, QuantConnect/Research Kalman pairs notebook, robertmartin8/PyPortfolioOpt for Black-Litterman later.</p>
+<p>Hyperliquid info API: candle snapshots and historical funding for ETH, BTC, SOL, HYPE perps.</p>
+<p>Victor's challenge-game tournament outputs and the Oracle Commander rolodex win-rate overfit finding as a real test case.</p>
+<p>Methods and tools: Python with numpy, pandas, scipy, statsmodels (coint, VECM/Johansen via coint_johansen, adfuller), itertools.combinations for CSCV splits, pykalman or a hand-written 2-state Kalman filter, hypothesis or pytest for property tests, parquet caches. PBO from CSCV with S=16 submatrices; PSR, DSR with the number of trials and variance of trial Sharpes; MinTRL; purged K-fold with embargo; combinatorial purged CV for path distributions; OU MLE fit on residuals with half-life ln(2)/theta; backtest with Hyperliquid taker fees and hourly funding; paper arm on live candles.</p>
+<p>What proves it right (other than you or the model): Published numbers: the DSR paper's worked example reproduced to 3 decimals; the PBO paper's qualitative results reproduced (noise strategy sets give high PBO, planted-signal sets give near zero). An independent implementation (pypbo) agrees with yours on the same return matrix. A leakage test where plain KFold inflates accuracy on overlapping labels and purged CV does not. For the strategy: out-of-sample cointegration test p-values, the gate's verdict, and a 30-day paper run against a static-beta and flat control on live Hyperliquid data.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>From the quant project list, do not pick a strategy first. Build the validation gate first, prove it on known answers, then use it to judge one strategy.</p>
+<p>Implement in a package quantgate/: CSCV Probability of Backtest Overfitting (S=16), Probabilistic Sharpe Ratio, Deflated Sharpe Ratio with the number of trials, Minimum Track Record Length, purged K-fold with embargo, and combinatorial purged CV. Use the Bailey, Borwein, Lopez de Prado, Zhu PBO paper and the 2014 DSR paper as the specification. Check mlfinlab's license before importing it; write from the papers if it is not freely usable.</p>
+<p>Prove it: reproduce the DSR paper's worked example; show 100 pure-noise strategies give high PBO and no strategy passes DSR; show a planted-signal set gives PBO near 0; match esvhd/pypbo on the same matrix; show purged CV removes the inflation plain KFold shows on overlapping labels.</p>
+<p>Build OU pairs with a Kalman-filter hedge ratio on Hyperliquid perps (ETH/BTC, SOL/ETH, HYPE/SOL). Test cointegration out of sample. Include taker fees and funding.</p>
+<p>Run the full parameter grid through the gate, counting every trial. Compare against static OLS beta and a flat control.</p>
+<p>If it passes, run 30 days of paper trading.</p>
+<p>No real money until the gate and paper run pass; any later pilot is capped at $500 notional, 1x leverage, and halts at a 10% drawdown. Never promise returns.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE: You are a quantitative researcher whose job is to stop overfit strategies from reaching capital. You build and prove the validation gate before you look at any strategy, and you assume every backtest is overfit until the gate says otherwise. No real orders in this run.</p>
+<p>CONTEXT:</p>
+<p>Source list: 15 quant projects seeded by @heidioftheeast: Probability of Backtest Overfitting (PBO), walk-forward plus purged K-fold, dollar bars and triple-barrier labels, Ornstein-Uhlenbeck (OU) pairs, Kalman dynamic hedge ratio, Bayesian Black-Litterman, Deflated and Probabilistic Sharpe, and more. The guide ranks PBO as the highest-leverage tool and names the Oracle Commander rolodex win-rate overfit as the failure PBO would have caught.</p>
+<p>Specs: Bailey, Borwein, Lopez de Prado, Zhu (PBO via Combinatorially Symmetric Cross-Validation, CSCV); Bailey and Lopez de Prado (Deflated Sharpe Ratio, 2014; PSR and MinTRL, 2012); Advances in Financial Machine Learning (purged K-fold with embargo, combinatorial purged CV).</p>
+<p>Repos: esvhd/pypbo (reference implementation), hudson-and-thames/mlfinlab (check license; it moved to paid distribution), cantaro86/Financial-Models-Numerical-Methods (OU), QuantConnect/Research Kalman pairs notebook.</p>
+<p>Data: Hyperliquid info API candles and funding for ETH, BTC, SOL, HYPE perps.</p>
+<p>HARD CONSTRAINTS:</p>
+<p>Gate before strategy. No strategy result is reported until the gate's synthetic tests pass.</p>
+<p>Count every trial (every parameter combination and every pair evaluated) and feed that count to DSR.</p>
+<p>Time-ordered splits only; embargo at least the maximum holding period.</p>
+<p>Fees and funding in every backtest: Hyperliquid taker fee and hourly funding from the API.</p>
+<p>No private key loaded, no order signed. Any later pilot: $500 notional total, 1x leverage, halt at 10% drawdown or 5 consecutive losing days, manual review to restart.</p>
+<p>Never state expected returns as promises.</p>
+<p>DELIVERABLES, in order:</p>
+<p>sources.md: formulas with equation references from each paper; license status of pypbo and mlfinlab.</p>
+<p>quantgate/: pbo_cscv(returns_matrix, S), psr(sr, n, skew, kurt, sr_benchmark), dsr(sr, n, skew, kurt, n_trials, var_trial_sr), min_trl(...), PurgedKFold(n_splits, embargo), CombinatorialPurgedCV(n_groups, k_test). Typed, documented, unit-tested.</p>
+<p>proof.md: DSR worked example reproduced; noise-set PBO; planted-signal PBO; agreement with pypbo; purged versus plain KFold leakage test. Each with numbers.</p>
+<p>pairs/: cointegration screen (Engle-Granger, Johansen) on training data, OU MLE fit with half-life, Kalman hedge ratio with tuned process noise, entry and exit z-score rules, fee and funding accounting.</p>
+<p>gate_run.md: full grid through the gate with trial count, PBO, DSR, PSR, MinTRL; versus static-OLS-beta and flat controls on held-out data.</p>
+<p>paper/: read-only paper runner on live candles with both controls, only if step 5 passes.</p>
+<p>GAP ANALYSIS (built in): keep gaps.md. Record formula ambiguities, library disagreements, data holes (HYPE history length), funding gaps, and how each biases results. Fill what you can; state the rest.</p>
+<p>SELF-QUESTIONS before finishing:</p>
+<p>Does my DSR match the paper's worked example exactly, and which variance of trial Sharpes did I use?</p>
+<p>Did I count every trial, including pairs I screened out?</p>
+<p>Is the embargo at least the longest holding period?</p>
+<p>Are the pairs cointegrated out of sample, or only in the window I fit?</p>
+<p>Does the Kalman version beat static beta after fees, or just trade more?</p>
+<p>Is funding a cost or a hidden source of PnL in the result?</p>
+<p>How many years of data does HYPE have, and does MinTRL say that is enough?</p>
+<p>Would the gate have flagged the Oracle Commander rolodex result?</p>
+<p>STOP CONDITIONS: stop at the gate. Stop early if the synthetic proofs fail (fix the gate first), or if no pair is cointegrated out of sample (report and end).</p>
+<p>RETURN FORMAT: markdown report: Verdict (one line), Gate proofs table, Pairs screen, Gate run versus controls table, Paper status, Gaps ranked, file paths.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: papers, formulas, licenses</h4>
+<p>Goal: Pin every formula and dependency to its primary source.</p>
+<p>Obtain the PBO paper (Bailey, Borwein, Lopez de Prado, Zhu), the Deflated Sharpe Ratio paper (Bailey and Lopez de Prado, 2014), and The Sharpe Ratio Efficient Frontier (2012). Extract into sources.md, with equation numbers: the CSCV algorithm (split T x N matrix into S row-blocks, all C(S, S/2) combinations, logit of the out-of-sample relative rank of the in-sample best, PBO as the fraction of logits at or below zero); PSR including skewness and kurtosis terms; DSR's expected maximum Sharpe under N trials; MinTRL. Record each paper's worked numerical examples so step 2 can reproduce them.</p>
+<p>From Advances in Financial Machine Learning, record purged K-fold and embargo definitions and combinatorial purged CV.</p>
+<p>Check licenses and installability: pip install pypbo or install from esvhd/pypbo; check hudson-and-thames/mlfinlab's current license and whether pip install works without a paid key. Record results. List Hyperliquid info API endpoints for candleSnapshot and fundingHistory with limits.</p>
+<p>Expect: sources.md with formulas, equation references, worked examples, license table, API endpoint table.</p>
+<p>Audit before moving on: Every formula has a paper and equation reference; any reconstructed from memory is marked unverified. If mlfinlab is not freely usable, mark purged CV as build-from-book in step 3.</p>
+<h4>Step 2 — Gate core: PBO, PSR, DSR, MinTRL with proofs</h4>
+<p>Goal: Implement the statistics and prove them against known answers.</p>
+<p>Implement in quantgate/stats.py: pbo_cscv(R: ndarray[T, N], S: int = 16, metric=sharpe) returning pbo, logits, and performance degradation slope; psr(sr, n, skew, kurt, sr_benchmark=0); dsr(sr, n, skew, kurt, n_trials, var_trial_sr); min_trl(sr, skew, kurt, sr_benchmark, prob=0.95). Use non-annualized per-period Sharpe internally; annualize only in reports.</p>
+<p>Proofs, written to proof.md with numbers: (a) reproduce the DSR paper's worked example to 3 decimals; (b) N=100 pure-noise strategies, T=2000, seeds 0-19: report the PBO distribution and confirm no strategy passes DSR at 0.95; (c) planted signal: one strategy with true per-period Sharpe 0.1 among 99 noise strategies: PBO near 0 and DSR passes; (d) run pypbo on the same matrices and report agreement to 2 decimals or explain differences; (e) hypothesis property tests: PBO in [0, 1], PSR monotone in sr, DSR decreasing in n_trials.</p>
+<p>Expect: quantgate/stats.py, tests passing, proof.md with five numbered results and tables.</p>
+<p>Audit before moving on: Fail if the DSR example does not reproduce; locate the discrepancy (variance of trials, Euler-Mascheroni term, kurtosis convention) before moving on. Fail if pure noise yields low PBO; check the logit sign and rank convention.</p>
+<h4>Step 3 — Purged and combinatorial cross-validation</h4>
+<p>Goal: Provide leakage-free splits and prove they remove leakage.</p>
+<p>Implement quantgate/cv.py: PurgedKFold(n_splits, embargo_frac) taking a pandas Series of label end times (t1) indexed by start time, yielding train and test indices with training samples whose label interval overlaps the test interval removed and an embargo after each test block; CombinatorialPurgedCV(n_groups, k_test) yielding all C(n_groups, k_test) splits and a method to assemble backtest paths. Follow the book's definitions recorded in sources.md.</p>
+<p>Leakage proof: generate a synthetic series with triple-barrier-style labels spanning 20 bars and features that are noise but share label windows with neighbors. Train a RandomForestClassifier with sklearn KFold (shuffled) versus PurgedKFold. Plain KFold should show accuracy clearly above 0.5; purged should be near 0.5. Report both with 10 seeds. Add unit tests: no train index overlaps any test label window; embargo honored; number of CPCV paths equals the formula.</p>
+<p>Expect: quantgate/cv.py, tests passing, a leakage table in proof.md (plain versus purged accuracy, 10 seeds).</p>
+<p>Audit before moving on: If purged accuracy is still well above 0.5 on noise, leakage remains; inspect t1 handling. Confirm the embargo length used later will be at least the maximum pairs holding period.</p>
+<h4>Step 4 — OU pairs with Kalman hedge ratio</h4>
+<p>Goal: Build the strategy from the list with honest costs.</p>
+<p>Pull hourly candles and funding history from the Hyperliquid info API for BTC, ETH, SOL, HYPE perps, maximum available history; cache parquet. Split time: first 60% training, last 40% held out.</p>
+<p>On training data only, screen pairs ETH/BTC, SOL/ETH, HYPE/SOL, and all other combinations with Engle-Granger and Johansen tests on log prices; record every pair tested (they count as trials). For survivors: static OLS beta, OU MLE fit on the residual spread (theta, mu, sigma, half-life ln(2)/theta). Kalman version: state beta_t (and intercept) with random-walk transition; tune process-noise delta on training only.</p>
+<p>Rules: enter when spread z-score exceeds k, exit at z=0 or after a max hold of 3 half-lives, stop at z of 2k. Costs: Hyperliquid taker fee per leg per side, funding paid or received hourly per leg. Grid: k in {1.5, 2, 2.5}, delta in 5 values, lookback for z in 3 values. Log every combination's per-period returns as one column of the trial matrix.</p>
+<p>Expect: pairs/ code, data cache, screen.md with all pairs tested and test statistics, a trial return matrix for the gate, held-out cointegration retest results.</p>
+<p>Audit before moving on: Re-test cointegration on held-out data for each survivor; a pair not cointegrated out of sample is reported as failed, not dropped silently. Confirm funding is applied with the correct sign for long and short legs on 5 hand-checked hours.</p>
+<h4>Step 5 — Run the gate, compare controls, paper arm</h4>
+<p>Goal: Judge the strategy with the gate and forward evidence.</p>
+<p>Using the trial matrix from step 4 on training data, compute PBO via CSCV with S=16. Select the in-sample best configuration. On held-out data compute its Sharpe, PSR, DSR with n_trials equal to every combination and pair evaluated, and MinTRL. Run CombinatorialPurgedCV with embargo at least the max hold to get a distribution of path Sharpes.</p>
+<p>Controls on held-out data: static OLS beta with the same rules, and flat (no position, zero return). The strategy must beat static beta to justify the Kalman filter and beat flat after costs.</p>
+<p>Gate: PBO below 0.2, DSR probability above 0.95, held-out Sharpe CI excluding zero, beats both controls. If and only if it passes, build paper/: a read-only runner on live hourly candles with frozen parameters, logging hypothetical fills at next-bar open plus fees and funding, alongside the static-beta control, for 30 days with a heartbeat file.</p>
+<p>Expect: gate_run.md with PBO, DSR, PSR, MinTRL, CPCV path distribution, controls table, verdict; paper/ running only if passed.</p>
+<p>Audit before moving on: Confirm n_trials includes screened-out pairs and every grid point. Check that no parameter was refit on held-out data. If the result passes only with the smallest trial count, it does not pass.</p>
+<h4>Step 6 — Validate against oracles, gap report</h4>
+<p>Goal: Confirm the gate is right, the verdict is earned, and list what is missing.</p>
+<p>Run the oracles and record pass or fail with evidence: (1) DSR paper example reproduced to 3 decimals; (2) noise sets give high PBO and no DSR pass, planted signal gives near-zero PBO and passes; (3) pypbo agrees on PBO to 2 decimals or differences are explained; (4) purged CV removes the plain-KFold leakage on synthetic data; (5) the pairs verdict follows mechanically from the gate thresholds; (6) if passed, 30 days of paper trading beat the static-beta control after fees and funding. Real money stays off unless all six pass; any later pilot is capped at $500 notional, 1x leverage, 10% drawdown halt.</p>
+<p>Apply the gate to one real past result, the Oracle Commander rolodex win-rate finding if its trial matrix is available, and report the PBO. Write gap_report.md: each guide claim (PBO highest-leverage, ETH/BTC a good OU candidate, Kalman as reusable smoother, mlfinlab as the purged CV source) and each result, verified / unverified / false with evidence, ranked by impact. Fix the top three.</p>
+<p>Expect: oracles.md with six rows and evidence, the retro PBO on a real past result or a note on why unavailable, gap_report.md ranked.</p>
+<p>Audit before moving on: Any oracle lacking a number or file is unverified, and an unverified oracle means no-go. Confirm no return projection appears anywhere in the reports.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are an independent reviewer of a quant validation gate and the pairs strategy it judged. You did not build them. Read sources.md, quantgate/, proof.md, screen.md, gate_run.md, oracles.md, and gap_report.md.</p>
+<p>Enumerate every claim: formula correctness, DSR reproduction, noise and planted-signal PBO behavior, pypbo agreement, leakage removal, cointegration results, trial count, gate verdict, paper results. Mark each verified, unverified, or false. Re-run the DSR example and one noise-set PBO yourself.</p>
+<p>List missing pieces: trials not counted, embargo shorter than max hold, funding sign errors, held-out data touched during tuning, small-sample HYPE history, no static-beta control.</p>
+<p>Rank by impact on the chance an overfit strategy reaches capital: trial undercounting and leakage first, then cost errors, then sample size.</p>
+<p>Fix the top three now and show before and after numbers.</p>
+<p>Report what you could not fix and why. If any fix changes the verdict, say so first.</p>
+<p>Return a claim table (claim, status, evidence, fix) and the ranked gap list. Never project returns.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Does my DSR reproduce the paper's worked example, and which variance-of-trial-Sharpes estimate did I use?</p>
+<p>Did I count every pair screened and every grid point as a trial?</p>
+<p>Is my PBO logit sign convention right, so that noise looks overfit?</p>
+<p>Is the embargo at least the longest holding period in the pairs rules?</p>
+<p>Are my pairs cointegrated on held-out data, or only in the fitting window?</p>
+<p>Does the Kalman hedge beat static OLS beta after fees, or only trade more?</p>
+<p>Is funding applied per leg with the right sign, and is it driving the result?</p>
+<p>Does HYPE have enough history for MinTRL at the observed Sharpe?</p>
+<p>Did pypbo and my implementation agree, and if not, which one is wrong?</p>
+<p>Could I apply the gate to the Oracle Commander rolodex result to check it would have caught it?</p>
+<p>Is mlfinlab licensed for my use, or did I build purged CV from the book?</p>
+<h3>5 · What proves it right</h3>
+<p>Bailey and Lopez de Prado (2014) DSR worked example reproduced to 3 decimals by quantgate.dsr.</p>
+<p>Synthetic proofs: 20 seeds of 100 pure-noise strategies give high PBO with no DSR pass; a planted true-signal strategy gives PBO near 0 and passes DSR.</p>
+<p>Independent implementation esvhd/pypbo agrees with quantgate PBO to 2 decimals on the same return matrices.</p>
+<p>Leakage test: plain shuffled KFold accuracy clearly above 0.5 on noise features with overlapping labels, purged K-fold near 0.5, across 10 seeds.</p>
+<p>If the gate passes: 30-day read-only paper run on live Hyperliquid candles beats the static-beta control after fees and funding.</p>
+<h3>6 · Failure modes</h3>
+<p>Trial undercounting. Tell: DSR passes easily; trial count equals grid size only. Fix: include every pair screened and every discarded variant.</p>
+<p>Look-ahead through overlapping labels. Tell: CV accuracy far above held-out accuracy. Fix: purged K-fold with embargo at least max hold.</p>
+<p>Spurious cointegration. Tell: Engle-Granger passes in training, fails on held-out. Fix: require out-of-sample retest; report failures.</p>
+<p>Kalman overfits through process noise. Tell: best delta sits at a grid edge, many more trades than static beta. Fix: widen grid, compare to static beta, count trials.</p>
+<p>Funding misapplied. Tell: PnL driven by funding with the wrong sign on short legs. Fix: hand-check hours and separate funding PnL in reports.</p>
+<p>License surprise. Tell: mlfinlab import fails or requires a key. Fix: build purged CV from the book, as specified in sources.md.</p>
+<p>Gate tuned to pass. Tell: thresholds changed after seeing results. Fix: freeze thresholds in code before step 5 and record the commit.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Gate first: do not touch strategy code until proof.md passes. Cache papers' formulas in sources.md and Hyperliquid data in parquet under data/quant/; never refetch cached ranges. Spawn one sub-agent to implement and test quantgate.stats against the papers and another to independently run pypbo on the same matrices as the agreement oracle. Freeze gate thresholds in code with a commit before running the strategy grid. Never load or print a private key; paper runs are read-only. Stop and ask Victor before any step that would place an order, if the synthetic proofs fail twice, or if no pair is cointegrated out of sample. Write outputs to docs/quant_gate/: sources.md, proof.md, screen.md, gate_run.md, oracles.md, gap_report.md, with code in quantgate/ and pairs/. Return the verdict line first, then the proofs table, then gaps. Never project returns.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Quant Project Ideas — 15 Projects Worth Building
 
@@ -518,6 +651,235 @@ PBO, purged CV, CPCV, PSR/DSR, OFI, Kalman — these are *primitives*. You use t
 - [sohaibelkarmi/High-Frequency-Trading-Simulator](https://github.com/sohaibelkarmi/High-Frequency-Trading-Simulator)
 - [hmmlearn/hmmlearn](https://github.com/hmmlearn/hmmlearn)
 - [Forecasting high-frequency OFI using Hawkes processes (arxiv)](https://arxiv.org/html/2408.03594v1)
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Turn the 15-project quant list (seeded by @heidioftheeast's thread) into the one build that makes every later project trustworthy: a validation gate (Probability of Backtest Overfitting via CSCV, Probabilistic and Deflated Sharpe Ratios, Minimum Track Record Length, purged and embargoed cross-validation), proven against known answers, then used to judge one real strategy from the list, Ornstein-Uhlenbeck pairs with a Kalman-filter hedge ratio on Hyperliquid perps, with a paper arm and a control. Done means the gate reproduces published examples and catches planted overfitting, and the pairs strategy either passes the gate and a paper run or is rejected with numbers. No real money in this run.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** Build the measuring instrument before any strategy, and prove the instrument on synthetic data where the answer is known: pure-noise strategy sets must look overfit, a planted signal must pass, and the Deflated Sharpe Ratio must reproduce the paper's worked example. They count every variant tried, because the deflation needs the number of trials. They check licenses before depending on a library: mlfinlab moved to a paid, closed distribution, so the purged CV may need to be written from the book. For pairs, they test cointegration out of sample with Engle-Granger and Johansen, fit the OU half-life, include funding and fees, and compare against a static-beta version and a do-nothing control before believing the Kalman filter adds anything.
+- **Rawest material to start from:** - Bailey, Borwein, Lopez de Prado, Zhu, The Probability of Backtest Overfitting (CSCV algorithm and examples).
+- Bailey and Lopez de Prado, The Deflated Sharpe Ratio (2014) and The Sharpe Ratio Efficient Frontier (2012) for PSR and MinTRL formulas and worked numbers.
+- Lopez de Prado, Advances in Financial Machine Learning, chapters on purged K-fold with embargo and combinatorial purged CV.
+- Repos: esvhd/pypbo, hudson-and-thames/mlfinlab (check license and installability), cantaro86/Financial-Models-Numerical-Methods OU notebook, david-alber OU pairs repo, QuantConnect/Research Kalman pairs notebook, robertmartin8/PyPortfolioOpt for Black-Litterman later.
+- Hyperliquid info API: candle snapshots and historical funding for ETH, BTC, SOL, HYPE perps.
+- Victor's challenge-game tournament outputs and the Oracle Commander rolodex win-rate overfit finding as a real test case.
+- **Methods and tools:** Python with numpy, pandas, scipy, statsmodels (coint, VECM/Johansen via coint_johansen, adfuller), itertools.combinations for CSCV splits, pykalman or a hand-written 2-state Kalman filter, hypothesis or pytest for property tests, parquet caches. PBO from CSCV with S=16 submatrices; PSR, DSR with the number of trials and variance of trial Sharpes; MinTRL; purged K-fold with embargo; combinatorial purged CV for path distributions; OU MLE fit on residuals with half-life ln(2)/theta; backtest with Hyperliquid taker fees and hourly funding; paper arm on live candles.
+- **What proves it right (other than you or the model):** Published numbers: the DSR paper's worked example reproduced to 3 decimals; the PBO paper's qualitative results reproduced (noise strategy sets give high PBO, planted-signal sets give near zero). An independent implementation (pypbo) agrees with yours on the same return matrix. A leakage test where plain KFold inflates accuracy on overlapping labels and purged CV does not. For the strategy: out-of-sample cointegration test p-values, the gate's verdict, and a 30-day paper run against a static-beta and flat control on live Hyperliquid data.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+From the quant project list, do not pick a strategy first. Build the validation gate first, prove it on known answers, then use it to judge one strategy.
+
+1. Implement in a package quantgate/: CSCV Probability of Backtest Overfitting (S=16), Probabilistic Sharpe Ratio, Deflated Sharpe Ratio with the number of trials, Minimum Track Record Length, purged K-fold with embargo, and combinatorial purged CV. Use the Bailey, Borwein, Lopez de Prado, Zhu PBO paper and the 2014 DSR paper as the specification. Check mlfinlab's license before importing it; write from the papers if it is not freely usable.
+2. Prove it: reproduce the DSR paper's worked example; show 100 pure-noise strategies give high PBO and no strategy passes DSR; show a planted-signal set gives PBO near 0; match esvhd/pypbo on the same matrix; show purged CV removes the inflation plain KFold shows on overlapping labels.
+3. Build OU pairs with a Kalman-filter hedge ratio on Hyperliquid perps (ETH/BTC, SOL/ETH, HYPE/SOL). Test cointegration out of sample. Include taker fees and funding.
+4. Run the full parameter grid through the gate, counting every trial. Compare against static OLS beta and a flat control.
+5. If it passes, run 30 days of paper trading.
+
+No real money until the gate and paper run pass; any later pilot is capped at $500 notional, 1x leverage, and halts at a 10% drawdown. Never promise returns.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE: You are a quantitative researcher whose job is to stop overfit strategies from reaching capital. You build and prove the validation gate before you look at any strategy, and you assume every backtest is overfit until the gate says otherwise. No real orders in this run.
+
+CONTEXT:
+- Source list: 15 quant projects seeded by @heidioftheeast: Probability of Backtest Overfitting (PBO), walk-forward plus purged K-fold, dollar bars and triple-barrier labels, Ornstein-Uhlenbeck (OU) pairs, Kalman dynamic hedge ratio, Bayesian Black-Litterman, Deflated and Probabilistic Sharpe, and more. The guide ranks PBO as the highest-leverage tool and names the Oracle Commander rolodex win-rate overfit as the failure PBO would have caught.
+- Specs: Bailey, Borwein, Lopez de Prado, Zhu (PBO via Combinatorially Symmetric Cross-Validation, CSCV); Bailey and Lopez de Prado (Deflated Sharpe Ratio, 2014; PSR and MinTRL, 2012); Advances in Financial Machine Learning (purged K-fold with embargo, combinatorial purged CV).
+- Repos: esvhd/pypbo (reference implementation), hudson-and-thames/mlfinlab (check license; it moved to paid distribution), cantaro86/Financial-Models-Numerical-Methods (OU), QuantConnect/Research Kalman pairs notebook.
+- Data: Hyperliquid info API candles and funding for ETH, BTC, SOL, HYPE perps.
+
+HARD CONSTRAINTS:
+- Gate before strategy. No strategy result is reported until the gate's synthetic tests pass.
+- Count every trial (every parameter combination and every pair evaluated) and feed that count to DSR.
+- Time-ordered splits only; embargo at least the maximum holding period.
+- Fees and funding in every backtest: Hyperliquid taker fee and hourly funding from the API.
+- No private key loaded, no order signed. Any later pilot: $500 notional total, 1x leverage, halt at 10% drawdown or 5 consecutive losing days, manual review to restart.
+- Never state expected returns as promises.
+
+DELIVERABLES, in order:
+1. sources.md: formulas with equation references from each paper; license status of pypbo and mlfinlab.
+2. quantgate/: pbo_cscv(returns_matrix, S), psr(sr, n, skew, kurt, sr_benchmark), dsr(sr, n, skew, kurt, n_trials, var_trial_sr), min_trl(...), PurgedKFold(n_splits, embargo), CombinatorialPurgedCV(n_groups, k_test). Typed, documented, unit-tested.
+3. proof.md: DSR worked example reproduced; noise-set PBO; planted-signal PBO; agreement with pypbo; purged versus plain KFold leakage test. Each with numbers.
+4. pairs/: cointegration screen (Engle-Granger, Johansen) on training data, OU MLE fit with half-life, Kalman hedge ratio with tuned process noise, entry and exit z-score rules, fee and funding accounting.
+5. gate_run.md: full grid through the gate with trial count, PBO, DSR, PSR, MinTRL; versus static-OLS-beta and flat controls on held-out data.
+6. paper/: read-only paper runner on live candles with both controls, only if step 5 passes.
+
+GAP ANALYSIS (built in): keep gaps.md. Record formula ambiguities, library disagreements, data holes (HYPE history length), funding gaps, and how each biases results. Fill what you can; state the rest.
+
+SELF-QUESTIONS before finishing:
+- Does my DSR match the paper's worked example exactly, and which variance of trial Sharpes did I use?
+- Did I count every trial, including pairs I screened out?
+- Is the embargo at least the longest holding period?
+- Are the pairs cointegrated out of sample, or only in the window I fit?
+- Does the Kalman version beat static beta after fees, or just trade more?
+- Is funding a cost or a hidden source of PnL in the result?
+- How many years of data does HYPE have, and does MinTRL say that is enough?
+- Would the gate have flagged the Oracle Commander rolodex result?
+
+STOP CONDITIONS: stop at the gate. Stop early if the synthetic proofs fail (fix the gate first), or if no pair is cointegrated out of sample (report and end).
+
+RETURN FORMAT: markdown report: Verdict (one line), Gate proofs table, Pairs screen, Gate run versus controls table, Paper status, Gaps ranked, file paths.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: papers, formulas, licenses
+
+*Goal:* Pin every formula and dependency to its primary source.
+
+```text
+Obtain the PBO paper (Bailey, Borwein, Lopez de Prado, Zhu), the Deflated Sharpe Ratio paper (Bailey and Lopez de Prado, 2014), and The Sharpe Ratio Efficient Frontier (2012). Extract into sources.md, with equation numbers: the CSCV algorithm (split T x N matrix into S row-blocks, all C(S, S/2) combinations, logit of the out-of-sample relative rank of the in-sample best, PBO as the fraction of logits at or below zero); PSR including skewness and kurtosis terms; DSR's expected maximum Sharpe under N trials; MinTRL. Record each paper's worked numerical examples so step 2 can reproduce them.
+
+From Advances in Financial Machine Learning, record purged K-fold and embargo definitions and combinatorial purged CV.
+
+Check licenses and installability: pip install pypbo or install from esvhd/pypbo; check hudson-and-thames/mlfinlab's current license and whether pip install works without a paid key. Record results. List Hyperliquid info API endpoints for candleSnapshot and fundingHistory with limits.
+```
+
+**Expect:** sources.md with formulas, equation references, worked examples, license table, API endpoint table.
+
+**Audit before moving on:** Every formula has a paper and equation reference; any reconstructed from memory is marked unverified. If mlfinlab is not freely usable, mark purged CV as build-from-book in step 3.
+
+#### Step 2 — Gate core: PBO, PSR, DSR, MinTRL with proofs
+
+*Goal:* Implement the statistics and prove them against known answers.
+
+```text
+Implement in quantgate/stats.py: pbo_cscv(R: ndarray[T, N], S: int = 16, metric=sharpe) returning pbo, logits, and performance degradation slope; psr(sr, n, skew, kurt, sr_benchmark=0); dsr(sr, n, skew, kurt, n_trials, var_trial_sr); min_trl(sr, skew, kurt, sr_benchmark, prob=0.95). Use non-annualized per-period Sharpe internally; annualize only in reports.
+
+Proofs, written to proof.md with numbers: (a) reproduce the DSR paper's worked example to 3 decimals; (b) N=100 pure-noise strategies, T=2000, seeds 0-19: report the PBO distribution and confirm no strategy passes DSR at 0.95; (c) planted signal: one strategy with true per-period Sharpe 0.1 among 99 noise strategies: PBO near 0 and DSR passes; (d) run pypbo on the same matrices and report agreement to 2 decimals or explain differences; (e) hypothesis property tests: PBO in [0, 1], PSR monotone in sr, DSR decreasing in n_trials.
+```
+
+**Expect:** quantgate/stats.py, tests passing, proof.md with five numbered results and tables.
+
+**Audit before moving on:** Fail if the DSR example does not reproduce; locate the discrepancy (variance of trials, Euler-Mascheroni term, kurtosis convention) before moving on. Fail if pure noise yields low PBO; check the logit sign and rank convention.
+
+#### Step 3 — Purged and combinatorial cross-validation
+
+*Goal:* Provide leakage-free splits and prove they remove leakage.
+
+```text
+Implement quantgate/cv.py: PurgedKFold(n_splits, embargo_frac) taking a pandas Series of label end times (t1) indexed by start time, yielding train and test indices with training samples whose label interval overlaps the test interval removed and an embargo after each test block; CombinatorialPurgedCV(n_groups, k_test) yielding all C(n_groups, k_test) splits and a method to assemble backtest paths. Follow the book's definitions recorded in sources.md.
+
+Leakage proof: generate a synthetic series with triple-barrier-style labels spanning 20 bars and features that are noise but share label windows with neighbors. Train a RandomForestClassifier with sklearn KFold (shuffled) versus PurgedKFold. Plain KFold should show accuracy clearly above 0.5; purged should be near 0.5. Report both with 10 seeds. Add unit tests: no train index overlaps any test label window; embargo honored; number of CPCV paths equals the formula.
+```
+
+**Expect:** quantgate/cv.py, tests passing, a leakage table in proof.md (plain versus purged accuracy, 10 seeds).
+
+**Audit before moving on:** If purged accuracy is still well above 0.5 on noise, leakage remains; inspect t1 handling. Confirm the embargo length used later will be at least the maximum pairs holding period.
+
+#### Step 4 — OU pairs with Kalman hedge ratio
+
+*Goal:* Build the strategy from the list with honest costs.
+
+```text
+Pull hourly candles and funding history from the Hyperliquid info API for BTC, ETH, SOL, HYPE perps, maximum available history; cache parquet. Split time: first 60% training, last 40% held out.
+
+On training data only, screen pairs ETH/BTC, SOL/ETH, HYPE/SOL, and all other combinations with Engle-Granger and Johansen tests on log prices; record every pair tested (they count as trials). For survivors: static OLS beta, OU MLE fit on the residual spread (theta, mu, sigma, half-life ln(2)/theta). Kalman version: state beta_t (and intercept) with random-walk transition; tune process-noise delta on training only.
+
+Rules: enter when spread z-score exceeds k, exit at z=0 or after a max hold of 3 half-lives, stop at z of 2k. Costs: Hyperliquid taker fee per leg per side, funding paid or received hourly per leg. Grid: k in {1.5, 2, 2.5}, delta in 5 values, lookback for z in 3 values. Log every combination's per-period returns as one column of the trial matrix.
+```
+
+**Expect:** pairs/ code, data cache, screen.md with all pairs tested and test statistics, a trial return matrix for the gate, held-out cointegration retest results.
+
+**Audit before moving on:** Re-test cointegration on held-out data for each survivor; a pair not cointegrated out of sample is reported as failed, not dropped silently. Confirm funding is applied with the correct sign for long and short legs on 5 hand-checked hours.
+
+#### Step 5 — Run the gate, compare controls, paper arm
+
+*Goal:* Judge the strategy with the gate and forward evidence.
+
+```text
+Using the trial matrix from step 4 on training data, compute PBO via CSCV with S=16. Select the in-sample best configuration. On held-out data compute its Sharpe, PSR, DSR with n_trials equal to every combination and pair evaluated, and MinTRL. Run CombinatorialPurgedCV with embargo at least the max hold to get a distribution of path Sharpes.
+
+Controls on held-out data: static OLS beta with the same rules, and flat (no position, zero return). The strategy must beat static beta to justify the Kalman filter and beat flat after costs.
+
+Gate: PBO below 0.2, DSR probability above 0.95, held-out Sharpe CI excluding zero, beats both controls. If and only if it passes, build paper/: a read-only runner on live hourly candles with frozen parameters, logging hypothetical fills at next-bar open plus fees and funding, alongside the static-beta control, for 30 days with a heartbeat file.
+```
+
+**Expect:** gate_run.md with PBO, DSR, PSR, MinTRL, CPCV path distribution, controls table, verdict; paper/ running only if passed.
+
+**Audit before moving on:** Confirm n_trials includes screened-out pairs and every grid point. Check that no parameter was refit on held-out data. If the result passes only with the smallest trial count, it does not pass.
+
+#### Step 6 — Validate against oracles, gap report
+
+*Goal:* Confirm the gate is right, the verdict is earned, and list what is missing.
+
+```text
+Run the oracles and record pass or fail with evidence: (1) DSR paper example reproduced to 3 decimals; (2) noise sets give high PBO and no DSR pass, planted signal gives near-zero PBO and passes; (3) pypbo agrees on PBO to 2 decimals or differences are explained; (4) purged CV removes the plain-KFold leakage on synthetic data; (5) the pairs verdict follows mechanically from the gate thresholds; (6) if passed, 30 days of paper trading beat the static-beta control after fees and funding. Real money stays off unless all six pass; any later pilot is capped at $500 notional, 1x leverage, 10% drawdown halt.
+
+Apply the gate to one real past result, the Oracle Commander rolodex win-rate finding if its trial matrix is available, and report the PBO. Write gap_report.md: each guide claim (PBO highest-leverage, ETH/BTC a good OU candidate, Kalman as reusable smoother, mlfinlab as the purged CV source) and each result, verified / unverified / false with evidence, ranked by impact. Fix the top three.
+```
+
+**Expect:** oracles.md with six rows and evidence, the retro PBO on a real past result or a note on why unavailable, gap_report.md ranked.
+
+**Audit before moving on:** Any oracle lacking a number or file is unverified, and an unverified oracle means no-go. Confirm no return projection appears anywhere in the reports.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent reviewer of a quant validation gate and the pairs strategy it judged. You did not build them. Read sources.md, quantgate/, proof.md, screen.md, gate_run.md, oracles.md, and gap_report.md.
+
+1. Enumerate every claim: formula correctness, DSR reproduction, noise and planted-signal PBO behavior, pypbo agreement, leakage removal, cointegration results, trial count, gate verdict, paper results. Mark each verified, unverified, or false. Re-run the DSR example and one noise-set PBO yourself.
+2. List missing pieces: trials not counted, embargo shorter than max hold, funding sign errors, held-out data touched during tuning, small-sample HYPE history, no static-beta control.
+3. Rank by impact on the chance an overfit strategy reaches capital: trial undercounting and leakage first, then cost errors, then sample size.
+4. Fix the top three now and show before and after numbers.
+5. Report what you could not fix and why. If any fix changes the verdict, say so first.
+Return a claim table (claim, status, evidence, fix) and the ranked gap list. Never project returns.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Does my DSR reproduce the paper's worked example, and which variance-of-trial-Sharpes estimate did I use?
+- Did I count every pair screened and every grid point as a trial?
+- Is my PBO logit sign convention right, so that noise looks overfit?
+- Is the embargo at least the longest holding period in the pairs rules?
+- Are my pairs cointegrated on held-out data, or only in the fitting window?
+- Does the Kalman hedge beat static OLS beta after fees, or only trade more?
+- Is funding applied per leg with the right sign, and is it driving the result?
+- Does HYPE have enough history for MinTRL at the observed Sharpe?
+- Did pypbo and my implementation agree, and if not, which one is wrong?
+- Could I apply the gate to the Oracle Commander rolodex result to check it would have caught it?
+- Is mlfinlab licensed for my use, or did I build purged CV from the book?
+
+### 5 · What proves it right
+
+- Bailey and Lopez de Prado (2014) DSR worked example reproduced to 3 decimals by quantgate.dsr.
+- Synthetic proofs: 20 seeds of 100 pure-noise strategies give high PBO with no DSR pass; a planted true-signal strategy gives PBO near 0 and passes DSR.
+- Independent implementation esvhd/pypbo agrees with quantgate PBO to 2 decimals on the same return matrices.
+- Leakage test: plain shuffled KFold accuracy clearly above 0.5 on noise features with overlapping labels, purged K-fold near 0.5, across 10 seeds.
+- If the gate passes: 30-day read-only paper run on live Hyperliquid candles beats the static-beta control after fees and funding.
+
+### 6 · Failure modes
+
+- Trial undercounting. Tell: DSR passes easily; trial count equals grid size only. Fix: include every pair screened and every discarded variant.
+- Look-ahead through overlapping labels. Tell: CV accuracy far above held-out accuracy. Fix: purged K-fold with embargo at least max hold.
+- Spurious cointegration. Tell: Engle-Granger passes in training, fails on held-out. Fix: require out-of-sample retest; report failures.
+- Kalman overfits through process noise. Tell: best delta sits at a grid edge, many more trades than static beta. Fix: widen grid, compare to static beta, count trials.
+- Funding misapplied. Tell: PnL driven by funding with the wrong sign on short legs. Fix: hand-check hours and separate funding PnL in reports.
+- License surprise. Tell: mlfinlab import fails or requires a key. Fix: build purged CV from the book, as specified in sources.md.
+- Gate tuned to pass. Tell: thresholds changed after seeing results. Fix: freeze thresholds in code before step 5 and record the commit.
+
+### 7 · Agent direction (unattended runs)
+
+Gate first: do not touch strategy code until proof.md passes. Cache papers' formulas in sources.md and Hyperliquid data in parquet under data/quant/; never refetch cached ranges. Spawn one sub-agent to implement and test quantgate.stats against the papers and another to independently run pypbo on the same matrices as the agreement oracle. Freeze gate thresholds in code with a commit before running the strategy grid. Never load or print a private key; paper runs are read-only. Stop and ask Victor before any step that would place an order, if the synthetic proofs fail twice, or if no pair is cointegrated out of sample. Write outputs to docs/quant_gate/: sources.md, proof.md, screen.md, gate_run.md, oracles.md, gap_report.md, with code in quantgate/ and pairs/. Return the verdict line first, then the proofs table, then gaps. Never project returns.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -525,4 +887,26 @@ PBO, purged CV, CPCV, PSR/DSR, OFI, Kalman — these are *primitives*. You use t
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

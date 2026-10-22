@@ -94,9 +94,128 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>@iamfesq</p>
 <p>@nick_saraev</p>
 <p>@realrileybrown</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Running this system takes one hand-drawn character from a Procreate kit-bash sheet to a rigged, animated, rendered 3D shot using Jon Finger's chain (Procreate, Magnific style transfer, 3DAI Studio or Hunyuan3D-2, Move AI mocap, render) with Kling as a fallback for 2D-to-video. It is for an indie creator who wants to know if the 'under an hour, about 45 minutes per asset' claim holds and where the chain breaks. Done means a timed log for each stage, a mesh that passes technical checks (manifold, polycount, UVs, valid glTF), a retargeted mocap clip without foot sliding, a render, and a gap report naming the stages that needed manual cleanup.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A character TD would refuse to send a single loose sketch to image-to-3D. They would draw an orthographic turnaround (front, side, back at the same scale) or, like Jon Finger, a kit-bash sheet of separate parts, then check the generated mesh for topology, scale and pivots before rigging. They would retopologize to an animation-friendly quad mesh, bake the generated texture onto clean UVs, and rig with a standard skeleton so mocap retargets. They would also time each stage honestly, including failed generations and cleanup, and check license terms for every tool before calling the asset production-ready.</p>
+<p>Rawest material to start from: - Jon Finger's own description (via chatgptricks): parts sketched as a kit-bash sheet in Procreate, made to look 3D with Magnific, converted with 3D AI Studio, assembled into a humanoid, Move AI performance on top, Cinema 4D render.</p>
+<p>Tencent Hunyuan3D-2 GitHub repo and model card (shape stage then texture stage), and its LICENSE file, which restricts some territories.</p>
+<p>Move AI export docs (FBX/BVH skeleton naming, frame rate).</p>
+<p>Kling motion brush docs (up to 5 subjects with drawn paths) and Magnific's creativity/resemblance settings.</p>
+<p>Blender manual: Rigify, QuadriFlow remesh, bake, the glTF 2.0 exporter.</p>
+<p>Khronos glTF-Validator.</p>
+<p>Your own sketch files at full resolution, not screenshots.</p>
+<p>Methods and tools: Procreate (export PNG per part at 2048 px on white), Magnific AI with resemblance high and creativity low to keep silhouettes, Hunyuan3D-2 run locally (python with the shape and paint pipelines) or the 3DAI Studio web app, Blender 4.x headless via bpy for import, scale normalization, merge, decimate or QuadriFlow, Smart UV project and texture bake, Rigify or Mixamo auto-rig, retargeting Move AI FBX with the Rokoko retargeting add-on or Blender's built-in constraints, trimesh for watertight and polycount checks, glTF-Validator for export, FFmpeg for assembly, and a stage-timing CSV.</p>
+<p>What proves it right (other than you or the model): Technical oracles: trimesh reports watertight meshes with a triangle count under budget; glTF-Validator reports zero errors; the GLB opens in a third-party viewer (Babylon.js sandbox or three.js editor) with textures; Blender renders the animated shot headless without errors. Motion oracle: foot contacts stay within 1 cm of the floor in contact frames. Time oracle: a stopwatch log per stage including failed attempts. Human oracle: an animator or a viewer judges whether the result still matches the sketch.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Take my Procreate character from sketch to a rendered animated shot and measure every stage. Do not start from one loose drawing: help me produce a kit-bash sheet of separate parts plus a front and side view at the same scale, as Jon Finger did. Run each part through Magnific with high resemblance and low creativity, then to 3D through Hunyuan3D-2 (local, shape then texture) and, as a comparison, 3DAI Studio. In Blender headless: normalize scale to meters, set pivots, assemble the humanoid, remesh with QuadriFlow to under 30k quads, project UVs, bake the generated texture, rig with Rigify, and retarget a Move AI capture of me. Check with trimesh (watertight, polycount), glTF-Validator (zero errors), and a foot-contact script (contact frames within 1 cm of the floor). Render 5 seconds at 24 fps and assemble with FFmpeg. Keep a CSV of start and end time per stage, including failed generations and manual fixes, so the '45 minutes per asset' claim is tested. Read the Hunyuan3D-2 license and each service's commercial terms and list restrictions. Finish with a gap report: which stages needed manual work, total time, and whether the asset is game-ready or only render-ready.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are a character technical director running an AI-assisted asset pipeline. You care about whether the asset survives rigging, animation and export, not whether a turntable looks good. You time everything and count failed attempts. You treat 'under an hour' as a claim to measure.</p>
+<p>CONTEXT</p>
+<p>Jon Finger's chain (chatgptricks post): sketch parts as a kit-bash sheet in Procreate, Magnific AI style transfer to make them look 3D, 3D AI Studio to convert to meshes, assemble a humanoid, Move AI motion capture of his own performance, Cinema 4D render. He called it 'a little experiment'.</p>
+<p>Hunyuan3D-2 (nick_saraev): free image-to-3D, Generate Shape then Generate Textured Shape; open weights on GitHub.</p>
+<p>Kling motion brush (realrileybrown): select up to 5 subjects in a still and draw motion paths; a 2D-to-video fallback when 3D fails.</p>
+<p>AI rotoscoping (iamfesq): segmentation mask to composite yourself into the scene.</p>
+<p>The dive's claim: about 45 minutes per asset from napkin to animated render.</p>
+<p>HARD CONSTRAINTS</p>
+<p>Every stage writes its output to stages/NN_name/ with the exact settings used and a row in timing.csv (stage, start, end, attempts, manual_fix_minutes, notes).</p>
+<p>Mesh budget: under 30k quads after retopology, single material, 2048 px texture.</p>
+<p>Scale in meters, character about 1.7 m, feet on Z=0, forward -Y.</p>
+<p>No commercial-use claim until each tool's license and plan terms are recorded in licenses.md (Hunyuan3D-2's license has territory restrictions; Magnific, 3DAI Studio, Move AI and Kling terms vary by plan).</p>
+<p>Do not upload other people's art or likeness.</p>
+<p>DELIVERABLES, IN ORDER</p>
+<p>ground_truth.md: tool versions and plans, license notes, the original sketch files, and a reference timing goal.</p>
+<p>stages/01_sheet: kit-bash parts sheet plus front and side views exported as separate 2048 px PNGs on white.</p>
+<p>stages/02_magnific: each part with recorded resemblance and creativity settings.</p>
+<p>stages/03_mesh: Hunyuan3D-2 meshes and 3DAI Studio meshes for the same parts, with a comparison table (triangles, watertight, visual fidelity score 1-5).</p>
+<p>stages/04_assembly: Blender .blend and a headless script assemble.py that imports, scales, sets pivots, joins, remeshes with QuadriFlow, UV-projects and bakes.</p>
+<p>stages/05_rig: Rigify rig with weights; test poses.</p>
+<p>stages/06_mocap: Move AI capture exported to FBX, retargeted; foot-contact report.</p>
+<p>stages/07_render: 5-second 24 fps render, FFmpeg-assembled MP4, GLB export validated.</p>
+<p>fallback/: if 3D fails, a Kling motion-brush clip from the Magnific image, labeled as 2D.</p>
+<p>report.md.</p>
+<p>BUILT-IN GAP ANALYSIS Maintain GAPS in report.md. For each claim mark VERIFIED, UNVERIFIED or FALSE with evidence: total time under 60 minutes; parts converted without manual mesh repair; Hunyuan3D-2 versus 3DAI Studio fidelity; mesh watertight after assembly; weights deform without candy-wrapping at elbows and knees; mocap retarget without foot sliding; GLB valid; commercial use allowed. Run the checks; list what is left with the next action.</p>
+<p>SELF-QUESTIONS</p>
+<p>Did a single sketch angle produce a plausible back side, or did the model invent one?</p>
+<p>Did Magnific change the design (extra details, different proportions) and did I accept drift without noticing?</p>
+<p>Are the generated meshes one shell or many intersecting shells?</p>
+<p>Is the texture baked onto my new UVs or still on the generator's atlas?</p>
+<p>Is the timing honest, including generation queues and retries?</p>
+<p>Would this asset survive a game engine import, or is it render-only?</p>
+<p>STOP CONDITIONS Stop and report if image-to-3D fails on more than half of the parts after 3 attempts each; produce the Kling fallback and document why. Stop before any paid upgrade or upload of identifiable likeness; ask the user.</p>
+<p>RETURN FORMAT report.md: a timing table per stage with attempts and manual minutes, the mesh comparison table, validator outputs, the foot-contact result, license table, verdict (game-ready / render-ready / failed), GAPS, and links to the MP4 and GLB.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: tools, licenses, source sketch</h4>
+<p>Goal: Pin tool versions, terms and the raw sketch before generating anything.</p>
+<p>List every tool in the chain (Procreate, Magnific AI, 3DAI Studio, Hunyuan3D-2, Move AI, Blender, Kling) with the version or plan the user has. Clone Tencent's Hunyuan3D-2 repo, read README and LICENSE, and record the territory restrictions and commercial terms verbatim. For each paid service record what the current plan allows for commercial use and output ownership, with the URL of the terms page and the date read. Collect the user's original sketch files at full resolution. Write the 45-minute claim as a hypothesis and create timing.csv with headers stage, start, end, attempts, manual_fix_minutes, notes. Check whether a local GPU can run Hunyuan3D-2 (record VRAM and the repo's stated minimum) or whether the web UI must be used. Note that Jon Finger rendered in Cinema 4D; decide whether Blender replaces it and say so. Write ground_truth.md and licenses.md.</p>
+<p>Expect: ground_truth.md, licenses.md with quoted terms and dates, timing.csv header, sketches in stages/00_source.</p>
+<p>Audit before moving on: Fail if any license row says 'probably fine' or lacks a source URL and date. Mark the tool UNVERIFIED for commercial use instead.</p>
+<h4>Step 2 — Kit-bash sheet and turnaround</h4>
+<p>Goal: Give the image-to-3D stage inputs it can succeed with.</p>
+<p>From the source sketch, produce in Procreate (or describe exactly for the user to draw) a kit-bash sheet like Jon Finger's: head, torso, each arm, each leg, hands and props drawn separately, front-facing, consistent scale, on white, with clear silhouettes and no overlapping parts. Add a front and side view of the assembled character at the same height. Export each part as a 2048 px PNG with a transparent or white background. Then run each part through Magnific with high resemblance and low creativity; record the slider values and prompt per part. Compare each Magnific output to its sketch with an overlay at 50% opacity and note any added or removed features. Keep part names consistent across files (head, torso, arm_L, arm_R) so later scripts can find them.</p>
+<p>Expect: stages/01_sheet with 8-12 part PNGs and two views; stages/02_magnific with outputs, settings.json and an overlay note per part.</p>
+<p>Audit before moving on: Fail any part whose Magnific silhouette deviates visibly from the sketch (new limbs, changed proportions); rerun with lower creativity. Log time and attempts.</p>
+<h4>Step 3 — Image to 3D, two generators</h4>
+<p>Goal: Convert parts to meshes and compare Hunyuan3D-2 with 3DAI Studio.</p>
+<p>For each Magnific part, generate a mesh with Hunyuan3D-2 locally (shape pipeline, then paint pipeline for texture; record seed, steps and octree resolution) and with 3DAI Studio's web tool. Export GLB or OBJ. Write mesh_check.py using trimesh: triangle count, number of connected bodies, is_watertight, bounding box, and texture presence. Produce a comparison table per part: generator, triangles, bodies, watertight, fidelity to the sketch scored 1-5 by overlaying a front render on the sketch. Pick the better mesh per part with a reason. Log generation time and queue time separately in timing.csv. If Hunyuan3D-2 is run locally, also record GPU time per part so the cost of the free route is visible. Keep every rejected mesh with its seed; do not overwrite.</p>
+<p>Expect: stages/03_mesh with two meshes per part, mesh_check.py output and a comparison table.</p>
+<p>Audit before moving on: Fail a mesh with more than 3 bodies or that is non-watertight where it should be solid; retry with a cleaner input image, then mark for manual repair. Stop per the stop condition if more than half the parts fail after 3 attempts.</p>
+<h4>Step 4 — Assemble, retopologize, bake</h4>
+<p>Goal: Make one clean animation-ready mesh in Blender headless.</p>
+<p>Write assemble.py for blender -b -P: import chosen part meshes, scale so total height is 1.7 m, place feet at Z=0 facing -Y, position parts using the front and side views as reference planes, join into one object, voxel remesh at 1 cm to fuse shells, then QuadriFlow remesh to a target of 25k faces. Duplicate the original textured parts as a bake source. Smart UV project the new mesh with 0.02 island margin, bake diffuse from the source with cage extrusion 0.02 to a 2048 px image, assign a single material. Save .blend and export GLB. Run mesh_check.py and Khronos glTF-Validator on the GLB. Record the face count before and after QuadriFlow and how long each Blender operation took.</p>
+<p>Expect: assembly .blend, assemble.py, character.glb, validator report with zero errors, mesh_check output.</p>
+<p>Audit before moving on: Render front and side views and overlay them on the sketch views. Fail if the texture has black bake holes over 2% of the surface or validator errors exist; fix cage distance or UVs and rerun.</p>
+<h4>Step 5 — Rig, mocap, retarget</h4>
+<p>Goal: Drive the character with the user's own performance.</p>
+<p>Add a Rigify human metarig, fit bones to the mesh using the side view, generate the rig and bind with automatic weights. Test 6 poses (arms up, squat, twist, walk contact, fist, head turn) and note candy-wrapping or tearing. Capture a 5-second Move AI performance of the user (single or multi-camera as their plan allows), export FBX at 24 fps, and retarget to the Rigify rig with the Rokoko retargeting add-on or a bone-mapping script. Write foot_contact.py: detect frames where foot velocity is under 2 cm per frame and report foot height and horizontal drift in those frames. Confirm the Move AI frame rate matches the scene frame rate before retargeting; a mismatch causes sliding that no IK fix hides. Log manual weight-paint minutes in timing.csv.</p>
+<p>Expect: rigged .blend, pose test renders, retargeted action, foot_contact report.</p>
+<p>Audit before moving on: Fail if foot height in contact frames exceeds 1 cm or drift exceeds 2 cm per contact; fix with a root-height offset or IK foot locks, rerun the script.</p>
+<h4>Step 6 — Render and fallback</h4>
+<p>Goal: Produce the final shot and a 2D fallback for comparison.</p>
+<p>Light the scene with a three-point setup, render 120 frames at 24 fps in Eevee at 1920x1080 headless (blender -b scene.blend -a), and assemble with FFmpeg: ffmpeg -framerate 24 -i frame_%04d.png -c:v libx264 -pix_fmt yuv420p -crf 18 shot.mp4. Export a final GLB with the animation and validate it again; open it in the Babylon.js sandbox or three.js editor and confirm the animation plays and the texture is not missing. Log render time per frame in timing.csv. As a fallback and comparison, feed the best Magnific image into Kling, use motion brush on up to 5 regions to animate a similar action, and save it labeled 2D. If AI rotoscoping of the user is wanted, segment the user's video with a segmentation model and composite the character beside them.</p>
+<p>Expect: shot.mp4, animated GLB passing validation, a third-party viewer screenshot, Kling fallback clip.</p>
+<p>Audit before moving on: Check shot.mp4 with ffprobe for 120 frames at 24 fps. Fail if the GLB animation does not play in the third-party viewer.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4>
+<p>Goal: Test the 45-minute claim and the production-ready claim.</p>
+<p>Sum timing.csv per stage and total, separating machine time, queue time and manual minutes. Compare to the 45-minute claim, and compute what the total would be on a second asset reusing the scripts (exclude one-time setup like installing Hunyuan3D-2). Rerun mesh_check.py, glTF-Validator and foot_contact.py and paste outputs. Ask one person (ideally an animator) to compare the render to the original sketch and score likeness 1-5 and motion quality 1-5. Classify the asset: game-ready (valid GLB, under budget, clean rig), render-ready (looks right, fails technical checks), or failed. Write report.md with GAPS: each claim VERIFIED, UNVERIFIED or FALSE with evidence, plus the three most expensive stages and what would shorten them next time. State plainly whether the dive's under-an-hour claim held for this asset, and with how many attempts.</p>
+<p>Expect: report.md with totals, validator outputs, reviewer scores, classification and GAPS.</p>
+<p>Audit before moving on: Fail if total time omits failed attempts or manual fixes. Fail if any VERIFIED row lacks a pasted output.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are auditing a sketch-to-animated-3D asset produced with Procreate, Magnific, Hunyuan3D-2 or 3DAI Studio, Blender, Move AI and optionally Kling. Inputs: stages/, timing.csv, licenses.md, report.md, character.glb, shot.mp4. 1) Enumerate claims: total time, game-ready status, watertight mesh, validator clean, foot contact within 1 cm, likeness to the sketch, commercial use allowed. 2) Re-verify: rerun mesh_check.py, glTF-Validator, foot_contact.py, ffprobe; recompute totals from timing.csv; check licenses.md rows have URLs and dates; render a front view and overlay on the sketch. Mark each VERIFIED, UNVERIFIED or FALSE with output. 3) Hunt hidden manual work: compare .blend modification history and file times against timing.csv; look for parts sculpted by hand but logged as generated. 4) List missing pieces: no back view, no LODs, no texture for hands, no retarget for fingers. 5) Rank by impact on the 'production asset' claim. 6) Fix the top three now and rerun checks. 7) Report what remains unfixed and why.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Did I give image-to-3D separate parts and orthographic views, or one perspective sketch it had to guess from?</p>
+<p>Did Magnific's style transfer drift the design, and did I check with an overlay?</p>
+<p>Is the Hunyuan3D-2 license compatible with the user's country and intended use?</p>
+<p>Are meshes fused into one shell, or will intersecting parts tear when rigged?</p>
+<p>Is the texture baked to my UVs, or will it break after retopology?</p>
+<p>Does the retargeted mocap slide feet or clip through the body?</p>
+<p>Does my timing include queues, retries and manual fixes?</p>
+<p>Would the GLB load in a game engine with its animation?</p>
+<p>Is the Kling fallback clearly labeled 2D rather than counted as the 3D result?</p>
+<p>What did Jon Finger's chain use Cinema 4D for, and did my Blender render cover it?</p>
+<h3>5 · What proves it right</h3>
+<p>Khronos glTF-Validator returns zero errors for the animated character.glb, and the Babylon.js sandbox or three.js editor plays the animation.</p>
+<p>trimesh reports one watertight body under 30k faces after assembly.</p>
+<p>foot_contact.py shows foot height within 1 cm and drift under 2 cm in contact frames.</p>
+<p>Stopwatch-based timing.csv totals versus the 45-minute claim, with retries and manual minutes included.</p>
+<p>An animator or independent viewer scores likeness to the sketch and motion quality.</p>
+<h3>6 · Failure modes</h3>
+<p>Invented back side. Tell: the back of the mesh is lumpy or mirrors the front. Fix: supply a side and back view or generate parts separately.</p>
+<p>Style drift. Tell: Magnific adds features the sketch lacks. Fix: high resemblance, low creativity, overlay check.</p>
+<p>Multi-shell mesh. Tell: trimesh counts many bodies, rig tears. Fix: voxel remesh before QuadriFlow.</p>
+<p>Lost texture. Tell: black or smeared bake. Fix: correct cage extrusion, island margin, re-bake.</p>
+<p>Foot sliding. Tell: drift in contact frames. Fix: root offset, IK foot locks, matched frame rate.</p>
+<p>Time claim inflated. Tell: totals exclude queues and retries. Fix: log every attempt.</p>
+<p>License surprise. Tell: commercial use blocked by plan or territory. Fix: record terms before production use.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Begin with licenses and source files; nothing generated is usable if terms forbid it. Use Blender headless via bpy scripts for every Blender stage so it is reproducible; avoid GUI-only steps except where the user must draw or perform. Run Hunyuan3D-2 locally if a GPU with enough VRAM exists, otherwise use the web UI and log it. Web services (Magnific, 3DAI Studio, Move AI, Kling) need the user's accounts: prepare inputs and settings, then ask the user to run them and return files. Spawn a sub-agent for mesh_check.py and foot_contact.py while you write assemble.py. Cache every generated mesh with its seed. Stop and ask before paid upgrades, before uploading the user's likeness, and when the stop condition fires. Return: stages/, timing.csv, licenses.md, character.glb, shot.mp4, fallback clip, report.md with GAPS.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 <h2>Related deep dives</h2>
 <p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
-<p>Generated 2026-10-21 · curated by @6ab3 for DejaViewed</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Napkin Sketch → Production Asset: The 5-Tool Creative Pipeline
 
@@ -192,13 +311,225 @@ Procreate or any drawing app, Magnific AI, Hunyuan3D-2 or 3DAI Studio, Kling or 
 
 ---
 
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Running this system takes one hand-drawn character from a Procreate kit-bash sheet to a rigged, animated, rendered 3D shot using Jon Finger's chain (Procreate, Magnific style transfer, 3DAI Studio or Hunyuan3D-2, Move AI mocap, render) with Kling as a fallback for 2D-to-video. It is for an indie creator who wants to know if the 'under an hour, about 45 minutes per asset' claim holds and where the chain breaks. Done means a timed log for each stage, a mesh that passes technical checks (manifold, polycount, UVs, valid glTF), a retargeted mocap clip without foot sliding, a render, and a gap report naming the stages that needed manual cleanup.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A character TD would refuse to send a single loose sketch to image-to-3D. They would draw an orthographic turnaround (front, side, back at the same scale) or, like Jon Finger, a kit-bash sheet of separate parts, then check the generated mesh for topology, scale and pivots before rigging. They would retopologize to an animation-friendly quad mesh, bake the generated texture onto clean UVs, and rig with a standard skeleton so mocap retargets. They would also time each stage honestly, including failed generations and cleanup, and check license terms for every tool before calling the asset production-ready.
+- **Rawest material to start from:** - Jon Finger's own description (via chatgptricks): parts sketched as a kit-bash sheet in Procreate, made to look 3D with Magnific, converted with 3D AI Studio, assembled into a humanoid, Move AI performance on top, Cinema 4D render.
+- Tencent Hunyuan3D-2 GitHub repo and model card (shape stage then texture stage), and its LICENSE file, which restricts some territories.
+- Move AI export docs (FBX/BVH skeleton naming, frame rate).
+- Kling motion brush docs (up to 5 subjects with drawn paths) and Magnific's creativity/resemblance settings.
+- Blender manual: Rigify, QuadriFlow remesh, bake, the glTF 2.0 exporter.
+- Khronos glTF-Validator.
+- Your own sketch files at full resolution, not screenshots.
+- **Methods and tools:** Procreate (export PNG per part at 2048 px on white), Magnific AI with resemblance high and creativity low to keep silhouettes, Hunyuan3D-2 run locally (python with the shape and paint pipelines) or the 3DAI Studio web app, Blender 4.x headless via bpy for import, scale normalization, merge, decimate or QuadriFlow, Smart UV project and texture bake, Rigify or Mixamo auto-rig, retargeting Move AI FBX with the Rokoko retargeting add-on or Blender's built-in constraints, trimesh for watertight and polycount checks, glTF-Validator for export, FFmpeg for assembly, and a stage-timing CSV.
+- **What proves it right (other than you or the model):** Technical oracles: trimesh reports watertight meshes with a triangle count under budget; glTF-Validator reports zero errors; the GLB opens in a third-party viewer (Babylon.js sandbox or three.js editor) with textures; Blender renders the animated shot headless without errors. Motion oracle: foot contacts stay within 1 cm of the floor in contact frames. Time oracle: a stopwatch log per stage including failed attempts. Human oracle: an animator or a viewer judges whether the result still matches the sketch.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Take my Procreate character from sketch to a rendered animated shot and measure every stage. Do not start from one loose drawing: help me produce a kit-bash sheet of separate parts plus a front and side view at the same scale, as Jon Finger did. Run each part through Magnific with high resemblance and low creativity, then to 3D through Hunyuan3D-2 (local, shape then texture) and, as a comparison, 3DAI Studio. In Blender headless: normalize scale to meters, set pivots, assemble the humanoid, remesh with QuadriFlow to under 30k quads, project UVs, bake the generated texture, rig with Rigify, and retarget a Move AI capture of me. Check with trimesh (watertight, polycount), glTF-Validator (zero errors), and a foot-contact script (contact frames within 1 cm of the floor). Render 5 seconds at 24 fps and assemble with FFmpeg. Keep a CSV of start and end time per stage, including failed generations and manual fixes, so the '45 minutes per asset' claim is tested. Read the Hunyuan3D-2 license and each service's commercial terms and list restrictions. Finish with a gap report: which stages needed manual work, total time, and whether the asset is game-ready or only render-ready.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are a character technical director running an AI-assisted asset pipeline. You care about whether the asset survives rigging, animation and export, not whether a turntable looks good. You time everything and count failed attempts. You treat 'under an hour' as a claim to measure.
+
+CONTEXT
+- Jon Finger's chain (chatgptricks post): sketch parts as a kit-bash sheet in Procreate, Magnific AI style transfer to make them look 3D, 3D AI Studio to convert to meshes, assemble a humanoid, Move AI motion capture of his own performance, Cinema 4D render. He called it 'a little experiment'.
+- Hunyuan3D-2 (nick_saraev): free image-to-3D, Generate Shape then Generate Textured Shape; open weights on GitHub.
+- Kling motion brush (realrileybrown): select up to 5 subjects in a still and draw motion paths; a 2D-to-video fallback when 3D fails.
+- AI rotoscoping (iamfesq): segmentation mask to composite yourself into the scene.
+- The dive's claim: about 45 minutes per asset from napkin to animated render.
+
+HARD CONSTRAINTS
+- Every stage writes its output to stages/NN_name/ with the exact settings used and a row in timing.csv (stage, start, end, attempts, manual_fix_minutes, notes).
+- Mesh budget: under 30k quads after retopology, single material, 2048 px texture.
+- Scale in meters, character about 1.7 m, feet on Z=0, forward -Y.
+- No commercial-use claim until each tool's license and plan terms are recorded in licenses.md (Hunyuan3D-2's license has territory restrictions; Magnific, 3DAI Studio, Move AI and Kling terms vary by plan).
+- Do not upload other people's art or likeness.
+
+DELIVERABLES, IN ORDER
+1. ground_truth.md: tool versions and plans, license notes, the original sketch files, and a reference timing goal.
+2. stages/01_sheet: kit-bash parts sheet plus front and side views exported as separate 2048 px PNGs on white.
+3. stages/02_magnific: each part with recorded resemblance and creativity settings.
+4. stages/03_mesh: Hunyuan3D-2 meshes and 3DAI Studio meshes for the same parts, with a comparison table (triangles, watertight, visual fidelity score 1-5).
+5. stages/04_assembly: Blender .blend and a headless script assemble.py that imports, scales, sets pivots, joins, remeshes with QuadriFlow, UV-projects and bakes.
+6. stages/05_rig: Rigify rig with weights; test poses.
+7. stages/06_mocap: Move AI capture exported to FBX, retargeted; foot-contact report.
+8. stages/07_render: 5-second 24 fps render, FFmpeg-assembled MP4, GLB export validated.
+9. fallback/: if 3D fails, a Kling motion-brush clip from the Magnific image, labeled as 2D.
+10. report.md.
+
+BUILT-IN GAP ANALYSIS
+Maintain GAPS in report.md. For each claim mark VERIFIED, UNVERIFIED or FALSE with evidence: total time under 60 minutes; parts converted without manual mesh repair; Hunyuan3D-2 versus 3DAI Studio fidelity; mesh watertight after assembly; weights deform without candy-wrapping at elbows and knees; mocap retarget without foot sliding; GLB valid; commercial use allowed. Run the checks; list what is left with the next action.
+
+SELF-QUESTIONS
+- Did a single sketch angle produce a plausible back side, or did the model invent one?
+- Did Magnific change the design (extra details, different proportions) and did I accept drift without noticing?
+- Are the generated meshes one shell or many intersecting shells?
+- Is the texture baked onto my new UVs or still on the generator's atlas?
+- Is the timing honest, including generation queues and retries?
+- Would this asset survive a game engine import, or is it render-only?
+
+STOP CONDITIONS
+Stop and report if image-to-3D fails on more than half of the parts after 3 attempts each; produce the Kling fallback and document why. Stop before any paid upgrade or upload of identifiable likeness; ask the user.
+
+RETURN FORMAT
+report.md: a timing table per stage with attempts and manual minutes, the mesh comparison table, validator outputs, the foot-contact result, license table, verdict (game-ready / render-ready / failed), GAPS, and links to the MP4 and GLB.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: tools, licenses, source sketch
+
+*Goal:* Pin tool versions, terms and the raw sketch before generating anything.
+
+```text
+List every tool in the chain (Procreate, Magnific AI, 3DAI Studio, Hunyuan3D-2, Move AI, Blender, Kling) with the version or plan the user has. Clone Tencent's Hunyuan3D-2 repo, read README and LICENSE, and record the territory restrictions and commercial terms verbatim. For each paid service record what the current plan allows for commercial use and output ownership, with the URL of the terms page and the date read. Collect the user's original sketch files at full resolution. Write the 45-minute claim as a hypothesis and create timing.csv with headers stage, start, end, attempts, manual_fix_minutes, notes. Check whether a local GPU can run Hunyuan3D-2 (record VRAM and the repo's stated minimum) or whether the web UI must be used. Note that Jon Finger rendered in Cinema 4D; decide whether Blender replaces it and say so. Write ground_truth.md and licenses.md.
+```
+
+**Expect:** ground_truth.md, licenses.md with quoted terms and dates, timing.csv header, sketches in stages/00_source.
+
+**Audit before moving on:** Fail if any license row says 'probably fine' or lacks a source URL and date. Mark the tool UNVERIFIED for commercial use instead.
+
+#### Step 2 — Kit-bash sheet and turnaround
+
+*Goal:* Give the image-to-3D stage inputs it can succeed with.
+
+```text
+From the source sketch, produce in Procreate (or describe exactly for the user to draw) a kit-bash sheet like Jon Finger's: head, torso, each arm, each leg, hands and props drawn separately, front-facing, consistent scale, on white, with clear silhouettes and no overlapping parts. Add a front and side view of the assembled character at the same height. Export each part as a 2048 px PNG with a transparent or white background. Then run each part through Magnific with high resemblance and low creativity; record the slider values and prompt per part. Compare each Magnific output to its sketch with an overlay at 50% opacity and note any added or removed features. Keep part names consistent across files (head, torso, arm_L, arm_R) so later scripts can find them.
+```
+
+**Expect:** stages/01_sheet with 8-12 part PNGs and two views; stages/02_magnific with outputs, settings.json and an overlay note per part.
+
+**Audit before moving on:** Fail any part whose Magnific silhouette deviates visibly from the sketch (new limbs, changed proportions); rerun with lower creativity. Log time and attempts.
+
+#### Step 3 — Image to 3D, two generators
+
+*Goal:* Convert parts to meshes and compare Hunyuan3D-2 with 3DAI Studio.
+
+```text
+For each Magnific part, generate a mesh with Hunyuan3D-2 locally (shape pipeline, then paint pipeline for texture; record seed, steps and octree resolution) and with 3DAI Studio's web tool. Export GLB or OBJ. Write mesh_check.py using trimesh: triangle count, number of connected bodies, is_watertight, bounding box, and texture presence. Produce a comparison table per part: generator, triangles, bodies, watertight, fidelity to the sketch scored 1-5 by overlaying a front render on the sketch. Pick the better mesh per part with a reason. Log generation time and queue time separately in timing.csv. If Hunyuan3D-2 is run locally, also record GPU time per part so the cost of the free route is visible. Keep every rejected mesh with its seed; do not overwrite.
+```
+
+**Expect:** stages/03_mesh with two meshes per part, mesh_check.py output and a comparison table.
+
+**Audit before moving on:** Fail a mesh with more than 3 bodies or that is non-watertight where it should be solid; retry with a cleaner input image, then mark for manual repair. Stop per the stop condition if more than half the parts fail after 3 attempts.
+
+#### Step 4 — Assemble, retopologize, bake
+
+*Goal:* Make one clean animation-ready mesh in Blender headless.
+
+```text
+Write assemble.py for blender -b -P: import chosen part meshes, scale so total height is 1.7 m, place feet at Z=0 facing -Y, position parts using the front and side views as reference planes, join into one object, voxel remesh at 1 cm to fuse shells, then QuadriFlow remesh to a target of 25k faces. Duplicate the original textured parts as a bake source. Smart UV project the new mesh with 0.02 island margin, bake diffuse from the source with cage extrusion 0.02 to a 2048 px image, assign a single material. Save .blend and export GLB. Run mesh_check.py and Khronos glTF-Validator on the GLB. Record the face count before and after QuadriFlow and how long each Blender operation took.
+```
+
+**Expect:** assembly .blend, assemble.py, character.glb, validator report with zero errors, mesh_check output.
+
+**Audit before moving on:** Render front and side views and overlay them on the sketch views. Fail if the texture has black bake holes over 2% of the surface or validator errors exist; fix cage distance or UVs and rerun.
+
+#### Step 5 — Rig, mocap, retarget
+
+*Goal:* Drive the character with the user's own performance.
+
+```text
+Add a Rigify human metarig, fit bones to the mesh using the side view, generate the rig and bind with automatic weights. Test 6 poses (arms up, squat, twist, walk contact, fist, head turn) and note candy-wrapping or tearing. Capture a 5-second Move AI performance of the user (single or multi-camera as their plan allows), export FBX at 24 fps, and retarget to the Rigify rig with the Rokoko retargeting add-on or a bone-mapping script. Write foot_contact.py: detect frames where foot velocity is under 2 cm per frame and report foot height and horizontal drift in those frames. Confirm the Move AI frame rate matches the scene frame rate before retargeting; a mismatch causes sliding that no IK fix hides. Log manual weight-paint minutes in timing.csv.
+```
+
+**Expect:** rigged .blend, pose test renders, retargeted action, foot_contact report.
+
+**Audit before moving on:** Fail if foot height in contact frames exceeds 1 cm or drift exceeds 2 cm per contact; fix with a root-height offset or IK foot locks, rerun the script.
+
+#### Step 6 — Render and fallback
+
+*Goal:* Produce the final shot and a 2D fallback for comparison.
+
+```text
+Light the scene with a three-point setup, render 120 frames at 24 fps in Eevee at 1920x1080 headless (blender -b scene.blend -a), and assemble with FFmpeg: ffmpeg -framerate 24 -i frame_%04d.png -c:v libx264 -pix_fmt yuv420p -crf 18 shot.mp4. Export a final GLB with the animation and validate it again; open it in the Babylon.js sandbox or three.js editor and confirm the animation plays and the texture is not missing. Log render time per frame in timing.csv. As a fallback and comparison, feed the best Magnific image into Kling, use motion brush on up to 5 regions to animate a similar action, and save it labeled 2D. If AI rotoscoping of the user is wanted, segment the user's video with a segmentation model and composite the character beside them.
+```
+
+**Expect:** shot.mp4, animated GLB passing validation, a third-party viewer screenshot, Kling fallback clip.
+
+**Audit before moving on:** Check shot.mp4 with ffprobe for 120 frames at 24 fps. Fail if the GLB animation does not play in the third-party viewer.
+
+#### Step 7 — Validate against oracles and write the gap report
+
+*Goal:* Test the 45-minute claim and the production-ready claim.
+
+```text
+Sum timing.csv per stage and total, separating machine time, queue time and manual minutes. Compare to the 45-minute claim, and compute what the total would be on a second asset reusing the scripts (exclude one-time setup like installing Hunyuan3D-2). Rerun mesh_check.py, glTF-Validator and foot_contact.py and paste outputs. Ask one person (ideally an animator) to compare the render to the original sketch and score likeness 1-5 and motion quality 1-5. Classify the asset: game-ready (valid GLB, under budget, clean rig), render-ready (looks right, fails technical checks), or failed. Write report.md with GAPS: each claim VERIFIED, UNVERIFIED or FALSE with evidence, plus the three most expensive stages and what would shorten them next time. State plainly whether the dive's under-an-hour claim held for this asset, and with how many attempts.
+```
+
+**Expect:** report.md with totals, validator outputs, reviewer scores, classification and GAPS.
+
+**Audit before moving on:** Fail if total time omits failed attempts or manual fixes. Fail if any VERIFIED row lacks a pasted output.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are auditing a sketch-to-animated-3D asset produced with Procreate, Magnific, Hunyuan3D-2 or 3DAI Studio, Blender, Move AI and optionally Kling. Inputs: stages/, timing.csv, licenses.md, report.md, character.glb, shot.mp4. 1) Enumerate claims: total time, game-ready status, watertight mesh, validator clean, foot contact within 1 cm, likeness to the sketch, commercial use allowed. 2) Re-verify: rerun mesh_check.py, glTF-Validator, foot_contact.py, ffprobe; recompute totals from timing.csv; check licenses.md rows have URLs and dates; render a front view and overlay on the sketch. Mark each VERIFIED, UNVERIFIED or FALSE with output. 3) Hunt hidden manual work: compare .blend modification history and file times against timing.csv; look for parts sculpted by hand but logged as generated. 4) List missing pieces: no back view, no LODs, no texture for hands, no retarget for fingers. 5) Rank by impact on the 'production asset' claim. 6) Fix the top three now and rerun checks. 7) Report what remains unfixed and why.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Did I give image-to-3D separate parts and orthographic views, or one perspective sketch it had to guess from?
+- Did Magnific's style transfer drift the design, and did I check with an overlay?
+- Is the Hunyuan3D-2 license compatible with the user's country and intended use?
+- Are meshes fused into one shell, or will intersecting parts tear when rigged?
+- Is the texture baked to my UVs, or will it break after retopology?
+- Does the retargeted mocap slide feet or clip through the body?
+- Does my timing include queues, retries and manual fixes?
+- Would the GLB load in a game engine with its animation?
+- Is the Kling fallback clearly labeled 2D rather than counted as the 3D result?
+- What did Jon Finger's chain use Cinema 4D for, and did my Blender render cover it?
+
+### 5 · What proves it right
+
+- Khronos glTF-Validator returns zero errors for the animated character.glb, and the Babylon.js sandbox or three.js editor plays the animation.
+- trimesh reports one watertight body under 30k faces after assembly.
+- foot_contact.py shows foot height within 1 cm and drift under 2 cm in contact frames.
+- Stopwatch-based timing.csv totals versus the 45-minute claim, with retries and manual minutes included.
+- An animator or independent viewer scores likeness to the sketch and motion quality.
+
+### 6 · Failure modes
+
+- Invented back side. Tell: the back of the mesh is lumpy or mirrors the front. Fix: supply a side and back view or generate parts separately.
+- Style drift. Tell: Magnific adds features the sketch lacks. Fix: high resemblance, low creativity, overlay check.
+- Multi-shell mesh. Tell: trimesh counts many bodies, rig tears. Fix: voxel remesh before QuadriFlow.
+- Lost texture. Tell: black or smeared bake. Fix: correct cage extrusion, island margin, re-bake.
+- Foot sliding. Tell: drift in contact frames. Fix: root offset, IK foot locks, matched frame rate.
+- Time claim inflated. Tell: totals exclude queues and retries. Fix: log every attempt.
+- License surprise. Tell: commercial use blocked by plan or territory. Fix: record terms before production use.
+
+### 7 · Agent direction (unattended runs)
+
+Begin with licenses and source files; nothing generated is usable if terms forbid it. Use Blender headless via bpy scripts for every Blender stage so it is reproducible; avoid GUI-only steps except where the user must draw or perform. Run Hunyuan3D-2 locally if a GPU with enough VRAM exists, otherwise use the web UI and log it. Web services (Magnific, 3DAI Studio, Move AI, Kling) need the user's accounts: prepare inputs and settings, then ask the user to run them and return files. Spawn a sub-agent for mesh_check.py and foot_contact.py while you write assemble.py. Cache every generated mesh with its seed. Stop and ask before paid upgrades, before uploading the user's likeness, and when the stop condition fires. Return: stages/, timing.csv, licenses.md, character.glb, shot.mp4, fallback clip, report.md with GAPS.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
 ## Related deep dives
 
 Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
 
 ---
 
-*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -206,4 +537,26 @@ Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across t
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
 </script></body></html>

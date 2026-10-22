@@ -180,6 +180,129 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>XDA: I set up Claude Code the way its creator does</p>
 <p>Boris Cherny on Threads — "Invest in your CLAUDE.md"</p>
 <p>Claude Code memory docs</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Running this system turns Boris Cherny's CLAUDE.md pattern into a tested project file: a lean, project-specific CLAUDE.md under about 200 lines, rules that earned their place, deterministic hooks for the rules that must never break, and a small behavioural eval that measures whether the file changes what Claude Code does. It is for a developer who uses Claude Code daily and wants fewer repeated mistakes. Done means an A/B eval showing the new file beats the old one or no file on rule adherence, every absolute rule backed by a hook, and every claim in the guide about how CLAUDE.md loads checked against the installed version's docs.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): An engineer who treats prompts as code would version CLAUDE.md, lint it, and test it: a set of scripted tasks run headless with claude -p, scored for whether each rule was followed, comparing no file, the old file and the new file. They would move absolute rules out of prose and into hooks or permission settings, because instructions are probabilistic and hooks are not. They would measure the file's token weight, cut rules with no incident behind them, and check how the installed Claude Code version actually loads memory files, including imports, nested directories and local overrides, instead of trusting a community gist.</p>
+<p>Rawest material to start from: 1) The official Claude Code documentation pages on memory (CLAUDE.md), settings, hooks and headless mode, for the installed version. 2) Boris Cherny's own posts and talks where he describes his workflow, read in the original rather than community copies. 3) The project's current CLAUDE.md and its git history, showing which rules came from which corrections. 4) Session transcripts from the project, where repeated corrections reveal missing rules. 5) The project's real build, test, lint and typecheck commands from its config files. 6) Anthropic's published guidance on Claude Code best practices.</p>
+<p>Methods and tools: claude --version to pin behaviour; /init for a baseline scaffold; /memory to inspect loaded memory files; a token count of the file with a tokenizer; claude -p headless runs with --output-format json for scripted evals; a task suite of 10-20 prompts each designed to tempt a specific rule violation (claim done without tests, edit without a plan, use the wrong package manager); automatic scoring by checking transcripts and repository state (did it run uv run pytest, did it write a plan file, did it touch a forbidden path); PreToolUse hooks in .claude/settings.json for absolute rules; git for versioning and diffs; 3 runs per task per arm to handle nondeterminism.</p>
+<p>What proves it right (other than you or the model): The A/B eval: adherence rate per rule across no file, old file and new file, 3 runs per task, with the new file at least matching the old on every rule and improving on the targeted ones. Hooks that block a deliberately attempted violation in a live session. The official docs confirming or contradicting each loading claim. A teammate using the file for a week and logging repeated corrections.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>I want a CLAUDE.md for this project that measurably changes Claude Code's behaviour, using Boris Cherny's pattern as the starting point. Act as an engineer who treats prompts as code. First read the official Claude Code memory, settings, hooks and headless docs for my installed version, and check the guide's claims: how CLAUDE.md files are discovered and loaded, whether the # shortcut still appends to memory, and whether 'under 200 lines' is documented guidance. Then: (1) mine my git history and session transcripts for corrections I gave more than once; (2) draft a CLAUDE.md under 200 lines with project facts (real build, test, lint, typecheck commands from config), plan-first, subagent, verification, bug-reproduction and self-improvement sections, each rule tied to an incident or a stated reason; (3) move any rule that must never break into a PreToolUse hook or a permission setting; (4) build a 12-task headless eval with claude -p that tempts each rule, run it 3 times each with no file, the old file and the new file, and score adherence automatically. Report adherence per rule, token weight, which claims held, and which rules I should delete.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are an engineer who treats CLAUDE.md as code: versioned, measured, tested. You keep the file short, tie every rule to a reason, and enforce absolute rules with hooks rather than prose. You verify every claim about Claude Code's behaviour against the installed version's documentation.</p>
+<p>CONTEXT</p>
+<p>Guide: Boris Cherny, creator of Claude Code, published workflow rules that became the community template. His team's CLAUDE.md is about 2.5k tokens. Sections: Workflow Orchestration (plan mode for 3+ step tasks, written plan, phased verification), Subagents (keep the main context clean, return summaries, parallelize), Verification Before Done (tests, lint, typecheck, never claim done without proof), Self-Improvement Loop (every correction becomes a rule; ruthlessly edit), Autonomous Bug Fixing (reproduce with a failing test first), and a project-context head (stack, commands, conventions).</p>
+<p>Boris's quote as given in the guide: 'Invest in your CLAUDE.md. After every correction, end with Update your CLAUDE.md so you don't make that mistake again. Claude is effective at writing rules for itself.'</p>
+<p>Guide claims to check: CLAUDE.md files are auto-discovered at project root, ~/.claude/CLAUDE.md and parent directories, then concatenated and prepended to the system prompt; the # prefix appends a line to CLAUDE.md; files over about 200 lines measurably reduce adherence; over 80% of Anthropic engineers used Claude Code daily at public launch in May 2025.</p>
+<p>Contrast in the guide: a global orchestrator CLAUDE.md maps trigger words to skills and inventories tools; Boris's per-project file focuses on workflow discipline.</p>
+<p>HARD CONSTRAINTS</p>
+<p>Final file under 200 lines and under 3k tokens, measured.</p>
+<p>Every rule has a reason or an incident reference in a comment or a linked lessons file.</p>
+<p>Absolute rules (never commit secrets, never push to main, never run destructive commands) get a hook or permission rule; prose alone is not enough.</p>
+<p>Commands in the file come from the project's real config (pyproject.toml, package.json, Makefile), and each is run once to confirm it works.</p>
+<p>Do not edit global ~/.claude/CLAUDE.md in this task.</p>
+<p>DELIVERABLES, IN ORDER</p>
+<p>claims.md: each guide claim with verified / outdated / unverified and the doc URL or test.</p>
+<p>corrections.md: repeated corrections mined from git history and transcripts, grouped and counted.</p>
+<p>CLAUDE.md (new) with a diff against the old one.</p>
+<p>.claude/settings.json hooks and permissions for absolute rules, with a test showing each blocks a violation.</p>
+<p>eval/: 12+ tasks, a runner using claude -p with JSON output, automatic scorers, and results for no file, old file, new file, 3 runs each.</p>
+<p>report.md: adherence per rule per arm, token weight, rules to delete, open questions.</p>
+<p>GAP ANALYSIS (BUILT IN) Keep gaps.md: claims you could not verify for this version; rules the eval cannot score automatically; nondeterminism across runs; rules that improved adherence for one task but hurt another; any conflict between project and global files. Fill what you can.</p>
+<p>SELF-QUESTIONS</p>
+<p>Which rules exist because of a real incident, and which are cargo-culted?</p>
+<p>Which rules does the model already follow with no file at all?</p>
+<p>Which absolute rule still relies only on prose?</p>
+<p>Does the file's length push important rules into the middle where they are ignored?</p>
+<p>Do my eval tasks actually tempt the violation, or are they too easy?</p>
+<p>STOP CONDITIONS Stop and ask if the project has no runnable test command, or if headless runs are not permitted in this environment. Otherwise stop when all six deliverables exist.</p>
+<p>RETURN FORMAT Table of deliverable, path, status; claims verdicts; adherence table per rule per arm; line and token counts; rules recommended for deletion; top five gaps.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: docs, version, current file</h4>
+<p>Goal: Know how this Claude Code version loads memory and what the project file says now.</p>
+<p>Run claude --version and record it. Read the official Claude Code docs for memory, settings, hooks, slash commands and headless mode for this version. Check each guide claim and write claims.md with verified, outdated or unverified plus the doc URL: discovery locations (project root, ~/.claude/CLAUDE.md, parent directories, nested subdirectories, any local or imported files); whether contents are prepended to the system prompt or injected another way; whether the # shortcut still appends to memory; whether /init and /memory behave as described; whether any doc states a size guideline; the 80% daily-use figure and its source. In a live session run /memory and record which files are loaded for this project. Copy the project's current CLAUDE.md to CLAUDE.old.md. Count lines and tokens for it, and list every command it names; run each command once and record whether it works.</p>
+<p>Expect: claims.md, loaded_memory.md, CLAUDE.old.md, a command check table.</p>
+<p>Audit before moving on: Every claim cites a doc URL or a test you ran. Any command in the old file that fails is marked for fixing in the new file.</p>
+<h4>Step 2 — Mine corrections</h4>
+<p>Goal: Find the mistakes that actually repeat in this project.</p>
+<p>Search git log messages and diffs for reverts, 'fix' commits following agent commits, and edits to CLAUDE.md, and list what each was correcting. Search the project's Claude Code session transcripts (in the user's Claude projects directory for this repo) for user messages that correct the agent: phrases like 'no', 'wrong', 'don't', 'I told you', 'again', 'you broke'. Do not copy secrets or personal data from transcripts; quote only the correction gist. Group corrections into themes (wrong command, claimed done without tests, edited the wrong file, ignored plan, touched production, verbose output). Count occurrences and note the last date. For each theme, decide whether it needs a CLAUDE.md rule, a hook, a permission setting, or nothing (one-off). Prefer a hook whenever the violation is detectable from the tool input alone, such as a command string or a file path.</p>
+<p>Expect: corrections.md with themes, counts, dates and the proposed mechanism for each.</p>
+<p>Audit before moving on: Each theme has at least one cited commit hash or transcript date. Themes seen once in more than a month are marked one-off unless they caused damage.</p>
+<h4>Step 3 — Draft the new CLAUDE.md</h4>
+<p>Goal: Write a lean file where every rule earns its place.</p>
+<p>Write CLAUDE.md using Boris's structure, adapted to this project:</p>
+<p>Head: project one-liner, stack, and the exact build, test, lint and typecheck commands taken from the project's config and verified in step 1.</p>
+<p>Workflow: plan mode and a written plan for tasks with 3 or more steps or architectural choices.</p>
+<p>Subagents: use them for exploration and parallel independent tasks; they return summaries.</p>
+<p>Verification: never claim done without running the test, lint and typecheck commands; say what was not verified.</p>
+<p>Bugs: reproduce with a failing test that fails for the right reason before fixing.</p>
+<p>Self-improvement: when corrected, propose a rule; delete rules that no longer apply.</p>
+<p>Project rules from corrections.md that chose the 'rule' mechanism, each with a short reason.</p>
+<p>Put the most violated rules near the top. Keep it under 200 lines and 3k tokens; measure both. Write a diff against CLAUDE.old.md and list removed rules with the reason for removal.</p>
+<p>Expect: CLAUDE.md, a diff, a removed-rules list, line and token counts.</p>
+<p>Audit before moving on: Any rule without a reason or incident is removed or justified. If the file exceeds limits, cut conventions the linter already enforces first.</p>
+<h4>Step 4 — Hooks for absolute rules</h4>
+<p>Goal: Make the rules that must never break deterministic.</p>
+<p>For each theme in corrections.md that chose 'hook' or 'permission', and for standard absolute rules (no secrets in commits, no force push, no push to main, no destructive deletes at repo root), write enforcement in .claude/settings.json: permission deny rules where a pattern suffices, and PreToolUse hooks running a small script that inspects the tool input and exits with a blocking status and a message when it matches. Keep hook scripts in .claude/hooks/ with tests: feed each script a sample violating and a sample allowed tool input and assert the exit code. In a live session, deliberately ask Claude to perform each blocked action and confirm the hook blocks it with a clear message. Remove the matching prose rule from CLAUDE.md or shorten it to a pointer to the hook.</p>
+<p>Expect: .claude/settings.json, .claude/hooks/ with tests, a live-block log.</p>
+<p>Audit before moving on: Every hook test passes and every live attempt is blocked. A hook that blocks legitimate work in normal use is narrowed before moving on.</p>
+<h4>Step 5 — Build and run the behavioural eval</h4>
+<p>Goal: Measure whether the file changes behaviour.</p>
+<p>Create eval/tasks/ with at least 12 tasks, each a small, real change in this repo designed to tempt one rule: a bug fix that invites patching without a failing test; a 4-step feature that invites skipping a plan; a change where the wrong package manager command is tempting; a task that ends with an easy chance to claim done without tests. Write eval/run.sh: for each arm (no CLAUDE.md, CLAUDE.old.md, new CLAUDE.md), for each task, 3 runs, in a fresh git worktree, run claude -p with the task prompt and --output-format json, saving the transcript and the final diff. Write eval/score.py: per run, check the transcript and repository state for each targeted rule (ran the right test command, wrote a plan before edits, added a failing test before the fix, claimed done only after verification). Output a table of adherence per rule per arm.</p>
+<p>Expect: eval/ tasks, runner, scorer, raw results and an adherence table.</p>
+<p>Audit before moving on: Hand-check 5 random scored runs against their transcripts; any scorer mistake is fixed and all runs re-scored. If a task is followed 100% even with no file, it is too easy; replace it.</p>
+<h4>Step 6 — Validate against oracles and write the gap report</h4>
+<p>Goal: Decide what to keep, what to delete, and what is still unknown.</p>
+<p>Compare adherence per rule across the three arms. A rule that shows no improvement over no file is a deletion candidate unless it encodes a project fact.</p>
+<p>Confirm each hook blocks its violation live and passes its tests.</p>
+<p>Re-measure final line and token counts.</p>
+<p>Ask a teammate, or yourself over the next week, to log any correction they still have to give; list the plan for that log.</p>
+<p>Write report.md: adherence table, rules to delete, hooks added, token weight, claims verdicts.</p>
+<p>Write gaps.md: unverified loading claims, rules not scorable automatically, run-to-run variance, conflicts with the global CLAUDE.md, and anything skipped. Fix what you can now.</p>
+<p>Add a dated line to the file's history or a lessons file recording this eval's result, so the next rebuild starts from measured adherence instead of memory.</p>
+<p>Expect: report.md, gaps.md, final CLAUDE.md committed with its eval results.</p>
+<p>Audit before moving on: Re-run the eval for the new file once more and confirm adherence is within the earlier run-to-run range. Confirm no secret or personal data from transcripts was copied into any output.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are auditing a CLAUDE.md rebuild you did not do. Read claims.md, corrections.md, CLAUDE.old.md, the new CLAUDE.md, .claude/settings.json, .claude/hooks/, eval/ results and report.md.</p>
+<p>List every claim: loading behaviour, shortcut behaviour, size guidance, adherence improvements, hook coverage, token weight.</p>
+<p>Mark each verified, unverified or false with evidence: a doc URL, a test output, an eval table row, a live-block log.</p>
+<p>Re-check: every command in CLAUDE.md runs; every rule has a reason; every absolute rule has a hook or permission rule that was shown to block; the eval ran 3 times per task per arm in fresh worktrees; the scorer was hand-checked; the file is under 200 lines and 3k tokens; no secrets or personal data were copied from transcripts.</p>
+<p>List missing pieces: rules that cannot be scored, tasks that were too easy, untested interaction with the global file.</p>
+<p>Rank gaps by how much they weaken the claim that the new file works.</p>
+<p>Fix the top three now.</p>
+<p>Report what you could not fix and why.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>How does my installed Claude Code version actually load CLAUDE.md files, per its docs?</p>
+<p>Does the # shortcut still append to memory in this version?</p>
+<p>Which rules trace to a real repeated correction, and which are copied from a gist?</p>
+<p>Which rules does Claude already follow with no file?</p>
+<p>Which absolute rules still rely only on prose?</p>
+<p>Are the build, test, lint and typecheck commands in the file the ones that actually work?</p>
+<p>Are my eval tasks hard enough to tempt each violation?</p>
+<p>Is run-to-run variance larger than the difference between arms?</p>
+<p>Does the project file conflict with the global CLAUDE.md anywhere?</p>
+<p>Is the file short enough that the most important rules are not buried?</p>
+<h3>5 · What proves it right</h3>
+<p>The official Claude Code documentation for the installed version: every loading and shortcut claim matched to a page.</p>
+<p>The headless A/B eval: adherence per rule across no file, old file and new file, 3 runs per task, with hand-checked scoring.</p>
+<p>Live sessions: each hook blocks a deliberately requested violation with a clear message.</p>
+<p>A teammate's one-week correction log, showing fewer repeated corrections than in corrections.md.</p>
+<p>A tokenizer count and wc -l on the final file within the stated limits.</p>
+<h3>6 · Failure modes</h3>
+<p>Cargo-cult rules. Tell: rules nobody can tie to an incident. Fix: require a reason per rule and delete the rest.</p>
+<p>Prose for walls. Tell: an absolute rule broken despite being in the file. Fix: hook or permission deny with a test.</p>
+<p>Bloat. Tell: file grows past 200 lines and key rules get ignored. Fix: move details to linked docs and hooks, keep the top tight.</p>
+<p>Stale commands. Tell: Claude runs a test command that no longer exists. Fix: verify commands from config each time the file changes.</p>
+<p>Unmeasured improvement. Tell: 'it feels better'. Fix: run the headless eval with three arms and repeats.</p>
+<p>Outdated mechanics. Tell: relying on a shortcut or loading path the current version changed. Fix: check docs for the installed version.</p>
+<p>Transcript leakage. Tell: secrets or personal text copied into corrections.md. Fix: quote only the gist and scrub before committing.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with claude --version and the official docs; several guide claims depend on version. Cache the docs pages you read under notes/docs/ with dates. Spawn a sub-agent to mine transcripts and git history for corrections, with instructions to quote only the gist and never copy secrets, while the main loop drafts the file. Run the eval in separate git worktrees so arms do not contaminate each other, and run tasks in parallel only when they touch different worktrees. Stop and ask before editing the global ~/.claude/CLAUDE.md, before adding hooks that block common commands, and if headless runs cost more than the user expects. Return README.md linking claims.md, corrections.md, CLAUDE.md with its diff, .claude/settings.json, .claude/hooks/, eval/, report.md and gaps.md, each with a one-line status.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Boris Cherny's CLAUDE.md — The Canonical Template
 
@@ -397,6 +520,227 @@ A production global CLAUDE.md (`~/.claude/CLAUDE.md`) is a **fundamentally diffe
 - [XDA: I set up Claude Code the way its creator does](https://www.xda-developers.com/set-up-claude-code-like-boris-cherny/)
 - [Boris Cherny on Threads — "Invest in your CLAUDE.md"](https://www.threads.com/@boris_cherny/post/DUMZuyJkpSJ/invest-in-your-claude-md-after-every-correction-end-with-update-your-claude-md)
 - [Claude Code memory docs](https://code.claude.com/docs/en/memory)
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Running this system turns Boris Cherny's CLAUDE.md pattern into a tested project file: a lean, project-specific CLAUDE.md under about 200 lines, rules that earned their place, deterministic hooks for the rules that must never break, and a small behavioural eval that measures whether the file changes what Claude Code does. It is for a developer who uses Claude Code daily and wants fewer repeated mistakes. Done means an A/B eval showing the new file beats the old one or no file on rule adherence, every absolute rule backed by a hook, and every claim in the guide about how CLAUDE.md loads checked against the installed version's docs.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** An engineer who treats prompts as code would version CLAUDE.md, lint it, and test it: a set of scripted tasks run headless with claude -p, scored for whether each rule was followed, comparing no file, the old file and the new file. They would move absolute rules out of prose and into hooks or permission settings, because instructions are probabilistic and hooks are not. They would measure the file's token weight, cut rules with no incident behind them, and check how the installed Claude Code version actually loads memory files, including imports, nested directories and local overrides, instead of trusting a community gist.
+- **Rawest material to start from:** 1) The official Claude Code documentation pages on memory (CLAUDE.md), settings, hooks and headless mode, for the installed version. 2) Boris Cherny's own posts and talks where he describes his workflow, read in the original rather than community copies. 3) The project's current CLAUDE.md and its git history, showing which rules came from which corrections. 4) Session transcripts from the project, where repeated corrections reveal missing rules. 5) The project's real build, test, lint and typecheck commands from its config files. 6) Anthropic's published guidance on Claude Code best practices.
+- **Methods and tools:** claude --version to pin behaviour; /init for a baseline scaffold; /memory to inspect loaded memory files; a token count of the file with a tokenizer; claude -p headless runs with --output-format json for scripted evals; a task suite of 10-20 prompts each designed to tempt a specific rule violation (claim done without tests, edit without a plan, use the wrong package manager); automatic scoring by checking transcripts and repository state (did it run uv run pytest, did it write a plan file, did it touch a forbidden path); PreToolUse hooks in .claude/settings.json for absolute rules; git for versioning and diffs; 3 runs per task per arm to handle nondeterminism.
+- **What proves it right (other than you or the model):** The A/B eval: adherence rate per rule across no file, old file and new file, 3 runs per task, with the new file at least matching the old on every rule and improving on the targeted ones. Hooks that block a deliberately attempted violation in a live session. The official docs confirming or contradicting each loading claim. A teammate using the file for a week and logging repeated corrections.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+I want a CLAUDE.md for this project that measurably changes Claude Code's behaviour, using Boris Cherny's pattern as the starting point. Act as an engineer who treats prompts as code. First read the official Claude Code memory, settings, hooks and headless docs for my installed version, and check the guide's claims: how CLAUDE.md files are discovered and loaded, whether the # shortcut still appends to memory, and whether 'under 200 lines' is documented guidance. Then: (1) mine my git history and session transcripts for corrections I gave more than once; (2) draft a CLAUDE.md under 200 lines with project facts (real build, test, lint, typecheck commands from config), plan-first, subagent, verification, bug-reproduction and self-improvement sections, each rule tied to an incident or a stated reason; (3) move any rule that must never break into a PreToolUse hook or a permission setting; (4) build a 12-task headless eval with claude -p that tempts each rule, run it 3 times each with no file, the old file and the new file, and score adherence automatically. Report adherence per rule, token weight, which claims held, and which rules I should delete.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are an engineer who treats CLAUDE.md as code: versioned, measured, tested. You keep the file short, tie every rule to a reason, and enforce absolute rules with hooks rather than prose. You verify every claim about Claude Code's behaviour against the installed version's documentation.
+
+CONTEXT
+- Guide: Boris Cherny, creator of Claude Code, published workflow rules that became the community template. His team's CLAUDE.md is about 2.5k tokens. Sections: Workflow Orchestration (plan mode for 3+ step tasks, written plan, phased verification), Subagents (keep the main context clean, return summaries, parallelize), Verification Before Done (tests, lint, typecheck, never claim done without proof), Self-Improvement Loop (every correction becomes a rule; ruthlessly edit), Autonomous Bug Fixing (reproduce with a failing test first), and a project-context head (stack, commands, conventions).
+- Boris's quote as given in the guide: 'Invest in your CLAUDE.md. After every correction, end with Update your CLAUDE.md so you don't make that mistake again. Claude is effective at writing rules for itself.'
+- Guide claims to check: CLAUDE.md files are auto-discovered at project root, ~/.claude/CLAUDE.md and parent directories, then concatenated and prepended to the system prompt; the # prefix appends a line to CLAUDE.md; files over about 200 lines measurably reduce adherence; over 80% of Anthropic engineers used Claude Code daily at public launch in May 2025.
+- Contrast in the guide: a global orchestrator CLAUDE.md maps trigger words to skills and inventories tools; Boris's per-project file focuses on workflow discipline.
+
+HARD CONSTRAINTS
+- Final file under 200 lines and under 3k tokens, measured.
+- Every rule has a reason or an incident reference in a comment or a linked lessons file.
+- Absolute rules (never commit secrets, never push to main, never run destructive commands) get a hook or permission rule; prose alone is not enough.
+- Commands in the file come from the project's real config (pyproject.toml, package.json, Makefile), and each is run once to confirm it works.
+- Do not edit global ~/.claude/CLAUDE.md in this task.
+
+DELIVERABLES, IN ORDER
+1. claims.md: each guide claim with verified / outdated / unverified and the doc URL or test.
+2. corrections.md: repeated corrections mined from git history and transcripts, grouped and counted.
+3. CLAUDE.md (new) with a diff against the old one.
+4. .claude/settings.json hooks and permissions for absolute rules, with a test showing each blocks a violation.
+5. eval/: 12+ tasks, a runner using claude -p with JSON output, automatic scorers, and results for no file, old file, new file, 3 runs each.
+6. report.md: adherence per rule per arm, token weight, rules to delete, open questions.
+
+GAP ANALYSIS (BUILT IN)
+Keep gaps.md: claims you could not verify for this version; rules the eval cannot score automatically; nondeterminism across runs; rules that improved adherence for one task but hurt another; any conflict between project and global files. Fill what you can.
+
+SELF-QUESTIONS
+- Which rules exist because of a real incident, and which are cargo-culted?
+- Which rules does the model already follow with no file at all?
+- Which absolute rule still relies only on prose?
+- Does the file's length push important rules into the middle where they are ignored?
+- Do my eval tasks actually tempt the violation, or are they too easy?
+
+STOP CONDITIONS
+Stop and ask if the project has no runnable test command, or if headless runs are not permitted in this environment. Otherwise stop when all six deliverables exist.
+
+RETURN FORMAT
+Table of deliverable, path, status; claims verdicts; adherence table per rule per arm; line and token counts; rules recommended for deletion; top five gaps.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: docs, version, current file
+
+*Goal:* Know how this Claude Code version loads memory and what the project file says now.
+
+```text
+Run claude --version and record it. Read the official Claude Code docs for memory, settings, hooks, slash commands and headless mode for this version.
+Check each guide claim and write claims.md with verified, outdated or unverified plus the doc URL: discovery locations (project root, ~/.claude/CLAUDE.md, parent directories, nested subdirectories, any local or imported files); whether contents are prepended to the system prompt or injected another way; whether the # shortcut still appends to memory; whether /init and /memory behave as described; whether any doc states a size guideline; the 80% daily-use figure and its source.
+In a live session run /memory and record which files are loaded for this project.
+Copy the project's current CLAUDE.md to CLAUDE.old.md. Count lines and tokens for it, and list every command it names; run each command once and record whether it works.
+```
+
+**Expect:** claims.md, loaded_memory.md, CLAUDE.old.md, a command check table.
+
+**Audit before moving on:** Every claim cites a doc URL or a test you ran. Any command in the old file that fails is marked for fixing in the new file.
+
+#### Step 2 — Mine corrections
+
+*Goal:* Find the mistakes that actually repeat in this project.
+
+```text
+Search git log messages and diffs for reverts, 'fix' commits following agent commits, and edits to CLAUDE.md, and list what each was correcting. Search the project's Claude Code session transcripts (in the user's Claude projects directory for this repo) for user messages that correct the agent: phrases like 'no', 'wrong', 'don't', 'I told you', 'again', 'you broke'. Do not copy secrets or personal data from transcripts; quote only the correction gist.
+Group corrections into themes (wrong command, claimed done without tests, edited the wrong file, ignored plan, touched production, verbose output). Count occurrences and note the last date.
+For each theme, decide whether it needs a CLAUDE.md rule, a hook, a permission setting, or nothing (one-off). Prefer a hook whenever the violation is detectable from the tool input alone, such as a command string or a file path.
+```
+
+**Expect:** corrections.md with themes, counts, dates and the proposed mechanism for each.
+
+**Audit before moving on:** Each theme has at least one cited commit hash or transcript date. Themes seen once in more than a month are marked one-off unless they caused damage.
+
+#### Step 3 — Draft the new CLAUDE.md
+
+*Goal:* Write a lean file where every rule earns its place.
+
+```text
+Write CLAUDE.md using Boris's structure, adapted to this project:
+- Head: project one-liner, stack, and the exact build, test, lint and typecheck commands taken from the project's config and verified in step 1.
+- Workflow: plan mode and a written plan for tasks with 3 or more steps or architectural choices.
+- Subagents: use them for exploration and parallel independent tasks; they return summaries.
+- Verification: never claim done without running the test, lint and typecheck commands; say what was not verified.
+- Bugs: reproduce with a failing test that fails for the right reason before fixing.
+- Self-improvement: when corrected, propose a rule; delete rules that no longer apply.
+- Project rules from corrections.md that chose the 'rule' mechanism, each with a short reason.
+Put the most violated rules near the top. Keep it under 200 lines and 3k tokens; measure both. Write a diff against CLAUDE.old.md and list removed rules with the reason for removal.
+```
+
+**Expect:** CLAUDE.md, a diff, a removed-rules list, line and token counts.
+
+**Audit before moving on:** Any rule without a reason or incident is removed or justified. If the file exceeds limits, cut conventions the linter already enforces first.
+
+#### Step 4 — Hooks for absolute rules
+
+*Goal:* Make the rules that must never break deterministic.
+
+```text
+For each theme in corrections.md that chose 'hook' or 'permission', and for standard absolute rules (no secrets in commits, no force push, no push to main, no destructive deletes at repo root), write enforcement in .claude/settings.json: permission deny rules where a pattern suffices, and PreToolUse hooks running a small script that inspects the tool input and exits with a blocking status and a message when it matches.
+Keep hook scripts in .claude/hooks/ with tests: feed each script a sample violating and a sample allowed tool input and assert the exit code.
+In a live session, deliberately ask Claude to perform each blocked action and confirm the hook blocks it with a clear message.
+Remove the matching prose rule from CLAUDE.md or shorten it to a pointer to the hook.
+```
+
+**Expect:** .claude/settings.json, .claude/hooks/ with tests, a live-block log.
+
+**Audit before moving on:** Every hook test passes and every live attempt is blocked. A hook that blocks legitimate work in normal use is narrowed before moving on.
+
+#### Step 5 — Build and run the behavioural eval
+
+*Goal:* Measure whether the file changes behaviour.
+
+```text
+Create eval/tasks/ with at least 12 tasks, each a small, real change in this repo designed to tempt one rule: a bug fix that invites patching without a failing test; a 4-step feature that invites skipping a plan; a change where the wrong package manager command is tempting; a task that ends with an easy chance to claim done without tests.
+Write eval/run.sh: for each arm (no CLAUDE.md, CLAUDE.old.md, new CLAUDE.md), for each task, 3 runs, in a fresh git worktree, run claude -p with the task prompt and --output-format json, saving the transcript and the final diff.
+Write eval/score.py: per run, check the transcript and repository state for each targeted rule (ran the right test command, wrote a plan before edits, added a failing test before the fix, claimed done only after verification). Output a table of adherence per rule per arm.
+```
+
+**Expect:** eval/ tasks, runner, scorer, raw results and an adherence table.
+
+**Audit before moving on:** Hand-check 5 random scored runs against their transcripts; any scorer mistake is fixed and all runs re-scored. If a task is followed 100% even with no file, it is too easy; replace it.
+
+#### Step 6 — Validate against oracles and write the gap report
+
+*Goal:* Decide what to keep, what to delete, and what is still unknown.
+
+```text
+1. Compare adherence per rule across the three arms. A rule that shows no improvement over no file is a deletion candidate unless it encodes a project fact.
+2. Confirm each hook blocks its violation live and passes its tests.
+3. Re-measure final line and token counts.
+4. Ask a teammate, or yourself over the next week, to log any correction they still have to give; list the plan for that log.
+5. Write report.md: adherence table, rules to delete, hooks added, token weight, claims verdicts.
+6. Write gaps.md: unverified loading claims, rules not scorable automatically, run-to-run variance, conflicts with the global CLAUDE.md, and anything skipped. Fix what you can now.
+7. Add a dated line to the file's history or a lessons file recording this eval's result, so the next rebuild starts from measured adherence instead of memory.
+```
+
+**Expect:** report.md, gaps.md, final CLAUDE.md committed with its eval results.
+
+**Audit before moving on:** Re-run the eval for the new file once more and confirm adherence is within the earlier run-to-run range. Confirm no secret or personal data from transcripts was copied into any output.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are auditing a CLAUDE.md rebuild you did not do. Read claims.md, corrections.md, CLAUDE.old.md, the new CLAUDE.md, .claude/settings.json, .claude/hooks/, eval/ results and report.md.
+1. List every claim: loading behaviour, shortcut behaviour, size guidance, adherence improvements, hook coverage, token weight.
+2. Mark each verified, unverified or false with evidence: a doc URL, a test output, an eval table row, a live-block log.
+3. Re-check: every command in CLAUDE.md runs; every rule has a reason; every absolute rule has a hook or permission rule that was shown to block; the eval ran 3 times per task per arm in fresh worktrees; the scorer was hand-checked; the file is under 200 lines and 3k tokens; no secrets or personal data were copied from transcripts.
+4. List missing pieces: rules that cannot be scored, tasks that were too easy, untested interaction with the global file.
+5. Rank gaps by how much they weaken the claim that the new file works.
+6. Fix the top three now.
+7. Report what you could not fix and why.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- How does my installed Claude Code version actually load CLAUDE.md files, per its docs?
+- Does the # shortcut still append to memory in this version?
+- Which rules trace to a real repeated correction, and which are copied from a gist?
+- Which rules does Claude already follow with no file?
+- Which absolute rules still rely only on prose?
+- Are the build, test, lint and typecheck commands in the file the ones that actually work?
+- Are my eval tasks hard enough to tempt each violation?
+- Is run-to-run variance larger than the difference between arms?
+- Does the project file conflict with the global CLAUDE.md anywhere?
+- Is the file short enough that the most important rules are not buried?
+
+### 5 · What proves it right
+
+- The official Claude Code documentation for the installed version: every loading and shortcut claim matched to a page.
+- The headless A/B eval: adherence per rule across no file, old file and new file, 3 runs per task, with hand-checked scoring.
+- Live sessions: each hook blocks a deliberately requested violation with a clear message.
+- A teammate's one-week correction log, showing fewer repeated corrections than in corrections.md.
+- A tokenizer count and wc -l on the final file within the stated limits.
+
+### 6 · Failure modes
+
+- Cargo-cult rules. Tell: rules nobody can tie to an incident. Fix: require a reason per rule and delete the rest.
+- Prose for walls. Tell: an absolute rule broken despite being in the file. Fix: hook or permission deny with a test.
+- Bloat. Tell: file grows past 200 lines and key rules get ignored. Fix: move details to linked docs and hooks, keep the top tight.
+- Stale commands. Tell: Claude runs a test command that no longer exists. Fix: verify commands from config each time the file changes.
+- Unmeasured improvement. Tell: 'it feels better'. Fix: run the headless eval with three arms and repeats.
+- Outdated mechanics. Tell: relying on a shortcut or loading path the current version changed. Fix: check docs for the installed version.
+- Transcript leakage. Tell: secrets or personal text copied into corrections.md. Fix: quote only the gist and scrub before committing.
+
+### 7 · Agent direction (unattended runs)
+
+Start with claude --version and the official docs; several guide claims depend on version. Cache the docs pages you read under notes/docs/ with dates. Spawn a sub-agent to mine transcripts and git history for corrections, with instructions to quote only the gist and never copy secrets, while the main loop drafts the file. Run the eval in separate git worktrees so arms do not contaminate each other, and run tasks in parallel only when they touch different worktrees. Stop and ask before editing the global ~/.claude/CLAUDE.md, before adding hooks that block common commands, and if headless runs cost more than the user expects. Return README.md linking claims.md, corrections.md, CLAUDE.md with its diff, .claude/settings.json, .claude/hooks/, eval/, report.md and gaps.md, each with a one-line status.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -404,4 +748,26 @@ A production global CLAUDE.md (`~/.claude/CLAUDE.md`) is a **fundamentally diffe
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

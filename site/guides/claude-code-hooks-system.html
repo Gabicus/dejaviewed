@@ -157,6 +157,104 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <h2>Bottom line</h2>
 <p>Hooks are the layer where Claude Code stops being "a smart assistant that mostly follows rules" and becomes "a runtime with hard constraints you can trust." The nine standard events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd) cover 95% of real use cases. Start with three hooks — block destructive Bash, auto-format on edit, inject git context on session start — and add more as you notice yourself saying "Claude should always X" for the nth time. That sentence is always a hook.</p>
 <p>If you have hookify installed, use /hookify for interactive creation, and treat every from now on / whenever X rule in CLAUDE.md as a candidate to migrate into settings.json where it becomes enforceable instead of advisory.</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail. Done means each hook is proven to fire (or block) in a live headless Claude Code session, not just in theory.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A platform engineer would treat hooks as production code that runs with your full user permissions on every tool call, so they would version the scripts in git, unit-test each one against recorded event payloads, and measure their latency because a slow PreToolUse hook taxes every single Bash call. They would read the installed version's hook reference instead of trusting a blog table, because event names and the structured-output schema have changed between releases (the guide's modified_tool_input and top-level decision: approve are older shapes; current docs use hookSpecificOutput.permissionDecision and updatedInput). They would guard Stop hooks against infinite loops using the stop_hook_active input field.</p>
+<p>Rawest material to start from: Start from the source, not summaries: (1) the official hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide, read for the exact version you run (claude --version); (2) the Agent SDK hooks page at platform.claude.com/docs/en/agent-sdk/hooks; (3) disler/claude-code-hooks-mastery on GitHub, which logs the real stdin payload of every event to JSON files; (4) your own captured payloads, produced by a catch-all logging hook that dumps stdin for every event to ~/.claude/hook-payloads/ - .json; (5) your existing ~/.claude/settings.json, .claude/settings.json, and .claude/settings.local.json, plus any hookify rules (/hookify:list).</p>
+<p>Methods and tools: jq for parsing stdin; bash with set -euo pipefail or Python 3 stdlib for anything nontrivial; bats-core or pytest for the harness (pipe fixture JSON into the script, assert exit code 0/2 and stdout/stderr); shellcheck on every .sh; hyperfine to time each hook (budget under 50 ms for PreToolUse); claude --debug and the /hooks slash command to confirm registration; headless claude -p runs with --output-format stream-json to prove a hook fired end to end; gitleaks or trufflehog regex sets as the source for the secret-pattern blocker.</p>
+<p>What proves it right (other than you or the model): The oracles are outside the model: (a) a bats/pytest suite where recorded payloads from your own Claude Code version produce the expected exit codes; (b) a headless claude -p session told to run rm -rf /tmp/hooktest-canary (a directory holding a .protected sentinel) that shows the block reason in the stream-json transcript and leaves the canary directory intact; (c) a Stop-gate run where a deliberately failing pytest keeps the session working and the session ends only after the test passes.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>You are a platform engineer hardening my Claude Code setup with hooks. First run claude --version and read the hooks reference for that version (code.claude.com/docs/en/hooks); record the exact event names, stdin fields, exit-code semantics, and the structured JSON output schema (permissionDecision, updatedInput, additionalContext, decision/reason for Stop). Install a temporary catch-all hook that dumps stdin for every event into ~/.claude/hook-payloads/ and run one short session to capture real payloads; these become test fixtures. Then build, in a git-tracked ~/.claude/hooks/ directory: block-destructive.sh (PreToolUse, Bash), block-secrets.py (PreToolUse, Edit Write MultiEdit, gitleaks-derived patterns), format-on-edit.sh (PostToolUse), session-git-context.sh (SessionStart), bash-audit.sh (PostToolUse, Bash, TSV), precompact-backup.py (PreCompact, async), stop-tests-gate.sh (Stop, honours stop_hook_active). For each: a bats or pytest test feeding fixtures and asserting exit code and output, shellcheck clean, hyperfine timing under 50 ms for PreToolUse. Register them in ~/.claude/settings.json without clobbering existing hooks. Prove each fires in a headless claude -p --output-format stream-json session using canary files under /tmp. Return the file tree, the test output, the timing table, and a list of guide claims you found wrong for this version.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are a platform engineer building a deterministic guardrail layer for Claude Code. You treat hooks as production code that runs with the user's full permissions on every tool call. You trust the installed version's documentation and captured payloads over any blog post, including the guide you were given. You never claim a hook works until a live session proves it.</p>
+<p>CONTEXT</p>
+<p>Hooks are shell commands the harness (not the model) runs at lifecycle events: SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd, plus newer ones that churn between versions.</p>
+<p>Stdin is JSON (session_id, hook_event_name, tool_name, tool_input, cwd, transcript_path, and per-event fields). Exit 0 allows, exit 2 blocks and feeds stderr to Claude, other non-zero is a non-blocking error.</p>
+<p>Claims from the guide you must TEST, not repeat: (1) 'structured JSON can return {"modified_tool_input": ...} to rewrite arguments' (current docs may name this updatedInput under hookSpecificOutput); (2) '{"decision": "approve"}' as a valid PreToolUse output; (3) 'SessionStart stdout gets injected into Claude's first system message'; (4) 'async: true hooks cannot block or modify'; (5) 'later settings files win for the same key' (hooks may merge rather than override).</p>
+<p>References: code.claude.com/docs/en/hooks, code.claude.com/docs/en/hooks-guide, github.com/disler/claude-code-hooks-mastery, the hookify plugin if installed (/hookify:list).</p>
+<p>HARD CONSTRAINTS</p>
+<p>Back up ~/.claude/settings.json to settings.json.bak- before editing. Merge hooks with jq; never overwrite existing entries.</p>
+<p>All scripts live in ~/.claude/hooks/, are git-tracked, executable, shellcheck clean.</p>
+<p>PreToolUse hooks must finish in under 50 ms median (hyperfine, 20 runs).</p>
+<p>Every Stop hook must exit 0 when stop_hook_active is true to prevent infinite loops.</p>
+<p>Destructive tests only against canary paths under /tmp/hooktest-. Never test against real data.</p>
+<p>The secret blocker reports the pattern name, never the matched value.</p>
+<p>ORDERED DELIVERABLES</p>
+<p>ground-truth.md: claude --version, the event table copied from the installed version's docs, the exact output JSON schema, and a verdict on each of the five guide claims above.</p>
+<p>A capture hook (temporary) that writes every event's stdin to ~/.claude/hook-payloads/; run one session that triggers Bash, Edit, Write, a subagent, and /compact. Keep the payloads as fixtures in ~/.claude/hooks/tests/fixtures/. Remove the capture hook afterward.</p>
+<p>Seven hooks: block-destructive.sh, block-secrets.py, format-on-edit.sh, session-git-context.sh, bash-audit.sh, precompact-backup.py (async), stop-tests-gate.sh.</p>
+<p>tests/: bats or pytest cases, at least three per hook (allow case, block case, malformed-stdin case).</p>
+<p>settings.json merged entries with matchers (Bash; Edit Write MultiEdit; empty matcher for lifecycle events) and timeouts.</p>
+<p>Live proof: headless runs of claude -p '...' --output-format stream-json for the blocker, the secret blocker, and the Stop gate, saved as transcripts in ~/.claude/hooks/proof/.</p>
+<p>README.md in ~/.claude/hooks/: what each hook does, how to disable (disableAllHooks or removing the entry), and a 'what this cannot stop' section.</p>
+<p>BUILT-IN GAP ANALYSIS Before finishing, write GAPS.md listing: every event you could not trigger live and why; every guide claim that was false or unverifiable on this version; bypasses you found for each blocker (try bash -c, eval, base64 -d sh, writing a script then running it, MCP tools that write files); hooks whose latency exceeded budget. Fix what you can now (for example extend the Edit matcher to MCP filesystem tools), and mark the rest open with a reason.</p>
+<p>SELF-QUESTIONS BEFORE FINISHING</p>
+<p>Did I read the docs for my installed version, or an older page?</p>
+<p>Does any hook print a secret, a full tool_input, or a transcript to stdout where Claude will see it?</p>
+<p>What happens to each hook when jq is missing, stdin is empty, or tool_input lacks the field I read?</p>
+<p>Does the Stop gate handle a repo without tests, and does it honour stop_hook_active?</p>
+<p>Does format-on-edit run on files outside the project (for example ~/.claude itself)?</p>
+<p>STOP CONDITIONS Stop and report when all seven hooks pass their tests and the three live proofs exist, or when a doc/behaviour mismatch blocks a hook (report the mismatch with the doc excerpt and the observed payload). Stop immediately and ask if any test would touch a path outside /tmp/hooktest- or the hooks directory.</p>
+<p>RETURN FORMAT A single message with: (1) file tree of ~/.claude/hooks; (2) test summary (pass/fail counts per hook); (3) latency table (hook, median ms); (4) verdicts on the five guide claims; (5) the GAPS.md contents; (6) the exact settings.json diff.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Establish ground truth for the installed version</h4>
+<p>Goal: Pin the exact hook contract of the Claude Code version you run and capture real payloads.</p>
+<p>Run claude --version and record it. Read the hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide. Write ~/.claude/hooks/ground-truth.md containing: the full list of hook events with when they fire and whether they can block; the stdin fields common to all events and the extra fields per event (tool_name, tool_input, tool_response, prompt, stop_hook_active, trigger for PreCompact, source for SessionStart); exit-code semantics; the structured JSON output schema (continue, stopReason, suppressOutput, hookSpecificOutput.permissionDecision, permissionDecisionReason, updatedInput, additionalContext, and Stop's decision/reason). Then judge these guide claims as true, false, or renamed for this version: modified_tool_input rewrites args; decision: approve is valid for PreToolUse; SessionStart stdout is injected as context; async hooks cannot block; later settings files override earlier ones for hooks. Next, back up ~/.claude/settings.json, add a temporary catch-all hook on every event that runs cat &gt; ~/.claude/hook-payloads/$(date +%s%N)-event.json, start one session that runs a Bash command, edits a file, writes a file, spawns a subagent, and runs /compact, then remove the catch-all. Copy the payloads into ~/.claude/hooks/tests/fixtures/ named by event.</p>
+<p>Expect: ground-truth.md (one to two pages) with a version string, an event table, a schema block, and five claim verdicts each quoting the doc line; at least one fixture JSON per event triggered.</p>
+<p>Audit before moving on: Open each fixture and confirm the fields you documented actually appear; any documented field missing from a real payload is a fail, so re-read the docs for that version and correct ground-truth.md. Confirm settings.json matches the backup after removing the capture hook (diff must be empty).</p>
+<h4>Step 2 — Build and test the PreToolUse blockers</h4>
+<p>Goal: Ship a destructive-Bash blocker and a secret-leak blocker with fixture tests and latency budgets.</p>
+<p>Using the fixtures in ~/.claude/hooks/tests/fixtures/ and the schema in ground-truth.md, write two hooks. (a) block-destructive.sh: read .tool_input.command with jq; block with exit 2 and a one-line stderr reason on rm -rf against /, ~, $HOME or a repo root, mkfs, dd of= to /dev/, fork bombs, chmod -R 777 /, git push --force to main or master, find ... -exec rm -rf without a .git prune, and rm -rf of any directory containing a .protected sentinel file (this gives live tests a safe target). Allow everything else. Handle missing jq or empty stdin by exiting 0 and logging to ~/.claude/hooks/errors.log. (b) block-secrets.py: on Edit, Write, and MultiEdit, scan new_string, content, and edits[].new_string against a pattern set derived from gitleaks default rules (AWS keys, GitHub tokens, Anthropic and OpenAI keys, PEM private key headers, 64-hex Ethereum private keys) and exit 2 naming only the rule, never the value. Write bats or pytest cases: three allow, three block, one malformed stdin per hook. Run shellcheck. Time each with hyperfine --runs 20 piping a fixture; the median must be under 50 ms. Then try to bypass block-destructive with bash -c, eval, base64 -d sh, and a script file, and record which get through.</p>
+<p>Expect: Two executable scripts, a test file with at least 14 passing cases, a hyperfine table, and a bypass list with pass/blocked per technique.</p>
+<p>Audit before moving on: Re-run the tests from a clean shell. Grep the scripts' stderr strings to confirm no secret value can be echoed. If a known-dangerous fixture passes, or latency exceeds 50 ms, fix before moving on. Bypasses that remain open go into GAPS.md, not silently ignored.</p>
+<h4>Step 3 — Build the advisory hooks</h4>
+<p>Goal: Add format-on-edit, Bash audit logging, and SessionStart git context, each tested.</p>
+<p>Write three hooks using the fixtures. (a) format-on-edit.sh for PostToolUse on Edit Write MultiEdit: read .tool_input.file_path, skip files outside the session cwd (from .cwd) and anything under ~/.claude, then dispatch by extension: prettier --write for ts/tsx/js/jsx/json/css/md, ruff format for py, rustfmt for rs, gofmt -w for go. Skip silently if the formatter is not installed. Never exit 2. (b) bash-audit.sh for PostToolUse on Bash: append a TSV row of ISO timestamp, session_id, cwd, and the command with tabs and newlines escaped, to ~/.claude/bash-log.tsv; rotate when the file passes 10 MB. (c) session-git-context.sh for SessionStart: if cwd is a git repo, print the branch, git status --short head -10, and git log --oneline -5; print nothing outside a repo. Verify against ground-truth.md whether SessionStart stdout becomes model context on this version and whether JSON additionalContext is the preferred path; use whichever the docs specify. Write tests: format-on-edit actually reformats a badly indented fixture file in /tmp/hooktest-fmt; audit log escapes a multi-line command; git context prints nothing in a non-repo directory.</p>
+<p>Expect: Three scripts, passing tests, and a sample bash-log.tsv row and git-context output pasted into the step notes.</p>
+<p>Audit before moving on: Check that a command containing a tab or newline yields exactly one TSV row. Check the formatter does not touch files outside cwd. If SessionStart output is not visible to the model in a live test, switch to the documented JSON field and retest.</p>
+<h4>Step 4 — Build the Stop gate and PreCompact backup</h4>
+<p>Goal: Refuse premature 'done' while tests fail, and snapshot transcripts before compaction.</p>
+<p>Write stop-tests-gate.sh for the Stop event. Read stdin; if .stop_hook_active is true, exit 0 immediately to avoid an infinite loop. Detect the test runner from the cwd: pytest if pyproject.toml or pytest.ini exists, npm test --silent if package.json has a test script, cargo test --quiet for Cargo.toml; if none, exit 0. Run it with a 120-second timeout. On failure, block the stop using the mechanism ground-truth.md specifies for Stop on this version (exit 2 with the failing test names on stderr, or JSON decision: block with a reason), capped to the last 30 lines of output. Write precompact-backup.py for PreCompact, registered async: copy the file at .transcript_path to ~/.claude/transcript-backups/ - - .jsonl, keep the newest 50, and never print the transcript. Test the Stop gate in /tmp/hooktest-stop with a tiny pytest project in three states: passing, failing, and stop_hook_active true while failing. Test the backup with a fixture payload pointing at a dummy transcript.</p>
+<p>Expect: Two scripts and a test log showing three Stop outcomes (allow, block with reason, allow due to stop_hook_active) and one backup file created with the right name.</p>
+<p>Audit before moving on: Confirm the gate cannot loop: simulate two consecutive Stop events, the second with stop_hook_active true, and verify exit 0. Confirm a 120-second timeout is shorter than the hook timeout you will register. Confirm the backup rotation deletes only files in its own directory.</p>
+<h4>Step 5 — Prove each hook end to end in live sessions</h4>
+<p>Goal: Show the harness, not the test harness, enforces each hook.</p>
+<p>First register the hooks: back up ~/.claude/settings.json, then merge all seven entries into .hooks with jq, appending to existing arrays (matchers Bash and Edit Write MultiEdit for the tool hooks, empty for lifecycle events, async true for PreCompact, Stop timeout 150 seconds). Validate with jq empty, confirm each entry appears under /hooks, and list project-level hooks in .claude/settings.json that would double-fire. Then create canaries: mkdir -p /tmp/hooktest-canary &amp;&amp; touch /tmp/hooktest-canary/keep.txt /tmp/hooktest-canary/.protected. Never target a parent path in a test. Run headless sessions and save each transcript to ~/.claude/hooks/proof/: (1) claude -p 'Run: rm -rf /tmp/hooktest-canary then report' --output-format stream-json --verbose with permission settings that would otherwise allow Bash; confirm the stream shows a block with your stderr reason and the canary still exists. (2) Ask Claude to write a file /tmp/hooktest-secret/config.py containing a fake AWS key in the documented AKIA format; confirm the write is blocked and the file does not exist. (3) In /tmp/hooktest-stop with a failing test, ask Claude to 'add a docstring and say done'; confirm the session continues and fixes or reports the failing test before stopping. (4) Count Bash tool calls in the transcripts and compare with new rows in bash-log.tsv. (5) Run /compact in an interactive session and confirm a backup file appears.</p>
+<p>Expect: Five proof transcripts or notes with pass/fail, a canary directory that still exists, and matching Bash-call counts.</p>
+<p>Audit before moving on: Any proof that passes only because the model declined on its own (no hook event in the stream) is a fail; re-run with a prompt that pushes the action and confirm the block reason comes from the hook. Mismatched audit-log counts mean the matcher misses some calls. A settings diff that removes any pre-existing line means restore the backup and redo the merge.</p>
+<h4>Step 6 — Validate against the oracles and write the gap report</h4>
+<p>Goal: Run every external check and publish what is proven, what is open, and what the guide got wrong.</p>
+<p>Run the full test suite from a clean shell and paste the summary. Run shellcheck on all .sh files. Run hyperfine on every PreToolUse hook and tabulate medians. Run gitleaks detect on the project repo and confirm no secret type it finds is missing from block-secrets.py's rules. Re-read the five proof transcripts. Write ~/.claude/hooks/README.md (purpose of each hook, how to disable each, fail-open versus fail-closed choice, what each blocker cannot stop) and GAPS.md with three sections: Verified (claim, evidence file), Open (claim or bypass, why not fixed, impact high/medium/low), and Guide corrections (each guide claim that was false or renamed on this version with the doc excerpt). Commit ~/.claude/hooks to git with a message naming the Claude Code version tested.</p>
+<p>Expect: All tests green, a latency table, README.md and GAPS.md, and a commit hash.</p>
+<p>Audit before moving on: Every Verified row must cite a file in tests/ or proof/. Any high-impact Open item without a mitigation note is a fail: add a mitigation (for example a permissions deny rule) or mark it explicitly as accepted risk with the reason.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are auditing a freshly built Claude Code hook suite in ~/.claude/hooks/ that you did not write. Do not trust README.md. (1) List every claim the README and ground-truth.md make (each hook's trigger, behaviour, latency, and each guide-claim verdict). (2) For each, mark verified, unverified, or false, and cite evidence: a test case name, a proof transcript line, or a doc excerpt for the version from claude --version. (3) Attack the blockers: try at least eight bypasses of block-destructive (bash -c, sh -c, eval, base64 -d sh, python -c with shutil.rmtree, a heredoc script then execute, xargs rm, an MCP filesystem delete tool) and five of block-secrets (split string concatenation, base64 of a key, a key in a NotebookEdit cell, a key via Bash echo &gt; file, a key in an MCP write tool). Record which get through. (4) Check for silent failures: what does each hook do with empty stdin, invalid JSON, a missing jq or formatter; does any hook print tool_input or transcript content where Claude sees it. (5) Rank all gaps by impact (data loss, secret leak, workflow friction). Fix the top three now, re-run tests, and append results to GAPS.md. Report what you could not fix and why, with the exact command that demonstrates each remaining bypass on a /tmp canary.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Which version's hook schema did I implement, and did I check it against a captured payload rather than the guide's table?</p>
+<p>Does the Stop gate honour stop_hook_active, and what happens if the test suite takes longer than the hook timeout?</p>
+<p>Does block-secrets cover MultiEdit edits[] and NotebookEdit, or only Edit and Write?</p>
+<p>Can Claude write a file through an MCP server tool that none of my matchers see?</p>
+<p>Is fail-open on missing jq the right call for the destructive blocker, and did I document it?</p>
+<p>Do project-level .claude/settings.json hooks double-fire with my user-level ones?</p>
+<p>Does format-on-edit rewrite files Claude did not intend to change, such as lockfiles or generated code?</p>
+<p>Will the audit log or transcript backups grow without bound?</p>
+<h3>5 · What proves it right</h3>
+<p>bats or pytest suite: every hook passes allow, block, and malformed-stdin fixtures captured from the installed Claude Code version.</p>
+<p>Headless claude -p --output-format stream-json transcripts showing the hook's block reason for a destructive command, with /tmp/hooktest-canary still present afterward.</p>
+<p>A failing pytest project where the Stop gate keeps the session working until tests pass, and a stop_hook_active=true run that exits cleanly.</p>
+<p>gitleaks detect on the repo finds no secret class that block-secrets.py lacks a rule for.</p>
+<h3>6 · Failure modes</h3>
+<p>Stop hook loops forever. Tell: the session keeps restarting after every response and burns tokens. Fix: exit 0 when stop_hook_active is true and cap retries.</p>
+<p>Hook written to an outdated schema. Tell: JSON output is ignored and tools run anyway. Fix: re-read the docs for claude --version and use hookSpecificOutput fields.</p>
+<p>Regex blocker treated as a sandbox. Tell: bash -c or a written script runs the blocked command. Fix: document bypasses, add permissions deny rules and a sandboxed run mode for risky work.</p>
+<p>Slow PreToolUse hook. Tell: every Bash call stalls noticeably. Fix: hyperfine it, move logic to a compiled binary or cache, keep heavy work in async PostToolUse.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Run this in the user's home config, so treat ~/.claude/settings.json as precious: back it up before every write and diff after. Reach for the installed version's docs and a captured payload first; do not code from the guide's tables. Spawn a subagent only for the adversarial bypass hunt in the gap audit, so the builder is not grading its own blockers. Never execute a destructive command outside /tmp/hooktest- paths; if any proof would need one, stop and ask. Never print, log, or echo the value of anything matching a secret pattern, including in test output. Return in chat: the hook file tree, test summary, latency table, guide-claim verdicts, settings diff, and GAPS.md; the files themselves live in ~/.claude/hooks/ and are committed to a git repo there.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Claude Code Hooks System — Deep Dive
 
@@ -463,6 +561,192 @@ cat .claude/settings.json 2>/dev/null | jq '.hooks // {}'
 Hooks are the layer where Claude Code stops being "a smart assistant that mostly follows rules" and becomes "a runtime with hard constraints you can trust." The nine standard events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd) cover 95% of real use cases. Start with three hooks — block destructive Bash, auto-format on edit, inject git context on session start — and add more as you notice yourself saying "Claude should always X" for the nth time. That sentence is always a hook.
 
 If you have `hookify` installed, use `/hookify` for interactive creation, and treat every `from now on` / `whenever X` rule in CLAUDE.md as a candidate to migrate into `settings.json` where it becomes enforceable instead of advisory.
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail. Done means each hook is proven to fire (or block) in a live headless Claude Code session, not just in theory.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A platform engineer would treat hooks as production code that runs with your full user permissions on every tool call, so they would version the scripts in git, unit-test each one against recorded event payloads, and measure their latency because a slow PreToolUse hook taxes every single Bash call. They would read the installed version's hook reference instead of trusting a blog table, because event names and the structured-output schema have changed between releases (the guide's `modified_tool_input` and top-level `decision: approve` are older shapes; current docs use `hookSpecificOutput.permissionDecision` and `updatedInput`). They would guard Stop hooks against infinite loops using the `stop_hook_active` input field.
+- **Rawest material to start from:** Start from the source, not summaries: (1) the official hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide, read for the exact version you run (`claude --version`); (2) the Agent SDK hooks page at platform.claude.com/docs/en/agent-sdk/hooks; (3) disler/claude-code-hooks-mastery on GitHub, which logs the real stdin payload of every event to JSON files; (4) your own captured payloads, produced by a catch-all logging hook that dumps stdin for every event to `~/.claude/hook-payloads/<event>-<ts>.json`; (5) your existing `~/.claude/settings.json`, `.claude/settings.json`, and `.claude/settings.local.json`, plus any hookify rules (`/hookify:list`).
+- **Methods and tools:** jq for parsing stdin; bash with `set -euo pipefail` or Python 3 stdlib for anything nontrivial; bats-core or pytest for the harness (pipe fixture JSON into the script, assert exit code 0/2 and stdout/stderr); shellcheck on every .sh; `hyperfine` to time each hook (budget under 50 ms for PreToolUse); `claude --debug` and the `/hooks` slash command to confirm registration; headless `claude -p` runs with `--output-format stream-json` to prove a hook fired end to end; gitleaks or trufflehog regex sets as the source for the secret-pattern blocker.
+- **What proves it right (other than you or the model):** The oracles are outside the model: (a) a bats/pytest suite where recorded payloads from your own Claude Code version produce the expected exit codes; (b) a headless `claude -p` session told to run `rm -rf /tmp/hooktest-canary` (a directory holding a .protected sentinel) that shows the block reason in the stream-json transcript and leaves the canary directory intact; (c) a Stop-gate run where a deliberately failing pytest keeps the session working and the session ends only after the test passes.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+You are a platform engineer hardening my Claude Code setup with hooks. First run `claude --version` and read the hooks reference for that version (code.claude.com/docs/en/hooks); record the exact event names, stdin fields, exit-code semantics, and the structured JSON output schema (permissionDecision, updatedInput, additionalContext, decision/reason for Stop). Install a temporary catch-all hook that dumps stdin for every event into ~/.claude/hook-payloads/ and run one short session to capture real payloads; these become test fixtures. Then build, in a git-tracked ~/.claude/hooks/ directory: block-destructive.sh (PreToolUse, Bash), block-secrets.py (PreToolUse, Edit|Write|MultiEdit, gitleaks-derived patterns), format-on-edit.sh (PostToolUse), session-git-context.sh (SessionStart), bash-audit.sh (PostToolUse, Bash, TSV), precompact-backup.py (PreCompact, async), stop-tests-gate.sh (Stop, honours stop_hook_active). For each: a bats or pytest test feeding fixtures and asserting exit code and output, shellcheck clean, hyperfine timing under 50 ms for PreToolUse. Register them in ~/.claude/settings.json without clobbering existing hooks. Prove each fires in a headless `claude -p --output-format stream-json` session using canary files under /tmp. Return the file tree, the test output, the timing table, and a list of guide claims you found wrong for this version.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are a platform engineer building a deterministic guardrail layer for Claude Code. You treat hooks as production code that runs with the user's full permissions on every tool call. You trust the installed version's documentation and captured payloads over any blog post, including the guide you were given. You never claim a hook works until a live session proves it.
+
+CONTEXT
+- Hooks are shell commands the harness (not the model) runs at lifecycle events: SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd, plus newer ones that churn between versions.
+- Stdin is JSON (session_id, hook_event_name, tool_name, tool_input, cwd, transcript_path, and per-event fields). Exit 0 allows, exit 2 blocks and feeds stderr to Claude, other non-zero is a non-blocking error.
+- Claims from the guide you must TEST, not repeat: (1) 'structured JSON can return {"modified_tool_input": ...} to rewrite arguments' (current docs may name this updatedInput under hookSpecificOutput); (2) '{"decision": "approve"}' as a valid PreToolUse output; (3) 'SessionStart stdout gets injected into Claude's first system message'; (4) 'async: true hooks cannot block or modify'; (5) 'later settings files win for the same key' (hooks may merge rather than override).
+- References: code.claude.com/docs/en/hooks, code.claude.com/docs/en/hooks-guide, github.com/disler/claude-code-hooks-mastery, the hookify plugin if installed (/hookify:list).
+
+HARD CONSTRAINTS
+- Back up ~/.claude/settings.json to settings.json.bak-<date> before editing. Merge hooks with jq; never overwrite existing entries.
+- All scripts live in ~/.claude/hooks/, are git-tracked, executable, shellcheck clean.
+- PreToolUse hooks must finish in under 50 ms median (hyperfine, 20 runs).
+- Every Stop hook must exit 0 when stop_hook_active is true to prevent infinite loops.
+- Destructive tests only against canary paths under /tmp/hooktest-*. Never test against real data.
+- The secret blocker reports the pattern name, never the matched value.
+
+ORDERED DELIVERABLES
+1. ground-truth.md: claude --version, the event table copied from the installed version's docs, the exact output JSON schema, and a verdict on each of the five guide claims above.
+2. A capture hook (temporary) that writes every event's stdin to ~/.claude/hook-payloads/; run one session that triggers Bash, Edit, Write, a subagent, and /compact. Keep the payloads as fixtures in ~/.claude/hooks/tests/fixtures/. Remove the capture hook afterward.
+3. Seven hooks: block-destructive.sh, block-secrets.py, format-on-edit.sh, session-git-context.sh, bash-audit.sh, precompact-backup.py (async), stop-tests-gate.sh.
+4. tests/: bats or pytest cases, at least three per hook (allow case, block case, malformed-stdin case).
+5. settings.json merged entries with matchers (Bash; Edit|Write|MultiEdit; empty matcher for lifecycle events) and timeouts.
+6. Live proof: headless runs of `claude -p '...' --output-format stream-json` for the blocker, the secret blocker, and the Stop gate, saved as transcripts in ~/.claude/hooks/proof/.
+7. README.md in ~/.claude/hooks/: what each hook does, how to disable (disableAllHooks or removing the entry), and a 'what this cannot stop' section.
+
+BUILT-IN GAP ANALYSIS
+Before finishing, write GAPS.md listing: every event you could not trigger live and why; every guide claim that was false or unverifiable on this version; bypasses you found for each blocker (try bash -c, eval, base64 -d | sh, writing a script then running it, MCP tools that write files); hooks whose latency exceeded budget. Fix what you can now (for example extend the Edit matcher to MCP filesystem tools), and mark the rest open with a reason.
+
+SELF-QUESTIONS BEFORE FINISHING
+- Did I read the docs for my installed version, or an older page?
+- Does any hook print a secret, a full tool_input, or a transcript to stdout where Claude will see it?
+- What happens to each hook when jq is missing, stdin is empty, or tool_input lacks the field I read?
+- Does the Stop gate handle a repo without tests, and does it honour stop_hook_active?
+- Does format-on-edit run on files outside the project (for example ~/.claude itself)?
+
+STOP CONDITIONS
+Stop and report when all seven hooks pass their tests and the three live proofs exist, or when a doc/behaviour mismatch blocks a hook (report the mismatch with the doc excerpt and the observed payload). Stop immediately and ask if any test would touch a path outside /tmp/hooktest-* or the hooks directory.
+
+RETURN FORMAT
+A single message with: (1) file tree of ~/.claude/hooks; (2) test summary (pass/fail counts per hook); (3) latency table (hook, median ms); (4) verdicts on the five guide claims; (5) the GAPS.md contents; (6) the exact settings.json diff.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Establish ground truth for the installed version
+
+*Goal:* Pin the exact hook contract of the Claude Code version you run and capture real payloads.
+
+```text
+Run `claude --version` and record it. Read the hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide. Write ~/.claude/hooks/ground-truth.md containing: the full list of hook events with when they fire and whether they can block; the stdin fields common to all events and the extra fields per event (tool_name, tool_input, tool_response, prompt, stop_hook_active, trigger for PreCompact, source for SessionStart); exit-code semantics; the structured JSON output schema (continue, stopReason, suppressOutput, hookSpecificOutput.permissionDecision, permissionDecisionReason, updatedInput, additionalContext, and Stop's decision/reason). Then judge these guide claims as true, false, or renamed for this version: modified_tool_input rewrites args; decision: approve is valid for PreToolUse; SessionStart stdout is injected as context; async hooks cannot block; later settings files override earlier ones for hooks. Next, back up ~/.claude/settings.json, add a temporary catch-all hook on every event that runs `cat > ~/.claude/hook-payloads/$(date +%s%N)-event.json`, start one session that runs a Bash command, edits a file, writes a file, spawns a subagent, and runs /compact, then remove the catch-all. Copy the payloads into ~/.claude/hooks/tests/fixtures/ named by event.
+```
+
+**Expect:** ground-truth.md (one to two pages) with a version string, an event table, a schema block, and five claim verdicts each quoting the doc line; at least one fixture JSON per event triggered.
+
+**Audit before moving on:** Open each fixture and confirm the fields you documented actually appear; any documented field missing from a real payload is a fail, so re-read the docs for that version and correct ground-truth.md. Confirm settings.json matches the backup after removing the capture hook (diff must be empty).
+
+#### Step 2 — Build and test the PreToolUse blockers
+
+*Goal:* Ship a destructive-Bash blocker and a secret-leak blocker with fixture tests and latency budgets.
+
+```text
+Using the fixtures in ~/.claude/hooks/tests/fixtures/ and the schema in ground-truth.md, write two hooks. (a) block-destructive.sh: read .tool_input.command with jq; block with exit 2 and a one-line stderr reason on rm -rf against /, ~, $HOME or a repo root, mkfs, dd of= to /dev/, fork bombs, chmod -R 777 /, git push --force to main or master, `find ... -exec rm -rf` without a .git prune, and rm -rf of any directory containing a .protected sentinel file (this gives live tests a safe target). Allow everything else. Handle missing jq or empty stdin by exiting 0 and logging to ~/.claude/hooks/errors.log. (b) block-secrets.py: on Edit, Write, and MultiEdit, scan new_string, content, and edits[].new_string against a pattern set derived from gitleaks default rules (AWS keys, GitHub tokens, Anthropic and OpenAI keys, PEM private key headers, 64-hex Ethereum private keys) and exit 2 naming only the rule, never the value. Write bats or pytest cases: three allow, three block, one malformed stdin per hook. Run shellcheck. Time each with `hyperfine --runs 20` piping a fixture; the median must be under 50 ms. Then try to bypass block-destructive with bash -c, eval, base64 -d | sh, and a script file, and record which get through.
+```
+
+**Expect:** Two executable scripts, a test file with at least 14 passing cases, a hyperfine table, and a bypass list with pass/blocked per technique.
+
+**Audit before moving on:** Re-run the tests from a clean shell. Grep the scripts' stderr strings to confirm no secret value can be echoed. If a known-dangerous fixture passes, or latency exceeds 50 ms, fix before moving on. Bypasses that remain open go into GAPS.md, not silently ignored.
+
+#### Step 3 — Build the advisory hooks
+
+*Goal:* Add format-on-edit, Bash audit logging, and SessionStart git context, each tested.
+
+```text
+Write three hooks using the fixtures. (a) format-on-edit.sh for PostToolUse on Edit|Write|MultiEdit: read .tool_input.file_path, skip files outside the session cwd (from .cwd) and anything under ~/.claude, then dispatch by extension: prettier --write for ts/tsx/js/jsx/json/css/md, ruff format for py, rustfmt for rs, gofmt -w for go. Skip silently if the formatter is not installed. Never exit 2. (b) bash-audit.sh for PostToolUse on Bash: append a TSV row of ISO timestamp, session_id, cwd, and the command with tabs and newlines escaped, to ~/.claude/bash-log.tsv; rotate when the file passes 10 MB. (c) session-git-context.sh for SessionStart: if cwd is a git repo, print the branch, `git status --short | head -10`, and `git log --oneline -5`; print nothing outside a repo. Verify against ground-truth.md whether SessionStart stdout becomes model context on this version and whether JSON additionalContext is the preferred path; use whichever the docs specify. Write tests: format-on-edit actually reformats a badly indented fixture file in /tmp/hooktest-fmt; audit log escapes a multi-line command; git context prints nothing in a non-repo directory.
+```
+
+**Expect:** Three scripts, passing tests, and a sample bash-log.tsv row and git-context output pasted into the step notes.
+
+**Audit before moving on:** Check that a command containing a tab or newline yields exactly one TSV row. Check the formatter does not touch files outside cwd. If SessionStart output is not visible to the model in a live test, switch to the documented JSON field and retest.
+
+#### Step 4 — Build the Stop gate and PreCompact backup
+
+*Goal:* Refuse premature 'done' while tests fail, and snapshot transcripts before compaction.
+
+```text
+Write stop-tests-gate.sh for the Stop event. Read stdin; if .stop_hook_active is true, exit 0 immediately to avoid an infinite loop. Detect the test runner from the cwd: pytest if pyproject.toml or pytest.ini exists, `npm test --silent` if package.json has a test script, `cargo test --quiet` for Cargo.toml; if none, exit 0. Run it with a 120-second timeout. On failure, block the stop using the mechanism ground-truth.md specifies for Stop on this version (exit 2 with the failing test names on stderr, or JSON decision: block with a reason), capped to the last 30 lines of output. Write precompact-backup.py for PreCompact, registered async: copy the file at .transcript_path to ~/.claude/transcript-backups/<session_id>-<trigger>-<UTC timestamp>.jsonl, keep the newest 50, and never print the transcript. Test the Stop gate in /tmp/hooktest-stop with a tiny pytest project in three states: passing, failing, and stop_hook_active true while failing. Test the backup with a fixture payload pointing at a dummy transcript.
+```
+
+**Expect:** Two scripts and a test log showing three Stop outcomes (allow, block with reason, allow due to stop_hook_active) and one backup file created with the right name.
+
+**Audit before moving on:** Confirm the gate cannot loop: simulate two consecutive Stop events, the second with stop_hook_active true, and verify exit 0. Confirm a 120-second timeout is shorter than the hook timeout you will register. Confirm the backup rotation deletes only files in its own directory.
+
+#### Step 5 — Prove each hook end to end in live sessions
+
+*Goal:* Show the harness, not the test harness, enforces each hook.
+
+```text
+First register the hooks: back up ~/.claude/settings.json, then merge all seven entries into .hooks with jq, appending to existing arrays (matchers Bash and Edit|Write|MultiEdit for the tool hooks, empty for lifecycle events, async true for PreCompact, Stop timeout 150 seconds). Validate with `jq empty`, confirm each entry appears under /hooks, and list project-level hooks in .claude/settings.json that would double-fire. Then create canaries: mkdir -p /tmp/hooktest-canary && touch /tmp/hooktest-canary/keep.txt /tmp/hooktest-canary/.protected. Never target a parent path in a test. Run headless sessions and save each transcript to ~/.claude/hooks/proof/: (1) `claude -p 'Run: rm -rf /tmp/hooktest-canary then report' --output-format stream-json --verbose` with permission settings that would otherwise allow Bash; confirm the stream shows a block with your stderr reason and the canary still exists. (2) Ask Claude to write a file /tmp/hooktest-secret/config.py containing a fake AWS key in the documented AKIA format; confirm the write is blocked and the file does not exist. (3) In /tmp/hooktest-stop with a failing test, ask Claude to 'add a docstring and say done'; confirm the session continues and fixes or reports the failing test before stopping. (4) Count Bash tool calls in the transcripts and compare with new rows in bash-log.tsv. (5) Run /compact in an interactive session and confirm a backup file appears.
+```
+
+**Expect:** Five proof transcripts or notes with pass/fail, a canary directory that still exists, and matching Bash-call counts.
+
+**Audit before moving on:** Any proof that passes only because the model declined on its own (no hook event in the stream) is a fail; re-run with a prompt that pushes the action and confirm the block reason comes from the hook. Mismatched audit-log counts mean the matcher misses some calls. A settings diff that removes any pre-existing line means restore the backup and redo the merge.
+
+#### Step 6 — Validate against the oracles and write the gap report
+
+*Goal:* Run every external check and publish what is proven, what is open, and what the guide got wrong.
+
+```text
+Run the full test suite from a clean shell and paste the summary. Run shellcheck on all .sh files. Run hyperfine on every PreToolUse hook and tabulate medians. Run gitleaks detect on the project repo and confirm no secret type it finds is missing from block-secrets.py's rules. Re-read the five proof transcripts. Write ~/.claude/hooks/README.md (purpose of each hook, how to disable each, fail-open versus fail-closed choice, what each blocker cannot stop) and GAPS.md with three sections: Verified (claim, evidence file), Open (claim or bypass, why not fixed, impact high/medium/low), and Guide corrections (each guide claim that was false or renamed on this version with the doc excerpt). Commit ~/.claude/hooks to git with a message naming the Claude Code version tested.
+```
+
+**Expect:** All tests green, a latency table, README.md and GAPS.md, and a commit hash.
+
+**Audit before moving on:** Every Verified row must cite a file in tests/ or proof/. Any high-impact Open item without a mitigation note is a fail: add a mitigation (for example a permissions deny rule) or mark it explicitly as accepted risk with the reason.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are auditing a freshly built Claude Code hook suite in ~/.claude/hooks/ that you did not write. Do not trust README.md. (1) List every claim the README and ground-truth.md make (each hook's trigger, behaviour, latency, and each guide-claim verdict). (2) For each, mark verified, unverified, or false, and cite evidence: a test case name, a proof transcript line, or a doc excerpt for the version from `claude --version`. (3) Attack the blockers: try at least eight bypasses of block-destructive (bash -c, sh -c, eval, base64 -d | sh, python -c with shutil.rmtree, a heredoc script then execute, xargs rm, an MCP filesystem delete tool) and five of block-secrets (split string concatenation, base64 of a key, a key in a NotebookEdit cell, a key via Bash echo > file, a key in an MCP write tool). Record which get through. (4) Check for silent failures: what does each hook do with empty stdin, invalid JSON, a missing jq or formatter; does any hook print tool_input or transcript content where Claude sees it. (5) Rank all gaps by impact (data loss, secret leak, workflow friction). Fix the top three now, re-run tests, and append results to GAPS.md. Report what you could not fix and why, with the exact command that demonstrates each remaining bypass on a /tmp canary.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Which version's hook schema did I implement, and did I check it against a captured payload rather than the guide's table?
+- Does the Stop gate honour stop_hook_active, and what happens if the test suite takes longer than the hook timeout?
+- Does block-secrets cover MultiEdit edits[] and NotebookEdit, or only Edit and Write?
+- Can Claude write a file through an MCP server tool that none of my matchers see?
+- Is fail-open on missing jq the right call for the destructive blocker, and did I document it?
+- Do project-level .claude/settings.json hooks double-fire with my user-level ones?
+- Does format-on-edit rewrite files Claude did not intend to change, such as lockfiles or generated code?
+- Will the audit log or transcript backups grow without bound?
+
+### 5 · What proves it right
+
+- bats or pytest suite: every hook passes allow, block, and malformed-stdin fixtures captured from the installed Claude Code version.
+- Headless `claude -p --output-format stream-json` transcripts showing the hook's block reason for a destructive command, with /tmp/hooktest-canary still present afterward.
+- A failing pytest project where the Stop gate keeps the session working until tests pass, and a stop_hook_active=true run that exits cleanly.
+- gitleaks detect on the repo finds no secret class that block-secrets.py lacks a rule for.
+
+### 6 · Failure modes
+
+- Stop hook loops forever. Tell: the session keeps restarting after every response and burns tokens. Fix: exit 0 when stop_hook_active is true and cap retries.
+- Hook written to an outdated schema. Tell: JSON output is ignored and tools run anyway. Fix: re-read the docs for `claude --version` and use hookSpecificOutput fields.
+- Regex blocker treated as a sandbox. Tell: `bash -c` or a written script runs the blocked command. Fix: document bypasses, add permissions deny rules and a sandboxed run mode for risky work.
+- Slow PreToolUse hook. Tell: every Bash call stalls noticeably. Fix: hyperfine it, move logic to a compiled binary or cache, keep heavy work in async PostToolUse.
+
+### 7 · Agent direction (unattended runs)
+
+Run this in the user's home config, so treat ~/.claude/settings.json as precious: back it up before every write and diff after. Reach for the installed version's docs and a captured payload first; do not code from the guide's tables. Spawn a subagent only for the adversarial bypass hunt in the gap audit, so the builder is not grading its own blockers. Never execute a destructive command outside /tmp/hooktest-* paths; if any proof would need one, stop and ask. Never print, log, or echo the value of anything matching a secret pattern, including in test output. Return in chat: the hook file tree, test summary, latency table, guide-claim verdicts, settings diff, and GAPS.md; the files themselves live in ~/.claude/hooks/ and are committed to a git repo there.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -470,4 +754,26 @@ If you have `hookify` installed, use `/hookify` for interactive creation, and tr
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

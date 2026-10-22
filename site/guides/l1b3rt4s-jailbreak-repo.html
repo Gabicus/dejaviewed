@@ -133,6 +133,103 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>NVIDIA NeMo Guardrails, Lakera Guard, Protect AI Rebuff, Llama Guard — the guardrail layer you should be regression-testing against this corpus.</p>
 <h2>Ethical framing</h2>
 <p>This repo exists because the people who build frontier models have not yet solved prompt injection, and because the community of researchers who study that failure mode needs a shared artifact to reason about. Cataloging it here is an act of defensive research: knowing what attacks look like in organized form is how builders of LLM-powered products write better system prompts, how trust-and-safety teams prioritize their roadmap, and how alignment researchers measure progress between model generations. Using it to extract harmful content from production systems you do not own is both illegal and a waste of the corpus's real value. Treat it the way a security engineer treats exploit-db: read it, learn from it, harden against it, and never run it at something you are not authorized to.</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Uses the structure of Elder Plinius's L1B3RT4S corpus (about 40 vendor-sorted .mkd files, SYSTEMPROMPTS.mkd, SPECIAL_TOKENS.json, !SHORTCUTS.json) as input to a defensive program for YOUR OWN LLM agents. It produces a channel-by-class threat model, code-level hardening, detectors with measured false positives, and a red-team harness built from public benchmarks (HarmBench, JailbreakBench, AgentDojo, garak). Done means hardened-versus-baseline attack success is measured on your staging agent, utility holds, and no deliverable contains payload text.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): Never read the corpus for payloads. Treat it as evidence that a few structural attack CLASSES generalize across vendors and work on release day. The guide names seven: role/frame inversion, policy-puppeteering, output-format coercion, multi-turn priming, tool-context injection, token-level tricks and authority spoofing. Map them onto every input channel of your own agent and close what architecture can close, not what prompt wording hopes to. Measure with licensed public benchmarks. Use the corpus only as a release-cadence signal ('new dated vendor entry, so rerun the suite').</p>
+<p>Rawest material to start from: OWASP Top 10 for LLM Applications 2025 (LLM01, LLM02, LLM05, LLM06, LLM07). MITRE ATLAS (AML.T0051 LLM Prompt Injection, direct and indirect; AML.T0054 LLM Jailbreak). The HarmBench paper, repo and classifier (Mazeika et al. 2024). JailbreakBench (JBB-Behaviors, 100 harmful plus a benign set). AgentDojo and InjecAgent for tool-output injection. garak probes and Microsoft PyRIT. Anthropic and OpenAI system cards. Your agent's request logs, tool schemas and trust boundaries. From L1B3RT4S, use metadata only: file list, line counts and commit dates.</p>
+<p>Methods and tools: A channel-by-class threat matrix. Microsoft spotlighting (delimiting and datamarking untrusted content). Least-privilege tool scopes and code-enforced confirmation. Unicode NFKC normalization, stripping of the tag block U+E0000 to U+E007F and zero-width characters, and special-token removal from the tokenizer config. Input classifiers: Llama Prompt Guard 2 and protectai/deberta-v3-base-prompt-injection-v2. Output classifier: Llama Guard 3 or 4. A system-prompt canary. Harnesses: garak, PyRIT, promptfoo redteam and AgentDojo, with the HarmBench classifier as judge. Metrics: attack success rate (ASR) with Wilson 95% intervals, benign false-positive rate, utility retention and time-to-detect.</p>
+<p>What proves it right (other than you or the model): JailbreakBench and HarmBench run unchanged against staging, judged by the HarmBench classifier and not by your model, show hardened ASR below baseline with non-overlapping intervals. AgentDojo targeted-attack success falls while its utility stays within 5 points. Detector false-positive rate is measured on a held-out benign set. An external red-team firm scoped to your own systems finds no class-level bypass the suite missed, or each finding becomes a regression test.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>I ship my own LLM agents and want them hardened against the attack classes the public L1B3RT4S corpus shows generalize across vendors. Do not reproduce or paraphrase any repo prompt, and do not test any system I do not own. (1) Using category descriptions only, map the seven classes to MITRE ATLAS (AML.T0051, AML.T0054) and OWASP LLM01, 02, 05, 06 and 07. Build a threat matrix over every input channel of my agent: user turn, system prompt, tool results, retrieved docs, uploads and memory. (2) Close what architecture can: spotlighting, least-privilege tools, confirmation gates enforced in code, Unicode NFKC normalization, tag and zero-width stripping, and special-token removal. (3) Add Llama Prompt Guard 2 on inputs and tool results, Llama Guard on outputs and a system-prompt canary. Measure each detector's false-positive rate on a held-out benign set. (4) Build a red-team harness from JailbreakBench, HarmBench, AgentDojo and garak only. Run baseline versus hardened on my staging agent, report ASR with Wilson CIs, and judge with the HarmBench classifier. (5) Write alerts, an incident runbook and a watcher that reruns the suite when my vendor's model changes or the corpus adds a dated entry for it. Return the matrix, configs, results, runbook and gaps.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE: You are the security program lead for a team shipping its own LLM agents. Harden them against the attack classes the public L1B3RT4S corpus (elder-plinius, AGPL-3.0, about 40 vendor-sorted .mkd files) shows generalize across frontier models. Work at the level of classes, controls and measurements. Never reproduce, paraphrase or compose jailbreak text, bypass recipes or injection payloads. Never test systems we do not own.</p>
+<p>CONTEXT: The corpus's defensive value is structural. Vendor files are versioned by model with dated entries, which gives a release-cadence signal. SYSTEMPROMPTS.mkd holds leaked production prompts, a negative-example library for prompt design. SPECIAL_TOKENS.json shows that control tokens matter for sanitizers. !SHORTCUTS.json names payload families as a rough taxonomy. The guide names seven classes: role/frame inversion, policy-puppeteering, output-format coercion, multi-turn priming and context flooding, tool-context (indirect) injection, token-level tricks (control tokens, invisible Unicode, homoglyphs) and authority spoofing. The corpus publishes no rigorous success rates, so measurement comes from HarmBench, JailbreakBench, AgentDojo, garak and PyRIT, mapped to MITRE ATLAS and the OWASP LLM Top 10 2025. Our agent's code, tools and staging endpoint are in this repo.</p>
+<p>HARD CONSTRAINTS: No attack strings in any deliverable. Name classes and benchmark IDs only. Attack inputs come only from published benchmark packages loaded at runtime and are never copied into the repo. Test only against staging. Every side-effect control is enforced in code, with prompt wording never the sole defense. Raw red-team transcripts go in restricted storage.</p>
+<p>DELIVERABLES:</p>
+<p>taxonomy.md: the seven classes, each with a one-line mechanism, its ATLAS ID, its OWASP item, its entry channels and covering benchmarks. Add corpus_meta.csv with file names, line counts and last-commit dates only.</p>
+<p>threat_matrix.md: channels (user turn, system prompt, tool results, retrieved docs, uploads, memory) against the seven classes. Each cell gives impact, current control, residual risk and closable-by (architecture, detector or prompt).</p>
+<p>hardening/: diffs for review covering spotlighting, least-privilege scopes, harness-enforced confirmation for send, delete, pay and deploy, breaking the private-data, untrusted-content and outbound-channel trifecta, an NFKC sanitizer stripping U+E0000 to U+E007F and zero-width characters, special-token removal, escaped output handling (LLM05) and a system-prompt canary.</p>
+<p>detectors/: Prompt Guard 2 on inputs and tool results, Llama Guard on outputs and canary detection. Report TPR, FPR, latency and cost, with FPR measured on a held-out benign set (JBB benign plus 500 anonymized real prompts).</p>
+<p>redteam/: garak, PyRIT and AgentDojo runners. Report ASR per class and channel with Wilson 95% CIs, judged by the HarmBench classifier or by trace checks. Compare baseline to hardened, and include utility and over-refusal.</p>
+<p>ops/: logging schema, alerts (canary hit, detector spike, gate blocks after untrusted input), runbook (triage, contain, rotate, patch, add regression test, disclose) and a weekly metadata-only watcher that triggers reruns.</p>
+<p>GAP ANALYSIS: Keep gaps.md running. Log untested matrix cells, classes with fewer than 30 cases, detectors without a measured FPR, prose-only controls and self-judged benchmarks. Close what you can, and rank the rest.</p>
+<p>SELF-QUESTIONS: Which classes did architecture close, and which only have detectors? Can tool output reach a side-effecting tool without a gate? Did over-refusal rise or utility fall by more than 5 points? Does the sanitizer run before the detector? Are the intervals separated? Did any attack text leak into the repo or tickets? Who gets paged on a canary hit?</p>
+<p>STOP: Ask before merging diffs, changing production config or contacting vendors. If staging is unavailable, stop rather than test a third party. Finish when every matrix cell is measured or listed in gaps.md and the oracles have run.</p>
+<p>RETURN: a file table, the threat matrix with residual risk, baseline-versus-hardened ASR per class with n and CIs, utility and FPR, alert and runbook paths, and the ranked gaps.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: classes, standards, benchmarks</h4>
+<p>Goal: Build a class taxonomy anchored to ATLAS, OWASP and public benchmarks, using only corpus metadata.</p>
+<p>You are the security lead hardening our own LLM agents. Do not copy, quote or paraphrase any L1B3RT4S prompt content. Under our adversarial-material policy, collect metadata only: file names, line counts and each file's last commit date (git log -1 --format=%cs -- FILE). Write these to corpus_meta.csv. Note our vendor's file and its dated-entry cadence. Write taxonomy.md for the guide's seven classes: role/frame inversion, policy-puppeteering, output-format coercion, multi-turn priming and context flooding, tool-context (indirect) injection, token-level tricks and authority spoofing. Give each a one-sentence description of the mechanism it abuses (for example, refusal classifiers trained on natural-language refusals miss coerced formats). Also give each its MITRE ATLAS ID (AML.T0051 and sub-techniques, AML.T0054), its OWASP LLM Top 10 2025 item and its covering benchmarks: JailbreakBench, HarmBench, AgentDojo, InjecAgent, garak probe families or PyRIT multi-turn orchestrators. Record each benchmark's license and version.</p>
+<p>Expect: corpus_meta.csv with about 40 metadata rows and no content. taxonomy.md has 7 entries, each with ATLAS, OWASP and at least 1 benchmark, plus a benchmark license table.</p>
+<p>Audit before moving on: grep the outputs for payload-like text (long quoted imperatives, leetspeak blocks, Base64 blobs). On any hit, delete it and redo. A class with no benchmark goes in gaps.md as 'needs custom benign test design'.</p>
+<h4>Step 2 — Channel-by-class threat model</h4>
+<p>Goal: Locate where each class can enter our agent and rate its impact.</p>
+<p>Inventory our agent's input channels from code and logs: user turn, system prompt assembly, each tool's results, RAG sources, uploads, persisted memory and agent-to-agent messages. Record each channel's trust level and whether it reaches a privileged position. Build threat_matrix.md with channels as rows and the seven classes as columns. Each cell holds the worst plausible impact (exfiltration via tool, unauthorized side effect, harmful output, system prompt disclosure or cost blowup), the existing control, the residual risk (high, medium or low) and closable-by (architecture, detector or prompt). Prioritize tool-context injection that reaches side-effecting tools (email, payments, deploy, file write, HTTP POST), which is the OWASP LLM06 Excessive Agency chain. Flag every session where private data, untrusted content and an outbound channel coexist. End with the top 5 cells ranked by impact times likelihood.</p>
+<p>Expect: threat_matrix.md with every channel times 7 classes filled, and the top 5 cells ranked with rationale.</p>
+<p>Audit before moving on: Every registered tool appears as a row, and no cell is blank. Check that each OWASP item from LLM01 to LLM07 is touched by at least one cell.</p>
+<h4>Step 3 — Architecture hardening</h4>
+<p>Goal: Close the top cells with code-level controls, not prompt wording.</p>
+<p>For the top 5 cells and any other high cell, write diffs for human review. Do not merge them. (1) Spotlighting: untrusted content goes only in datamarked tool-result or delimited blocks, with a fixed rule that instructions found in data are reported, never followed. (2) Least-privilege tools: read-only by default, with per-session grants for side effects. (3) Harness-enforced confirmation for send, pay, delete, deploy and outbound HTTP. (4) Break the trifecta: once untrusted content is in context, outbound tools need confirmation. (5) A sanitizer for untrusted channels: NFKC, strip U+E0000 to U+E007F, U+200B to U+200D, U+2060 and U+FEFF, and escape special tokens taken from our tokenizer config, not from the corpus file. (6) Output handling: never pass model output to a shell, SQL or HTML unescaped (LLM05). (7) A system-prompt canary, with no secrets in the prompt (LLM07). Write hardening/ mapping each diff to its cells, plus sanitizer unit tests using synthetic benign strings with inserted invisible characters.</p>
+<p>Expect: hardening/ with one diff per control mapped to cells, passing sanitizer tests and an updated residual-risk column.</p>
+<p>Audit before moving on: Each high cell names its closing diff, or moves to gaps.md. Test the gate by calling the tool directly with the model removed. It must still block.</p>
+<h4>Step 4 — Detectors with measured false positives</h4>
+<p>Goal: Add input and output classifiers plus canary detection, and measure their cost on benign traffic.</p>
+<p>Add (1) Llama Prompt Guard 2 on user turns AND on tool results and retrieved docs, compared against protectai/deberta-v3-base-prompt-injection-v2; (2) Llama Guard 3 or 4 on outputs with our policy categories; and (3) a canary detector covering outputs and outbound tool arguments. Benign set: JailbreakBench benign behaviors, 500 anonymized real prompts and 200 real tool results, including legitimate security discussions. Split it into tuning and held-out halves. Attack set: JailbreakBench, HarmBench and AgentDojo loaded from their packages at runtime and never saved to the repo. Sweep thresholds and report TPR, FPR, latency p50 and p95 and cost per 1K calls. Pick operating points with held-out FPR at or below 1% unless the threat matrix justifies more. List the classes the detectors miss, especially format coercion and multi-turn drift.</p>
+<p>Expect: detectors/ configs and a per-channel table (detector, threshold, TPR, FPR, latency, cost), plus a blind-spots-by-class list.</p>
+<p>Audit before moving on: If FPR exceeds 1%, justify it or retune. git grep to confirm no benchmark strings were committed. Confirm the detectors run on tool results.</p>
+<h4>Step 5 — Red-team harness, baseline vs hardened</h4>
+<p>Goal: Measure attack success per class and channel before and after hardening, on staging only.</p>
+<p>Build redteam/ against our staging endpoint only. (1) garak probe families matching taxonomy.md (encoding, promptinject, latentinjection, persona and glitch-token probes). (2) JailbreakBench and HarmBench behaviors via their published artifacts or PyRIT orchestrators, including multi-turn crescendo-style orchestrators. (3) AgentDojo for tool-output injection. If it cannot run as-is, port its task structure to our tools with benign injected goals, such as emailing a dummy address on a mock mail tool. Judge harmful content with the HarmBench classifier and agentic cases with deterministic trace checks, never with our own model. Run the pre-hardening commit and the hardened build with the same model id and settings. Report ASR per class and channel with n and Wilson 95% CIs, utility (AgentDojo utility plus 50 real benign tasks) and over-refusal (JBB benign). Keep raw transcripts in restricted storage and only aggregates in the repo.</p>
+<p>Expect: redteam/ runners and results.json with baseline and hardened ASR, n and CIs per class and channel, plus utility and over-refusal deltas.</p>
+<p>Audit before moving on: Fewer than 30 cases per class is underpowered. Claim an improvement only when the intervals do not overlap. A utility drop over 5 points or an over-refusal rise over 3 points is a reported cost. Verify that the judge differs from the agent model.</p>
+<h4>Step 6 — Monitoring and incident response</h4>
+<p>Goal: Detect production attempts and respond from a written runbook.</p>
+<p>Write ops/. (1) Logging: per request, log the provenance of each context segment, detector scores, tool calls with redacted arguments, gate decisions, canary hits and the model id. Restrict access to attack-bearing logs. (2) Alerts: a canary hit pages on-call. A detector-flag rate above 3 times the 7-day baseline opens a ticket. A gate block after untrusted content entered context goes to review. Per-tenant spikes in refusals or blocks are flagged. (3) Runbook: triage and scope; contain (feature-flag the tool, revoke grants); eradicate (rotate any credential the agent could reach, patch the control); recover; post-incident (add a class-level benign regression test to redteam/, update the matrix, disclose per policy and report model-level root causes through the vendor's official channel). (4) Tabletop one scenario per top-5 cell and record time-to-contain.</p>
+<p>Expect: ops/ with logging schema, alert definitions, runbook.md and tabletop.md covering 5 scenarios.</p>
+<p>Audit before moving on: Fire a synthetic canary hit in staging and record the page latency. Each top-5 cell needs an alert that would fire. Missing ones go in gaps.md.</p>
+<h4>Step 7 — Release-cadence watcher</h4>
+<p>Goal: Rerun the suite automatically when the attack landscape or our stack changes.</p>
+<p>Build a weekly job that refreshes corpus_meta.csv from L1B3RT4S metadata only (names, line counts, commit dates) and diffs it against last week. Trigger a full redteam/ rerun when any of these happen: our vendor's file gains commits; a new file appears for a model we use; our model id changes; a tool is added; or a vendor publishes a new system card. The job never ingests file contents into our systems, tickets or LLM context. Track release feeds for HarmBench, JailbreakBench, AgentDojo and garak, and bump their pins at a monthly review. Each rerun writes dated results and opens a ticket if any class's ASR exceeds its hardened upper CI bound. Document the schedule, triggers, stored data and ticket owner in ops/watcher.md.</p>
+<p>Expect: A scheduled job, ops/watcher.md and one dry run producing a metadata diff and a rerun decision.</p>
+<p>Audit before moving on: Inspect stored artifacts for any corpus content. Force a trigger (a model id change in staging config) and confirm the rerun and ticket. A missing owner fails.</p>
+<h4>Step 8 — Validate against oracles, write gap report</h4>
+<p>Goal: Prove the hardening with external oracles and publish residual risk and gaps.</p>
+<p>Validate. (1) JailbreakBench and HarmBench (HarmBench-classifier judged) and AgentDojo targeted-attack success each show hardened below baseline with non-overlapping Wilson 95% intervals, utility within 5 points and over-refusal up no more than 3 points. (2) Detector FPR is at or below 1% on the held-out benign half. (3) A synthetic canary pages on-call, with time-to-acknowledge recorded. (4) A reviewer who did not build this, either an internal security engineer or an external red-team firm scoped to our systems, tests redteam/ and the matrix. Their class-level findings become regression tests. (5) git grep and a skim confirm no attack text in the repo, docs or tickets. Then write gaps.md and report.md. Mark each claim verified, unverified or false with evidence paths. List high residual cells, classes under 30 cases, detector blind spots (multi-turn drift, format coercion) and prose-only controls. Rank them, fix the top three and record owners for the rest.</p>
+<p>Expect: report.md with oracle results and evidence paths, the final matrix, and gaps.md ranked with owners and the top three fixed.</p>
+<p>Audit before moving on: An oracle without a results file, log or reviewer note is downgraded to unverified. A reviewer-found class bypass means the class cannot be reported closed until fixed and rerun.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are an independent security auditor who did not build this program. Scope is our own staging systems only. Do not create or quote attack text. Inputs: taxonomy.md, corpus_meta.csv, threat_matrix.md, hardening/, detectors/, redteam/results.json, ops/ and report.md. (1) List every claim in report.md ('class X closed', 'FPR 0.8%', 'canary alert works') and mark it verified, unverified or false with an evidence path. (2) For each high or medium cell, find its control and measured test. Flag cells with a control but no test, or with n below 30. (3) Confirm that gates are harness-enforced via the direct tool-call test with the model removed. (4) Check measurement: a judge independent of the agent, non-overlapping intervals and a benign FPR set held out from tuning. (5) Check hygiene: git grep the repo, wiki and tickets for payload-like content or corpus excerpts. (6) List what is missing: unlisted channels, new tools, an unexercised runbook and an unowned watcher. (7) Rank by impact times likelihood, fix the top three with diffs and explain the rest. Return a table with these columns: finding, status, evidence, fixed, owner.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Which of the seven classes did architecture close, and which am I only detecting probabilistically?</p>
+<p>Can tool output or a retrieved document reach a side-effecting tool without a harness-enforced confirmation?</p>
+<p>Does any session combine private data, untrusted content and an outbound channel?</p>
+<p>Do my detectors run on tool results and retrieved docs, or only on user turns?</p>
+<p>What covers multi-turn drift and format coercion, which per-message classifiers miss?</p>
+<p>Is my special-token list from our tokenizer config, and does the sanitizer run before the detector and the model?</p>
+<p>Did hardening raise over-refusal on JBB benign or cut utility by more than 5 points?</p>
+<p>Are baseline and hardened intervals separated at n of 30 or more per class?</p>
+<p>Did any benchmark attack text or corpus excerpt land in the repo, docs or tickets?</p>
+<p>Who is paged on a canary hit, and was that path tested end to end?</p>
+<h3>5 · What proves it right</h3>
+<p>JailbreakBench and HarmBench against staging, judged by the HarmBench classifier, show hardened ASR below baseline with non-overlapping Wilson 95% intervals at n of 30 or more per class.</p>
+<p>AgentDojo targeted-attack success falls on our tool set while AgentDojo utility stays within 5 points of baseline.</p>
+<p>Detector FPR is at or below 1% on the held-out benign half (JBB benign plus anonymized real prompts) that was never used for tuning.</p>
+<p>A synthetic staging canary hit pages on-call, with time-to-acknowledge recorded in the incident tool.</p>
+<p>An independent reviewer scoped to our systems finds no class-level bypass the suite missed, or every finding becomes a passing regression test.</p>
+<h3>6 · Failure modes</h3>
+<p>Payload creep. Tell: attack strings appear in the repo or tickets. Fix: load benchmarks at runtime and commit aggregates only.</p>
+<p>Prompt-only defense. Tell: hardening is mostly new prompt wording, and gate tests fail with the model removed. Fix: move controls into harness code.</p>
+<p>User-turn tunnel vision. Tell: detectors cover only user messages while AgentDojo injections succeed through tool results. Fix: classify every untrusted channel.</p>
+<p>Self-grading. Tell: the agent model judges itself and ASR looks near zero. Fix: use the HarmBench classifier or trace checks, plus hand labels.</p>
+<p>Over-hardening. Tell: benign security discussions get refused and utility drops. Fix: make over-refusal and utility deltas release blockers, and tune on held-out benign data.</p>
+<p>Stale suite. Tell: the model id changed after the last run. Fix: the watcher triggers on model id changes and new vendor entries.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Cache the OWASP, ATLAS and benchmark docs plus this repo's tool registry first. Touch L1B3RT4S only through git metadata commands (ls-files, wc -l, log --format=%cs). Never read its files into context or write its content anywhere. Spawn sub-agents per channel group for the threat matrix and for the benchmark runners. Keep hardening design, detector operating points and the final report in the main loop. Run evals only against the user's staging endpoint. If staging is unavailable, stop and ask rather than test a third-party product. Ask before merging diffs, changing production config or alerting, or contacting vendors. Outputs go in one folder: taxonomy.md, corpus_meta.csv, threat_matrix.md, hardening/, detectors/, redteam/, ops/, gaps.md and report.md. Return the report tables and the ranked gaps.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># L1B3RT4S — Elder Plinius's Jailbreak Corpus (Defensive Research Notes)
 
@@ -291,6 +388,201 @@ ${PAGER:-less} ~/projects/ai-catalogs/repos/L1B3RT4S/ANTHROPIC.mkd
 ## Ethical framing
 
 This repo exists because the people who build frontier models have not yet solved prompt injection, and because the community of researchers who study that failure mode needs a shared artifact to reason about. Cataloging it here is an act of defensive research: knowing what attacks look like in organized form is how builders of LLM-powered products write better system prompts, how trust-and-safety teams prioritize their roadmap, and how alignment researchers measure progress between model generations. Using it to extract harmful content from production systems you do not own is both illegal and a waste of the corpus's real value. Treat it the way a security engineer treats exploit-db: read it, learn from it, harden against it, and never run it at something you are not authorized to.
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Uses the structure of Elder Plinius's L1B3RT4S corpus (about 40 vendor-sorted .mkd files, SYSTEMPROMPTS.mkd, *SPECIAL_TOKENS.json, !SHORTCUTS.json) as input to a defensive program for YOUR OWN LLM agents. It produces a channel-by-class threat model, code-level hardening, detectors with measured false positives, and a red-team harness built from public benchmarks (HarmBench, JailbreakBench, AgentDojo, garak). Done means hardened-versus-baseline attack success is measured on your staging agent, utility holds, and no deliverable contains payload text.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** Never read the corpus for payloads. Treat it as evidence that a few structural attack CLASSES generalize across vendors and work on release day. The guide names seven: role/frame inversion, policy-puppeteering, output-format coercion, multi-turn priming, tool-context injection, token-level tricks and authority spoofing. Map them onto every input channel of your own agent and close what architecture can close, not what prompt wording hopes to. Measure with licensed public benchmarks. Use the corpus only as a release-cadence signal ('new dated vendor entry, so rerun the suite').
+- **Rawest material to start from:** OWASP Top 10 for LLM Applications 2025 (LLM01, LLM02, LLM05, LLM06, LLM07). MITRE ATLAS (AML.T0051 LLM Prompt Injection, direct and indirect; AML.T0054 LLM Jailbreak). The HarmBench paper, repo and classifier (Mazeika et al. 2024). JailbreakBench (JBB-Behaviors, 100 harmful plus a benign set). AgentDojo and InjecAgent for tool-output injection. garak probes and Microsoft PyRIT. Anthropic and OpenAI system cards. Your agent's request logs, tool schemas and trust boundaries. From L1B3RT4S, use metadata only: file list, line counts and commit dates.
+- **Methods and tools:** A channel-by-class threat matrix. Microsoft spotlighting (delimiting and datamarking untrusted content). Least-privilege tool scopes and code-enforced confirmation. Unicode NFKC normalization, stripping of the tag block U+E0000 to U+E007F and zero-width characters, and special-token removal from the tokenizer config. Input classifiers: Llama Prompt Guard 2 and protectai/deberta-v3-base-prompt-injection-v2. Output classifier: Llama Guard 3 or 4. A system-prompt canary. Harnesses: garak, PyRIT, promptfoo redteam and AgentDojo, with the HarmBench classifier as judge. Metrics: attack success rate (ASR) with Wilson 95% intervals, benign false-positive rate, utility retention and time-to-detect.
+- **What proves it right (other than you or the model):** JailbreakBench and HarmBench run unchanged against staging, judged by the HarmBench classifier and not by your model, show hardened ASR below baseline with non-overlapping intervals. AgentDojo targeted-attack success falls while its utility stays within 5 points. Detector false-positive rate is measured on a held-out benign set. An external red-team firm scoped to your own systems finds no class-level bypass the suite missed, or each finding becomes a regression test.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+I ship my own LLM agents and want them hardened against the attack classes the public L1B3RT4S corpus shows generalize across vendors. Do not reproduce or paraphrase any repo prompt, and do not test any system I do not own. (1) Using category descriptions only, map the seven classes to MITRE ATLAS (AML.T0051, AML.T0054) and OWASP LLM01, 02, 05, 06 and 07. Build a threat matrix over every input channel of my agent: user turn, system prompt, tool results, retrieved docs, uploads and memory. (2) Close what architecture can: spotlighting, least-privilege tools, confirmation gates enforced in code, Unicode NFKC normalization, tag and zero-width stripping, and special-token removal. (3) Add Llama Prompt Guard 2 on inputs and tool results, Llama Guard on outputs and a system-prompt canary. Measure each detector's false-positive rate on a held-out benign set. (4) Build a red-team harness from JailbreakBench, HarmBench, AgentDojo and garak only. Run baseline versus hardened on my staging agent, report ASR with Wilson CIs, and judge with the HarmBench classifier. (5) Write alerts, an incident runbook and a watcher that reruns the suite when my vendor's model changes or the corpus adds a dated entry for it. Return the matrix, configs, results, runbook and gaps.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE: You are the security program lead for a team shipping its own LLM agents. Harden them against the attack classes the public L1B3RT4S corpus (elder-plinius, AGPL-3.0, about 40 vendor-sorted .mkd files) shows generalize across frontier models. Work at the level of classes, controls and measurements. Never reproduce, paraphrase or compose jailbreak text, bypass recipes or injection payloads. Never test systems we do not own.
+
+CONTEXT: The corpus's defensive value is structural. Vendor files are versioned by model with dated entries, which gives a release-cadence signal. SYSTEMPROMPTS.mkd holds leaked production prompts, a negative-example library for prompt design. *SPECIAL_TOKENS.json shows that control tokens matter for sanitizers. !SHORTCUTS.json names payload families as a rough taxonomy. The guide names seven classes: role/frame inversion, policy-puppeteering, output-format coercion, multi-turn priming and context flooding, tool-context (indirect) injection, token-level tricks (control tokens, invisible Unicode, homoglyphs) and authority spoofing. The corpus publishes no rigorous success rates, so measurement comes from HarmBench, JailbreakBench, AgentDojo, garak and PyRIT, mapped to MITRE ATLAS and the OWASP LLM Top 10 2025. Our agent's code, tools and staging endpoint are in this repo.
+
+HARD CONSTRAINTS: No attack strings in any deliverable. Name classes and benchmark IDs only. Attack inputs come only from published benchmark packages loaded at runtime and are never copied into the repo. Test only against staging. Every side-effect control is enforced in code, with prompt wording never the sole defense. Raw red-team transcripts go in restricted storage.
+
+DELIVERABLES:
+1. taxonomy.md: the seven classes, each with a one-line mechanism, its ATLAS ID, its OWASP item, its entry channels and covering benchmarks. Add corpus_meta.csv with file names, line counts and last-commit dates only.
+2. threat_matrix.md: channels (user turn, system prompt, tool results, retrieved docs, uploads, memory) against the seven classes. Each cell gives impact, current control, residual risk and closable-by (architecture, detector or prompt).
+3. hardening/: diffs for review covering spotlighting, least-privilege scopes, harness-enforced confirmation for send, delete, pay and deploy, breaking the private-data, untrusted-content and outbound-channel trifecta, an NFKC sanitizer stripping U+E0000 to U+E007F and zero-width characters, special-token removal, escaped output handling (LLM05) and a system-prompt canary.
+4. detectors/: Prompt Guard 2 on inputs and tool results, Llama Guard on outputs and canary detection. Report TPR, FPR, latency and cost, with FPR measured on a held-out benign set (JBB benign plus 500 anonymized real prompts).
+5. redteam/: garak, PyRIT and AgentDojo runners. Report ASR per class and channel with Wilson 95% CIs, judged by the HarmBench classifier or by trace checks. Compare baseline to hardened, and include utility and over-refusal.
+6. ops/: logging schema, alerts (canary hit, detector spike, gate blocks after untrusted input), runbook (triage, contain, rotate, patch, add regression test, disclose) and a weekly metadata-only watcher that triggers reruns.
+
+GAP ANALYSIS: Keep gaps.md running. Log untested matrix cells, classes with fewer than 30 cases, detectors without a measured FPR, prose-only controls and self-judged benchmarks. Close what you can, and rank the rest.
+
+SELF-QUESTIONS: Which classes did architecture close, and which only have detectors? Can tool output reach a side-effecting tool without a gate? Did over-refusal rise or utility fall by more than 5 points? Does the sanitizer run before the detector? Are the intervals separated? Did any attack text leak into the repo or tickets? Who gets paged on a canary hit?
+
+STOP: Ask before merging diffs, changing production config or contacting vendors. If staging is unavailable, stop rather than test a third party. Finish when every matrix cell is measured or listed in gaps.md and the oracles have run.
+
+RETURN: a file table, the threat matrix with residual risk, baseline-versus-hardened ASR per class with n and CIs, utility and FPR, alert and runbook paths, and the ranked gaps.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: classes, standards, benchmarks
+
+*Goal:* Build a class taxonomy anchored to ATLAS, OWASP and public benchmarks, using only corpus metadata.
+
+```text
+You are the security lead hardening our own LLM agents. Do not copy, quote or paraphrase any L1B3RT4S prompt content. Under our adversarial-material policy, collect metadata only: file names, line counts and each file's last commit date (git log -1 --format=%cs -- FILE). Write these to corpus_meta.csv. Note our vendor's file and its dated-entry cadence. Write taxonomy.md for the guide's seven classes: role/frame inversion, policy-puppeteering, output-format coercion, multi-turn priming and context flooding, tool-context (indirect) injection, token-level tricks and authority spoofing. Give each a one-sentence description of the mechanism it abuses (for example, refusal classifiers trained on natural-language refusals miss coerced formats). Also give each its MITRE ATLAS ID (AML.T0051 and sub-techniques, AML.T0054), its OWASP LLM Top 10 2025 item and its covering benchmarks: JailbreakBench, HarmBench, AgentDojo, InjecAgent, garak probe families or PyRIT multi-turn orchestrators. Record each benchmark's license and version.
+```
+
+**Expect:** corpus_meta.csv with about 40 metadata rows and no content. taxonomy.md has 7 entries, each with ATLAS, OWASP and at least 1 benchmark, plus a benchmark license table.
+
+**Audit before moving on:** grep the outputs for payload-like text (long quoted imperatives, leetspeak blocks, Base64 blobs). On any hit, delete it and redo. A class with no benchmark goes in gaps.md as 'needs custom benign test design'.
+
+#### Step 2 — Channel-by-class threat model
+
+*Goal:* Locate where each class can enter our agent and rate its impact.
+
+```text
+Inventory our agent's input channels from code and logs: user turn, system prompt assembly, each tool's results, RAG sources, uploads, persisted memory and agent-to-agent messages. Record each channel's trust level and whether it reaches a privileged position. Build threat_matrix.md with channels as rows and the seven classes as columns. Each cell holds the worst plausible impact (exfiltration via tool, unauthorized side effect, harmful output, system prompt disclosure or cost blowup), the existing control, the residual risk (high, medium or low) and closable-by (architecture, detector or prompt). Prioritize tool-context injection that reaches side-effecting tools (email, payments, deploy, file write, HTTP POST), which is the OWASP LLM06 Excessive Agency chain. Flag every session where private data, untrusted content and an outbound channel coexist. End with the top 5 cells ranked by impact times likelihood.
+```
+
+**Expect:** threat_matrix.md with every channel times 7 classes filled, and the top 5 cells ranked with rationale.
+
+**Audit before moving on:** Every registered tool appears as a row, and no cell is blank. Check that each OWASP item from LLM01 to LLM07 is touched by at least one cell.
+
+#### Step 3 — Architecture hardening
+
+*Goal:* Close the top cells with code-level controls, not prompt wording.
+
+```text
+For the top 5 cells and any other high cell, write diffs for human review. Do not merge them. (1) Spotlighting: untrusted content goes only in datamarked tool-result or delimited blocks, with a fixed rule that instructions found in data are reported, never followed. (2) Least-privilege tools: read-only by default, with per-session grants for side effects. (3) Harness-enforced confirmation for send, pay, delete, deploy and outbound HTTP. (4) Break the trifecta: once untrusted content is in context, outbound tools need confirmation. (5) A sanitizer for untrusted channels: NFKC, strip U+E0000 to U+E007F, U+200B to U+200D, U+2060 and U+FEFF, and escape special tokens taken from our tokenizer config, not from the corpus file. (6) Output handling: never pass model output to a shell, SQL or HTML unescaped (LLM05). (7) A system-prompt canary, with no secrets in the prompt (LLM07). Write hardening/ mapping each diff to its cells, plus sanitizer unit tests using synthetic benign strings with inserted invisible characters.
+```
+
+**Expect:** hardening/ with one diff per control mapped to cells, passing sanitizer tests and an updated residual-risk column.
+
+**Audit before moving on:** Each high cell names its closing diff, or moves to gaps.md. Test the gate by calling the tool directly with the model removed. It must still block.
+
+#### Step 4 — Detectors with measured false positives
+
+*Goal:* Add input and output classifiers plus canary detection, and measure their cost on benign traffic.
+
+```text
+Add (1) Llama Prompt Guard 2 on user turns AND on tool results and retrieved docs, compared against protectai/deberta-v3-base-prompt-injection-v2; (2) Llama Guard 3 or 4 on outputs with our policy categories; and (3) a canary detector covering outputs and outbound tool arguments. Benign set: JailbreakBench benign behaviors, 500 anonymized real prompts and 200 real tool results, including legitimate security discussions. Split it into tuning and held-out halves. Attack set: JailbreakBench, HarmBench and AgentDojo loaded from their packages at runtime and never saved to the repo. Sweep thresholds and report TPR, FPR, latency p50 and p95 and cost per 1K calls. Pick operating points with held-out FPR at or below 1% unless the threat matrix justifies more. List the classes the detectors miss, especially format coercion and multi-turn drift.
+```
+
+**Expect:** detectors/ configs and a per-channel table (detector, threshold, TPR, FPR, latency, cost), plus a blind-spots-by-class list.
+
+**Audit before moving on:** If FPR exceeds 1%, justify it or retune. git grep to confirm no benchmark strings were committed. Confirm the detectors run on tool results.
+
+#### Step 5 — Red-team harness, baseline vs hardened
+
+*Goal:* Measure attack success per class and channel before and after hardening, on staging only.
+
+```text
+Build redteam/ against our staging endpoint only. (1) garak probe families matching taxonomy.md (encoding, promptinject, latentinjection, persona and glitch-token probes). (2) JailbreakBench and HarmBench behaviors via their published artifacts or PyRIT orchestrators, including multi-turn crescendo-style orchestrators. (3) AgentDojo for tool-output injection. If it cannot run as-is, port its task structure to our tools with benign injected goals, such as emailing a dummy address on a mock mail tool. Judge harmful content with the HarmBench classifier and agentic cases with deterministic trace checks, never with our own model. Run the pre-hardening commit and the hardened build with the same model id and settings. Report ASR per class and channel with n and Wilson 95% CIs, utility (AgentDojo utility plus 50 real benign tasks) and over-refusal (JBB benign). Keep raw transcripts in restricted storage and only aggregates in the repo.
+```
+
+**Expect:** redteam/ runners and results.json with baseline and hardened ASR, n and CIs per class and channel, plus utility and over-refusal deltas.
+
+**Audit before moving on:** Fewer than 30 cases per class is underpowered. Claim an improvement only when the intervals do not overlap. A utility drop over 5 points or an over-refusal rise over 3 points is a reported cost. Verify that the judge differs from the agent model.
+
+#### Step 6 — Monitoring and incident response
+
+*Goal:* Detect production attempts and respond from a written runbook.
+
+```text
+Write ops/. (1) Logging: per request, log the provenance of each context segment, detector scores, tool calls with redacted arguments, gate decisions, canary hits and the model id. Restrict access to attack-bearing logs. (2) Alerts: a canary hit pages on-call. A detector-flag rate above 3 times the 7-day baseline opens a ticket. A gate block after untrusted content entered context goes to review. Per-tenant spikes in refusals or blocks are flagged. (3) Runbook: triage and scope; contain (feature-flag the tool, revoke grants); eradicate (rotate any credential the agent could reach, patch the control); recover; post-incident (add a class-level benign regression test to redteam/, update the matrix, disclose per policy and report model-level root causes through the vendor's official channel). (4) Tabletop one scenario per top-5 cell and record time-to-contain.
+```
+
+**Expect:** ops/ with logging schema, alert definitions, runbook.md and tabletop.md covering 5 scenarios.
+
+**Audit before moving on:** Fire a synthetic canary hit in staging and record the page latency. Each top-5 cell needs an alert that would fire. Missing ones go in gaps.md.
+
+#### Step 7 — Release-cadence watcher
+
+*Goal:* Rerun the suite automatically when the attack landscape or our stack changes.
+
+```text
+Build a weekly job that refreshes corpus_meta.csv from L1B3RT4S metadata only (names, line counts, commit dates) and diffs it against last week. Trigger a full redteam/ rerun when any of these happen: our vendor's file gains commits; a new file appears for a model we use; our model id changes; a tool is added; or a vendor publishes a new system card. The job never ingests file contents into our systems, tickets or LLM context. Track release feeds for HarmBench, JailbreakBench, AgentDojo and garak, and bump their pins at a monthly review. Each rerun writes dated results and opens a ticket if any class's ASR exceeds its hardened upper CI bound. Document the schedule, triggers, stored data and ticket owner in ops/watcher.md.
+```
+
+**Expect:** A scheduled job, ops/watcher.md and one dry run producing a metadata diff and a rerun decision.
+
+**Audit before moving on:** Inspect stored artifacts for any corpus content. Force a trigger (a model id change in staging config) and confirm the rerun and ticket. A missing owner fails.
+
+#### Step 8 — Validate against oracles, write gap report
+
+*Goal:* Prove the hardening with external oracles and publish residual risk and gaps.
+
+```text
+Validate. (1) JailbreakBench and HarmBench (HarmBench-classifier judged) and AgentDojo targeted-attack success each show hardened below baseline with non-overlapping Wilson 95% intervals, utility within 5 points and over-refusal up no more than 3 points. (2) Detector FPR is at or below 1% on the held-out benign half. (3) A synthetic canary pages on-call, with time-to-acknowledge recorded. (4) A reviewer who did not build this, either an internal security engineer or an external red-team firm scoped to our systems, tests redteam/ and the matrix. Their class-level findings become regression tests. (5) git grep and a skim confirm no attack text in the repo, docs or tickets. Then write gaps.md and report.md. Mark each claim verified, unverified or false with evidence paths. List high residual cells, classes under 30 cases, detector blind spots (multi-turn drift, format coercion) and prose-only controls. Rank them, fix the top three and record owners for the rest.
+```
+
+**Expect:** report.md with oracle results and evidence paths, the final matrix, and gaps.md ranked with owners and the top three fixed.
+
+**Audit before moving on:** An oracle without a results file, log or reviewer note is downgraded to unverified. A reviewer-found class bypass means the class cannot be reported closed until fixed and rerun.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent security auditor who did not build this program. Scope is our own staging systems only. Do not create or quote attack text. Inputs: taxonomy.md, corpus_meta.csv, threat_matrix.md, hardening/, detectors/, redteam/results.json, ops/ and report.md. (1) List every claim in report.md ('class X closed', 'FPR 0.8%', 'canary alert works') and mark it verified, unverified or false with an evidence path. (2) For each high or medium cell, find its control and measured test. Flag cells with a control but no test, or with n below 30. (3) Confirm that gates are harness-enforced via the direct tool-call test with the model removed. (4) Check measurement: a judge independent of the agent, non-overlapping intervals and a benign FPR set held out from tuning. (5) Check hygiene: git grep the repo, wiki and tickets for payload-like content or corpus excerpts. (6) List what is missing: unlisted channels, new tools, an unexercised runbook and an unowned watcher. (7) Rank by impact times likelihood, fix the top three with diffs and explain the rest. Return a table with these columns: finding, status, evidence, fixed, owner.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Which of the seven classes did architecture close, and which am I only detecting probabilistically?
+- Can tool output or a retrieved document reach a side-effecting tool without a harness-enforced confirmation?
+- Does any session combine private data, untrusted content and an outbound channel?
+- Do my detectors run on tool results and retrieved docs, or only on user turns?
+- What covers multi-turn drift and format coercion, which per-message classifiers miss?
+- Is my special-token list from our tokenizer config, and does the sanitizer run before the detector and the model?
+- Did hardening raise over-refusal on JBB benign or cut utility by more than 5 points?
+- Are baseline and hardened intervals separated at n of 30 or more per class?
+- Did any benchmark attack text or corpus excerpt land in the repo, docs or tickets?
+- Who is paged on a canary hit, and was that path tested end to end?
+
+### 5 · What proves it right
+
+- JailbreakBench and HarmBench against staging, judged by the HarmBench classifier, show hardened ASR below baseline with non-overlapping Wilson 95% intervals at n of 30 or more per class.
+- AgentDojo targeted-attack success falls on our tool set while AgentDojo utility stays within 5 points of baseline.
+- Detector FPR is at or below 1% on the held-out benign half (JBB benign plus anonymized real prompts) that was never used for tuning.
+- A synthetic staging canary hit pages on-call, with time-to-acknowledge recorded in the incident tool.
+- An independent reviewer scoped to our systems finds no class-level bypass the suite missed, or every finding becomes a passing regression test.
+
+### 6 · Failure modes
+
+- Payload creep. Tell: attack strings appear in the repo or tickets. Fix: load benchmarks at runtime and commit aggregates only.
+- Prompt-only defense. Tell: hardening is mostly new prompt wording, and gate tests fail with the model removed. Fix: move controls into harness code.
+- User-turn tunnel vision. Tell: detectors cover only user messages while AgentDojo injections succeed through tool results. Fix: classify every untrusted channel.
+- Self-grading. Tell: the agent model judges itself and ASR looks near zero. Fix: use the HarmBench classifier or trace checks, plus hand labels.
+- Over-hardening. Tell: benign security discussions get refused and utility drops. Fix: make over-refusal and utility deltas release blockers, and tune on held-out benign data.
+- Stale suite. Tell: the model id changed after the last run. Fix: the watcher triggers on model id changes and new vendor entries.
+
+### 7 · Agent direction (unattended runs)
+
+Cache the OWASP, ATLAS and benchmark docs plus this repo's tool registry first. Touch L1B3RT4S only through git metadata commands (ls-files, wc -l, log --format=%cs). Never read its files into context or write its content anywhere. Spawn sub-agents per channel group for the threat matrix and for the benchmark runners. Keep hardening design, detector operating points and the final report in the main loop. Run evals only against the user's staging endpoint. If staging is unavailable, stop and ask rather than test a third-party product. Ask before merging diffs, changing production config or alerting, or contacting vendors. Outputs go in one folder: taxonomy.md, corpus_meta.csv, threat_matrix.md, hardening/, detectors/, redteam/, ops/, gaps.md and report.md. Return the report tables and the ranked gaps.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -298,4 +590,26 @@ This repo exists because the people who build frontier models have not yet solve
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

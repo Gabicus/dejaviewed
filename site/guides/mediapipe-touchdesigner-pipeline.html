@@ -1,111 +1,594 @@
-<html lang="en">
-<meta charset="utf-8">
-<title>MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline — DejaViewed Guide</title>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
 <style>
-  .guide { max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
-  .guide h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-  .guide h2 { color: #7dd3fc; margin-top: 2rem; font-size: 1.3rem; border-bottom: 1px solid rgba(125,211,252,0.2); padding-bottom: 0.5rem; }
-  .guide p, .guide li { line-height: 1.7; color: #cbd5e1; }
-  .confidence-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
-  .confidence-badge.high { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-  .confidence-badge.medium { background: rgba(250,204,21,0.15); color: #fbbf24; border: 1px solid rgba(250,204,21,0.3); }
-  .meta { color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem; }
-  .entries-section { margin-top: 2rem; }
-</style>
-<script src="../shared.js" defer></script>
-<script>document.addEventListener("DOMContentLoaded",()=>window.DV&&DV.mountHeader(document.body,"guides"))</script>
-
-<article class="guide" data-pagefind-body data-pagefind-filter="kind:Guide">
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
-  <h1>MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline</h1>
-<div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-mediapipe-touchdesigner-pipeline.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline →</a></div>
-  <div class="meta">creative_fusion · 10 connected entries · Medium difficulty</div>
-  
-  <h2>Thesis</h2>
-  <p>MediaPipe's body/hand/face tracking combined with TouchDesigner's node-based visual programming creates a real-time pipeline where human movement becomes generative art. Multiple creators are independently converging on this stack — from spider-web string simulations to 3D Gaussian splatting to interactive music visualizers.</p>
-  
-  <h2>Why It Matters</h2>
-  <p>This is the democratization of interactive installation art. What used to require a team, custom hardware, and months of C++ now runs on a laptop with a webcam. The convergence of multiple creators on this exact stack signals it's become the de facto standard for real-time body-reactive art.</p>
-  
-  <h2>The Evidence</h2>
-  <div class="entries-section">
-    <div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DW6tpWWMtZV.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DW6tpWWMtZV/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">MediaPipe — What if Spiders Wove with Strings?🕷️</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@pepepepebrick · A-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DXOWz4yjN--.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DXOWz4yjN--/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Claude — Also, happy 100 posts to me! Woohoo!!!</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@ojrgb · A-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYaNXZJx_L3.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYaNXZJx_L3/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">MediaPipe — Download free at</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@zerospacelabs · A-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYiiwmzpRM7.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYiiwmzpRM7/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Gemini — if you want to listen leave a comment and i can send a link! ♡</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@as.ws__ · A-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYpRWC1OO0u.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYpRWC1OO0u/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">MediaPipe — Ongoing R&D at the intersection of art and technology. not a finishe</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@touchdesigner · A-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DFaChZeMdn1.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DFaChZeMdn1/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">MediaPipe TouchDesigner plugin by @blankensmithing</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@neles0n · A-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DVoReJNCGxT.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DVoReJNCGxT/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@pala3d · A-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  
-  <div style="flex:1;min-width:0;">
-    <a href="https://derivative.ca" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">TouchDesigner Creative Coding — 3D scanning, MediaPipe, Gaussian splats</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@6ab3 · A-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DV7jVzkE4NI.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DV7jVzkE4NI/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">TouchDesigner — I made this iridescent alien creature using POPS; the mesh was m</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@Edited · B-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DY7uFuWtJPL.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DY7uFuWtJPL/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">TouchDesigner — - adjust spacing of all particles</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@the.poet.engineer · B-tier · MediaPipe+TouchDesigner creative pipeline</div>
-  </div>
-</div>
-  </div>
-  
-  <h2>Action Sketch</h2>
-  <ol><li>Install TouchDesigner + MediaPipe Python bindings</li><li>Set up basic hand landmark tracking (21 points per hand)</li><li>Pipe landmark data into TouchDesigner via OSC or shared memory</li><li>Build a simple particle system that responds to hand position</li><li>Layer in face mesh (468 landmarks) for expression-reactive visuals</li><li>Export as standalone for installations or stream via NDI</li></ol>
-  
-  <h2>Prerequisites</h2>
-  <ul><li>TouchDesigner (free learning edition)</li><li>Webcam</li><li>MediaPipe Python or JS SDK</li><li>Basic understanding of node-based visual programming</li></ul>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-mediapipe-touchdesigner-pipeline.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline →</a></div>
+  <div id="guide-body"></div>
 </article>
-</html>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline</h1>
+<p>Insight class: Creative Fusion · Difficulty: Medium · Quality: 5/5 Connected entries: 10 · Tools: Claude, Gemini, Kinect, Kling, MediaPipe, Pika, Runway, Sora, TouchDesigner, Unreal Engine, Veo</p>
+<h2>Thesis</h2>
+<p>MediaPipe's body/hand/face tracking combined with TouchDesigner's node-based visual programming creates a real-time pipeline where human movement becomes generative art. Multiple creators are independently converging on this stack — from spider-web string simulations to 3D Gaussian splatting to interactive music visualizers.</p>
+<h2>Why it matters</h2>
+<p>This is the democratization of interactive installation art. What used to require a team, custom hardware, and months of C++ now runs on a laptop with a webcam. The convergence of multiple creators on this exact stack signals it's become the de facto standard for real-time body-reactive art.</p>
+<h2>The evidence — connected entries</h2>
+<h3>MediaPipe — What if Spiders Wove with Strings?🕷️</h3>
+<p>Creator: @pepepepebrick · Tier: A Tools: MediaPipe, TouchDesigner</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>🧱 2026/04/09 — @pepepepebrick; uses MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>Claude — Also, happy 100 posts to me! Woohoo!!!</h3>
+<p>Creator: @ojrgb · Tier: A Tools: Claude, MediaPipe, TouchDesigner</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>“Claude can do this in 10 minutes!” Is a caption I see a LOT rn and I definitely have mixed feelings about it. On one... — @ojrgb; uses Claude, MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>MediaPipe — Download free at</h3>
+<p>Creator: @zerospacelabs · Tier: A Tools: MediaPipe, TouchDesigner</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>Torin &amp; Lyell demo Classifier &amp; PCA visualization TOXs live at DATLAB XIII 12/2025. TouchDesigner plugins for trainin... — @zerospacelabs; uses MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>Gemini Omni — Google's unified multimodal model family for video</h3>
+<p>Creator: @gigaqian · Tier: B Tools: Gemini, Kling, Pika, Runway, Sora, TouchDesigner, Veo</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. It's a single model that converses across text, image, video and audio, unlike diffusion-only video tools such as Veo, Sora, Runway or Kling. Early testers report that two 10-second generations used about 86% of a Pro plan's daily quota. There's also an aside about Kling's 'Omni' naming.</p>
+<p>View original post</p>
+<h3>MediaPipe — Ongoing R&amp;D at the intersection of art and technology. not a finished...</h3>
+<p>Creator: @touchdesigner · Tier: B Tools: MediaPipe, TouchDesigner</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>repost @gerrylistudio How does presence reshape what we remember? — @touchdesigner; uses MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>MediaPipe TouchDesigner plugin by @blankensmithing</h3>
+<p>Creator: @neles0n · Tier: A Tools: MediaPipe, TouchDesigner</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>@neles0n trying the MediaPipe plugin by @blankensmithing inside TouchDesigner. Useful pointer for anyone doing body/hand tracking in TD creative-coding pipelines.</p>
+<p>View original post</p>
+<h3>DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz</h3>
+<p>Creator: @pala3d · Tier: B Tools: Kinect, TouchDesigner, Unreal Engine</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>@pala3d's 'DATA CONTROL' project: real-time visualization of NASA/CERN datasets as particle systems, body-controlled via Kinect through TouchDesigner into Unreal Engine. Pipeline explicitly human-made, no AI. Reference for data-viz/creative-coding stack.</p>
+<p>View original post</p>
+<h3>TouchDesigner Creative Coding — 3D scanning, MediaPipe, Gaussian splats</h3>
+<p>Creator: @6ab3 · Tier: A Tools: MediaPipe, TouchDesigner</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>Sources: @the.poet.engineer, @_sashasokolov Three techniques: 3D scanning with virtual cameras (Polycam), MediaPipe body tracking for interactive dance art, and Gaussian splats for photorealistic 3D scenes. Includes setup, key concepts, and resources. TouchDesigner</p>
+<p>View original post</p>
+<h3>TouchDesigner — I made this iridescent alien creature using POPS; the mesh was made with...</h3>
+<p>Creator: @lauraaliceartist · Tier: B Tools: TouchDesigner</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>Biblically accurate alien // Motion sensor in realtime @pipo_interfaces - what an intuitive and fun little tool 🤲 bui... — @Edited; uses TouchDesigner.</p>
+<p>View original post</p>
+<h3>TouchDesigner — - adjust spacing of all particles</h3>
+<p>Creator: @the.poet.engineer · Tier: C Tools: TouchDesigner</p>
+<p>MediaPipe+TouchDesigner creative pipeline</p>
+<p>particle life in 3d controlled by hands 🪸 — @the.poet.engineer; uses TouchDesigner.</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Install TouchDesigner + MediaPipe Python bindings</p>
+<p>Set up basic hand landmark tracking (21 points per hand)</p>
+<p>Pipe landmark data into TouchDesigner via OSC or shared memory</p>
+<p>Build a simple particle system that responds to hand position</p>
+<p>Layer in face mesh (468 landmarks) for expression-reactive visuals</p>
+<p>Export as standalone for installations or stream via NDI</p>
+<h2>Prerequisites</h2>
+<p>TouchDesigner (free learning edition)</p>
+<p>Webcam</p>
+<p>MediaPipe Python or JS SDK</p>
+<p>Basic understanding of node-based visual programming</p>
+<h2>Key tools and resources</h2>
+<p>Claude</p>
+<p>Gemini</p>
+<p>Kinect</p>
+<p>Kling</p>
+<p>MediaPipe</p>
+<p>Pika</p>
+<p>Runway</p>
+<p>Sora</p>
+<p>TouchDesigner</p>
+<p>Unreal Engine</p>
+<p>Veo</p>
+<h2>Creators to follow</h2>
+<p>@6ab3</p>
+<p>@gigaqian</p>
+<p>@lauraaliceartist</p>
+<p>@neles0n</p>
+<p>@ojrgb</p>
+<p>@pala3d</p>
+<p>@pepepepebrick</p>
+<p>@the.poet.engineer</p>
+<p>@touchdesigner</p>
+<p>@zerospacelabs</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Build and ship one real-time, body-reactive visual: MediaPipe tracking (hands 21 / pose 33 / face 468 landmarks) piped into TouchDesigner, driving a generative visual that responds to movement, exported as a standalone or NDI stream. Done means it runs live at 30fps+ on a laptop with a webcam, a named gesture or body position provably changes the output, and the project file opens and runs on a second machine from the committed repo.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A working interactive-installation artist does not wire a demo and stop. Like pepepepebrick's spider-web system or the DATLAB plugin work zerospacelabs shows, they design the mapping first: which landmark drives which visual parameter, with smoothing and dead-zones so jitter does not read as noise, and a fallback when tracking is lost. They profile the pipeline (camera -&gt; MediaPipe -&gt; transport -&gt; TD render) for latency and dropped frames, not just 'it looks cool'. They build a gesture classifier (zerospacelabs' CHOP classifier / Teachable-Machine approach) so discrete gestures trigger states, not just continuous position. And they test it with other people's bodies and hands, in real lighting, because tracking that works on the author fails on strangers.</p>
+<p>Rawest material to start from: Google's MediaPipe Tasks docs and landmark index diagrams (hand 21, pose 33, face 468); the MediaPipe TouchDesigner plugin by @blankensmithing that neles0n and the touchdesigner account use; TouchDesigner's own OSC In/Out and Shared Memory CHOP docs; the DATLAB classifier/PCA TOX (datlabnyc.com/classified) zerospacelabs demos; FreeMoCap (github.com/freemocap/freemocap) for full-body 3D if you go beyond hands; and a recorded reference clip of the exact gestures you intend to support.</p>
+<p>Methods and tools: MediaPipe Tasks Python (HandLandmarker, PoseLandmarker, FaceLandmarker) running the webcam; transport to TouchDesigner via OSC (python-osc) or a Shared Memory CHOP for lower latency; TouchDesigner particle/instancing GPU system (POPs or instancing) driven by the incoming CHOP channels; a one-euro filter for landmark smoothing; a gesture classifier on CHOP data (the DATLAB Classifier TOX, or a small scikit-learn model); export via TouchDesigner standalone build or NDI Out for streaming.</p>
+<p>What proves it right (other than you or the model): The project opens and runs on a second machine from the committed repo without manual rewiring. A latency measurement (timestamp a gesture to its on-screen response) stays under ~100ms. Frame rate holds 30fps+ under live tracking. A third person, not the author, performs the supported gesture and the output changes as specified. A recorded clip shows the mapping doing what the design doc claims.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Act as an interactive-installation engineer. Build me one real-time body-reactive visual and prove it, don't just demo it. Target: MediaPipe landmarks driving a TouchDesigner generative visual, 30fps+ on a laptop webcam. First write a mapping design doc: which specific landmarks (by index) drive which visual parameters, the smoothing (one-euro filter) and dead-zones, the lost-tracking fallback, and one discrete gesture that triggers a state change. Then implement: MediaPipe Tasks Python capturing the webcam, transport to TouchDesigner over OSC or Shared Memory CHOP, and a GPU particle/instancing system reacting to the channels. Add a gesture classifier on the CHOP data for the discrete trigger. Measure end-to-end latency (gesture to pixel) and frame rate under live tracking, and record a clip. Test with a second person's hands/body in normal lighting and report where tracking fails. Package it so the .toe plus the Python runs on a second machine from the repo. Return the design doc, the code, the .toe, the latency/fps numbers, the failure notes, and a list of what you could not verify.</p>
+<h3>2 · One-shot prompt</h3>
+<p>You are an interactive-installation engineer building one real-time, body-reactive visual with MediaPipe and TouchDesigner. Stance: ship something that runs live and survives other people's bodies, not a screen-recorded demo. No marketing language.</p>
+<p>Context: MediaPipe Tasks gives you HandLandmarker (21 points/hand), PoseLandmarker (33) and FaceLandmarker (468); pick one to start. TouchDesigner receives external data cleanly over OSC (python-osc) or, for lower latency, a Shared Memory CHOP. The @blankensmithing MediaPipe TD plugin exists if you prefer it to rolling your own transport. Reference work: pepepepebrick's hand-tracked spider-web audio-visual system, the DATLAB Classifier TOX (datlabnyc.com/classified) that trains a classifier on any CHOP data, and FreeMoCap for full-body 3D later. Landmark jitter is the enemy; a one-euro filter is the standard fix.</p>
+<p>Hard constraints: 30fps+ under live tracking on a laptop webcam; end-to-end latency (gesture to pixel) must be measured, not assumed; the project must open and run on a second machine from the committed repo. Name real landmark indices, real TD operators, real file paths. Do not claim it works until it has run with a second person in the frame.</p>
+<p>Ordered deliverables: (1) a mapping design doc: which landmark indices drive which visual parameters, smoothing and dead-zones, lost-tracking fallback, and one discrete gesture that triggers a state change. (2) the MediaPipe capture script (webcam -&gt; landmarks -&gt; OSC/SharedMem). (3) the TouchDesigner .toe: a GPU particle or instancing system driven by the incoming CHOP channels, with the one-euro filter applied. (4) a gesture classifier on the CHOP data for the discrete trigger (DATLAB TOX or a small sklearn model). (5) a latency + fps measurement. (6) a recorded clip and a second-person test report. (7) a run-on-another-machine packaging note.</p>
+<p>Built-in gap analysis: before finishing, list what you have not verified - does it hold 30fps with two hands in frame; does the gesture fire for someone else; does the .toe open clean on a fresh install; is the latency number from a real timestamp. Fill what you can by running it.</p>
+<p>Self-questions to answer in writing: Which landmark indices am I actually using and why those? Is my smoothing hiding real motion or only jitter? What happens when tracking drops mid-gesture? Does the classifier generalise beyond my own hand? Is my fps measured under load or idle? Did I hardcode an absolute path that breaks on another machine? Is OSC dropping packets at high landmark rates?</p>
+<p>Stop conditions: stop and ask only if no webcam or no TouchDesigner is available. Otherwise build end-to-end.</p>
+<p>Return format: a markdown report with the design doc, a file tree, the latency/fps table, the second-person test notes, and an 'Unverified and missing' section. Commit the capture script, the .toe and any classifier model; print the commit hash. One more discipline: treat the webcam frame itself as untrusted and variable. Different cameras expose different fields of view, white balance and frame rates, so normalise the landmark coordinate space (0-1 relative to frame) before mapping, and log the camera's actual resolution and fps alongside every performance number. When you report that a gesture works, name the exact lighting, distance from camera and hand orientation it was tested under, because a mapping tuned at arm's length in daylight often collapses at a desk under a lamp, and the design doc's thresholds must say which condition they assume.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: landmarks + transport</h4>
+<p>Goal: Confirm MediaPipe and the TD transport actually work before designing anything.</p>
+<p>Establish ground truth. (1) Stand up MediaPipe Tasks Python on the webcam for your chosen tracker (HandLandmarker 21 / PoseLandmarker 33 / FaceLandmarker 468). Print the raw landmark array and confirm the indices match Google's diagram (e.g. hand index-finger tip = landmark 8, wrist = 0). (2) Open TouchDesigner and get ONE number flowing from Python into a CHOP, via OSC (python-osc -&gt; OSC In CHOP) or a Shared Memory CHOP. Move your hand and watch the CHOP value change. (3) Measure the raw landmark update rate (Hz) and note CPU/GPU load. Document the exact MediaPipe model file, the transport choice, the port, and the landmark-index-to-channel map. Do not design visuals yet; this step only proves the pipe carries live data with correct indices.</p>
+<p>Expect: Live landmark values printing with verified indices, at least one value flowing into a TD CHOP and visibly tracking motion, and a measured update rate.</p>
+<p>Audit before moving on: Cross-check three landmark indices against Google's official diagram by moving that body part and confirming the right channel moves. Fail if indices are guessed or if the CHOP does not update live. On fail, fix the index map or transport before step 2.</p>
+<h4>Step 2 — Mapping design doc</h4>
+<p>Goal: Decide the landmark-to-parameter mapping, smoothing and fallbacks on paper first.</p>
+<p>Write the mapping design doc before building visuals. Specify, as a table: each visual parameter you will drive (e.g. particle emission rate, force field position, color hue) and the exact landmark index/derived value that drives it (e.g. hand openness = distance landmarks 4-8; position = landmark 9 x/y). Define smoothing: a one-euro filter per channel with starting min-cutoff and beta values. Define dead-zones so resting hands do not twitch the visual. Define the lost-tracking fallback (freeze last value? fade out? which?). Define exactly ONE discrete gesture (e.g. pinch = landmarks 4-8 distance below threshold) that triggers a state change, and what state it toggles. Reference pepepepebrick's approach where proximity modulates sound/visual as a model. This doc is the contract step 3 and 4 must satisfy.</p>
+<p>Expect: A design doc with a parameter-&gt;landmark table, per-channel smoothing params, dead-zones, a lost-tracking fallback, and one defined discrete gesture with its threshold and effect.</p>
+<p>Audit before moving on: Check every visual parameter has exactly one defined driver and every driver is a real landmark index or derived value from step 1. Fail if any mapping is vague ('hand controls particles') or references an index you did not verify. On fail, make it specific.</p>
+<h4>Step 3 — Build the reactive visual</h4>
+<p>Goal: Implement the TD GPU visual driven by the smoothed channels.</p>
+<p>Implement the visual in TouchDesigner per the design doc. Build a GPU particle or instancing system (POPs or instancing geometry) whose parameters are driven by the incoming CHOP channels from step 1. Apply the one-euro filter (Filter/Lag CHOP or a custom one-euro) to each channel using the design-doc values. Implement the dead-zones and the lost-tracking fallback exactly as specified. Do not add parameters the design doc did not define. Keep the render path GPU-bound; avoid per-frame Python in the render loop. Save as a .toe with a relative, portable project folder structure (media and TOXes inside the project dir, no absolute paths).</p>
+<p>Expect: A .toe where moving the tracked body part visibly and smoothly drives the specified visual parameters, with jitter removed and a working lost-tracking fallback.</p>
+<p>Audit before moving on: Trigger lost tracking (cover the camera) and confirm the fallback behaves as designed, not a freeze-crash. Grep the .toe/project for absolute paths. Fail on absolute paths, on jitter that reads as noise, or on any undefined parameter. On fail, fix smoothing/paths.</p>
+<h4>Step 4 — Gesture classifier</h4>
+<p>Goal: Make the discrete gesture fire reliably via a classifier, not a brittle threshold alone.</p>
+<p>Add the discrete-gesture trigger from the design doc as a classifier on the CHOP data, following the DATLAB Classifier approach zerospacelabs demos (train categories on CHOP channels, get a confidence score). Either use the DATLAB Classifier TOX (datlabnyc.com/classified) or train a small scikit-learn model on recorded landmark samples of the gesture vs not-gesture. Record at least 50 positive and 50 negative samples, including some from a second person's hand if available. Wire the classifier output so the gesture state change only fires above a confidence threshold with a short debounce to avoid flicker. Report the classifier's accuracy on a held-out set.</p>
+<p>Expect: A trained classifier (TOX or sklearn model) firing the discrete gesture above a confidence threshold with debounce, plus a held-out accuracy number.</p>
+<p>Audit before moving on: Test the gesture 10 times deliberately and 10 times with random motion; count false positives and false negatives. Fail if false-positive rate under random motion is high or if it never fires. On fail, add samples, raise the threshold, or lengthen the debounce.</p>
+<h4>Step 5 — Measure latency + fps</h4>
+<p>Goal: Quantify that it is actually real-time under live tracking.</p>
+<p>Measure performance under real conditions. (1) Frame rate: run the full pipeline (camera + MediaPipe + transport + TD render) with the tracked body part moving, and log TD's fps over 60 seconds; also log with two hands / full body in frame if relevant. (2) Latency: timestamp a sharp gesture (e.g. a clap or pinch) at the camera and the moment the visual responds, and compute end-to-end ms; repeat 10 times and report median. (3) Note CPU/GPU utilisation. Produce a table: condition, fps, median latency, dropped frames. State the hardware (CPU/GPU, webcam resolution/fps).</p>
+<p>Expect: A performance table with measured fps (idle and loaded), median end-to-end latency over 10 trials, dropped-frame count, and the hardware spec.</p>
+<p>Audit before moving on: Confirm fps was measured with motion and tracking active, not idle. Confirm latency is from real timestamps, not estimated from fps. Fail if fps ~100ms median; on fail, drop camera resolution, switch OSC-&gt;Shared Memory CHOP, or move Python work off the render thread, then re-measure.</p>
+<h4>Step 6 — Second-person test + portability + gap report</h4>
+<p>Goal: Prove it survives another body and another machine, then report gaps.</p>
+<p>Final validation. (1) Have a second person (or use a recorded clip of different hands/body in different lighting) perform the supported gesture and the continuous mapping; note every place tracking or the classifier fails on them. (2) Copy the project folder to a second machine (or a clean user profile) with a fresh TouchDesigner + Python env install, open the .toe, and run it; record what breaks (missing module, path, model file) and fix until it runs. (3) Record a 20-second clip showing the mapping and the gesture doing what the design doc claims. (4) Enumerate claims, mark verified/unverified/false, list missing pieces ranked by impact, fix the top two. Commit the capture script, .toe, classifier model and a requirements.txt; print the commit hash.</p>
+<p>Expect: A second-person failure report, a successful run on a second machine (or the exact fix list), a reference clip, a claim ledger, and a committed, portable project with its hash.</p>
+<p>Audit before moving on: Confirm the .toe opened on the second machine from the repo with no manual rewiring. Confirm the second-person test actually happened (clip or notes). Fail if it only works for the author or only on the build machine. On fail, state that limitation plainly in the report.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>Run after the pipeline is built. List every claim as a numbered item: each landmark-to-parameter mapping, the smoothing, the fallback, the gesture classifier accuracy, the fps and latency numbers, and portability. Mark each VERIFIED (with evidence: a clip, a log, a run on the second machine), UNVERIFIED, or FALSE. Specifically re-check: do the landmark indices match Google's diagram; is fps measured under motion with tracking active, not idle; is latency from real paired timestamps; does the gesture classifier fire for a second person without high false positives; does the .toe open and run on a clean install with no absolute paths; does the lost-tracking fallback avoid a freeze or crash. List missing pieces: untested lighting conditions, single-person-only classifier data, hardcoded paths, unmeasured dropped frames. Rank by impact on whether this runs as a live installation. Fix the top three and re-verify. Report what you could not fix and why (no second person available, hardware-bound fps, etc.). Do not mark real-time performance verified from fps alone without a latency measurement.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Which exact landmark indices drive each parameter, and did I verify them against Google's diagram?</p>
+<p>Is my one-euro filter removing jitter without killing real motion?</p>
+<p>What happens to the visual when tracking drops mid-gesture?</p>
+<p>Does the gesture classifier generalise to a second person's hand, or only mine?</p>
+<p>Is my fps number measured under live tracking and motion, or at idle?</p>
+<p>Is my latency number from paired timestamps, or inferred from fps?</p>
+<p>Did OSC drop packets at full landmark rate, and would Shared Memory CHOP fix it?</p>
+<p>Did I hardcode any absolute path that breaks the .toe on another machine?</p>
+<p>Does the project folder carry its media, TOXes and model, or does it reference files outside it?</p>
+<p>What lighting and skin-tone conditions have I actually tested, versus assumed?</p>
+<p>Is Python work running on the render thread and throttling fps?</p>
+<p>Does the discrete gesture false-fire under random motion?</p>
+<h3>5 · What proves it right</h3>
+<p>The .toe opens and runs from the committed repo on a second machine (or clean profile) with a fresh TouchDesigner+Python install, no manual rewiring.</p>
+<p>Measured end-to-end latency (paired gesture/pixel timestamps) is under ~100ms median over 10 trials, and fps holds 30+ under live tracking with motion.</p>
+<p>A second person performs the supported gesture in normal lighting and the output changes as the design doc specifies, with low false positives.</p>
+<p>Landmark indices used match Google's official MediaPipe diagram, confirmed by moving each body part and watching the mapped channel.</p>
+<p>A recorded clip shows the continuous mapping and the discrete gesture doing exactly what the design doc claims.</p>
+<h3>6 · Failure modes</h3>
+<p>Jittery output: raw landmarks drive parameters with no filter. Tell: the visual twitches when hands rest. Fix: one-euro filter plus dead-zones per channel.</p>
+<p>Works only for the author: classifier trained on one hand. Tell: a second person's gesture never fires. Fix: add second-person samples, raise threshold, debounce.</p>
+<p>Fake real-time: fps looked fine but latency is high. Tell: visible lag between gesture and response. Fix: measure latency with paired timestamps; switch to Shared Memory CHOP; move Python off the render thread.</p>
+<p>Broken on another machine: absolute paths or external media. Tell: .toe opens with missing-file errors. Fix: portable project folder, relative paths, requirements.txt.</p>
+<p>OSC packet loss at high landmark rates: 468 face landmarks flood OSC. Tell: channels stutter or freeze. Fix: send only needed landmarks, or use Shared Memory CHOP.</p>
+<p>Lost-tracking crash: no fallback when the hand leaves frame. Tell: visual freezes or NaNs. Fix: implement the designed fallback (hold last / fade).</p>
+<p>Python in the render loop: per-frame inference stalls TD. Tell: fps drops when tracking runs. Fix: decouple capture into its own process/thread, transport only results.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Reach first for the webcam + MediaPipe Tasks Python and a minimal OSC/Shared-Memory bridge to TouchDesigner; prove live data flows with correct landmark indices before building any visual. Cache the step-1 index-to-channel map and the step-2 design doc; every later step must satisfy the doc. Run the pipeline for real to get fps and latency; never report real-time from reasoning. Spawn a sub-agent only to train the gesture classifier so sampling and evaluation stay isolated. Stop and ask the user only if there is no webcam or no TouchDesigner install. Keep the project folder self-contained and relative-pathed; that is what makes the second-machine oracle pass. Return a markdown report (design doc, file tree, performance table, second-person notes, 'Unverified and missing') plus committed files: the capture script, the .toe, the classifier model and requirements.txt. Include a short reference clip path. If it only runs for the author or only on the build machine, report that as the result rather than hiding it.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
+<script id="md" type="text/markdown"># MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline
+
+**Insight class:** Creative Fusion · **Difficulty:** Medium · **Quality:** 5/5
+**Connected entries:** 10 · **Tools:** Claude, Gemini, Kinect, Kling, MediaPipe, Pika, Runway, Sora, TouchDesigner, Unreal Engine, Veo
+
+---
+
+## Thesis
+
+MediaPipe's body/hand/face tracking combined with TouchDesigner's node-based visual programming creates a real-time pipeline where human movement becomes generative art. Multiple creators are independently converging on this stack — from spider-web string simulations to 3D Gaussian splatting to interactive music visualizers.
+
+---
+
+## Why it matters
+
+This is the democratization of interactive installation art. What used to require a team, custom hardware, and months of C++ now runs on a laptop with a webcam. The convergence of multiple creators on this exact stack signals it's become the de facto standard for real-time body-reactive art.
+
+---
+
+## The evidence — connected entries
+
+### MediaPipe — What if Spiders Wove with Strings?🕷️
+**Creator:** [@pepepepebrick](https://instagram.com/pepepepebrick) · **Tier:** A
+**Tools:** MediaPipe, TouchDesigner
+
+> MediaPipe+TouchDesigner creative pipeline
+
+🧱 2026/04/09 — @pepepepebrick; uses MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DW6tpWWMtZV/)
+### Claude — Also, happy 100 posts to me! Woohoo!!!
+**Creator:** [@ojrgb](https://instagram.com/ojrgb) · **Tier:** A
+**Tools:** Claude, MediaPipe, TouchDesigner
+
+> MediaPipe+TouchDesigner creative pipeline
+
+“Claude can do this in 10 minutes!” Is a caption I see a LOT rn and I definitely have mixed feelings about it. On one... — @ojrgb; uses Claude, MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DXOWz4yjN--/)
+### MediaPipe — Download free at
+**Creator:** [@zerospacelabs](https://instagram.com/zerospacelabs) · **Tier:** A
+**Tools:** MediaPipe, TouchDesigner
+
+> MediaPipe+TouchDesigner creative pipeline
+
+Torin & Lyell demo Classifier & PCA visualization TOXs live at DATLAB XIII 12/2025. TouchDesigner plugins for trainin... — @zerospacelabs; uses MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DYaNXZJx_L3/)
+### Gemini Omni — Google's unified multimodal model family for video
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** B
+**Tools:** Gemini, Kling, Pika, Runway, Sora, TouchDesigner, Veo
+
+> MediaPipe+TouchDesigner creative pipeline
+
+At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. It's a single model that converses across text, image, video and audio, unlike diffusion-only video tools such as Veo, Sora, Runway or Kling. Early testers report that two 10-second generations used about 86% of a Pro plan's daily quota. There's also an aside about Kling's 'Omni' naming.
+
+[View original post](https://www.instagram.com/p/DYiiwmzpRM7/)
+### MediaPipe — Ongoing R&D at the intersection of art and technology. not a finished...
+**Creator:** [@touchdesigner](https://instagram.com/touchdesigner) · **Tier:** B
+**Tools:** MediaPipe, TouchDesigner
+
+> MediaPipe+TouchDesigner creative pipeline
+
+repost @gerrylistudio How does presence reshape what we remember? — @touchdesigner; uses MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DYpRWC1OO0u/)
+### MediaPipe TouchDesigner plugin by @blankensmithing
+**Creator:** [@neles0n](https://instagram.com/neles0n) · **Tier:** A
+**Tools:** MediaPipe, TouchDesigner
+
+> MediaPipe+TouchDesigner creative pipeline
+
+@neles0n trying the MediaPipe plugin by @blankensmithing inside TouchDesigner. Useful pointer for anyone doing body/hand tracking in TD creative-coding pipelines.
+
+[View original post](https://www.instagram.com/p/DFaChZeMdn1/)
+### DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz
+**Creator:** [@pala3d](https://instagram.com/pala3d) · **Tier:** B
+**Tools:** Kinect, TouchDesigner, Unreal Engine
+
+> MediaPipe+TouchDesigner creative pipeline
+
+@pala3d's 'DATA CONTROL' project: real-time visualization of NASA/CERN datasets as particle systems, body-controlled via Kinect through TouchDesigner into Unreal Engine. Pipeline explicitly human-made, no AI. Reference for data-viz/creative-coding stack.
+
+[View original post](https://www.instagram.com/p/DVoReJNCGxT/)
+### TouchDesigner Creative Coding — 3D scanning, MediaPipe, Gaussian splats
+**Creator:** [@6ab3](https://instagram.com/6ab3) · **Tier:** A
+**Tools:** MediaPipe, TouchDesigner
+
+> MediaPipe+TouchDesigner creative pipeline
+
+Sources: @the.poet.engineer, @_sashasokolov | Three techniques: 3D scanning with virtual cameras (Polycam), MediaPipe body tracking for interactive dance art, and Gaussian splats for photorealistic 3D scenes. Includes setup, key concepts, and resources. | TouchDesigner
+
+[View original post](https://derivative.ca)
+### TouchDesigner — I made this iridescent alien creature using POPS; the mesh was made with...
+**Creator:** [@lauraaliceartist](https://instagram.com/lauraaliceartist) · **Tier:** B
+**Tools:** TouchDesigner
+
+> MediaPipe+TouchDesigner creative pipeline
+
+Biblically accurate alien // Motion sensor in realtime @pipo_interfaces - what an intuitive and fun little tool 🤲 bui... — @Edited; uses TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DV7jVzkE4NI/)
+### TouchDesigner — - adjust spacing of all particles
+**Creator:** [@the.poet.engineer](https://instagram.com/the.poet.engineer) · **Tier:** C
+**Tools:** TouchDesigner
+
+> MediaPipe+TouchDesigner creative pipeline
+
+particle life in 3d controlled by hands 🪸 — @the.poet.engineer; uses TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DY7uFuWtJPL/)
+
+---
+
+## Action sketch — how to implement this
+
+1. Install TouchDesigner + MediaPipe Python bindings
+2. Set up basic hand landmark tracking (21 points per hand)
+3. Pipe landmark data into TouchDesigner via OSC or shared memory
+4. Build a simple particle system that responds to hand position
+5. Layer in face mesh (468 landmarks) for expression-reactive visuals
+6. Export as standalone for installations or stream via NDI
+
+---
+
+## Prerequisites
+
+- TouchDesigner (free learning edition)
+- Webcam
+- MediaPipe Python or JS SDK
+- Basic understanding of node-based visual programming
+
+---
+
+## Key tools and resources
+
+- **Claude**
+- **Gemini**
+- **Kinect**
+- **Kling**
+- **MediaPipe**
+- **Pika**
+- **Runway**
+- **Sora**
+- **TouchDesigner**
+- **Unreal Engine**
+- **Veo**
+
+## Creators to follow
+
+- [@6ab3](https://instagram.com/6ab3)
+- [@gigaqian](https://instagram.com/gigaqian)
+- [@lauraaliceartist](https://instagram.com/lauraaliceartist)
+- [@neles0n](https://instagram.com/neles0n)
+- [@ojrgb](https://instagram.com/ojrgb)
+- [@pala3d](https://instagram.com/pala3d)
+- [@pepepepebrick](https://instagram.com/pepepepebrick)
+- [@the.poet.engineer](https://instagram.com/the.poet.engineer)
+- [@touchdesigner](https://instagram.com/touchdesigner)
+- [@zerospacelabs](https://instagram.com/zerospacelabs)
+
+---
+
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Build and ship one real-time, body-reactive visual: MediaPipe tracking (hands 21 / pose 33 / face 468 landmarks) piped into TouchDesigner, driving a generative visual that responds to movement, exported as a standalone or NDI stream. Done means it runs live at 30fps+ on a laptop with a webcam, a named gesture or body position provably changes the output, and the project file opens and runs on a second machine from the committed repo.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A working interactive-installation artist does not wire a demo and stop. Like pepepepebrick's spider-web system or the DATLAB plugin work zerospacelabs shows, they design the mapping first: which landmark drives which visual parameter, with smoothing and dead-zones so jitter does not read as noise, and a fallback when tracking is lost. They profile the pipeline (camera -> MediaPipe -> transport -> TD render) for latency and dropped frames, not just 'it looks cool'. They build a gesture classifier (zerospacelabs' CHOP classifier / Teachable-Machine approach) so discrete gestures trigger states, not just continuous position. And they test it with other people's bodies and hands, in real lighting, because tracking that works on the author fails on strangers.
+- **Rawest material to start from:** Google's MediaPipe Tasks docs and landmark index diagrams (hand 21, pose 33, face 468); the MediaPipe TouchDesigner plugin by @blankensmithing that neles0n and the touchdesigner account use; TouchDesigner's own OSC In/Out and Shared Memory CHOP docs; the DATLAB classifier/PCA TOX (datlabnyc.com/classified) zerospacelabs demos; FreeMoCap (github.com/freemocap/freemocap) for full-body 3D if you go beyond hands; and a recorded reference clip of the exact gestures you intend to support.
+- **Methods and tools:** MediaPipe Tasks Python (HandLandmarker, PoseLandmarker, FaceLandmarker) running the webcam; transport to TouchDesigner via OSC (python-osc) or a Shared Memory CHOP for lower latency; TouchDesigner particle/instancing GPU system (POPs or instancing) driven by the incoming CHOP channels; a one-euro filter for landmark smoothing; a gesture classifier on CHOP data (the DATLAB Classifier TOX, or a small scikit-learn model); export via TouchDesigner standalone build or NDI Out for streaming.
+- **What proves it right (other than you or the model):** The project opens and runs on a second machine from the committed repo without manual rewiring. A latency measurement (timestamp a gesture to its on-screen response) stays under ~100ms. Frame rate holds 30fps+ under live tracking. A third person, not the author, performs the supported gesture and the output changes as specified. A recorded clip shows the mapping doing what the design doc claims.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Act as an interactive-installation engineer. Build me one real-time body-reactive visual and prove it, don't just demo it. Target: MediaPipe <hands|pose|face> landmarks driving a TouchDesigner generative visual, 30fps+ on a laptop webcam. First write a mapping design doc: which specific landmarks (by index) drive which visual parameters, the smoothing (one-euro filter) and dead-zones, the lost-tracking fallback, and one discrete gesture that triggers a state change. Then implement: MediaPipe Tasks Python capturing the webcam, transport to TouchDesigner over OSC or Shared Memory CHOP, and a GPU particle/instancing system reacting to the channels. Add a gesture classifier on the CHOP data for the discrete trigger. Measure end-to-end latency (gesture to pixel) and frame rate under live tracking, and record a clip. Test with a second person's hands/body in normal lighting and report where tracking fails. Package it so the .toe plus the Python runs on a second machine from the repo. Return the design doc, the code, the .toe, the latency/fps numbers, the failure notes, and a list of what you could not verify.
+```
+
+### 2 · One-shot prompt
+
+```text
+You are an interactive-installation engineer building one real-time, body-reactive visual with MediaPipe and TouchDesigner. Stance: ship something that runs live and survives other people's bodies, not a screen-recorded demo. No marketing language.
+
+Context: MediaPipe Tasks gives you HandLandmarker (21 points/hand), PoseLandmarker (33) and FaceLandmarker (468); pick one to start. TouchDesigner receives external data cleanly over OSC (python-osc) or, for lower latency, a Shared Memory CHOP. The @blankensmithing MediaPipe TD plugin exists if you prefer it to rolling your own transport. Reference work: pepepepebrick's hand-tracked spider-web audio-visual system, the DATLAB Classifier TOX (datlabnyc.com/classified) that trains a classifier on any CHOP data, and FreeMoCap for full-body 3D later. Landmark jitter is the enemy; a one-euro filter is the standard fix.
+
+Hard constraints: 30fps+ under live tracking on a laptop webcam; end-to-end latency (gesture to pixel) must be measured, not assumed; the project must open and run on a second machine from the committed repo. Name real landmark indices, real TD operators, real file paths. Do not claim it works until it has run with a second person in the frame.
+
+Ordered deliverables: (1) a mapping design doc: which landmark indices drive which visual parameters, smoothing and dead-zones, lost-tracking fallback, and one discrete gesture that triggers a state change. (2) the MediaPipe capture script (webcam -> landmarks -> OSC/SharedMem). (3) the TouchDesigner .toe: a GPU particle or instancing system driven by the incoming CHOP channels, with the one-euro filter applied. (4) a gesture classifier on the CHOP data for the discrete trigger (DATLAB TOX or a small sklearn model). (5) a latency + fps measurement. (6) a recorded clip and a second-person test report. (7) a run-on-another-machine packaging note.
+
+Built-in gap analysis: before finishing, list what you have not verified - does it hold 30fps with two hands in frame; does the gesture fire for someone else; does the .toe open clean on a fresh install; is the latency number from a real timestamp. Fill what you can by running it.
+
+Self-questions to answer in writing: Which landmark indices am I actually using and why those? Is my smoothing hiding real motion or only jitter? What happens when tracking drops mid-gesture? Does the classifier generalise beyond my own hand? Is my fps measured under load or idle? Did I hardcode an absolute path that breaks on another machine? Is OSC dropping packets at high landmark rates?
+
+Stop conditions: stop and ask only if no webcam or no TouchDesigner is available. Otherwise build end-to-end.
+
+Return format: a markdown report with the design doc, a file tree, the latency/fps table, the second-person test notes, and an 'Unverified and missing' section. Commit the capture script, the .toe and any classifier model; print the commit hash. One more discipline: treat the webcam frame itself as untrusted and variable. Different cameras expose different fields of view, white balance and frame rates, so normalise the landmark coordinate space (0-1 relative to frame) before mapping, and log the camera's actual resolution and fps alongside every performance number. When you report that a gesture works, name the exact lighting, distance from camera and hand orientation it was tested under, because a mapping tuned at arm's length in daylight often collapses at a desk under a lamp, and the design doc's thresholds must say which condition they assume.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: landmarks + transport
+
+*Goal:* Confirm MediaPipe and the TD transport actually work before designing anything.
+
+```text
+Establish ground truth. (1) Stand up MediaPipe Tasks Python on the webcam for your chosen tracker (HandLandmarker 21 / PoseLandmarker 33 / FaceLandmarker 468). Print the raw landmark array and confirm the indices match Google's diagram (e.g. hand index-finger tip = landmark 8, wrist = 0). (2) Open TouchDesigner and get ONE number flowing from Python into a CHOP, via OSC (python-osc -> OSC In CHOP) or a Shared Memory CHOP. Move your hand and watch the CHOP value change. (3) Measure the raw landmark update rate (Hz) and note CPU/GPU load. Document the exact MediaPipe model file, the transport choice, the port, and the landmark-index-to-channel map. Do not design visuals yet; this step only proves the pipe carries live data with correct indices.
+```
+
+**Expect:** Live landmark values printing with verified indices, at least one value flowing into a TD CHOP and visibly tracking motion, and a measured update rate.
+
+**Audit before moving on:** Cross-check three landmark indices against Google's official diagram by moving that body part and confirming the right channel moves. Fail if indices are guessed or if the CHOP does not update live. On fail, fix the index map or transport before step 2.
+
+#### Step 2 — Mapping design doc
+
+*Goal:* Decide the landmark-to-parameter mapping, smoothing and fallbacks on paper first.
+
+```text
+Write the mapping design doc before building visuals. Specify, as a table: each visual parameter you will drive (e.g. particle emission rate, force field position, color hue) and the exact landmark index/derived value that drives it (e.g. hand openness = distance landmarks 4-8; position = landmark 9 x/y). Define smoothing: a one-euro filter per channel with starting min-cutoff and beta values. Define dead-zones so resting hands do not twitch the visual. Define the lost-tracking fallback (freeze last value? fade out? which?). Define exactly ONE discrete gesture (e.g. pinch = landmarks 4-8 distance below threshold) that triggers a state change, and what state it toggles. Reference pepepepebrick's approach where proximity modulates sound/visual as a model. This doc is the contract step 3 and 4 must satisfy.
+```
+
+**Expect:** A design doc with a parameter->landmark table, per-channel smoothing params, dead-zones, a lost-tracking fallback, and one defined discrete gesture with its threshold and effect.
+
+**Audit before moving on:** Check every visual parameter has exactly one defined driver and every driver is a real landmark index or derived value from step 1. Fail if any mapping is vague ('hand controls particles') or references an index you did not verify. On fail, make it specific.
+
+#### Step 3 — Build the reactive visual
+
+*Goal:* Implement the TD GPU visual driven by the smoothed channels.
+
+```text
+Implement the visual in TouchDesigner per the design doc. Build a GPU particle or instancing system (POPs or instancing geometry) whose parameters are driven by the incoming CHOP channels from step 1. Apply the one-euro filter (Filter/Lag CHOP or a custom one-euro) to each channel using the design-doc values. Implement the dead-zones and the lost-tracking fallback exactly as specified. Do not add parameters the design doc did not define. Keep the render path GPU-bound; avoid per-frame Python in the render loop. Save as a .toe with a relative, portable project folder structure (media and TOXes inside the project dir, no absolute paths).
+```
+
+**Expect:** A .toe where moving the tracked body part visibly and smoothly drives the specified visual parameters, with jitter removed and a working lost-tracking fallback.
+
+**Audit before moving on:** Trigger lost tracking (cover the camera) and confirm the fallback behaves as designed, not a freeze-crash. Grep the .toe/project for absolute paths. Fail on absolute paths, on jitter that reads as noise, or on any undefined parameter. On fail, fix smoothing/paths.
+
+#### Step 4 — Gesture classifier
+
+*Goal:* Make the discrete gesture fire reliably via a classifier, not a brittle threshold alone.
+
+```text
+Add the discrete-gesture trigger from the design doc as a classifier on the CHOP data, following the DATLAB Classifier approach zerospacelabs demos (train categories on CHOP channels, get a confidence score). Either use the DATLAB Classifier TOX (datlabnyc.com/classified) or train a small scikit-learn model on recorded landmark samples of the gesture vs not-gesture. Record at least 50 positive and 50 negative samples, including some from a second person's hand if available. Wire the classifier output so the gesture state change only fires above a confidence threshold with a short debounce to avoid flicker. Report the classifier's accuracy on a held-out set.
+```
+
+**Expect:** A trained classifier (TOX or sklearn model) firing the discrete gesture above a confidence threshold with debounce, plus a held-out accuracy number.
+
+**Audit before moving on:** Test the gesture 10 times deliberately and 10 times with random motion; count false positives and false negatives. Fail if false-positive rate under random motion is high or if it never fires. On fail, add samples, raise the threshold, or lengthen the debounce.
+
+#### Step 5 — Measure latency + fps
+
+*Goal:* Quantify that it is actually real-time under live tracking.
+
+```text
+Measure performance under real conditions. (1) Frame rate: run the full pipeline (camera + MediaPipe + transport + TD render) with the tracked body part moving, and log TD's fps over 60 seconds; also log with two hands / full body in frame if relevant. (2) Latency: timestamp a sharp gesture (e.g. a clap or pinch) at the camera and the moment the visual responds, and compute end-to-end ms; repeat 10 times and report median. (3) Note CPU/GPU utilisation. Produce a table: condition, fps, median latency, dropped frames. State the hardware (CPU/GPU, webcam resolution/fps).
+```
+
+**Expect:** A performance table with measured fps (idle and loaded), median end-to-end latency over 10 trials, dropped-frame count, and the hardware spec.
+
+**Audit before moving on:** Confirm fps was measured with motion and tracking active, not idle. Confirm latency is from real timestamps, not estimated from fps. Fail if fps < 30 under load or latency > ~100ms median; on fail, drop camera resolution, switch OSC->Shared Memory CHOP, or move Python work off the render thread, then re-measure.
+
+#### Step 6 — Second-person test + portability + gap report
+
+*Goal:* Prove it survives another body and another machine, then report gaps.
+
+```text
+Final validation. (1) Have a second person (or use a recorded clip of different hands/body in different lighting) perform the supported gesture and the continuous mapping; note every place tracking or the classifier fails on them. (2) Copy the project folder to a second machine (or a clean user profile) with a fresh TouchDesigner + Python env install, open the .toe, and run it; record what breaks (missing module, path, model file) and fix until it runs. (3) Record a 20-second clip showing the mapping and the gesture doing what the design doc claims. (4) Enumerate claims, mark verified/unverified/false, list missing pieces ranked by impact, fix the top two. Commit the capture script, .toe, classifier model and a requirements.txt; print the commit hash.
+```
+
+**Expect:** A second-person failure report, a successful run on a second machine (or the exact fix list), a reference clip, a claim ledger, and a committed, portable project with its hash.
+
+**Audit before moving on:** Confirm the .toe opened on the second machine from the repo with no manual rewiring. Confirm the second-person test actually happened (clip or notes). Fail if it only works for the author or only on the build machine. On fail, state that limitation plainly in the report.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+Run after the pipeline is built. List every claim as a numbered item: each landmark-to-parameter mapping, the smoothing, the fallback, the gesture classifier accuracy, the fps and latency numbers, and portability. Mark each VERIFIED (with evidence: a clip, a log, a run on the second machine), UNVERIFIED, or FALSE. Specifically re-check: do the landmark indices match Google's diagram; is fps measured under motion with tracking active, not idle; is latency from real paired timestamps; does the gesture classifier fire for a second person without high false positives; does the .toe open and run on a clean install with no absolute paths; does the lost-tracking fallback avoid a freeze or crash. List missing pieces: untested lighting conditions, single-person-only classifier data, hardcoded paths, unmeasured dropped frames. Rank by impact on whether this runs as a live installation. Fix the top three and re-verify. Report what you could not fix and why (no second person available, hardware-bound fps, etc.). Do not mark real-time performance verified from fps alone without a latency measurement.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Which exact landmark indices drive each parameter, and did I verify them against Google's diagram?
+- Is my one-euro filter removing jitter without killing real motion?
+- What happens to the visual when tracking drops mid-gesture?
+- Does the gesture classifier generalise to a second person's hand, or only mine?
+- Is my fps number measured under live tracking and motion, or at idle?
+- Is my latency number from paired timestamps, or inferred from fps?
+- Did OSC drop packets at full landmark rate, and would Shared Memory CHOP fix it?
+- Did I hardcode any absolute path that breaks the .toe on another machine?
+- Does the project folder carry its media, TOXes and model, or does it reference files outside it?
+- What lighting and skin-tone conditions have I actually tested, versus assumed?
+- Is Python work running on the render thread and throttling fps?
+- Does the discrete gesture false-fire under random motion?
+
+### 5 · What proves it right
+
+- The .toe opens and runs from the committed repo on a second machine (or clean profile) with a fresh TouchDesigner+Python install, no manual rewiring.
+- Measured end-to-end latency (paired gesture/pixel timestamps) is under ~100ms median over 10 trials, and fps holds 30+ under live tracking with motion.
+- A second person performs the supported gesture in normal lighting and the output changes as the design doc specifies, with low false positives.
+- Landmark indices used match Google's official MediaPipe diagram, confirmed by moving each body part and watching the mapped channel.
+- A recorded clip shows the continuous mapping and the discrete gesture doing exactly what the design doc claims.
+
+### 6 · Failure modes
+
+- Jittery output: raw landmarks drive parameters with no filter. Tell: the visual twitches when hands rest. Fix: one-euro filter plus dead-zones per channel.
+- Works only for the author: classifier trained on one hand. Tell: a second person's gesture never fires. Fix: add second-person samples, raise threshold, debounce.
+- Fake real-time: fps looked fine but latency is high. Tell: visible lag between gesture and response. Fix: measure latency with paired timestamps; switch to Shared Memory CHOP; move Python off the render thread.
+- Broken on another machine: absolute paths or external media. Tell: .toe opens with missing-file errors. Fix: portable project folder, relative paths, requirements.txt.
+- OSC packet loss at high landmark rates: 468 face landmarks flood OSC. Tell: channels stutter or freeze. Fix: send only needed landmarks, or use Shared Memory CHOP.
+- Lost-tracking crash: no fallback when the hand leaves frame. Tell: visual freezes or NaNs. Fix: implement the designed fallback (hold last / fade).
+- Python in the render loop: per-frame inference stalls TD. Tell: fps drops when tracking runs. Fix: decouple capture into its own process/thread, transport only results.
+
+### 7 · Agent direction (unattended runs)
+
+Reach first for the webcam + MediaPipe Tasks Python and a minimal OSC/Shared-Memory bridge to TouchDesigner; prove live data flows with correct landmark indices before building any visual. Cache the step-1 index-to-channel map and the step-2 design doc; every later step must satisfy the doc. Run the pipeline for real to get fps and latency; never report real-time from reasoning. Spawn a sub-agent only to train the gesture classifier so sampling and evaluation stay isolated. Stop and ask the user only if there is no webcam or no TouchDesigner install. Keep the project folder self-contained and relative-pathed; that is what makes the second-machine oracle pass. Return a markdown report (design doc, file tree, performance table, second-person notes, 'Unverified and missing') plus committed files: the capture script, the .toe, the classifier model and requirements.txt. Include a short reference clip path. If it only runs for the author or only on the build machine, report that as the result rather than hiding it.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script></body></html>

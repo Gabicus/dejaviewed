@@ -150,6 +150,140 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>hcharper/polyBot-Weather</p>
 <p>Polymarket Traders Profit from Weather Predictions (Phemex)</p>
 <p>Polymarket Weather Markets — DEV Community</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Test whether a calibrated multi-model ensemble forecast of the exact resolution station beats Polymarket's prices on daily temperature and precipitation buckets after fees and fill costs. Running this produces a point-in-time forecast archive, a probability engine scored with Brier and reliability against both the market and climatology, a model-run lag study, a backtest with a control, and a read-only paper trader. No real money moves until the model beats the market's own probabilities out of sample and 30 days of paper trading beat the control.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): Forecast the resolution station, not the city: read each market's rules, identify the exact station and data product it resolves on (often an airport ASOS station as reported by a specific website), and build a per-station bias correction. Score the ensemble with proper scoring rules, Brier score and CRPS plus reliability diagrams, against two baselines: the market's own implied probability and climatology. Use only forecasts issued before each price timestamp, which means archiving or retrieving historical model runs rather than using reanalysis. Test the claimed 30-90 minute lag after model runs directly from price histories. Size with fractional Kelly capped hard, because Kelly on a miscalibrated probability is how small edges blow up.</p>
+<p>Rawest material to start from: - Each market's rules text and resolution source on Polymarket (Gamma API description field).</p>
+<p>Station observations: NWS daily climate reports (CLI) and ASOS data via the Iowa Environmental Mesonet archive for the exact station ids.</p>
+<p>Open-Meteo Ensemble API (GFS/GEFS, ECMWF IFS ensemble, ICON-EPS, GEM members) and its Previous Runs or Historical Forecast endpoints for point-in-time archives.</p>
+<p>ECMWF Open Data, NOAA NOMADS GEFS grib2, NWS API gridpoint and MOS products.</p>
+<p>Polymarket CLOB prices-history and trades for the weather tokens.</p>
+<p>suislanchez/polymarket-kalshi-weather-bot and hcharper/polyBot-Weather source for reference.</p>
+<p>Public wallet histories of gopfan2, neobrother, and Hans323 on Polymarket to check the claimed rules and PnL.</p>
+<p>Methods and tools: Python with httpx, pandas, xarray and cfgrib if parsing grib2; ensemble member counting with kernel dressing to smooth integer-degree buckets; per-station EMOS or simple linear bias correction fit on a rolling window; isotonic recalibration; Brier score, Brier skill score versus market and climatology, CRPS via properscoring, reliability diagrams; weights for ECMWF 35 / GFS 25 / UKMO 20 / NWS 20 compared against weights fit by minimizing CRPS on the training period; event-study of price changes around 00z/06z/12z/18z run availability times; fractional Kelly at 0.25 with a per-position dollar cap; limit-order fill simulation against the book.</p>
+<p>What proves it right (other than you or the model): The station's official observation decides every scored outcome, not the model. The market's implied probability is the control forecaster: the model must have a lower Brier score than the market out of sample, with a paired bootstrap CI. Climatology is the floor. A 30-day read-only paper run whose hypothetical fills are reconciled to the public trade tape must beat a control ledger. Public wallet data either confirms or refutes the named traders' claimed rules.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Do not build me a weather bot that trades yet. Prove there is an edge against Polymarket prices first.</p>
+<p>Pull every resolved Polymarket weather market for the past 12 months. From each market's rules, record the exact resolution station and data source. Pull official observations for those stations from NWS CLI reports or the Iowa Environmental Mesonet.</p>
+<p>Build a point-in-time forecast archive: for each market and each hour before resolution, the most recent ensemble members from Open-Meteo (GEFS, ECMWF IFS ensemble, ICON-EPS, GEM) that were actually available at that hour. No reanalysis.</p>
+<p>Compute bucket probabilities from members with per-station bias correction and kernel dressing. Compare the guide's fixed weights (ECMWF 35, GFS 25, UKMO 20, NWS 20) against weights fit on a training period. Score with Brier and reliability versus the market's implied probability and climatology on a held-out period.</p>
+<p>Test the claimed 30-90 minute price lag after each model run.</p>
+<p>Backtest the rule buy when model probability minus ask exceeds 0.10 with limit-order fills, fees, 0.25 Kelly, and a $10 cap per position, against a control.</p>
+<p>Run a read-only paper trader for 30 days.</p>
+<p>Gate: no real money until the model's Brier beats the market's out of sample and paper beats the control. Any pilot afterward: $300 total, $10 per position, halt after a 20% drawdown. Never promise returns.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE: You are a forecast-verification scientist and prediction-market researcher. You treat the order book as a competing forecaster and require your model to beat it on proper scoring rules out of sample before any trade. No real orders are placed in this run.</p>
+<p>CONTEXT:</p>
+<p>Strategy from the guide: compute P_ensemble for each Polymarket weather bucket from multi-model ensembles; buy YES when P_ensemble exceeds ask plus an edge threshold, buy NO when it is below bid minus the threshold; size with fractional Kelly; exit at resolution or on convergence.</p>
+<p>Claims to test: trained 4-model ensembles hit 70-75% on daily-high buckets; WeatherBot weights ECMWF 35%, GFS 25%, UKMO 20%, NWS 20% with outlier penalization; Polymarket lags new model runs by 30-90 minutes; gopfan2 made $2M+ with rules like buy YES under $0.15 and NO over $0.45 at about $1 risk per position; neobrother ladders adjacent buckets; the rooftop-sensor story is mostly myth and the real local edge is nowcasting the last-hour print at the resolution station.</p>
+<p>Data: Open-Meteo Ensemble and Previous Runs APIs, ECMWF Open Data, NOAA NOMADS GEFS, NWS API and MOS, NWS CLI reports and Iowa Environmental Mesonet ASOS archives, Polymarket Gamma and CLOB prices-history.</p>
+<p>Reference code: suislanchez/polymarket-kalshi-weather-bot (GEFS 31 members, Kelly sizing), hcharper/polyBot-Weather.</p>
+<p>HARD CONSTRAINTS:</p>
+<p>Point-in-time only: a forecast is usable at time t only if its run was published before t.</p>
+<p>Outcomes come from the station and product named in each market's rules.</p>
+<p>Split time: fit weights and bias corrections on the first 60% of months, report on the last 40%.</p>
+<p>No private key loaded, no order signed. Check key presence with a boolean only.</p>
+<p>Read Polymarket's Terms of Service for the user's jurisdiction; stop live-path work if excluded.</p>
+<p>Never project returns. Any later pilot: $300 total, $10 per position, halt at 20% drawdown or 10 consecutive losing days.</p>
+<p>DELIVERABLES, in order:</p>
+<p>markets.md and stations.csv: every resolved weather market, bucket bounds, resolution station id and source, outcome from official observation.</p>
+<p>forecast_archive.parquet: per market, per hour, the latest available ensemble members by model with run time.</p>
+<p>probability engine: bucket probabilities with bias correction and kernel dressing; fixed guide weights versus fitted weights.</p>
+<p>scores.md: Brier, Brier skill score versus market and versus climatology, reliability diagrams, by city and lead time, held-out period only, paired bootstrap CIs.</p>
+<p>lag_study.md: price change distribution in the 0-180 minutes after each model run's availability versus matched non-run windows.</p>
+<p>backtest.md: limit-order fills, fees, 0.25 Kelly, $10 cap, edge threshold 0.10, laddering variant, versus a control (the gopfan2-style price rule, and random entry at the same exposure).</p>
+<p>paper trader running read-only, and gate.md.</p>
+<p>GAP ANALYSIS (built in): keep gaps.md. Record missing model archives (UKMO may not be in the free ensemble feed), stations whose source product differs from the archive you used, markets with ambiguous rules, and how each gap biases scores. Fill what you can; state the rest with the next action.</p>
+<p>SELF-QUESTIONS before finishing:</p>
+<p>Am I forecasting the exact station and product in the rules, including rounding and the reporting day boundary?</p>
+<p>Was every forecast available before the price it is compared with?</p>
+<p>Does my model beat the market's Brier, or only climatology?</p>
+<p>Are the guide's fixed weights better or worse than fitted ones out of sample?</p>
+<p>Does the 30-90 minute lag exist, and is the move large enough to cover spread and fees?</p>
+<p>Can limit orders actually fill at the prices my backtest assumes, given book depth?</p>
+<p>Do the named traders' public histories match their claimed rules?</p>
+<p>Which cities or seasons carry the edge, and is that selection post hoc?</p>
+<p>STOP CONDITIONS: stop at the gate. Stop early if fewer than 500 resolved buckets exist in the held-out period, if the model does not beat climatology, or if ToS excludes the jurisdiction.</p>
+<p>RETURN FORMAT: markdown report: Verdict (one line), Data coverage, Scores table, Lag study, Backtest vs control, Paper status, Gate, Gaps ranked, file paths.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: markets, stations, data feeds</h4>
+<p>Goal: Know exactly what each market resolves on and which forecasts were available when.</p>
+<p>Pull all closed Polymarket weather markets for the past 12 months from the Gamma API. For each, parse the rules text and record: city, variable (daily high, low, precipitation), bucket bounds and units, rounding rule, reporting day boundary (local midnight or otherwise), and the exact resolution source (station id such as an airport ASOS code, and the website or product). Save stations.csv and markets.parquet.</p>
+<p>For each station, confirm an official observation archive: NWS CLI daily reports or Iowa Environmental Mesonet ASOS. Pull observations and compute each market's true outcome; compare to the on-chain resolution.</p>
+<p>Document the forecast feeds: Open-Meteo Ensemble API model list and member counts, the Previous Runs or Historical Forecast endpoint and how far back it goes, whether UKMO ensemble members are available free, ECMWF Open Data run times, NWS MOS availability. Also read Polymarket fees for weather markets and the Terms of Service jurisdiction list. Write ground_truth.md.</p>
+<p>Expect: markets.parquet, stations.csv, observations.parquet, ground_truth.md with feed availability table, fee row, jurisdiction finding, and a resolution-match rate.</p>
+<p>Audit before moving on: Resolution match between your observation-derived outcome and the on-chain outcome must be 98% or higher; investigate every mismatch (rounding, day boundary, station). Fail if any market lacks a named station; mark it excluded. Flag any model in the guide's weighting (UKMO, NWS) you cannot obtain point-in-time.</p>
+<h4>Step 2 — Point-in-time forecast archive</h4>
+<p>Goal: Reconstruct what every model said at every hour before each market resolved.</p>
+<p>For every market in markets.parquet, build forecast_archive.parquet: for each hour from 72 hours before resolution to resolution, the most recent run of each model whose publication time is before that hour, with all ensemble members for the station's coordinates and the target variable aggregated over the market's reporting day (daily max of hourly 2 m temperature, or daily precipitation sum). Use Open-Meteo Previous Runs or Historical Forecast endpoints for GEFS, ECMWF IFS ensemble, ICON-EPS, and GEM; add NWS MOS where archived.</p>
+<p>Record run initialization time and an assumed publication delay per model (for example GFS available about 3.5-5 hours after init; verify from NOMADS timestamps or Open-Meteo update times). Cache raw API responses by request hash so reruns are free.</p>
+<p>Expect: forecast_archive.parquet keyed by market, hour, model, run time, member, value; a coverage table by model and month; raw response cache.</p>
+<p>Audit before moving on: For 10 random rows, confirm the run's publication time precedes the archive hour; any violation is look-ahead and fails the step. Check daily-max aggregation uses the market's local reporting day, not UTC. Report member counts per model; a model with zero members for a month is a gap, not a zero.</p>
+<h4>Step 3 — Probability engine and scoring versus the market</h4>
+<p>Goal: Turn members into calibrated bucket probabilities and test them against the order book.</p>
+<p>Implement bucket probabilities: per model, apply a per-station linear bias correction fit on the training months; kernel-dress members with a Gaussian of width fit to minimize CRPS on training; integrate over each bucket with the rules' rounding. Combine models two ways: the guide's fixed weights (ECMWF 35, GFS 25, UKMO 20, NWS 20, renormalized over available models) and weights fit by minimizing CRPS on training. Add isotonic recalibration on training.</p>
+<p>On held-out months only, at lead times 48 h, 24 h, 12 h, and 3 h before resolution, compute Brier score for: fixed-weight ensemble, fitted ensemble, the market's mid-price as a probability, and climatology (station's historical frequency for that bucket and date window). Compute Brier skill scores with paired bootstrap 95% CIs, reliability diagrams, and results by city. Test the guide's 70-75% bucket accuracy claim by stating the top-bucket hit rate.</p>
+<p>Expect: scores.md with a table (forecaster x lead time: Brier, BSS vs market, BSS vs climatology, CI), reliability plots, per-city breakdown, top-bucket hit rate.</p>
+<p>Audit before moving on: Confirm no parameter was fit on held-out months. If the market's Brier is equal or better than the ensemble at the lead times you would trade, the gate is already failing; say so rather than searching subsets. Count how many city x lead cells you examined before naming winners.</p>
+<h4>Step 4 — Lag study and backtest with control</h4>
+<p>Goal: Check the model-run lag claim and simulate trading with real costs.</p>
+<p>Lag study: for each model run's publication time, measure the change in model probability and the change in market mid-price over 0-30, 30-90, and 90-180 minutes afterward; compare with matched windows with no new run. Report whether the market moves toward the model with delay and how much of the gap remains after spread.</p>
+<p>Backtest on held-out months: entry when fitted-ensemble probability minus best ask is at least 0.10 (and the NO-side mirror); limit orders at or inside the touch that fill only if subsequent trades cross your price; fees from ground_truth.md; 0.25 Kelly with a $10 cap per position and $300 strategy cap; variant with neobrother-style laddering across 3 adjacent buckets. Controls: the gopfan2 price rule (buy YES under 0.15, NO over 0.45, $1 per position) and random entry at matched exposure. Report per arm: trades, fill rate, net PnL, PnL per dollar risked with bootstrap CI, max drawdown, worst day.</p>
+<p>Expect: lag_study.md with the event-study table; backtest.md with model strategy, laddered variant, and both controls on held-out data.</p>
+<p>Audit before moving on: Rerun the backtest assuming fills only at the far side of the spread; if the result flips, the edge is the spread, not the forecast. Verify that no trade uses a forecast published after its timestamp. Fail if the strategy does not beat both controls with CI excluding zero.</p>
+<h4>Step 5 — Read-only paper trader</h4>
+<p>Goal: Gather 30 days of forward evidence without risking money.</p>
+<p>Build paper_trader/ in Python: every hour, list open weather markets from the Gamma API, map each to its station via stations.csv, pull the latest available ensemble members from Open-Meteo, compute calibrated bucket probabilities with the frozen parameters from step 3, read the CLOB book, and place hypothetical limit orders by the frozen step 4 rule. A hypothetical fill counts only if real trades later cross the price. Run the gopfan2-rule control and a random-entry control in parallel ledgers.</p>
+<p>Log every decision with model probability, market prices, run times used, and order details to paper_ledger.parquet. On resolution, pull the official observation and score. Write a daily summary: open exposure, fills, PnL per ledger, running Brier for model and market. No private key loaded. Run under a systemd user timer with a heartbeat file and alert on staleness.</p>
+<p>Expect: paper_trader/ code with README, running timer, paper_ledger.parquet growing, daily summaries.</p>
+<p>Audit before moving on: Grep for any signing or key-loading call; any hit fails the step. Reconcile 10 hypothetical fills against the public trade tape. Confirm frozen parameters are hashed and unchanged during the 30 days; a mid-run change restarts the clock.</p>
+<h4>Step 6 — Validate against oracles, gate, gap report</h4>
+<p>Goal: Decide go or no-go with evidence and list what remains open.</p>
+<p>Evaluate the gate, all must pass: (1) on held-out months, the fitted ensemble's Brier beats the market's implied probability at the traded lead time, paired bootstrap 95% CI excluding zero; (2) it beats climatology; (3) the held-out backtest beats both controls after fees with the far-side-fill assumption; (4) 30 days of paper trading with 100+ reconciled fills beat both paper controls and the running Brier still beats the market; (5) ToS permits the jurisdiction; (6) an independent rerun of scores.md from the cached archive reproduces the Brier numbers.</p>
+<p>If all pass, write the pilot spec: $300 total, $10 per position, halt at 20% drawdown or 10 consecutive losing days, daily reconciliation, kill switch. If any fail, verdict is no-go. Write gap_report.md: every guide claim (70-75% accuracy, the four weights, 30-90 minute lag, named trader rules and PnL, sensor myth) and every result, marked verified / unverified / false with evidence, ranked by impact on capital at risk. Fix the top three.</p>
+<p>Expect: gate.md with six rows and evidence, one-line verdict, pilot spec only if passed, gap_report.md ranked.</p>
+<p>Audit before moving on: Any unverified oracle makes the verdict no-go. Check the report contains no return projection. If a pilot is proposed, confirm caps exist as code constants in the trader.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are an independent reviewer of a Polymarket weather-forecast edge study. You did not build it. Read ground_truth.md, stations.csv, the forecast archive coverage table, scores.md, lag_study.md, backtest.md, the paper ledger, gate.md, and gap_report.md.</p>
+<p>Enumerate every claim: resolution-match rate, archive point-in-time correctness, Brier and skill scores, lag effect, backtest versus controls, paper results, jurisdiction. Mark each verified, unverified, or false. Recompute the held-out Brier for model and market at one lead time from the parquet yourself, and check 10 archive rows for look-ahead.</p>
+<p>List missing pieces: models in the guide's weighting that were unavailable, stations whose product differs from the archive, ambiguous-rule markets left in, parameters fit on held-out data, fills not reconciled.</p>
+<p>Rank by impact on capital at risk: look-ahead and station mismatch first, then fill optimism, then sample size.</p>
+<p>Fix the top three now and show before and after numbers.</p>
+<p>State what you could not fix and why. If any fix changes the verdict, say so first.</p>
+<p>Return a claim table (claim, status, evidence, fix) and the ranked gap list. Never project returns.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Which exact station and product does each market resolve on, and does my observation source match it including rounding?</p>
+<p>Is the reporting day local midnight to midnight, and did I aggregate forecasts over the same window?</p>
+<p>Was every forecast in my backtest published before the price it is compared with?</p>
+<p>Does my ensemble beat the market's own probability, or only climatology?</p>
+<p>Are UKMO and NWS actually in my archive, or am I running a two-model ensemble labeled as four?</p>
+<p>Does the market really lag model runs by 30-90 minutes, and is the residual gap larger than the spread?</p>
+<p>How much depth sits at the prices my limit orders need, especially on tail buckets?</p>
+<p>Do gopfan2's and neobrother's public wallets match the rules the guide attributes to them?</p>
+<p>Is my city or season filter chosen before or after seeing results?</p>
+<p>What does 0.25 Kelly do to drawdown if my probabilities are 5 points overconfident?</p>
+<p>Is live trading permitted under the Terms of Service in my jurisdiction?</p>
+<h3>5 · What proves it right</h3>
+<p>Official station observations (NWS CLI or Iowa Environmental Mesonet ASOS) decide every outcome, matching on-chain resolution in 98%+ of markets.</p>
+<p>Held-out Brier score of the fitted ensemble beats the market's implied probability at the traded lead time, paired bootstrap 95% CI excluding zero, and beats climatology.</p>
+<p>Held-out backtest beats both controls (gopfan2 price rule and random entry) after fees under far-side fills.</p>
+<p>Thirty-day read-only paper run with 100+ fills reconciled to the public trade tape beats both paper controls.</p>
+<p>Independent recomputation of scores.md from the cached forecast archive reproduces the Brier numbers.</p>
+<h3>6 · Failure modes</h3>
+<p>Wrong station or product. Tell: resolution-match rate under 98%, misses cluster in one city. Fix: re-read rules, switch to the named station and source.</p>
+<p>Look-ahead in the forecast archive. Tell: suspiciously high skill at short leads; run publication times after price timestamps. Fix: enforce publication delay per model and rebuild.</p>
+<p>Beating climatology but not the market. Tell: BSS versus market near zero. Fix: no-go; the order book already knows the forecast.</p>
+<p>Spread eats the edge. Tell: backtest positive at mid, negative at far-side fills. Fix: trade only where edge minus spread clears the threshold or stop.</p>
+<p>Overconfident probabilities with Kelly sizing. Tell: reliability curve below the diagonal at high probabilities. Fix: isotonic recalibration and 0.25 Kelly with hard dollar caps.</p>
+<p>Model unavailable but weighted. Tell: UKMO weight applied to an empty member set. Fix: renormalize over available models and say so.</p>
+<p>Daily boundary mismatch. Tell: misses on days with late-night temperature peaks. Fix: aggregate over the rules' exact local reporting window.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with rules text and stations: most failures here are resolution mismatches, so step 1 is the most valuable. Cache every API response under data/polymarket_weather/cache/ keyed by request hash and never refetch. Spawn a sub-agent to build the forecast archive (long, rate-limited, self-contained) and a separate one to independently recompute scores as the reproduction oracle. Use Open-Meteo before grib2 parsing; drop to NOMADS or ECMWF Open Data only to fill gaps. Never load or print a private key; the paper trader is read-only. Stop and ask Victor if ToS excludes his jurisdiction, if the held-out sample is under 500 buckets, or before anything that would sign an order. Write outputs to docs/polymarket_weather/: ground_truth.md, scores.md, lag_study.md, backtest.md, gate.md, gap_report.md, and paper_trader/. Return the verdict line first, then the gate table, then gaps. Never project returns.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Polymarket Weather Trading — Ensemble Forecasts as Edge
 
@@ -324,6 +458,234 @@ The trading-agent-team is built around crypto perps. Polymarket weather is an **
 - [hcharper/polyBot-Weather](https://github.com/hcharper/polyBot-Weather)
 - [Polymarket Traders Profit from Weather Predictions (Phemex)](https://phemex.com/news/article/polymarket-traders-profit-from-weather-predictions-58213)
 - [Polymarket Weather Markets — DEV Community](https://dev.to/cryptodeploy/how-polymarket-weather-markets-actually-work-50nb)
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Test whether a calibrated multi-model ensemble forecast of the exact resolution station beats Polymarket's prices on daily temperature and precipitation buckets after fees and fill costs. Running this produces a point-in-time forecast archive, a probability engine scored with Brier and reliability against both the market and climatology, a model-run lag study, a backtest with a control, and a read-only paper trader. No real money moves until the model beats the market's own probabilities out of sample and 30 days of paper trading beat the control.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** Forecast the resolution station, not the city: read each market's rules, identify the exact station and data product it resolves on (often an airport ASOS station as reported by a specific website), and build a per-station bias correction. Score the ensemble with proper scoring rules, Brier score and CRPS plus reliability diagrams, against two baselines: the market's own implied probability and climatology. Use only forecasts issued before each price timestamp, which means archiving or retrieving historical model runs rather than using reanalysis. Test the claimed 30-90 minute lag after model runs directly from price histories. Size with fractional Kelly capped hard, because Kelly on a miscalibrated probability is how small edges blow up.
+- **Rawest material to start from:** - Each market's rules text and resolution source on Polymarket (Gamma API description field).
+- Station observations: NWS daily climate reports (CLI) and ASOS data via the Iowa Environmental Mesonet archive for the exact station ids.
+- Open-Meteo Ensemble API (GFS/GEFS, ECMWF IFS ensemble, ICON-EPS, GEM members) and its Previous Runs or Historical Forecast endpoints for point-in-time archives.
+- ECMWF Open Data, NOAA NOMADS GEFS grib2, NWS API gridpoint and MOS products.
+- Polymarket CLOB prices-history and trades for the weather tokens.
+- suislanchez/polymarket-kalshi-weather-bot and hcharper/polyBot-Weather source for reference.
+- Public wallet histories of gopfan2, neobrother, and Hans323 on Polymarket to check the claimed rules and PnL.
+- **Methods and tools:** Python with httpx, pandas, xarray and cfgrib if parsing grib2; ensemble member counting with kernel dressing to smooth integer-degree buckets; per-station EMOS or simple linear bias correction fit on a rolling window; isotonic recalibration; Brier score, Brier skill score versus market and climatology, CRPS via properscoring, reliability diagrams; weights for ECMWF 35 / GFS 25 / UKMO 20 / NWS 20 compared against weights fit by minimizing CRPS on the training period; event-study of price changes around 00z/06z/12z/18z run availability times; fractional Kelly at 0.25 with a per-position dollar cap; limit-order fill simulation against the book.
+- **What proves it right (other than you or the model):** The station's official observation decides every scored outcome, not the model. The market's implied probability is the control forecaster: the model must have a lower Brier score than the market out of sample, with a paired bootstrap CI. Climatology is the floor. A 30-day read-only paper run whose hypothetical fills are reconciled to the public trade tape must beat a control ledger. Public wallet data either confirms or refutes the named traders' claimed rules.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Do not build me a weather bot that trades yet. Prove there is an edge against Polymarket prices first.
+
+1. Pull every resolved Polymarket weather market for the past 12 months. From each market's rules, record the exact resolution station and data source. Pull official observations for those stations from NWS CLI reports or the Iowa Environmental Mesonet.
+2. Build a point-in-time forecast archive: for each market and each hour before resolution, the most recent ensemble members from Open-Meteo (GEFS, ECMWF IFS ensemble, ICON-EPS, GEM) that were actually available at that hour. No reanalysis.
+3. Compute bucket probabilities from members with per-station bias correction and kernel dressing. Compare the guide's fixed weights (ECMWF 35, GFS 25, UKMO 20, NWS 20) against weights fit on a training period. Score with Brier and reliability versus the market's implied probability and climatology on a held-out period.
+4. Test the claimed 30-90 minute price lag after each model run.
+5. Backtest the rule buy when model probability minus ask exceeds 0.10 with limit-order fills, fees, 0.25 Kelly, and a $10 cap per position, against a control.
+6. Run a read-only paper trader for 30 days.
+
+Gate: no real money until the model's Brier beats the market's out of sample and paper beats the control. Any pilot afterward: $300 total, $10 per position, halt after a 20% drawdown. Never promise returns.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE: You are a forecast-verification scientist and prediction-market researcher. You treat the order book as a competing forecaster and require your model to beat it on proper scoring rules out of sample before any trade. No real orders are placed in this run.
+
+CONTEXT:
+- Strategy from the guide: compute P_ensemble for each Polymarket weather bucket from multi-model ensembles; buy YES when P_ensemble exceeds ask plus an edge threshold, buy NO when it is below bid minus the threshold; size with fractional Kelly; exit at resolution or on convergence.
+- Claims to test: trained 4-model ensembles hit 70-75% on daily-high buckets; WeatherBot weights ECMWF 35%, GFS 25%, UKMO 20%, NWS 20% with outlier penalization; Polymarket lags new model runs by 30-90 minutes; gopfan2 made $2M+ with rules like buy YES under $0.15 and NO over $0.45 at about $1 risk per position; neobrother ladders adjacent buckets; the rooftop-sensor story is mostly myth and the real local edge is nowcasting the last-hour print at the resolution station.
+- Data: Open-Meteo Ensemble and Previous Runs APIs, ECMWF Open Data, NOAA NOMADS GEFS, NWS API and MOS, NWS CLI reports and Iowa Environmental Mesonet ASOS archives, Polymarket Gamma and CLOB prices-history.
+- Reference code: suislanchez/polymarket-kalshi-weather-bot (GEFS 31 members, Kelly sizing), hcharper/polyBot-Weather.
+
+HARD CONSTRAINTS:
+- Point-in-time only: a forecast is usable at time t only if its run was published before t.
+- Outcomes come from the station and product named in each market's rules.
+- Split time: fit weights and bias corrections on the first 60% of months, report on the last 40%.
+- No private key loaded, no order signed. Check key presence with a boolean only.
+- Read Polymarket's Terms of Service for the user's jurisdiction; stop live-path work if excluded.
+- Never project returns. Any later pilot: $300 total, $10 per position, halt at 20% drawdown or 10 consecutive losing days.
+
+DELIVERABLES, in order:
+1. markets.md and stations.csv: every resolved weather market, bucket bounds, resolution station id and source, outcome from official observation.
+2. forecast_archive.parquet: per market, per hour, the latest available ensemble members by model with run time.
+3. probability engine: bucket probabilities with bias correction and kernel dressing; fixed guide weights versus fitted weights.
+4. scores.md: Brier, Brier skill score versus market and versus climatology, reliability diagrams, by city and lead time, held-out period only, paired bootstrap CIs.
+5. lag_study.md: price change distribution in the 0-180 minutes after each model run's availability versus matched non-run windows.
+6. backtest.md: limit-order fills, fees, 0.25 Kelly, $10 cap, edge threshold 0.10, laddering variant, versus a control (the gopfan2-style price rule, and random entry at the same exposure).
+7. paper trader running read-only, and gate.md.
+
+GAP ANALYSIS (built in): keep gaps.md. Record missing model archives (UKMO may not be in the free ensemble feed), stations whose source product differs from the archive you used, markets with ambiguous rules, and how each gap biases scores. Fill what you can; state the rest with the next action.
+
+SELF-QUESTIONS before finishing:
+- Am I forecasting the exact station and product in the rules, including rounding and the reporting day boundary?
+- Was every forecast available before the price it is compared with?
+- Does my model beat the market's Brier, or only climatology?
+- Are the guide's fixed weights better or worse than fitted ones out of sample?
+- Does the 30-90 minute lag exist, and is the move large enough to cover spread and fees?
+- Can limit orders actually fill at the prices my backtest assumes, given book depth?
+- Do the named traders' public histories match their claimed rules?
+- Which cities or seasons carry the edge, and is that selection post hoc?
+
+STOP CONDITIONS: stop at the gate. Stop early if fewer than 500 resolved buckets exist in the held-out period, if the model does not beat climatology, or if ToS excludes the jurisdiction.
+
+RETURN FORMAT: markdown report: Verdict (one line), Data coverage, Scores table, Lag study, Backtest vs control, Paper status, Gate, Gaps ranked, file paths.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: markets, stations, data feeds
+
+*Goal:* Know exactly what each market resolves on and which forecasts were available when.
+
+```text
+Pull all closed Polymarket weather markets for the past 12 months from the Gamma API. For each, parse the rules text and record: city, variable (daily high, low, precipitation), bucket bounds and units, rounding rule, reporting day boundary (local midnight or otherwise), and the exact resolution source (station id such as an airport ASOS code, and the website or product). Save stations.csv and markets.parquet.
+
+For each station, confirm an official observation archive: NWS CLI daily reports or Iowa Environmental Mesonet ASOS. Pull observations and compute each market's true outcome; compare to the on-chain resolution.
+
+Document the forecast feeds: Open-Meteo Ensemble API model list and member counts, the Previous Runs or Historical Forecast endpoint and how far back it goes, whether UKMO ensemble members are available free, ECMWF Open Data run times, NWS MOS availability. Also read Polymarket fees for weather markets and the Terms of Service jurisdiction list. Write ground_truth.md.
+```
+
+**Expect:** markets.parquet, stations.csv, observations.parquet, ground_truth.md with feed availability table, fee row, jurisdiction finding, and a resolution-match rate.
+
+**Audit before moving on:** Resolution match between your observation-derived outcome and the on-chain outcome must be 98% or higher; investigate every mismatch (rounding, day boundary, station). Fail if any market lacks a named station; mark it excluded. Flag any model in the guide's weighting (UKMO, NWS) you cannot obtain point-in-time.
+
+#### Step 2 — Point-in-time forecast archive
+
+*Goal:* Reconstruct what every model said at every hour before each market resolved.
+
+```text
+For every market in markets.parquet, build forecast_archive.parquet: for each hour from 72 hours before resolution to resolution, the most recent run of each model whose publication time is before that hour, with all ensemble members for the station's coordinates and the target variable aggregated over the market's reporting day (daily max of hourly 2 m temperature, or daily precipitation sum). Use Open-Meteo Previous Runs or Historical Forecast endpoints for GEFS, ECMWF IFS ensemble, ICON-EPS, and GEM; add NWS MOS where archived.
+
+Record run initialization time and an assumed publication delay per model (for example GFS available about 3.5-5 hours after init; verify from NOMADS timestamps or Open-Meteo update times). Cache raw API responses by request hash so reruns are free.
+```
+
+**Expect:** forecast_archive.parquet keyed by market, hour, model, run time, member, value; a coverage table by model and month; raw response cache.
+
+**Audit before moving on:** For 10 random rows, confirm the run's publication time precedes the archive hour; any violation is look-ahead and fails the step. Check daily-max aggregation uses the market's local reporting day, not UTC. Report member counts per model; a model with zero members for a month is a gap, not a zero.
+
+#### Step 3 — Probability engine and scoring versus the market
+
+*Goal:* Turn members into calibrated bucket probabilities and test them against the order book.
+
+```text
+Implement bucket probabilities: per model, apply a per-station linear bias correction fit on the training months; kernel-dress members with a Gaussian of width fit to minimize CRPS on training; integrate over each bucket with the rules' rounding. Combine models two ways: the guide's fixed weights (ECMWF 35, GFS 25, UKMO 20, NWS 20, renormalized over available models) and weights fit by minimizing CRPS on training. Add isotonic recalibration on training.
+
+On held-out months only, at lead times 48 h, 24 h, 12 h, and 3 h before resolution, compute Brier score for: fixed-weight ensemble, fitted ensemble, the market's mid-price as a probability, and climatology (station's historical frequency for that bucket and date window). Compute Brier skill scores with paired bootstrap 95% CIs, reliability diagrams, and results by city. Test the guide's 70-75% bucket accuracy claim by stating the top-bucket hit rate.
+```
+
+**Expect:** scores.md with a table (forecaster x lead time: Brier, BSS vs market, BSS vs climatology, CI), reliability plots, per-city breakdown, top-bucket hit rate.
+
+**Audit before moving on:** Confirm no parameter was fit on held-out months. If the market's Brier is equal or better than the ensemble at the lead times you would trade, the gate is already failing; say so rather than searching subsets. Count how many city x lead cells you examined before naming winners.
+
+#### Step 4 — Lag study and backtest with control
+
+*Goal:* Check the model-run lag claim and simulate trading with real costs.
+
+```text
+Lag study: for each model run's publication time, measure the change in model probability and the change in market mid-price over 0-30, 30-90, and 90-180 minutes afterward; compare with matched windows with no new run. Report whether the market moves toward the model with delay and how much of the gap remains after spread.
+
+Backtest on held-out months: entry when fitted-ensemble probability minus best ask is at least 0.10 (and the NO-side mirror); limit orders at or inside the touch that fill only if subsequent trades cross your price; fees from ground_truth.md; 0.25 Kelly with a $10 cap per position and $300 strategy cap; variant with neobrother-style laddering across 3 adjacent buckets. Controls: the gopfan2 price rule (buy YES under 0.15, NO over 0.45, $1 per position) and random entry at matched exposure. Report per arm: trades, fill rate, net PnL, PnL per dollar risked with bootstrap CI, max drawdown, worst day.
+```
+
+**Expect:** lag_study.md with the event-study table; backtest.md with model strategy, laddered variant, and both controls on held-out data.
+
+**Audit before moving on:** Rerun the backtest assuming fills only at the far side of the spread; if the result flips, the edge is the spread, not the forecast. Verify that no trade uses a forecast published after its timestamp. Fail if the strategy does not beat both controls with CI excluding zero.
+
+#### Step 5 — Read-only paper trader
+
+*Goal:* Gather 30 days of forward evidence without risking money.
+
+```text
+Build paper_trader/ in Python: every hour, list open weather markets from the Gamma API, map each to its station via stations.csv, pull the latest available ensemble members from Open-Meteo, compute calibrated bucket probabilities with the frozen parameters from step 3, read the CLOB book, and place hypothetical limit orders by the frozen step 4 rule. A hypothetical fill counts only if real trades later cross the price. Run the gopfan2-rule control and a random-entry control in parallel ledgers.
+
+Log every decision with model probability, market prices, run times used, and order details to paper_ledger.parquet. On resolution, pull the official observation and score. Write a daily summary: open exposure, fills, PnL per ledger, running Brier for model and market. No private key loaded. Run under a systemd user timer with a heartbeat file and alert on staleness.
+```
+
+**Expect:** paper_trader/ code with README, running timer, paper_ledger.parquet growing, daily summaries.
+
+**Audit before moving on:** Grep for any signing or key-loading call; any hit fails the step. Reconcile 10 hypothetical fills against the public trade tape. Confirm frozen parameters are hashed and unchanged during the 30 days; a mid-run change restarts the clock.
+
+#### Step 6 — Validate against oracles, gate, gap report
+
+*Goal:* Decide go or no-go with evidence and list what remains open.
+
+```text
+Evaluate the gate, all must pass: (1) on held-out months, the fitted ensemble's Brier beats the market's implied probability at the traded lead time, paired bootstrap 95% CI excluding zero; (2) it beats climatology; (3) the held-out backtest beats both controls after fees with the far-side-fill assumption; (4) 30 days of paper trading with 100+ reconciled fills beat both paper controls and the running Brier still beats the market; (5) ToS permits the jurisdiction; (6) an independent rerun of scores.md from the cached archive reproduces the Brier numbers.
+
+If all pass, write the pilot spec: $300 total, $10 per position, halt at 20% drawdown or 10 consecutive losing days, daily reconciliation, kill switch. If any fail, verdict is no-go. Write gap_report.md: every guide claim (70-75% accuracy, the four weights, 30-90 minute lag, named trader rules and PnL, sensor myth) and every result, marked verified / unverified / false with evidence, ranked by impact on capital at risk. Fix the top three.
+```
+
+**Expect:** gate.md with six rows and evidence, one-line verdict, pilot spec only if passed, gap_report.md ranked.
+
+**Audit before moving on:** Any unverified oracle makes the verdict no-go. Check the report contains no return projection. If a pilot is proposed, confirm caps exist as code constants in the trader.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent reviewer of a Polymarket weather-forecast edge study. You did not build it. Read ground_truth.md, stations.csv, the forecast archive coverage table, scores.md, lag_study.md, backtest.md, the paper ledger, gate.md, and gap_report.md.
+
+1. Enumerate every claim: resolution-match rate, archive point-in-time correctness, Brier and skill scores, lag effect, backtest versus controls, paper results, jurisdiction. Mark each verified, unverified, or false. Recompute the held-out Brier for model and market at one lead time from the parquet yourself, and check 10 archive rows for look-ahead.
+2. List missing pieces: models in the guide's weighting that were unavailable, stations whose product differs from the archive, ambiguous-rule markets left in, parameters fit on held-out data, fills not reconciled.
+3. Rank by impact on capital at risk: look-ahead and station mismatch first, then fill optimism, then sample size.
+4. Fix the top three now and show before and after numbers.
+5. State what you could not fix and why. If any fix changes the verdict, say so first.
+Return a claim table (claim, status, evidence, fix) and the ranked gap list. Never project returns.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Which exact station and product does each market resolve on, and does my observation source match it including rounding?
+- Is the reporting day local midnight to midnight, and did I aggregate forecasts over the same window?
+- Was every forecast in my backtest published before the price it is compared with?
+- Does my ensemble beat the market's own probability, or only climatology?
+- Are UKMO and NWS actually in my archive, or am I running a two-model ensemble labeled as four?
+- Does the market really lag model runs by 30-90 minutes, and is the residual gap larger than the spread?
+- How much depth sits at the prices my limit orders need, especially on tail buckets?
+- Do gopfan2's and neobrother's public wallets match the rules the guide attributes to them?
+- Is my city or season filter chosen before or after seeing results?
+- What does 0.25 Kelly do to drawdown if my probabilities are 5 points overconfident?
+- Is live trading permitted under the Terms of Service in my jurisdiction?
+
+### 5 · What proves it right
+
+- Official station observations (NWS CLI or Iowa Environmental Mesonet ASOS) decide every outcome, matching on-chain resolution in 98%+ of markets.
+- Held-out Brier score of the fitted ensemble beats the market's implied probability at the traded lead time, paired bootstrap 95% CI excluding zero, and beats climatology.
+- Held-out backtest beats both controls (gopfan2 price rule and random entry) after fees under far-side fills.
+- Thirty-day read-only paper run with 100+ fills reconciled to the public trade tape beats both paper controls.
+- Independent recomputation of scores.md from the cached forecast archive reproduces the Brier numbers.
+
+### 6 · Failure modes
+
+- Wrong station or product. Tell: resolution-match rate under 98%, misses cluster in one city. Fix: re-read rules, switch to the named station and source.
+- Look-ahead in the forecast archive. Tell: suspiciously high skill at short leads; run publication times after price timestamps. Fix: enforce publication delay per model and rebuild.
+- Beating climatology but not the market. Tell: BSS versus market near zero. Fix: no-go; the order book already knows the forecast.
+- Spread eats the edge. Tell: backtest positive at mid, negative at far-side fills. Fix: trade only where edge minus spread clears the threshold or stop.
+- Overconfident probabilities with Kelly sizing. Tell: reliability curve below the diagonal at high probabilities. Fix: isotonic recalibration and 0.25 Kelly with hard dollar caps.
+- Model unavailable but weighted. Tell: UKMO weight applied to an empty member set. Fix: renormalize over available models and say so.
+- Daily boundary mismatch. Tell: misses on days with late-night temperature peaks. Fix: aggregate over the rules' exact local reporting window.
+
+### 7 · Agent direction (unattended runs)
+
+Start with rules text and stations: most failures here are resolution mismatches, so step 1 is the most valuable. Cache every API response under data/polymarket_weather/cache/ keyed by request hash and never refetch. Spawn a sub-agent to build the forecast archive (long, rate-limited, self-contained) and a separate one to independently recompute scores as the reproduction oracle. Use Open-Meteo before grib2 parsing; drop to NOMADS or ECMWF Open Data only to fill gaps. Never load or print a private key; the paper trader is read-only. Stop and ask Victor if ToS excludes his jurisdiction, if the held-out sample is under 500 buckets, or before anything that would sign an order. Write outputs to docs/polymarket_weather/: ground_truth.md, scores.md, lag_study.md, backtest.md, gate.md, gap_report.md, and paper_trader/. Return the verdict line first, then the gate table, then gaps. Never project returns.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -331,4 +693,26 @@ The trading-agent-team is built around crypto perps. Polymarket weather is an **
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

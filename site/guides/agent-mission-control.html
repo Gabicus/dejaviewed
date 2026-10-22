@@ -109,10 +109,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Boris Cherny's thread of tips from the Claude Code team: 3-5 git worktrees with parallel sessions, plan mode for every complex task, a CLAUDE.md you update after each correction, skills committed to git, Slack MCP bug fixing, subagents, a BigQuery skill for analytics and learning output styles. It ends with a ready-to-paste CLAUDE.md workflow template (plan, subagents, lessons file, verify before done).</p>
 <p>View original post</p>
 <h2>Action sketch — how to implement this</h2>
-<p>Emit one JSON event per agent state change (started, blocked, needs-review, done) from your harness hooks onto a local queue — Redis or a file tail is enough to start</p>
-<p>Point Bot Crossing (or a 200-line Three.js scene) at that queue so blocked agents visibly raise hands; cluster agents by the repo/module they own to make the Conway structure visible</p>
-<p>Run a week with dashboard versus without and log minutes-to-unblock per blocked agent</p>
-<p>Falsifier: if minutes-to-unblock does not drop by at least a third versus a plain notification, the game layer is decoration and a notch widget wins</p>
+<p>Emit one JSON event per agent state change (started, blocked, needs-review, done) from your harness hooks onto a local queue — Redis or a file tail is enough to start Point Bot Crossing (or a 200-line Three.js scene) at that queue so blocked agents visibly raise hands; cluster agents by the repo/module they own to make the Conway structure visible Run a week with dashboard versus without and log minutes-to-unblock per blocked agent Falsifier: if minutes-to-unblock does not drop by at least a third versus a plain notification, the game layer is decoration and a notch widget wins</p>
 <h2>Prerequisites</h2>
 <p>A multi-agent setup with hooks</p>
 <p>Basic Three.js or TouchDesigner</p>
@@ -148,6 +145,107 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>@shellonback</p>
 <p>@the.poet.engineer</p>
 <p>@therobertta</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Produces a local agent control room: Claude Code hooks emit one JSON event per agent state change onto a local queue, a small redaction step strips secrets and personal data, and a spatial front end (Bot Crossing or a 200-line Three.js scene) shows agents clustered by the repo or module they own, with blocked agents raising hands. A crossover experiment then compares minutes-to-unblock against a plain desktop notification. Done means an event schema, working hooks, the dashboard, two weeks of logged unblock times, and a falsifier verdict: if minutes-to-unblock does not drop by at least a third, the game layer is decoration and a notch-style widget wins.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): An SRE or observability engineer would first define the event schema and the metric, then build the cheapest surface that could move it, and only then add the game layer. They would treat the event stream like Booking.com treats GenAI telemetry: a durable buffer between producers and consumers, redaction as a pipeline stage rather than a policy, and dual export to a live view and a warehouse for trends. They would run a proper comparison, alternating conditions by day to cancel out workload differences, and measure from the moment an agent blocks to the moment the human acts, using timestamps from the hooks rather than self-report. They would also apply Casey Muratori's version of Conway's law: map agent boundaries to modules, then count cross-boundary messages, because the layout should expose where coordination is slow.</p>
+<p>Rawest material to start from: The Claude Code hooks documentation (event names, the JSON payload on stdin with session_id, cwd, hook_event_name, tool_name), your own transcripts under ~/.claude/projects, the Bot Crossing repository and build review (botcrossing.com), the AgentCraft mod source (Foreman, worker isolation, per-agent commit identities), the Booking.com observability architecture write-up (collector, Kafka, PII redaction service, Arize), the OpenTelemetry GenAI semantic conventions, Casey Muratori's Conway's law lecture, Melvin Conway's 1968 paper 'How Do Committees Invent?', and Boris Cherny's Claude Code team tips (3 to 5 worktrees, plan mode, CLAUDE.md updates).</p>
+<p>Methods and tools: Claude Code hooks on SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop and SubagentStop writing JSON lines; Redis Streams (XADD, XREAD) or an append-only JSONL file tailed with a file watcher; a redaction stage using regexes for keys and tokens plus a PII detector such as Microsoft Presidio; git worktrees per agent with the worktree path as the agent's ownership key; Three.js or Bot Crossing for the scene, WebSocket from a small Python or Node server; notify-send or terminal-notifier as the control condition; DuckDB over the JSONL for analysis. Metric: minutes-to-unblock per blocked event, median and p90, with a bootstrap interval on the ratio between conditions.</p>
+<p>What proves it right (other than you or the model): Hook-timestamped blocked and resumed events, not recollection. An ABAB crossover across at least ten working days so workload differences cancel. A count of missed blocks (agents blocked for over 30 minutes unnoticed) in each condition. A second person using the dashboard for one day and finding the blocked agent without explanation. A secret-scanning pass (gitleaks on the event log) showing zero leaked tokens.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Act as an observability engineer building a control room for my Claude Code agents. First write an event schema: ts, agent_id, session_id, worktree, module, state (started, working, blocked, needs_review, done, error), reason, and tool_name. Write Claude Code hook scripts for SessionStart, PreToolUse, PostToolUse, Notification, Stop and SubagentStop that map each hook payload to that schema and append it to a Redis stream or a JSONL file, with a redaction step that removes API keys, tokens, emails and file contents before anything is written. Derive module ownership from each agent's git worktree path. Build a local-only WebSocket server and a Three.js scene, or adapt Bot Crossing, where agents stand in clusters by module and blocked agents raise hands; clicking one shows the reason and a command to jump to its tmux pane or terminal. Bind everything to localhost. Build the control: a plain desktop notification on the same blocked events. Run an ABAB crossover over ten working days, alternating dashboard and notification by day, and compute minutes-to-unblock from hook timestamps with median, p90 and a bootstrap interval on the ratio. Count blocks unnoticed for over 30 minutes. Also count cross-module messages to show where my agent boundaries create slow coordination. Report whether minutes-to-unblock fell by a third or more; if not, recommend the notch widget.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are an observability engineer and creative technologist. Build a local control room for many Claude Code agents and test whether a spatial, game-like view actually reduces the time a human takes to unblock them. Source claims to test: Bot Crossing manages 80 agents on a planet where they raise hands; AgentCraft runs Claude workers in isolated worktrees under a Foreman with merges gated on approval; a MacBook notch app replaces terminal babysitting; Casey Muratori says Conway's law now applies to agents, so the partition shapes the system; Booking.com puts a Kafka buffer and a PII-redaction service between apps and Arize. Treat each as a design hypothesis.</p>
+<p>CONTEXT</p>
+<p>Harness: Claude Code with hooks (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop); agents run in git worktrees, often in tmux or Ghostty panes.</p>
+<p>Queue: Redis Streams or append-only JSONL.</p>
+<p>Front end: Bot Crossing or Three.js; TouchDesigner gesture and Quest 3 spatial demos are inspiration only.</p>
+<p>Control: notify-send or terminal-notifier.</p>
+<p>HARD CONSTRAINTS</p>
+<p>Everything binds to localhost. No dashboard port exposed to the network; no cloud telemetry.</p>
+<p>Events never carry prompt text, file contents, secrets or personal data; a redaction stage runs before write, and gitleaks runs on the log.</p>
+<p>Hooks must not block or slow agents: each hook exits in under 100 ms and fails open, logging its own errors.</p>
+<p>The dashboard is read-only plus 'jump to session'; it never approves permissions or runs commands on an agent's behalf.</p>
+<p>The metric comes from hook timestamps only.</p>
+<p>DELIVERABLES IN ORDER</p>
+<p>schema.md: event fields, state machine, and how each hook maps to a state.</p>
+<p>hooks/: scripts and the settings.json snippet registering them.</p>
+<p>redact.py with tests on sample payloads containing fake keys and emails.</p>
+<p>server/ and scene/: localhost WebSocket server and Three.js or Bot Crossing scene; agents clustered by module from worktree path; hands raised on blocked or needs_review; click shows reason and a jump command.</p>
+<p>control/: desktop notification on the same events.</p>
+<p>experiment.md: ABAB schedule over ten working days and analysis script.</p>
+<p>results.md: minutes-to-unblock median and p90 per condition, ratio with bootstrap interval, missed-block counts, cross-module message counts, falsifier verdict.</p>
+<p>BUILT-IN GAP ANALYSIS Write GAPS: hook events that never fire for some states (for example, how 'needs review' is detected); agents run outside the harness; days excluded and why; redaction misses found by gitleaks; claims not tested (80-agent scale if you ran 10). Fill what you can now, such as adding a heuristic for idle-too-long, and rerun the analysis.</p>
+<p>SELF-QUESTIONS</p>
+<p>Which hook reliably signals 'blocked', and is a permission prompt the only kind of block?</p>
+<p>When does unblock end: the next UserPromptSubmit, a permission approval, or the next PostToolUse?</p>
+<p>Does clustering by module show anything a list sorted by wait time would not?</p>
+<p>Were dashboard days lighter workloads than notification days?</p>
+<p>Could the event log leak a secret through a tool argument?</p>
+<p>STOP CONDITIONS Stop and report if hooks add over 100 ms per tool call, if redaction tests fail, or if fewer than 30 blocked events occur across the ten days, which is too few to compare.</p>
+<p>RETURN FORMAT Verdict line, results table, file list, GAPS, self-question answers.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: hook payloads and blocking states</h4>
+<p>Goal: Learn exactly what each hook emits and which signals mean an agent is waiting on the human.</p>
+<p>Read the Claude Code hooks documentation and register a temporary logging hook for every event (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop) that writes the raw stdin JSON to a scratch file with a receive timestamp. Run three ordinary agent sessions in separate git worktrees, including at least one permission prompt, one idle wait for input, one subagent, and one error. From the raw payloads, write schema.md: the fields available per event, and a state machine mapping events to started, working, blocked, needs_review, done and error. Define precisely when a block starts (for example a Notification for permission or idle input) and when it ends (the next UserPromptSubmit or PostToolUse in that session). Note any state no hook signals and propose a heuristic, such as no event for N minutes. Delete the raw scratch file after extracting the schema, since it contains prompts.</p>
+<p>Expect: schema.md with an event table, state diagram in text, block start and end definitions, and known blind spots.</p>
+<p>Audit before moving on: Replay the raw payloads through the state machine and confirm every block you remember causing is detected with correct start and end. Fail on any missed block.</p>
+<h4>Step 2 — Hooks, redaction and the event queue</h4>
+<p>Goal: Emit safe, structured events with negligible overhead.</p>
+<p>Write hook scripts that map each payload to the schema: ts, agent_id, session_id, worktree, module (derived from the worktree path or the repo subdirectory the session works in), state, reason (short category, never prompt text), and tool_name. Pass every event through redact.py, which drops prompt and file fields entirely and regex-scrubs anything resembling API keys, bearer tokens, private keys, emails and phone numbers, with Presidio as an optional second pass. Append to a Redis stream with XADD or to events.jsonl. Each hook must exit within 100 ms and fail open: on error, log to hooks_errors.log and exit 0. Provide the settings.json snippet. Write tests for redact.py with fake keys and emails, and a timing test measuring hook overhead over 200 calls.</p>
+<p>Expect: hooks/, redact.py, tests passing, settings snippet, and a timing report with p50 and p99 hook latency.</p>
+<p>Audit before moving on: Run gitleaks on a day of events.jsonl and fail on any finding. Fail if p99 hook latency exceeds 100 ms; move work out of the hook into the consumer.</p>
+<h4>Step 3 — Spatial scene with Conway clustering</h4>
+<p>Goal: Build the control room view where structure and blocks are visible at a glance.</p>
+<p>Write a localhost-only WebSocket server that reads the stream and pushes current agent states. Build a Three.js scene, or adapt Bot Crossing by pointing its agent source at your server: each agent is a figure placed in a cluster for its module, clusters arranged so modules that exchange the most cross-boundary messages sit adjacent, and a line between clusters thickens with message count. Blocked or needs_review agents raise hands and pulse; done agents sit; errored agents turn red. Clicking an agent shows its reason, wait time, and a copyable command to jump to its tmux pane or terminal session. Add an always-visible counter of blocked agents and longest wait. No approve button and no command execution from the browser. Test with a replay of recorded events at 10x speed and with 80 synthetic agents for frame rate.</p>
+<p>Expect: server/, scene/, a replay tool, and a frame-rate note at 10 and 80 agents.</p>
+<p>Audit before moving on: Confirm the server binds to 127.0.0.1 only with ss -tlnp. Replay a known log and check every block raises a hand within 2 s. Fail if frame rate drops under 30 fps at 80 agents.</p>
+<h4>Step 4 — Control condition and crossover schedule</h4>
+<p>Goal: Set up a fair comparison against a plain notification.</p>
+<p>Build control/: a consumer that fires notify-send on Linux or terminal-notifier on macOS for each blocked or needs_review event, with the agent and module in the title, and nothing else. Write experiment.md: ten working days in ABAB order by day (dashboard, notification, dashboard, notification...), with the other surface disabled on each day; the hook stream runs every day regardless. Define the metric: minutes from block start to block end per event, using step 1's definitions. Define secondary metrics: blocks unnoticed over 30 minutes, number of agents run per day, and total agent-hours, to check workload balance. Write analyze.py in DuckDB over events.jsonl that labels each event with the day's condition and computes median, p90, ratio of medians with a 10,000-resample bootstrap interval, and the workload table.</p>
+<p>Expect: control/, experiment.md with the calendar, and analyze.py tested on replayed data.</p>
+<p>Audit before moving on: Run analyze.py on synthetic events with a known 40% improvement and confirm it recovers it. Fail if the condition label comes from anything but the calendar.</p>
+<h4>Step 5 — Run two weeks and log</h4>
+<p>Goal: Collect real blocked events under both conditions.</p>
+<p>Run the ten-day schedule with normal work across at least five agents per day in separate worktrees, following Boris Cherny's habits: plan mode for complex tasks, CLAUDE.md updates after corrections. Each evening run analyze.py for the day, check event counts, and append notes on anything unusual (meetings, outages, a day of one huge task). Check hooks_errors.log daily and fix failures without changing the metric definition. Record cross-module message counts from the stream each day. If a day is lost to illness or travel, extend the schedule to keep the ABAB balance rather than dropping a condition day. At the end of each dashboard day, note in one line whether the module clusters helped you decide which agent to unblock first, or whether you just clicked the longest-waiting hand. These notes feed the Conway analysis in step 6.</p>
+<p>Expect: Ten days of events.jsonl, daily summaries, a notes log, and no unexplained gaps.</p>
+<p>Audit before moving on: Fail a day if hook errors exceed 1% of events or if the wrong surface was active. Mark it excluded with a reason and extend the schedule.</p>
+<h4>Step 6 — Validate against oracles and write the gap report</h4>
+<p>Goal: Decide whether the game layer earns its place.</p>
+<p>Run analyze.py on all valid days. Write results.md: minutes-to-unblock median and p90 per condition, ratio of medians with bootstrap 95% interval, missed-block counts, workload balance table, and cross-module message counts with what they say about how the agents are partitioned. State the falsifier verdict: if minutes-to-unblock did not drop by at least a third with the interval excluding no-change, the game layer is decoration and a notch-style widget or plain notification wins. Have a second person use the dashboard for a session and record whether they found the blocked agent unaided. Then GAPS: each source claim (80 agents manageable via hands; Foreman decision log prevents re-litigating; notch app replaces babysitting; Conway's law for agents; Kafka plus redaction architecture) marked verified, unverified or false for this setup, plus blind spots in block detection and scale untested.</p>
+<p>Expect: results.md with tables, verdict, second-person observation, and GAPS.</p>
+<p>Audit before moving on: Recompute the ratio and interval with a fresh script from events.jsonl. Run gitleaks on all logs once more. Fail if any conclusion relies on recollection rather than hook timestamps.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are an independent reviewer of an agent control-room experiment. Open schema.md, hooks/, redact.py and its tests, server/, scene/, control/, experiment.md, events.jsonl, analyze.py and results.md. List every claim in results.md and mark each verified (cite the query and output), unverified (state the data needed), or false. Check: block start and end follow schema.md exactly; the condition per day comes from the calendar; ABAB order held or was rebalanced; workloads are comparable across conditions; the bootstrap interval was computed on the ratio of medians; hooks met the 100 ms budget and failed open; the server bound only to localhost; gitleaks finds nothing in any log; no prompt text or file contents were stored; the dashboard has no approve or execute path. List missing pieces, such as states no hook detects, agents run outside the harness, or untested scale. Rank problems by whether they could flip the falsifier verdict or leak data, fix the top three now, and report before and after. End with what needs more days, more agents, or a second user to settle.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Which hook event marks the start of a block, and does it fire for idle input as well as permission prompts?</p>
+<p>Where exactly does a block end, and could that definition favor one condition?</p>
+<p>Does module clustering reveal coordination costs that a list sorted by wait time would hide?</p>
+<p>Were dashboard days lighter or heavier workloads than notification days?</p>
+<p>Could a tool argument such as a curl header carry a secret into the event log?</p>
+<p>Does the scene stay readable at 80 agents, or only at the 5 to 10 I actually run?</p>
+<p>Is the dashboard tempting me to approve without reading the plan, the risk the auto-approve post raises?</p>
+<p>Are my agent boundaries where I expect the least design iteration, as Muratori recommends?</p>
+<p>Would a notch or menu-bar counter give the same unblock time for far less code?</p>
+<h3>5 · What proves it right</h3>
+<p>Hook-timestamped block start and end events analyzed over an ABAB crossover of ten working days.</p>
+<p>A bootstrap 95% interval on the ratio of median minutes-to-unblock, required to show at least a one-third reduction.</p>
+<p>gitleaks on every event log returning zero findings, and redact.py unit tests passing.</p>
+<p>A second person finding the blocked agent on the dashboard without help.</p>
+<p>ss -tlnp showing the server bound to 127.0.0.1 only.</p>
+<h3>6 · Failure modes</h3>
+<p>Blocks not detected: idle waits never emit a Notification. Tell: agents found waiting with no hand raised. Fix: add a no-event-for-N-minutes heuristic and log it as a distinct reason.</p>
+<p>Slow hooks: dashboard plumbing adds latency to every tool call. Tell: p99 hook time over 100 ms. Fix: hooks only append; all processing moves to the consumer.</p>
+<p>Secret leakage: tool arguments carry tokens into the log. Tell: gitleaks finding. Fix: drop argument fields entirely, keep tool_name only.</p>
+<p>Workload confound: dashboard days happen to be easy days. Tell: agent-hours differ by more than 25% between conditions. Fix: extend the crossover or normalize per agent-hour.</p>
+<p>Pretty but slower: the scene draws attention but adds a click before action. Tell: median unchanged, p90 better or worse. Fix: add jump-to-session as one click, or accept the falsifier.</p>
+<p>Exposed dashboard: server binds to 0.0.0.0 on a shared network. Tell: ss shows a wildcard bind. Fix: bind to localhost and add a startup assertion.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Begin with raw hook payloads from real sessions; do not design the schema from documentation alone. Keep the hooks dumb and fast, and put logic in a separate consumer process. Cache the raw event stream as the source of truth and make every analysis re-runnable from it. Spawn a sub-agent to build the Three.js scene against a recorded replay while you build hooks and redaction, and review its work by checking the localhost bind and running the 80-agent frame-rate test. Never give the dashboard power to approve permissions or execute commands. Stop and ask before editing the user's global settings.json, before running the ten-day experiment, and if block detection cannot distinguish permission waits from idle waits. Return results.md as the entry point, with schema.md, hooks/, redact.py, server/, scene/, control/, experiment.md, analyze.py and the anonymized events.jsonl.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 <h2>Related deep dives</h2>
 <p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
 <p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
@@ -275,10 +373,10 @@ Boris Cherny's thread of tips from the Claude Code team: 3-5 git worktrees with 
 
 ## Action sketch — how to implement this
 
-- Emit one JSON event per agent state change (started, blocked, needs-review, done) from your harness hooks onto a local queue — Redis or a file tail is enough to start
-- Point Bot Crossing (or a 200-line Three.js scene) at that queue so blocked agents visibly raise hands; cluster agents by the repo/module they own to make the Conway structure visible
-- Run a week with dashboard versus without and log minutes-to-unblock per blocked agent
-- Falsifier: if minutes-to-unblock does not drop by at least a third versus a plain notification, the game layer is decoration and a notch widget wins
+Emit one JSON event per agent state change (started, blocked, needs-review, done) from your harness hooks onto a local queue — Redis or a file tail is enough to start
+Point Bot Crossing (or a 200-line Three.js scene) at that queue so blocked agents visibly raise hands; cluster agents by the repo/module they own to make the Conway structure visible
+Run a week with dashboard versus without and log minutes-to-unblock per blocked agent
+Falsifier: if minutes-to-unblock does not drop by at least a third versus a plain notification, the game layer is decoration and a notch widget wins
 
 ---
 
@@ -327,6 +425,193 @@ Boris Cherny's thread of tips from the Claude Code team: 3-5 git worktrees with 
 
 ---
 
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Produces a local agent control room: Claude Code hooks emit one JSON event per agent state change onto a local queue, a small redaction step strips secrets and personal data, and a spatial front end (Bot Crossing or a 200-line Three.js scene) shows agents clustered by the repo or module they own, with blocked agents raising hands. A crossover experiment then compares minutes-to-unblock against a plain desktop notification. Done means an event schema, working hooks, the dashboard, two weeks of logged unblock times, and a falsifier verdict: if minutes-to-unblock does not drop by at least a third, the game layer is decoration and a notch-style widget wins.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** An SRE or observability engineer would first define the event schema and the metric, then build the cheapest surface that could move it, and only then add the game layer. They would treat the event stream like Booking.com treats GenAI telemetry: a durable buffer between producers and consumers, redaction as a pipeline stage rather than a policy, and dual export to a live view and a warehouse for trends. They would run a proper comparison, alternating conditions by day to cancel out workload differences, and measure from the moment an agent blocks to the moment the human acts, using timestamps from the hooks rather than self-report. They would also apply Casey Muratori's version of Conway's law: map agent boundaries to modules, then count cross-boundary messages, because the layout should expose where coordination is slow.
+- **Rawest material to start from:** The Claude Code hooks documentation (event names, the JSON payload on stdin with session_id, cwd, hook_event_name, tool_name), your own transcripts under ~/.claude/projects, the Bot Crossing repository and build review (botcrossing.com), the AgentCraft mod source (Foreman, worker isolation, per-agent commit identities), the Booking.com observability architecture write-up (collector, Kafka, PII redaction service, Arize), the OpenTelemetry GenAI semantic conventions, Casey Muratori's Conway's law lecture, Melvin Conway's 1968 paper 'How Do Committees Invent?', and Boris Cherny's Claude Code team tips (3 to 5 worktrees, plan mode, CLAUDE.md updates).
+- **Methods and tools:** Claude Code hooks on SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop and SubagentStop writing JSON lines; Redis Streams (XADD, XREAD) or an append-only JSONL file tailed with a file watcher; a redaction stage using regexes for keys and tokens plus a PII detector such as Microsoft Presidio; git worktrees per agent with the worktree path as the agent's ownership key; Three.js or Bot Crossing for the scene, WebSocket from a small Python or Node server; notify-send or terminal-notifier as the control condition; DuckDB over the JSONL for analysis. Metric: minutes-to-unblock per blocked event, median and p90, with a bootstrap interval on the ratio between conditions.
+- **What proves it right (other than you or the model):** Hook-timestamped blocked and resumed events, not recollection. An ABAB crossover across at least ten working days so workload differences cancel. A count of missed blocks (agents blocked for over 30 minutes unnoticed) in each condition. A second person using the dashboard for one day and finding the blocked agent without explanation. A secret-scanning pass (gitleaks on the event log) showing zero leaked tokens.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Act as an observability engineer building a control room for my Claude Code agents. First write an event schema: ts, agent_id, session_id, worktree, module, state (started, working, blocked, needs_review, done, error), reason, and tool_name. Write Claude Code hook scripts for SessionStart, PreToolUse, PostToolUse, Notification, Stop and SubagentStop that map each hook payload to that schema and append it to a Redis stream or a JSONL file, with a redaction step that removes API keys, tokens, emails and file contents before anything is written. Derive module ownership from each agent's git worktree path. Build a local-only WebSocket server and a Three.js scene, or adapt Bot Crossing, where agents stand in clusters by module and blocked agents raise hands; clicking one shows the reason and a command to jump to its tmux pane or terminal. Bind everything to localhost. Build the control: a plain desktop notification on the same blocked events. Run an ABAB crossover over ten working days, alternating dashboard and notification by day, and compute minutes-to-unblock from hook timestamps with median, p90 and a bootstrap interval on the ratio. Count blocks unnoticed for over 30 minutes. Also count cross-module messages to show where my agent boundaries create slow coordination. Report whether minutes-to-unblock fell by a third or more; if not, recommend the notch widget.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are an observability engineer and creative technologist. Build a local control room for many Claude Code agents and test whether a spatial, game-like view actually reduces the time a human takes to unblock them. Source claims to test: Bot Crossing manages 80 agents on a planet where they raise hands; AgentCraft runs Claude workers in isolated worktrees under a Foreman with merges gated on approval; a MacBook notch app replaces terminal babysitting; Casey Muratori says Conway's law now applies to agents, so the partition shapes the system; Booking.com puts a Kafka buffer and a PII-redaction service between apps and Arize. Treat each as a design hypothesis.
+
+CONTEXT
+- Harness: Claude Code with hooks (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop); agents run in git worktrees, often in tmux or Ghostty panes.
+- Queue: Redis Streams or append-only JSONL.
+- Front end: Bot Crossing or Three.js; TouchDesigner gesture and Quest 3 spatial demos are inspiration only.
+- Control: notify-send or terminal-notifier.
+
+HARD CONSTRAINTS
+1. Everything binds to localhost. No dashboard port exposed to the network; no cloud telemetry.
+2. Events never carry prompt text, file contents, secrets or personal data; a redaction stage runs before write, and gitleaks runs on the log.
+3. Hooks must not block or slow agents: each hook exits in under 100 ms and fails open, logging its own errors.
+4. The dashboard is read-only plus 'jump to session'; it never approves permissions or runs commands on an agent's behalf.
+5. The metric comes from hook timestamps only.
+
+DELIVERABLES IN ORDER
+1. schema.md: event fields, state machine, and how each hook maps to a state.
+2. hooks/: scripts and the settings.json snippet registering them.
+3. redact.py with tests on sample payloads containing fake keys and emails.
+4. server/ and scene/: localhost WebSocket server and Three.js or Bot Crossing scene; agents clustered by module from worktree path; hands raised on blocked or needs_review; click shows reason and a jump command.
+5. control/: desktop notification on the same events.
+6. experiment.md: ABAB schedule over ten working days and analysis script.
+7. results.md: minutes-to-unblock median and p90 per condition, ratio with bootstrap interval, missed-block counts, cross-module message counts, falsifier verdict.
+
+BUILT-IN GAP ANALYSIS
+Write GAPS: hook events that never fire for some states (for example, how 'needs review' is detected); agents run outside the harness; days excluded and why; redaction misses found by gitleaks; claims not tested (80-agent scale if you ran 10). Fill what you can now, such as adding a heuristic for idle-too-long, and rerun the analysis.
+
+SELF-QUESTIONS
+- Which hook reliably signals 'blocked', and is a permission prompt the only kind of block?
+- When does unblock end: the next UserPromptSubmit, a permission approval, or the next PostToolUse?
+- Does clustering by module show anything a list sorted by wait time would not?
+- Were dashboard days lighter workloads than notification days?
+- Could the event log leak a secret through a tool argument?
+
+STOP CONDITIONS
+Stop and report if hooks add over 100 ms per tool call, if redaction tests fail, or if fewer than 30 blocked events occur across the ten days, which is too few to compare.
+
+RETURN FORMAT
+Verdict line, results table, file list, GAPS, self-question answers.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: hook payloads and blocking states
+
+*Goal:* Learn exactly what each hook emits and which signals mean an agent is waiting on the human.
+
+```text
+Read the Claude Code hooks documentation and register a temporary logging hook for every event (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop) that writes the raw stdin JSON to a scratch file with a receive timestamp. Run three ordinary agent sessions in separate git worktrees, including at least one permission prompt, one idle wait for input, one subagent, and one error. From the raw payloads, write schema.md: the fields available per event, and a state machine mapping events to started, working, blocked, needs_review, done and error. Define precisely when a block starts (for example a Notification for permission or idle input) and when it ends (the next UserPromptSubmit or PostToolUse in that session). Note any state no hook signals and propose a heuristic, such as no event for N minutes. Delete the raw scratch file after extracting the schema, since it contains prompts.
+```
+
+**Expect:** schema.md with an event table, state diagram in text, block start and end definitions, and known blind spots.
+
+**Audit before moving on:** Replay the raw payloads through the state machine and confirm every block you remember causing is detected with correct start and end. Fail on any missed block.
+
+#### Step 2 — Hooks, redaction and the event queue
+
+*Goal:* Emit safe, structured events with negligible overhead.
+
+```text
+Write hook scripts that map each payload to the schema: ts, agent_id, session_id, worktree, module (derived from the worktree path or the repo subdirectory the session works in), state, reason (short category, never prompt text), and tool_name. Pass every event through redact.py, which drops prompt and file fields entirely and regex-scrubs anything resembling API keys, bearer tokens, private keys, emails and phone numbers, with Presidio as an optional second pass. Append to a Redis stream with XADD or to events.jsonl. Each hook must exit within 100 ms and fail open: on error, log to hooks_errors.log and exit 0. Provide the settings.json snippet. Write tests for redact.py with fake keys and emails, and a timing test measuring hook overhead over 200 calls.
+```
+
+**Expect:** hooks/, redact.py, tests passing, settings snippet, and a timing report with p50 and p99 hook latency.
+
+**Audit before moving on:** Run gitleaks on a day of events.jsonl and fail on any finding. Fail if p99 hook latency exceeds 100 ms; move work out of the hook into the consumer.
+
+#### Step 3 — Spatial scene with Conway clustering
+
+*Goal:* Build the control room view where structure and blocks are visible at a glance.
+
+```text
+Write a localhost-only WebSocket server that reads the stream and pushes current agent states. Build a Three.js scene, or adapt Bot Crossing by pointing its agent source at your server: each agent is a figure placed in a cluster for its module, clusters arranged so modules that exchange the most cross-boundary messages sit adjacent, and a line between clusters thickens with message count. Blocked or needs_review agents raise hands and pulse; done agents sit; errored agents turn red. Clicking an agent shows its reason, wait time, and a copyable command to jump to its tmux pane or terminal session. Add an always-visible counter of blocked agents and longest wait. No approve button and no command execution from the browser. Test with a replay of recorded events at 10x speed and with 80 synthetic agents for frame rate.
+```
+
+**Expect:** server/, scene/, a replay tool, and a frame-rate note at 10 and 80 agents.
+
+**Audit before moving on:** Confirm the server binds to 127.0.0.1 only with ss -tlnp. Replay a known log and check every block raises a hand within 2 s. Fail if frame rate drops under 30 fps at 80 agents.
+
+#### Step 4 — Control condition and crossover schedule
+
+*Goal:* Set up a fair comparison against a plain notification.
+
+```text
+Build control/: a consumer that fires notify-send on Linux or terminal-notifier on macOS for each blocked or needs_review event, with the agent and module in the title, and nothing else. Write experiment.md: ten working days in ABAB order by day (dashboard, notification, dashboard, notification...), with the other surface disabled on each day; the hook stream runs every day regardless. Define the metric: minutes from block start to block end per event, using step 1's definitions. Define secondary metrics: blocks unnoticed over 30 minutes, number of agents run per day, and total agent-hours, to check workload balance. Write analyze.py in DuckDB over events.jsonl that labels each event with the day's condition and computes median, p90, ratio of medians with a 10,000-resample bootstrap interval, and the workload table.
+```
+
+**Expect:** control/, experiment.md with the calendar, and analyze.py tested on replayed data.
+
+**Audit before moving on:** Run analyze.py on synthetic events with a known 40% improvement and confirm it recovers it. Fail if the condition label comes from anything but the calendar.
+
+#### Step 5 — Run two weeks and log
+
+*Goal:* Collect real blocked events under both conditions.
+
+```text
+Run the ten-day schedule with normal work across at least five agents per day in separate worktrees, following Boris Cherny's habits: plan mode for complex tasks, CLAUDE.md updates after corrections. Each evening run analyze.py for the day, check event counts, and append notes on anything unusual (meetings, outages, a day of one huge task). Check hooks_errors.log daily and fix failures without changing the metric definition. Record cross-module message counts from the stream each day. If a day is lost to illness or travel, extend the schedule to keep the ABAB balance rather than dropping a condition day. At the end of each dashboard day, note in one line whether the module clusters helped you decide which agent to unblock first, or whether you just clicked the longest-waiting hand. These notes feed the Conway analysis in step 6.
+```
+
+**Expect:** Ten days of events.jsonl, daily summaries, a notes log, and no unexplained gaps.
+
+**Audit before moving on:** Fail a day if hook errors exceed 1% of events or if the wrong surface was active. Mark it excluded with a reason and extend the schedule.
+
+#### Step 6 — Validate against oracles and write the gap report
+
+*Goal:* Decide whether the game layer earns its place.
+
+```text
+Run analyze.py on all valid days. Write results.md: minutes-to-unblock median and p90 per condition, ratio of medians with bootstrap 95% interval, missed-block counts, workload balance table, and cross-module message counts with what they say about how the agents are partitioned. State the falsifier verdict: if minutes-to-unblock did not drop by at least a third with the interval excluding no-change, the game layer is decoration and a notch-style widget or plain notification wins. Have a second person use the dashboard for a session and record whether they found the blocked agent unaided. Then GAPS: each source claim (80 agents manageable via hands; Foreman decision log prevents re-litigating; notch app replaces babysitting; Conway's law for agents; Kafka plus redaction architecture) marked verified, unverified or false for this setup, plus blind spots in block detection and scale untested.
+```
+
+**Expect:** results.md with tables, verdict, second-person observation, and GAPS.
+
+**Audit before moving on:** Recompute the ratio and interval with a fresh script from events.jsonl. Run gitleaks on all logs once more. Fail if any conclusion relies on recollection rather than hook timestamps.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent reviewer of an agent control-room experiment. Open schema.md, hooks/, redact.py and its tests, server/, scene/, control/, experiment.md, events.jsonl, analyze.py and results.md. List every claim in results.md and mark each verified (cite the query and output), unverified (state the data needed), or false. Check: block start and end follow schema.md exactly; the condition per day comes from the calendar; ABAB order held or was rebalanced; workloads are comparable across conditions; the bootstrap interval was computed on the ratio of medians; hooks met the 100 ms budget and failed open; the server bound only to localhost; gitleaks finds nothing in any log; no prompt text or file contents were stored; the dashboard has no approve or execute path. List missing pieces, such as states no hook detects, agents run outside the harness, or untested scale. Rank problems by whether they could flip the falsifier verdict or leak data, fix the top three now, and report before and after. End with what needs more days, more agents, or a second user to settle.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Which hook event marks the start of a block, and does it fire for idle input as well as permission prompts?
+- Where exactly does a block end, and could that definition favor one condition?
+- Does module clustering reveal coordination costs that a list sorted by wait time would hide?
+- Were dashboard days lighter or heavier workloads than notification days?
+- Could a tool argument such as a curl header carry a secret into the event log?
+- Does the scene stay readable at 80 agents, or only at the 5 to 10 I actually run?
+- Is the dashboard tempting me to approve without reading the plan, the risk the auto-approve post raises?
+- Are my agent boundaries where I expect the least design iteration, as Muratori recommends?
+- Would a notch or menu-bar counter give the same unblock time for far less code?
+
+### 5 · What proves it right
+
+- Hook-timestamped block start and end events analyzed over an ABAB crossover of ten working days.
+- A bootstrap 95% interval on the ratio of median minutes-to-unblock, required to show at least a one-third reduction.
+- gitleaks on every event log returning zero findings, and redact.py unit tests passing.
+- A second person finding the blocked agent on the dashboard without help.
+- ss -tlnp showing the server bound to 127.0.0.1 only.
+
+### 6 · Failure modes
+
+- Blocks not detected: idle waits never emit a Notification. Tell: agents found waiting with no hand raised. Fix: add a no-event-for-N-minutes heuristic and log it as a distinct reason.
+- Slow hooks: dashboard plumbing adds latency to every tool call. Tell: p99 hook time over 100 ms. Fix: hooks only append; all processing moves to the consumer.
+- Secret leakage: tool arguments carry tokens into the log. Tell: gitleaks finding. Fix: drop argument fields entirely, keep tool_name only.
+- Workload confound: dashboard days happen to be easy days. Tell: agent-hours differ by more than 25% between conditions. Fix: extend the crossover or normalize per agent-hour.
+- Pretty but slower: the scene draws attention but adds a click before action. Tell: median unchanged, p90 better or worse. Fix: add jump-to-session as one click, or accept the falsifier.
+- Exposed dashboard: server binds to 0.0.0.0 on a shared network. Tell: ss shows a wildcard bind. Fix: bind to localhost and add a startup assertion.
+
+### 7 · Agent direction (unattended runs)
+
+Begin with raw hook payloads from real sessions; do not design the schema from documentation alone. Keep the hooks dumb and fast, and put logic in a separate consumer process. Cache the raw event stream as the source of truth and make every analysis re-runnable from it. Spawn a sub-agent to build the Three.js scene against a recorded replay while you build hooks and redaction, and review its work by checking the localhost bind and running the 80-agent frame-rate test. Never give the dashboard power to approve permissions or execute commands. Stop and ask before editing the user's global settings.json, before running the ten-day experiment, and if block detection cannot distinguish permission waits from idle waits. Return results.md as the entry point, with schema.md, hooks/, redact.py, server/, scene/, control/, experiment.md, analyze.py and the anonymized events.jsonl.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
 ## Related deep dives
 
 Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
@@ -341,4 +626,26 @@ Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across t
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
 </script></body></html>

@@ -104,10 +104,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Riffs on Boris Cherny's advice to build loops that prompt Claude instead of prompting it yourself: connect the AI to a database with work and issues tables, use cron jobs to detect pending changes, and run skills for scoping, implementing, testing and repeating until the human goal is met. Counterpoint: for go-to-market work the human is still the bottleneck and must stay in the loop.</p>
 <p>View original post</p>
 <h2>Action sketch — how to implement this</h2>
-<p>Write one skill that runs Sherlock (via uv) and an email-enumeration tool against your own handles and addresses, storing results in a table keyed by date</p>
-<p>Add a photo pass: send your last 20 public images to a geolocation model and flag any that resolve within a few km of home</p>
-<p>Schedule it weekly, diff against last run, and have the agent draft data-broker opt-out requests from the checklist for each new hit</p>
-<p>Falsifier: if three consecutive weekly runs surface nothing new and the opt-outs stick, a quarterly manual checklist is enough and the agent is overhead</p>
+<p>Write one skill that runs Sherlock (via uv) and an email-enumeration tool against your own handles and addresses, storing results in a table keyed by date Add a photo pass: send your last 20 public images to a geolocation model and flag any that resolve within a few km of home Schedule it weekly, diff against last run, and have the agent draft data-broker opt-out requests from the checklist for each new hit Falsifier: if three consecutive weekly runs surface nothing new and the opt-outs stick, a quarterly manual checklist is enough and the agent is overhead</p>
 <h2>Prerequisites</h2>
 <p>Only run against identities you own</p>
 <p>A machine that can run Python CLIs on a schedule</p>
@@ -127,9 +124,132 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>@declan.middleton</p>
 <p>@innovation</p>
 <p>@lizthedeveloper</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Build one scheduled defensive agent that runs the public-footprint toolkit against your own identities, never anyone else's, and files the remediation. The pieces are a weekly job that runs username and email enumeration on your own handles, a photo pass that sends your own recent public images to a geolocation model and flags any that resolve near home, a diff against the prior run, and auto-drafted (never auto-submitted) data-broker opt-out requests. Done means the job is scheduled with an identity allowlist that makes targeting anyone else impossible, results are stored dated, and a month of runs has tested the falsifier.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A privacy engineer or a personal-threat-model consultant would start from a written threat model, not a tool list: who the adversary is (an ex, a stalker, a doxxing mob, a data broker), what they already have, and what single new fact would cause real harm. They would run the offensive tools only against identities the subject owns and consents to, under an explicit allowlist, because running them against third parties is harassment and often illegal. They would treat geolocation as a leak test on the subject's own photos, measure the error radius, and prioritize removals by harm, not by count. They would prefer authoritative removal routes (state privacy-law requests, the credit-bureau freeze, platform takedowns) over broker-by-broker whack-a-mole.</p>
+<p>Rawest material to start from: Your own account list and email addresses. Your own last 20 public images with their EXIF stripped and kept, so you can compare what the model infers against the truth. The California CCPA/CPRA and equivalent deletion-request templates. The three nationwide credit bureaus' freeze pages. The data-broker opt-out directory maintained by privacy groups such as the EFF and Privacy Rights Clearinghouse. The relevant platforms' own 'download your data' exports, which show what is actually public. Sherlock's site-list JSON, so you know its false-positive rate. GeoSpy's and any open geolocation model's stated accuracy.</p>
+<p>Methods and tools: Sherlock via uv (uv venv, uv pip install sherlock-project) and a second username engine to cross-check coverage and false positives. An email-exposure check against Have I Been Pwned's API for your own addresses only. A geolocation pass on your own images with a documented error radius, scored as 'resolves within N km of a sensitive location'. A SQLite table keyed by date for diffing. A scheduler (cron or a systemd timer) with an identity allowlist enforced in code. Opt-out requests drafted into a review queue, submitted only by a human. Archive checks for your own deleted content, to know what persists.</p>
+<p>What proves it right (other than you or the model): A measured false-positive rate for the username tools: how many flagged accounts are actually yours, confirmed by login or by you. The geolocation error radius on your own images where you know the true location, which tells you whether the leak is real. Confirmation emails from brokers that a removal completed, re-checked 30 and 60 days later for reappearance. A credit freeze confirmed at all three bureaus. The pre-registered falsifier: three consecutive weekly runs that surface nothing new, after which a quarterly manual check is enough.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>You are a privacy engineer. Build me a defensive self-audit agent that only ever runs against identities I own.</p>
+<p>First write my threat model: adversary, what they already have, and the one new fact that would cause real harm. Everything is prioritized against that.</p>
+<p>Enforce an identity allowlist in code. The tools must refuse any handle, email or image not on it. Log every target.</p>
+<p>Weekly, run Sherlock and a second username tool on my handles, check my emails against Have I Been Pwned, and send my own last 20 public photos to a geolocation model. Flag any photo that resolves within N km of home or work, and report the error radius against the known true location.</p>
+<p>Diff against last week and store results dated in SQLite.</p>
+<p>Draft, but never submit, data-broker opt-outs and CCPA deletion requests for each new hit, into a review queue I approve by hand. Add the three-bureau credit freeze as a one-time task.</p>
+<p>Pre-register the falsifier: if three weekly runs find nothing new, drop to quarterly.</p>
+<p>Return the scheduled job, the allowlist guard, the dated results and a prioritized remediation queue.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE You are a privacy engineer running a defensive self-audit. You operate only against identities the operator owns and has listed. You never target a third party, and you refuse if asked to.</p>
+<p>CONTEXT The saved posts are a full public-footprint toolkit sitting next to its defense.</p>
+<p>@lizthedeveloper: after Meta AI inferred a creator's home from old posts, a browser-only checklist to map your accounts, audit what is public, opt out of data brokers, freeze credit and store recovery codes. Also a game that makes reclaiming your data less of a dark-pattern slog.</p>
+<p>@carterperez.dev: Sherlock in three commands (uv venv, uv pip install sherlock-project, then sherlock ), plus mentions of email-to-account mappers and a Flock plate-search transparency site.</p>
+<p>@declan.middleton: Alien's Eye for usernames and a Reddit tool that recovers deleted posts from archives.</p>
+<p>@innovation: GeoSpy.ai infers location from buildings, plants, street layout and shadows.</p>
+<p>The move here is to run the offense against yourself, on a weekly schedule, and auto-file the defense.</p>
+<p>HARD CONSTRAINTS</p>
+<p>Identities allowlist. Create allowlist.yaml of the operator's own handles, emails and image folders. Every tool call checks it first and refuses anything not listed. Log every target with a timestamp.</p>
+<p>Own identities only. Do not run username, email, photo or archive lookups against anyone but the operator. If the operator asks to target someone else, refuse and stop.</p>
+<p>Draft, never auto-submit. Opt-outs, deletion requests and takedowns go into a review queue a human approves. No form is submitted by the agent.</p>
+<p>No secrets in logs. API keys for Have I Been Pwned and any geolocation service are read from the environment and never printed.</p>
+<p>DELIVERABLES</p>
+<p>threat_model.md: adversary, their current knowledge, the single most damaging new fact, and the sensitive locations to protect (home, work, a child's school).</p>
+<p>allowlist.yaml plus guard.py, with a test proving a non-listed handle or image is refused.</p>
+<p>sentinel.py: the weekly job. Username enumeration with Sherlock and a second tool; an email check against Have I Been Pwned for listed addresses; a geolocation pass on the operator's last 20 public images.</p>
+<p>A SQLite store keyed by date, with a diff against the previous run.</p>
+<p>remediation/: drafted CCPA/CPRA deletion requests and broker opt-outs per new hit, in a review queue, plus a one-time three-bureau freeze checklist.</p>
+<p>schedule: a cron or systemd timer entry, and a kill switch.</p>
+<p>BUILT-IN GAP ANALYSIS List the username hits you could not confirm are actually the operator's, the photos with no known ground-truth location (so the error radius is unknown), the brokers with no opt-out route found, and any platform whose public exposure you could not read. Fill what you can. Mark the rest UNFILLED.</p>
+<p>SELF-QUESTIONS Is every target on the allowlist? What is the geolocation error radius on photos where I know the truth? Which hit, if real, enables the most damaging fact from the threat model? Am I about to submit a form a human should approve?</p>
+<p>STOP Stop after one full run plus the drafted queue. Stop immediately and refuse if any requested target is not the operator's own identity.</p>
+<p>RETURN Return threat_model.md, allowlist.yaml, guard.py, sentinel.py, the SQLite store, remediation/ and schedule/, plus report.md with the sections Threat Model, Findings, Leak Radius, Remediation Queue and Gaps.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Threat model and identity allowlist</h4>
+<p>Goal: Define who and what you are defending against, and make targeting anyone else impossible.</p>
+<p>Before any tool runs, write threat_model.md. Name the realistic adversary (an ex-partner, a stalker, a harassment mob, a data broker reselling to anyone). State what they plausibly already know. State the single new fact that would cause real harm, usually a current home address, a child's school or a daily pattern. List the sensitive locations to protect. Then create allowlist.yaml holding only the operator's own handles, email addresses and local image folders. Write guard.py so every later tool call passes its target through it and raises on anything not listed. Write a test that feeds guard.py a handle and an image path that are not on the allowlist and confirms both are refused and logged. State in the header, in plain language, that this system runs only against the operator's own identities and must never be pointed at a third party.</p>
+<p>Expect: threat_model.md, allowlist.yaml, guard.py and a passing refusal test.</p>
+<p>Audit before moving on: Try to run a downstream tool with a target absent from the allowlist. It must refuse. If guard.py can be bypassed by calling a tool directly, route every tool through it before continuing. Fail if the allowlist is empty or the refusal test passes a non-listed target.</p>
+<h4>Step 2 — Username enumeration with false-positive control</h4>
+<p>Goal: Find the operator's own accounts across the web and measure the tools' error rate.</p>
+<p>Install Sherlock with uv: uv venv, source the venv, uv pip install sherlock-project. Run sherlock on each allowlisted handle, passing several at once. Run a second username engine, such as Alien's Eye, on the same handles, since @declan.middleton claims wider coverage. Compare the two result sets. Every handle must come from allowlist.yaml through guard.py. For each hit, record the site, the URL and a confidence flag. Then measure the false-positive rate: sample 20 hits and have the operator confirm which are actually theirs. Sherlock matches by URL pattern and over-reports, so this rate matters. Store results in the accounts table keyed by run date. Record which sites each tool covers that the other misses, so you know your true coverage, not just one tool's view. Note any account you had forgotten you owned, because dormant accounts with old passwords are prime targets.</p>
+<p>Expect: accounts.csv per run, a union-and-intersection comparison of the two tools, and a measured false-positive rate.</p>
+<p>Audit before moving on: Confirm every queried handle was on the allowlist by checking guard.py's log. If the false-positive rate is above 30%, down-weight single-tool hits and require confirmation before any hit drives a remediation draft. Fail if any non-operator handle was queried.</p>
+<h4>Step 3 — Email exposure on your own addresses</h4>
+<p>Goal: See which breaches and accounts expose the operator's own emails.</p>
+<p>For each allowlisted email address, check exposure against the Have I Been Pwned API. Read the API key from the environment and never print it. Record each breach: name, date, and the data classes exposed (passwords, addresses, phone numbers). Query only the operator's own addresses, enforced through guard.py. Map each breached address to the accounts found in step 2 where they overlap, so a single compromised password can be traced to the accounts it threatens. Do not attempt any dark-web crawl or third-party email lookup. The scope is the operator's own addresses and public breach data only. Flag any breach that exposed a security answer or a current address, because those feed the threat model's most-damaging-fact directly.</p>
+<p>Expect: breaches.csv keyed by address and date, and an overlap map to the step 2 accounts.</p>
+<p>Audit before moving on: Confirm the API key never appears in logs or output by grepping for it by pattern without printing it. Confirm only allowlisted addresses were queried. Fail if any third-party address was checked, or if a breach list has no dates.</p>
+<h4>Step 4 — Geolocation leak test on your own photos</h4>
+<p>Goal: Measure whether the operator's own public images reveal a sensitive location.</p>
+<p>Collect the operator's last 20 public images (from their own posts or 'download your data' export). Keep a copy of the original EXIF separately, then send EXIF-stripped copies to a geolocation model such as GeoSpy or an open equivalent, as @innovation describes: inference from buildings, plants, street layout and shadows. For each image where the true location is known, compute the error radius between the model's guess and the truth. This tells you whether the leak is real or the model is guessing. Flag any image that resolves within N km (set N from the threat model, for example 2 km) of a sensitive location. All images come from the allowlisted folders through guard.py. Do not geolocate anyone else's photos. Record, per image, the predicted location, the error radius and whether it breaches a sensitive zone.</p>
+<p>Expect: geo.csv with predicted location, error radius and breach flag per image, and a short leak summary.</p>
+<p>Audit before moving on: Confirm the error radius is computed only where ground truth exists, and that images with unknown truth are marked, not scored as safe. If the model's median error exceeds the flag radius, state that the geolocation signal is too weak to act on for this set. Fail if any non-operator image was processed.</p>
+<h4>Step 5 — Diff, prioritize and draft remediation</h4>
+<p>Goal: Turn new findings into a prioritized, human-approved removal queue.</p>
+<p>Diff this run against the previous run in the SQLite store. New accounts, new breaches and new geo-flags are the actionable set. Prioritize by harm, not count: a hit that enables the threat model's most-damaging fact ranks above a dormant forum account. For each prioritized hit, draft the remediation into remediation/queue/, never submitting it:</p>
+<p>A CCPA/CPRA deletion request for data brokers, from a template, pre-filled with the operator's details.</p>
+<p>A platform takedown or account-deletion note where an old account is exposed.</p>
+<p>A one-time checklist for the three-bureau credit freeze and recovery-code storage, from @lizthedeveloper's checklist.</p>
+<p>Each draft states what it targets, the legal basis and where the human submits it. Leave submission to the operator. The agent files drafts only.</p>
+<p>Expect: remediation/queue/ with one drafted request per prioritized hit, ranked, plus a one-time freeze checklist.</p>
+<p>Audit before moving on: Confirm nothing was submitted: no network POST to a broker form appears in the logs. Confirm each draft cites a legal basis and a submission location. Fail if a low-harm hit outranks a threat-model-critical one, or if any request was auto-sent.</p>
+<h4>Step 6 — Schedule, diff loop and kill switch</h4>
+<p>Goal: Run the sentinel weekly, unattended and safely.</p>
+<p>Wrap sentinel.py in a weekly cron or systemd timer. On each run it re-checks the allowlist, runs steps 2 to 4, diffs against the last run, appends dated rows and refreshes the remediation queue. Follow the DB-and-cron loop pattern (@angus.sewell, after Boris Cherny's 'build systems that prompt your AI'): a jobs table, a run that detects new findings, and skills that scope, draft and queue, stopping at the human-approval gate. Add a kill switch: a flag file or a single command that disables the timer, for when the operator is traveling and locations change. Write run outputs to dated files so three consecutive empty runs are easy to see. Do not escalate scope over time. The allowlist is fixed unless the operator edits it by hand.</p>
+<p>Expect: schedule/ with the timer unit or crontab line, a jobs table, and a documented kill switch.</p>
+<p>Audit before moving on: Dry-run the timer and confirm it re-validates the allowlist on every run. Confirm the kill switch actually stops it. Fail if the scheduled job can add targets on its own, or if it submits anything without the human gate.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4>
+<p>Goal: Confirm the leaks are real, the removals stick, and test the falsifier.</p>
+<p>Run the oracle pass: (a) Username false-positive rate: the share of flagged accounts the operator confirms are theirs. (b) Geolocation error radius on known-truth photos, and whether any real leak remains. (c) Broker removals: confirmation emails, re-checked at 30 and 60 days for reappearance. (d) The credit freeze confirmed at all three bureaus. (e) The falsifier: have three consecutive weekly runs surfaced nothing new? If so, recommend dropping to quarterly. Write report.md with the sections Threat Model, Findings, Leak Radius, Remediation Status, Falsifier and Gaps. State plainly which exposures are confirmed real versus tool noise, and which removals are verified versus pending. Rank the remaining gaps by harm. Include a short 'what changed since last month' line so the operator can see the trend at a glance. Note explicitly which exposures are already fixed and should drop off next run.</p>
+<p>Expect: report.md, a five-row oracle table, and a prioritized gap list.</p>
+<p>Audit before moving on: Any 'removed' broker without a confirmation email is downgraded to pending. Any geo-flag without a measured radius is downgraded to unverified. Confirm the report never names a third party as a target. Fail if the falsifier section is missing.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are an independent privacy reviewer. Open report.md, threat_model.md, allowlist.yaml, guard.py, the SQLite store and remediation/.</p>
+<p>First and hardest: confirm every target ever queried is on the allowlist and belongs to the operator. Grep guard.py's log for any target not in allowlist.yaml. If one exists, stop and flag it as a serious violation.</p>
+<p>Enumerate every finding claim: accounts, breaches, geo-flags, removals. Mark each verified, unverified or false.</p>
+<p>Recompute the username false-positive rate and the geolocation error radius from the stored data.</p>
+<p>Check that no remediation was auto-submitted: look for outbound POSTs to broker or platform forms.</p>
+<p>Check for secret leakage: search logs for API-key-shaped strings by pattern without printing any match.</p>
+<p>Check prioritization: is the queue ranked by threat-model harm, not by count?</p>
+<p>List what is missing: unconfirmed hits, photos with no ground truth, brokers with no route, removals not re-checked at 30 and 60 days.</p>
+<p>Rank gaps by harm. Fix the top three now. Report what you could not fix and why.</p>
+<p>Return audit.md with the columns claim, status, evidence and fix, plus 'Remaining gaps', and a one-line statement confirming no third party was targeted.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Is every handle, email, image and plate on the allowlist and owned by the operator?</p>
+<p>Could any tool be called in a way that bypasses guard.py and reaches a third party?</p>
+<p>What is the real geolocation error radius on photos where I know the true location?</p>
+<p>Which single finding, if real, enables the most damaging fact in the threat model?</p>
+<p>How many username hits are false positives from URL-pattern matching alone?</p>
+<p>Did I treat an unverified geo guess as a confirmed leak?</p>
+<p>Am I about to submit a form that a human should approve first?</p>
+<p>Did the scheduled job quietly expand its scope beyond the fixed allowlist?</p>
+<p>Are breach findings tied to the accounts they actually threaten?</p>
+<p>Did any API key reach a log or output file?</p>
+<p>Have three empty runs happened, meaning I should drop to quarterly per the falsifier?</p>
+<h3>5 · What proves it right</h3>
+<p>Username false-positive rate: the operator confirms, by login or recognition, which flagged accounts are actually theirs; target under 30% noise before acting.</p>
+<p>Geolocation error radius: on images with a known true location, the distance between the model's guess and the truth, deciding whether a leak is real.</p>
+<p>Broker removal confirmations: emails confirming deletion, re-checked at 30 and 60 days for reappearance.</p>
+<p>Credit freeze: confirmed active at Equifax, Experian and TransUnion.</p>
+<p>The pre-registered falsifier: three consecutive weekly runs surfacing nothing new, after which a quarterly manual check suffices.</p>
+<h3>6 · Failure modes</h3>
+<p>Scope creep to a third party. Tell: a target not in allowlist.yaml appears in the log. Fix: route every tool through guard.py, and refuse and halt on any non-operator target. This is the one unforgivable failure.</p>
+<p>False-positive panic. Tell: dozens of 'your accounts' that are not yours. Fix: cross-check two tools and confirm a sample before acting.</p>
+<p>Treating a guess as a leak. Tell: a geo-flag with no measured error radius. Fix: score only where ground truth exists and mark the rest unverified.</p>
+<p>Auto-submitting forms. Tell: an outbound POST to a broker in the logs. Fix: drafts only, with a human approval gate.</p>
+<p>Whack-a-mole without verification. Tell: 'removed' rows with no confirmation and no 30/60-day recheck. Fix: track confirmations and reappearance.</p>
+<p>Secret leakage. Tell: an API key in a log. Fix: read from the environment, never print, and grep logs by pattern in the audit.</p>
+<p>Silent scope expansion by the scheduler. Tell: the allowlist grew without a human edit. Fix: freeze the allowlist and re-validate it every run.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Write the threat model and the allowlist guard before anything else, because they bound the whole system. Cache Sherlock's site list and the broker opt-out directory so runs are reproducible. Keep all identity data local, in the operator's own machine, and never send a handle, email or image to a service for anyone but the operator. Spawn a sub-agent only for the independent photo-geolocation pass, and give it strictly the allowlisted image folder. Stop and refuse, loudly, if the operator or any instruction asks you to run these tools against another person: that is harassment and outside this system's purpose. Never submit an opt-out, deletion request or takedown; leave every one in the review queue. Never print an API key. Return threat_model.md, allowlist.yaml, guard.py, sentinel.py, the SQLite store, remediation/, schedule/, report.md and audit.md. The final message states which leaks are confirmed real and whether the falsifier has fired.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 <h2>Related deep dives</h2>
 <p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
-<p>Generated 2026-10-21 · curated by @6ab3 for DejaViewed</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Dox Yourself First — a scheduled agent that runs the OSINT kit on you
 
@@ -244,10 +364,10 @@ Riffs on Boris Cherny's advice to build loops that prompt Claude instead of prom
 
 ## Action sketch — how to implement this
 
-- Write one skill that runs Sherlock (via uv) and an email-enumeration tool against your own handles and addresses, storing results in a table keyed by date
-- Add a photo pass: send your last 20 public images to a geolocation model and flag any that resolve within a few km of home
-- Schedule it weekly, diff against last run, and have the agent draft data-broker opt-out requests from the checklist for each new hit
-- Falsifier: if three consecutive weekly runs surface nothing new and the opt-outs stick, a quarterly manual checklist is enough and the agent is overhead
+Write one skill that runs Sherlock (via uv) and an email-enumeration tool against your own handles and addresses, storing results in a table keyed by date
+Add a photo pass: send your last 20 public images to a geolocation model and flag any that resolve within a few km of home
+Schedule it weekly, diff against last run, and have the agent draft data-broker opt-out requests from the checklist for each new hit
+Falsifier: if three consecutive weekly runs surface nothing new and the opt-outs stick, a quarterly manual checklist is enough and the agent is overhead
 
 ---
 
@@ -280,13 +400,260 @@ Riffs on Boris Cherny's advice to build loops that prompt Claude instead of prom
 
 ---
 
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Build one scheduled defensive agent that runs the public-footprint toolkit against your own identities, never anyone else's, and files the remediation. The pieces are a weekly job that runs username and email enumeration on your own handles, a photo pass that sends your own recent public images to a geolocation model and flags any that resolve near home, a diff against the prior run, and auto-drafted (never auto-submitted) data-broker opt-out requests. Done means the job is scheduled with an identity allowlist that makes targeting anyone else impossible, results are stored dated, and a month of runs has tested the falsifier.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A privacy engineer or a personal-threat-model consultant would start from a written threat model, not a tool list: who the adversary is (an ex, a stalker, a doxxing mob, a data broker), what they already have, and what single new fact would cause real harm. They would run the offensive tools only against identities the subject owns and consents to, under an explicit allowlist, because running them against third parties is harassment and often illegal. They would treat geolocation as a leak test on the subject's own photos, measure the error radius, and prioritize removals by harm, not by count. They would prefer authoritative removal routes (state privacy-law requests, the credit-bureau freeze, platform takedowns) over broker-by-broker whack-a-mole.
+- **Rawest material to start from:** Your own account list and email addresses. Your own last 20 public images with their EXIF stripped and kept, so you can compare what the model infers against the truth. The California CCPA/CPRA and equivalent deletion-request templates. The three nationwide credit bureaus' freeze pages. The data-broker opt-out directory maintained by privacy groups such as the EFF and Privacy Rights Clearinghouse. The relevant platforms' own 'download your data' exports, which show what is actually public. Sherlock's site-list JSON, so you know its false-positive rate. GeoSpy's and any open geolocation model's stated accuracy.
+- **Methods and tools:** Sherlock via uv (uv venv, uv pip install sherlock-project) and a second username engine to cross-check coverage and false positives. An email-exposure check against Have I Been Pwned's API for your own addresses only. A geolocation pass on your own images with a documented error radius, scored as 'resolves within N km of a sensitive location'. A SQLite table keyed by date for diffing. A scheduler (cron or a systemd timer) with an identity allowlist enforced in code. Opt-out requests drafted into a review queue, submitted only by a human. Archive checks for your own deleted content, to know what persists.
+- **What proves it right (other than you or the model):** A measured false-positive rate for the username tools: how many flagged accounts are actually yours, confirmed by login or by you. The geolocation error radius on your own images where you know the true location, which tells you whether the leak is real. Confirmation emails from brokers that a removal completed, re-checked 30 and 60 days later for reappearance. A credit freeze confirmed at all three bureaus. The pre-registered falsifier: three consecutive weekly runs that surface nothing new, after which a quarterly manual check is enough.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+You are a privacy engineer. Build me a defensive self-audit agent that only ever runs against identities I own.
+1. First write my threat model: adversary, what they already have, and the one new fact that would cause real harm. Everything is prioritized against that.
+2. Enforce an identity allowlist in code. The tools must refuse any handle, email or image not on it. Log every target.
+3. Weekly, run Sherlock and a second username tool on my handles, check my emails against Have I Been Pwned, and send my own last 20 public photos to a geolocation model. Flag any photo that resolves within N km of home or work, and report the error radius against the known true location.
+4. Diff against last week and store results dated in SQLite.
+5. Draft, but never submit, data-broker opt-outs and CCPA deletion requests for each new hit, into a review queue I approve by hand. Add the three-bureau credit freeze as a one-time task.
+6. Pre-register the falsifier: if three weekly runs find nothing new, drop to quarterly.
+Return the scheduled job, the allowlist guard, the dated results and a prioritized remediation queue.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE
+You are a privacy engineer running a defensive self-audit. You operate only against identities the operator owns and has listed. You never target a third party, and you refuse if asked to.
+
+CONTEXT
+The saved posts are a full public-footprint toolkit sitting next to its defense.
+- @lizthedeveloper: after Meta AI inferred a creator's home from old posts, a browser-only checklist to map your accounts, audit what is public, opt out of data brokers, freeze credit and store recovery codes. Also a game that makes reclaiming your data less of a dark-pattern slog.
+- @carterperez.dev: Sherlock in three commands (uv venv, uv pip install sherlock-project, then sherlock <username>), plus mentions of email-to-account mappers and a Flock plate-search transparency site.
+- @declan.middleton: Alien's Eye for usernames and a Reddit tool that recovers deleted posts from archives.
+- @innovation: GeoSpy.ai infers location from buildings, plants, street layout and shadows.
+The move here is to run the offense against yourself, on a weekly schedule, and auto-file the defense.
+
+HARD CONSTRAINTS
+- Identities allowlist. Create allowlist.yaml of the operator's own handles, emails and image folders. Every tool call checks it first and refuses anything not listed. Log every target with a timestamp.
+- Own identities only. Do not run username, email, photo or archive lookups against anyone but the operator. If the operator asks to target someone else, refuse and stop.
+- Draft, never auto-submit. Opt-outs, deletion requests and takedowns go into a review queue a human approves. No form is submitted by the agent.
+- No secrets in logs. API keys for Have I Been Pwned and any geolocation service are read from the environment and never printed.
+
+DELIVERABLES
+1. threat_model.md: adversary, their current knowledge, the single most damaging new fact, and the sensitive locations to protect (home, work, a child's school).
+2. allowlist.yaml plus guard.py, with a test proving a non-listed handle or image is refused.
+3. sentinel.py: the weekly job. Username enumeration with Sherlock and a second tool; an email check against Have I Been Pwned for listed addresses; a geolocation pass on the operator's last 20 public images.
+4. A SQLite store keyed by date, with a diff against the previous run.
+5. remediation/: drafted CCPA/CPRA deletion requests and broker opt-outs per new hit, in a review queue, plus a one-time three-bureau freeze checklist.
+6. schedule: a cron or systemd timer entry, and a kill switch.
+
+BUILT-IN GAP ANALYSIS
+List the username hits you could not confirm are actually the operator's, the photos with no known ground-truth location (so the error radius is unknown), the brokers with no opt-out route found, and any platform whose public exposure you could not read. Fill what you can. Mark the rest UNFILLED.
+
+SELF-QUESTIONS
+Is every target on the allowlist? What is the geolocation error radius on photos where I know the truth? Which hit, if real, enables the most damaging fact from the threat model? Am I about to submit a form a human should approve?
+
+STOP
+Stop after one full run plus the drafted queue. Stop immediately and refuse if any requested target is not the operator's own identity.
+
+RETURN
+Return threat_model.md, allowlist.yaml, guard.py, sentinel.py, the SQLite store, remediation/ and schedule/, plus report.md with the sections Threat Model, Findings, Leak Radius, Remediation Queue and Gaps.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Threat model and identity allowlist
+
+*Goal:* Define who and what you are defending against, and make targeting anyone else impossible.
+
+```text
+Before any tool runs, write threat_model.md. Name the realistic adversary (an ex-partner, a stalker, a harassment mob, a data broker reselling to anyone). State what they plausibly already know. State the single new fact that would cause real harm, usually a current home address, a child's school or a daily pattern. List the sensitive locations to protect.
+Then create allowlist.yaml holding only the operator's own handles, email addresses and local image folders. Write guard.py so every later tool call passes its target through it and raises on anything not listed.
+Write a test that feeds guard.py a handle and an image path that are not on the allowlist and confirms both are refused and logged.
+State in the header, in plain language, that this system runs only against the operator's own identities and must never be pointed at a third party.
+```
+
+**Expect:** threat_model.md, allowlist.yaml, guard.py and a passing refusal test.
+
+**Audit before moving on:** Try to run a downstream tool with a target absent from the allowlist. It must refuse. If guard.py can be bypassed by calling a tool directly, route every tool through it before continuing. Fail if the allowlist is empty or the refusal test passes a non-listed target.
+
+#### Step 2 — Username enumeration with false-positive control
+
+*Goal:* Find the operator's own accounts across the web and measure the tools' error rate.
+
+```text
+Install Sherlock with uv: uv venv, source the venv, uv pip install sherlock-project. Run sherlock on each allowlisted handle, passing several at once.
+Run a second username engine, such as Alien's Eye, on the same handles, since @declan.middleton claims wider coverage. Compare the two result sets.
+Every handle must come from allowlist.yaml through guard.py.
+For each hit, record the site, the URL and a confidence flag. Then measure the false-positive rate: sample 20 hits and have the operator confirm which are actually theirs. Sherlock matches by URL pattern and over-reports, so this rate matters.
+Store results in the accounts table keyed by run date. Record which sites each tool covers that the other misses, so you know your true coverage, not just one tool's view. Note any account you had forgotten you owned, because dormant accounts with old passwords are prime targets.
+```
+
+**Expect:** accounts.csv per run, a union-and-intersection comparison of the two tools, and a measured false-positive rate.
+
+**Audit before moving on:** Confirm every queried handle was on the allowlist by checking guard.py's log. If the false-positive rate is above 30%, down-weight single-tool hits and require confirmation before any hit drives a remediation draft. Fail if any non-operator handle was queried.
+
+#### Step 3 — Email exposure on your own addresses
+
+*Goal:* See which breaches and accounts expose the operator's own emails.
+
+```text
+For each allowlisted email address, check exposure against the Have I Been Pwned API. Read the API key from the environment and never print it.
+Record each breach: name, date, and the data classes exposed (passwords, addresses, phone numbers).
+Query only the operator's own addresses, enforced through guard.py.
+Map each breached address to the accounts found in step 2 where they overlap, so a single compromised password can be traced to the accounts it threatens.
+Do not attempt any dark-web crawl or third-party email lookup. The scope is the operator's own addresses and public breach data only.
+Flag any breach that exposed a security answer or a current address, because those feed the threat model's most-damaging-fact directly.
+```
+
+**Expect:** breaches.csv keyed by address and date, and an overlap map to the step 2 accounts.
+
+**Audit before moving on:** Confirm the API key never appears in logs or output by grepping for it by pattern without printing it. Confirm only allowlisted addresses were queried. Fail if any third-party address was checked, or if a breach list has no dates.
+
+#### Step 4 — Geolocation leak test on your own photos
+
+*Goal:* Measure whether the operator's own public images reveal a sensitive location.
+
+```text
+Collect the operator's last 20 public images (from their own posts or 'download your data' export). Keep a copy of the original EXIF separately, then send EXIF-stripped copies to a geolocation model such as GeoSpy or an open equivalent, as @innovation describes: inference from buildings, plants, street layout and shadows.
+For each image where the true location is known, compute the error radius between the model's guess and the truth. This tells you whether the leak is real or the model is guessing.
+Flag any image that resolves within N km (set N from the threat model, for example 2 km) of a sensitive location.
+All images come from the allowlisted folders through guard.py. Do not geolocate anyone else's photos.
+Record, per image, the predicted location, the error radius and whether it breaches a sensitive zone.
+```
+
+**Expect:** geo.csv with predicted location, error radius and breach flag per image, and a short leak summary.
+
+**Audit before moving on:** Confirm the error radius is computed only where ground truth exists, and that images with unknown truth are marked, not scored as safe. If the model's median error exceeds the flag radius, state that the geolocation signal is too weak to act on for this set. Fail if any non-operator image was processed.
+
+#### Step 5 — Diff, prioritize and draft remediation
+
+*Goal:* Turn new findings into a prioritized, human-approved removal queue.
+
+```text
+Diff this run against the previous run in the SQLite store. New accounts, new breaches and new geo-flags are the actionable set.
+Prioritize by harm, not count: a hit that enables the threat model's most-damaging fact ranks above a dormant forum account.
+For each prioritized hit, draft the remediation into remediation/queue/, never submitting it:
+- A CCPA/CPRA deletion request for data brokers, from a template, pre-filled with the operator's details.
+- A platform takedown or account-deletion note where an old account is exposed.
+- A one-time checklist for the three-bureau credit freeze and recovery-code storage, from @lizthedeveloper's checklist.
+Each draft states what it targets, the legal basis and where the human submits it.
+Leave submission to the operator. The agent files drafts only.
+```
+
+**Expect:** remediation/queue/ with one drafted request per prioritized hit, ranked, plus a one-time freeze checklist.
+
+**Audit before moving on:** Confirm nothing was submitted: no network POST to a broker form appears in the logs. Confirm each draft cites a legal basis and a submission location. Fail if a low-harm hit outranks a threat-model-critical one, or if any request was auto-sent.
+
+#### Step 6 — Schedule, diff loop and kill switch
+
+*Goal:* Run the sentinel weekly, unattended and safely.
+
+```text
+Wrap sentinel.py in a weekly cron or systemd timer. On each run it re-checks the allowlist, runs steps 2 to 4, diffs against the last run, appends dated rows and refreshes the remediation queue.
+Follow the DB-and-cron loop pattern (@angus.sewell, after Boris Cherny's 'build systems that prompt your AI'): a jobs table, a run that detects new findings, and skills that scope, draft and queue, stopping at the human-approval gate.
+Add a kill switch: a flag file or a single command that disables the timer, for when the operator is traveling and locations change.
+Write run outputs to dated files so three consecutive empty runs are easy to see.
+Do not escalate scope over time. The allowlist is fixed unless the operator edits it by hand.
+```
+
+**Expect:** schedule/ with the timer unit or crontab line, a jobs table, and a documented kill switch.
+
+**Audit before moving on:** Dry-run the timer and confirm it re-validates the allowlist on every run. Confirm the kill switch actually stops it. Fail if the scheduled job can add targets on its own, or if it submits anything without the human gate.
+
+#### Step 7 — Validate against oracles and write the gap report
+
+*Goal:* Confirm the leaks are real, the removals stick, and test the falsifier.
+
+```text
+Run the oracle pass:
+(a) Username false-positive rate: the share of flagged accounts the operator confirms are theirs.
+(b) Geolocation error radius on known-truth photos, and whether any real leak remains.
+(c) Broker removals: confirmation emails, re-checked at 30 and 60 days for reappearance.
+(d) The credit freeze confirmed at all three bureaus.
+(e) The falsifier: have three consecutive weekly runs surfaced nothing new? If so, recommend dropping to quarterly.
+Write report.md with the sections Threat Model, Findings, Leak Radius, Remediation Status, Falsifier and Gaps. State plainly which exposures are confirmed real versus tool noise, and which removals are verified versus pending. Rank the remaining gaps by harm. Include a short 'what changed since last month' line so the operator can see the trend at a glance. Note explicitly which exposures are already fixed and should drop off next run.
+```
+
+**Expect:** report.md, a five-row oracle table, and a prioritized gap list.
+
+**Audit before moving on:** Any 'removed' broker without a confirmation email is downgraded to pending. Any geo-flag without a measured radius is downgraded to unverified. Confirm the report never names a third party as a target. Fail if the falsifier section is missing.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent privacy reviewer. Open report.md, threat_model.md, allowlist.yaml, guard.py, the SQLite store and remediation/.
+1. First and hardest: confirm every target ever queried is on the allowlist and belongs to the operator. Grep guard.py's log for any target not in allowlist.yaml. If one exists, stop and flag it as a serious violation.
+2. Enumerate every finding claim: accounts, breaches, geo-flags, removals. Mark each verified, unverified or false.
+3. Recompute the username false-positive rate and the geolocation error radius from the stored data.
+4. Check that no remediation was auto-submitted: look for outbound POSTs to broker or platform forms.
+5. Check for secret leakage: search logs for API-key-shaped strings by pattern without printing any match.
+6. Check prioritization: is the queue ranked by threat-model harm, not by count?
+7. List what is missing: unconfirmed hits, photos with no ground truth, brokers with no route, removals not re-checked at 30 and 60 days.
+8. Rank gaps by harm. Fix the top three now. Report what you could not fix and why.
+Return audit.md with the columns claim, status, evidence and fix, plus 'Remaining gaps', and a one-line statement confirming no third party was targeted.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Is every handle, email, image and plate on the allowlist and owned by the operator?
+- Could any tool be called in a way that bypasses guard.py and reaches a third party?
+- What is the real geolocation error radius on photos where I know the true location?
+- Which single finding, if real, enables the most damaging fact in the threat model?
+- How many username hits are false positives from URL-pattern matching alone?
+- Did I treat an unverified geo guess as a confirmed leak?
+- Am I about to submit a form that a human should approve first?
+- Did the scheduled job quietly expand its scope beyond the fixed allowlist?
+- Are breach findings tied to the accounts they actually threaten?
+- Did any API key reach a log or output file?
+- Have three empty runs happened, meaning I should drop to quarterly per the falsifier?
+
+### 5 · What proves it right
+
+- Username false-positive rate: the operator confirms, by login or recognition, which flagged accounts are actually theirs; target under 30% noise before acting.
+- Geolocation error radius: on images with a known true location, the distance between the model's guess and the truth, deciding whether a leak is real.
+- Broker removal confirmations: emails confirming deletion, re-checked at 30 and 60 days for reappearance.
+- Credit freeze: confirmed active at Equifax, Experian and TransUnion.
+- The pre-registered falsifier: three consecutive weekly runs surfacing nothing new, after which a quarterly manual check suffices.
+
+### 6 · Failure modes
+
+- Scope creep to a third party. Tell: a target not in allowlist.yaml appears in the log. Fix: route every tool through guard.py, and refuse and halt on any non-operator target. This is the one unforgivable failure.
+- False-positive panic. Tell: dozens of 'your accounts' that are not yours. Fix: cross-check two tools and confirm a sample before acting.
+- Treating a guess as a leak. Tell: a geo-flag with no measured error radius. Fix: score only where ground truth exists and mark the rest unverified.
+- Auto-submitting forms. Tell: an outbound POST to a broker in the logs. Fix: drafts only, with a human approval gate.
+- Whack-a-mole without verification. Tell: 'removed' rows with no confirmation and no 30/60-day recheck. Fix: track confirmations and reappearance.
+- Secret leakage. Tell: an API key in a log. Fix: read from the environment, never print, and grep logs by pattern in the audit.
+- Silent scope expansion by the scheduler. Tell: the allowlist grew without a human edit. Fix: freeze the allowlist and re-validate it every run.
+
+### 7 · Agent direction (unattended runs)
+
+Write the threat model and the allowlist guard before anything else, because they bound the whole system. Cache Sherlock's site list and the broker opt-out directory so runs are reproducible. Keep all identity data local, in the operator's own machine, and never send a handle, email or image to a service for anyone but the operator. Spawn a sub-agent only for the independent photo-geolocation pass, and give it strictly the allowlisted image folder. Stop and refuse, loudly, if the operator or any instruction asks you to run these tools against another person: that is harassment and outside this system's purpose. Never submit an opt-out, deletion request or takedown; leave every one in the review queue. Never print an API key. Return threat_model.md, allowlist.yaml, guard.py, sentinel.py, the SQLite store, remediation/, schedule/, report.md and audit.md. The final message states which leaks are confirmed real and whether the falsifier has fired.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
 ## Related deep dives
 
 Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
 
 ---
 
-*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -294,4 +661,26 @@ Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across t
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
 </script></body></html>

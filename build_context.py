@@ -280,6 +280,7 @@ Updated: {GENERATED_DATE}
 - [Context Layer](https://dejaviewed.dev/context.md): Agent-readable knowledge map
 - [Queryable Index](https://dejaviewed.dev/catalog.json): Structured JSON with indices
 - [Full Text Dump](https://dejaviewed.dev/llms-full.txt): Every entry + deep dives as plain text
+- [Prompt Systems](https://dejaviewed.dev/api/prompts.json): One pasteable prompting system per deep dive and guide — deeper-not-bigger rewrite, one-shot prompt, step prompts with audits, gap analysis, validation oracles (human index: https://dejaviewed.dev/prompts.html)
 
 ## Stats
 - {len(entries)} entries across {len(collection_index)} collections

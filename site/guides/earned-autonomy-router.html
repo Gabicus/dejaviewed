@@ -89,7 +89,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>David Friedberg on All-In says token usage flipped from 80/20 closed-to-open to 80/20 open-to-closed in 12 weeks, calling it Anthropic's biggest risk factor ahead of S-1s. He expects a bifurcated market: open weights for most use, premium models for hard engineering, math and biology work.</p>
 <p>View original post</p>
 <h3>Anthropic blocks Claude Max subscription tokens in 3rd-party tools</h3>
-<p>Creator: @tech.unicorn · Tier: A Tools: Anthropic, Claude, Claude Max, DeepSeek, GPT-4o, Gemini, Llama, Notion, Open Claw</p>
+<p>Creator: @tech.unicorn · Tier: B Tools: Anthropic, Claude, Claude Max, DeepSeek, GPT-4o, Gemini, Llama, Notion, Open Claw</p>
 <p>Vendor risk — one ToS change multiplied effective cost overnight</p>
 <p>@tech.unicorn on Anthropic killing subscription-token access in third-party tools (Jan 9 ToS change), spiking effective cost from $200/mo to $500-$2000/mo on API. Suggests multi-model routers (DeepSeek/Gemini/Llama/GPT-4o) as the mitigation.</p>
 <p>View original post</p>
@@ -114,10 +114,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Xiaomi showed a prototype AI Cube with 80GB unified memory running 3B and 120B models on-device, built on three in-house chips: XRING O3 (mobile), O100 AI accelerator (claimed 1.22 TB/s near-memory bandwidth) and D100 3nm driving chip. No price, release date or independent benchmarks yet.</p>
 <p>View original post</p>
 <h2>Action sketch — how to implement this</h2>
-<p>Log every delegated task for two weeks with a class label (rename, test-writing, data cleanup, UI tweak) and the reviewer's pass/fail</p>
-<p>Stand up Qwen 27B via llama.cpp or Ollama behind the same subagent interface; route one low-stakes class to it in shadow mode and grade it with the same frontier reviewer</p>
-<p>Add the promotion rule: 20 consecutive passes moves a class one tier down, any fail moves it back up; track dollars saved per class</p>
-<p>Falsifier: if after a month no task class sustains a 90%+ pass rate on the local tier, the local floor is not there yet for your work — stay two-tier</p>
+<p>Log every delegated task for two weeks with a class label (rename, test-writing, data cleanup, UI tweak) and the reviewer's pass/fail Stand up Qwen 27B via llama.cpp or Ollama behind the same subagent interface; route one low-stakes class to it in shadow mode and grade it with the same frontier reviewer Add the promotion rule: 20 consecutive passes moves a class one tier down, any fail moves it back up; track dollars saved per class Falsifier: if after a month no task class sustains a 90%+ pass rate on the local tier, the local floor is not there yet for your work — stay two-tier</p>
 <h2>Prerequisites</h2>
 <p>A 24GB GPU or a unified-memory machine</p>
 <p>An existing orchestrator-worker setup</p>
@@ -154,9 +151,131 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>@tech.unicorn</p>
 <p>@techno.optimist.prime</p>
 <p>@thomas.lentine</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Build a three-tier task router (frontier, mid-tier, and a local Qwen 27B on one 24GB GPU) plus a zero tier for plain shell commands, wired into an existing orchestrator-worker setup. Each task class earns its way down the stack only through statistically justified review pass rates. The router doubles as a measuring instrument: per task class, it reports where open models have caught up and what that saves in dollars. Done means 14 days of logged tasks, a shadow-mode local tier graded blind by a reviewer from a different vendor, a promotion rule with a confidence bound, a cost ledger reconciled to billing, and a verdict on the falsifier.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): An ML platform engineer would notice that '20 passes then promote' proves less than it sounds. With 20 passes out of 20, the 95% upper bound on the true fail rate is still about 14%, by the rule of three: 3/n. So they would gate promotion on a Wilson lower bound or a sequential probability ratio test (SPRT), not a raw streak. They would grade blind to which tier produced the output, with a reviewer from a different vendor so the grader does not favor its own family. They would rerun the vendor benchmarks themselves, because Qwen's 84.3 on OSWorld and DeepSeek's 61.8 to 82.7 on Terminal Bench 2.1 are self-reported. They would keep every tier compliant with vendor terms: API keys for automation, never subscription OAuth tokens in third-party tools.</p>
+<p>Rawest material to start from: The team's own logs: 14 or more days of delegated tasks with class labels, diffs, test results and reviewer verdicts. Billing exports from the Anthropic and OpenAI consoles, not plan-value estimates. The Qwen model card and the Unsloth GGUF quant files. llama.cpp llama-bench output on the actual GPU. The public Terminal-Bench and SWE-bench Verified harnesses for independent reruns. Anthropic's Consumer Terms and Usage Policy on subscription use in third-party tools. The Messages API reference for stop_reason values, including 'refusal'. The only-cli/oc repo for compact page views.</p>
+<p>Methods and tools: llama.cpp llama-server (OpenAI-compatible) or Ollama, serving a Qwen 27B Q4_K_M or Unsloth dynamic quant (about 17GB) on an RTX 3090/4090. One router interface: task, then class, then tier, then executor, then reviewer. A SQLite ledger. Wald SPRT (p0=0.85, p1=0.95, alpha=0.05, beta=0.10) and Wilson score intervals for promotion and demotion. Blind grading with tier labels stripped. Cohen's kappa between two reviewers. A deterministic zero-tier detector for commands already defined in package.json, the Makefile or scripts/, following the PromptOps Smart Action Detector. nvidia-smi power logging for local cost. oc for browsing inside local-tier tasks.</p>
+<p>What proves it right (other than you or the model): Executable tests (pytest or npm test exit codes) on each class's held-out tasks, where the local tier must match incumbent pass rates within the confidence bound. Independent reruns of 50 Terminal-Bench and 50 SWE-bench Verified tasks, compared with the vendor-reported numbers. Billing exports reconciled with the router's ledger to within 5%. Cohen's kappa of 0.6 or higher between two cross-vendor reviewers. The pre-registered falsifier: no class sustaining a 90% or higher local pass rate after a month.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>You are an ML platform engineer. Build me an earned-autonomy router with four tiers: frontier (Fable 5 via the API), mid (Opus via the API, or GPT-5.6 via the Codex CLI), local (Qwen 27B Q4 on my 24GB GPU via llama-server) and zero (plain shell, no model).</p>
+<p>Log every delegated task for 14 days in SQLite with the class, tier, tokens, cost, stop_reason and the reviewer's verdict. Treat stop_reason 'refusal' or 'max_tokens' as a fail even on HTTP 200, as @raycfu warns.</p>
+<p>Run the local tier in shadow mode on two low-stakes classes. Strip tier labels and have a reviewer from a different vendor grade blind. Double-grade 10% and report kappa.</p>
+<p>Promotion is not '20 in a row'. Use SPRT with p0=0.85 and p1=0.95, plus a Wilson bound, and demote when the upper bound falls below 0.90.</p>
+<p>Rerun 50 Terminal-Bench tasks locally to check Qwen's self-reported scores.</p>
+<p>Reconcile the cost ledger against billing exports, including review cost and local power.</p>
+<p>Use API keys only. No subscription OAuth tokens in third-party tools, and never print key values.</p>
+<p>Report per class: tier, n, pass rate with CI, dollars saved, and whether the falsifier fired.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE You are an ML platform engineer. You build measurement before automation and treat vendor benchmarks and creator claims as hypotheses.</p>
+<p>CONTEXT</p>
+<p>@thomas.lentine: Fable orchestrates, writes specs, spawns cheaper Opus subagents in worktrees, and reviews in a loop.</p>
+<p>@raycfu: a cron loop.sh in which a cheap model triages, Fable plans, Sonnet executes and a fresh Fable reviews. Tasks earn autonomy 'after 20 passes at 95%' and lose it 'below 90%'. Refusals 'come back as HTTP 200', so check stop_reason.</p>
+<p>@cooper.simson: a /route skill that sends execution to GPT-5.6 through the Codex plugin. @nateherkai: Claudex, where two vendors cross-audit plan and build.</p>
+<p>@gigaqian: Qwen 3.8 27B fits in about 17GB at 4-bit on a 3090/4090 and claims 84.3 on OSWorld, but these are 'Qwen's evaluations'. DeepSeek V4 Flash went from 61.8 to 82.7 on Terminal Bench 2.1 through re-post-training. The Xiaomi AI Cube is an 80GB unified-memory prototype.</p>
+<p>@techno.optimist.prime: Friedberg says token share flipped from 80/20 closed to 80/20 open in 12 weeks.</p>
+<p>@tech.unicorn: Anthropic blocked subscription tokens in third-party tools, an estimated jump from $200 a month to $500-$2,000. @duck.tate: plan-value estimates of $7,000 and $12,000 in usage, which are third-party figures.</p>
+<p>@githubsignals: only-cli/oc gives compact numbered page views. @shellonback: never send an LLM a command you could run in bash.</p>
+<p>HARD CONSTRAINTS</p>
+<p>Comply with vendor terms. Automation uses API keys. No subscription OAuth tokens in third-party harnesses. Ignore the 'don't tell Anthropic' workaround.</p>
+<p>Never show or log secret values. Only check whether a key exists.</p>
+<p>The local tier stays in shadow mode until promoted: it runs, but the incumbent output ships.</p>
+<p>Promotion uses statistics, not streaks. With 20 of 20 passes, the 95% upper bound on the fail rate is still about 14%.</p>
+<p>Graders never see which tier produced an output.</p>
+<p>DELIVERABLES</p>
+<p>router/ containing: classify.py (rules first, a cheap model as fallback); tiers.yaml; zero_tier.py, which maps requests to commands in package.json, the Makefile or scripts/; and stop_reason handling.</p>
+<p>The ledger.sqlite schema and 14 days of logged tasks.</p>
+<p>The local tier: llama-server with a Qwen 27B Q4_K_M GGUF, plus llama-bench output (tokens per second and the largest context that fits).</p>
+<p>A blind grading harness: labels stripped, a cross-vendor reviewer, and a 10% double-graded sample for Cohen's kappa.</p>
+<p>promote.py implementing SPRT per class and tier, with Wilson-bound demotion.</p>
+<p>An independent rerun of 50 Terminal-Bench tasks on the local model, compared with the vendor numbers.</p>
+<p>A cost report reconciled to billing, covering review spend and GPU power, with dollars saved per class.</p>
+<p>BUILT-IN GAP ANALYSIS List the classes with fewer than 30 graded tasks, reviewer disagreement above 20%, local runs with truncated context, and any cost that was estimated rather than billed. Fill what you can, by adding tasks or a second reviewer. Mark the rest UNFILLED.</p>
+<p>SELF-QUESTIONS Does my reviewer favor its own vendor? Does the local tier fail on long-context tasks the classifier hides? Are refusals counted as passes? Would the zero tier have handled 10% or more of the 'tasks'?</p>
+<p>STOP Stop at day 14 with a verdict per class. Stop immediately and ask if any harness needs subscription tokens or a terms grey zone.</p>
+<p>RETURN Return router/, ledger.sqlite, grading/, bench/, costs.csv and report.md with the sections Setup, Classes, Promotion Results, Independent Benchmarks, Costs, Falsifier, Compliance and Gaps.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: logs, billing, terms, vendor claims</h4>
+<p>Goal: Establish real baseline costs, the task mix, the compliance limits, and which numbers are vendor-reported.</p>
+<p>Collect the raw material before writing any router code. (1) Export 30 days of billing from the Anthropic and OpenAI consoles as CSV, with dollars and tokens by model. (2) Pull the last 200 delegated tasks from the orchestrator's history: agent branches, task files or transcripts. Hand-label each with a class: rename, test-writing, data cleanup, UI tweak, docs, refactor or research. (3) Quote the Anthropic Consumer Terms and Usage Policy clause on subscription credentials in third-party tools that made @tech.unicorn's setup non-compliant. Quote the equivalent OpenAI Codex terms. (4) Build claims.csv for Qwen's 84.3 on OSWorld, the 17GB quant size, DeepSeek's 61.8 to 82.7, Friedberg's 80/20 flip, and @duck.tate's $7,000 and $12,000 plan values. Mark each one vendor-reported, third-party or independently verified. (5) Read the Messages API docs and list every stop_reason value.</p>
+<p>Expect: billing.csv, tasks_labeled.csv with 200 rows and class shares, compliance.md with quoted clauses, and claims.csv.</p>
+<p>Audit before moving on: Billing totals must equal the console totals. If more than 15% of tasks fit no class, revise the taxonomy first. Fail if any credential value appears in any file. Check for key presence only.</p>
+<h4>Step 2 — Zero tier and router skeleton</h4>
+<p>Goal: Send deterministic work to the shell and put every tier behind one interface.</p>
+<p>Write router/ in Python. classify.py applies regex and AST rules first: a 'rename' touches identifiers only, and a 'test-writing' change only adds test files. A cheap model is the fallback and returns a class and a confidence score. zero_tier.py parses package.json scripts, Makefile targets and scripts/.sh. When a request maps to an existing command, such as 'run the tests' or 'build', it runs the command directly and logs tier=zero and cost=0, as in @shellonback's detector. tiers.yaml maps tier names to endpoints. Frontier is Fable 5 via the API. Mid is Opus via the API or GPT-5.6 via the Codex CLI. Local is http://localhost:8080/v1. Every model call records stop_reason. 'refusal' or 'max_tokens' marks the task failed. The ledger table is tasks(id, ts, class, tier, shadow, model, in_tokens, out_tokens, cost_usd, latency_s, stop_reason, tests_pass, reviewer, verdict).</p>
+<p>Expect: A working router CLI, ledger.sqlite, and unit tests for classification, zero-tier detection and refusal handling.</p>
+<p>Audit before moving on: Replay the 200 labeled tasks through classify.py. Agreement with the hand labels must be 85% or better. The zero tier must have no false positives on tasks that need reasoning. A mocked refusal must be logged as a fail.</p>
+<h4>Step 3 — Local tier, benchmarked independently</h4>
+<p>Goal: Serve Qwen 27B on the 24GB card and check the vendor claims yourself.</p>
+<p>Download a Qwen 27B Q4_K_M GGUF, or the Unsloth dynamic 4-bit quant, from Hugging Face and record its SHA-256. Run llama-bench to get prompt and generation tokens per second. Find the largest context that fits in 24GB with the KV cache at q8_0. Serve it with: llama-server -m -c -ngl 99 --port 8080. Run 50 Terminal-Bench and 50 SWE-bench Verified tasks through the same agent harness and tool access the router uses, with oc for web reads. Run a frontier baseline on the same 100 tasks. Compare the pass rates with Qwen's self-reported figures. Record where the model drops reasoning across tool calls, and how much it degrades past 32k tokens. Log GPU memory headroom at the chosen context, so you know how much room is left for longer agent sessions. Note which failure types are tool-format errors rather than reasoning errors, because a better system prompt or grammar constraint can fix the former.</p>
+<p>Expect: bench/llama_bench.txt, bench/results.csv with 100 tasks in local and frontier columns, and bench/notes.md.</p>
+<p>Audit before moving on: Confirm the GGUF hash matches the published one. Rerun 10 tasks. If the pass rate swings by more than 10 points, use 3 seeds. Fail if the server logs show n_ctx overflow, meaning context was silently truncated.</p>
+<h4>Step 4 — Shadow mode with blind cross-vendor review</h4>
+<p>Goal: Run the local tier in shadow on two low-stakes classes and grade without bias.</p>
+<p>Pick two classes with low blast radius and executable checks, such as test-writing and data cleanup. For 14 days, send every task in those classes to both the incumbent and the local tier. Only the incumbent output ships. The grading harness strips model names, tier labels, signature comments and whitespace tells, then shuffles the order. The primary reviewer comes from a different vendor than the producer. This is @nateherkai's Claudex rule: never let one model plan, build and grade its own work. A second reviewer double-grades 10% of the tasks, and you compute Cohen's kappa. The verdict requires both tests_pass (exit code) and the reviewer's pass against the spec. Log rows with shadow=1. Seed the shuffle and store the mapping from blind ID to tier in a separate file the reviewers never see. Record reviewer cost per graded task, because step 6 needs it.</p>
+<p>Expect: grading/ harness code, 60 or more shadow rows per class, and a kappa report.</p>
+<p>Audit before moving on: If kappa is below 0.6, rewrite the rubric and regrade a sample before trusting any rate. Grep all grader prompts for model or tier names. Fail if any class has fewer than 30 shadow tasks.</p>
+<h4>Step 5 — Promotion engine with stated error rates</h4>
+<p>Goal: Replace '20 in a row' with promotion and demotion rules that have known error rates.</p>
+<p>Implement promote.py. For each class and tier, run Wald's SPRT on the pass-or-fail sequence with H0 p=0.85 and H1 p=0.95, alpha=0.05 and beta=0.10. Accepting H1 promotes the class one tier down. Compute the Wilson 95% interval in parallel. Demote immediately when its upper bound falls below 0.90, which is @raycfu's 'below 90%' rule in statistical form. Document why a streak is weak: 0 fails in 20 leaves a 95% upper bound of about 0.14 on the fail rate. Promotion is per class, never global. Promoted classes keep a 10% audit sample graded by the frontier reviewer. Add goals/, @raycfu's daily regression suite, which replays 10 frozen tasks per promoted class every morning via cron. Store every decision with its timestamp and the evidence count, so the report can show exactly when and why each class moved. Expose the thresholds in tiers.yaml rather than hard-coding them.</p>
+<p>Expect: promote.py with tests, a per-class decision table, and goals/ with the regression suite and its cron entry.</p>
+<p>Audit before moving on: Simulate sequences at p=0.80, 0.90 and 0.97. Empirical promotion rates must match alpha and beta within 2 points. Fail if any class was promoted with fewer than 30 graded tasks.</p>
+<h4>Step 6 — Cost ledger reconciled to billing</h4>
+<p>Goal: Measure dollars saved per class against real invoices.</p>
+<p>For every task row, compute the cost from metered tokens at current list prices. For the local tier, compute power as watts from nvidia-smi --query-gpu=power.draw, times latency, times the local $/kWh, and add hardware amortization over 36 months. Reconcile the router's frontier and mid cost against the billing exports for the same days, to within 5%. Per class, compute the counterfactual: the cost if every task ran on frontier, minus actual cost. Include review spend. Reviews can erase the savings on cheap classes. Treat @duck.tate's plan values and @tech.unicorn's $500-$2,000 estimate as claims to compare against, never as inputs. Store every price used, with a source URL and date, in prices.yaml so the numbers can be recomputed when list prices change. Show per-class savings both with and without review cost.</p>
+<p>Expect: costs.csv by class and day, reconciliation.md with the variance against billing, and a savings table that includes review cost.</p>
+<p>Audit before moving on: If the variance against billing is above 5%, find the missing calls (retries, untagged subagents) before reporting any savings. Fail if local cost omits power or amortization.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4>
+<p>Goal: Deliver the per-class verdict, the falsifier result and the ranked gaps.</p>
+<p>Run the oracle pass: (a) Per class, the local pass rate with a Wilson CI against the incumbent, on executable tests. (b) The independent benchmark reruns against the vendor-reported numbers. (c) The billing reconciliation within 5%. (d) Reviewer kappa of 0.6 or higher. (e) The falsifier: does any class sustain a Wilson lower bound of 0.90 or higher on the local tier? Write report.md with the sections Setup, Classes, Promotion Results, Independent Benchmarks, Costs, Falsifier, Compliance and Gaps. If the falsifier fires, say plainly that you stay two-tier because the local floor is not there yet for this work. Rank the gaps by dollars at stake. Include one row per class showing what would change the verdict, for example 'needs 40 more graded tasks' or 'kappa too low to trust'. Recommend the next class to put in shadow mode.</p>
+<p>Expect: report.md, a five-row oracle table, and a per-class verdict table with tier, n, pass rate, CI and $ saved.</p>
+<p>Audit before moving on: Every promotion in the report must match promote.py output on the ledger. Mark any unreconciled savings figure as estimated. compliance.md must show no subscription-token use anywhere in the pipeline.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are an independent reviewer. Open report.md, ledger.sqlite, promote.py, grading/, bench/ and costs.csv.</p>
+<p>Enumerate every claim: pass rates, promotions, benchmark comparisons, savings and compliance. Mark each one verified (with a SQL query or file reference), unverified, or false.</p>
+<p>Recompute the per-class pass rates and Wilson intervals from ledger.sqlite and diff them against the report.</p>
+<p>Rerun promote.py on the ledger and check that the promotions match.</p>
+<p>Check blindness: grep the grader prompts for model and tier names, and recompute kappa.</p>
+<p>Check refusals: count rows with stop_reason 'refusal' and confirm none is marked pass.</p>
+<p>Check that savings include review spend and local power, and that they reconcile to billing.</p>
+<p>Check compliance: no subscription OAuth tokens in configs, and no key-shaped strings in logs. Search by pattern and report counts without printing any match.</p>
+<p>Rank the issues by impact. Fix the top three now. Report what you could not fix and why.</p>
+<p>Return audit.md with the columns claim, status, evidence and fix, plus 'Remaining gaps' and an A-F grade.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Did any class get promoted on a streak shorter than SPRT allows, or with fewer than 30 graded tasks?</p>
+<p>Was every graded task reviewed by a different vendor than the one that produced it?</p>
+<p>Could the grader infer the tier from style, latency or formatting?</p>
+<p>Are refusal and max_tokens stops counted as fails, given the HTTP 200 trap?</p>
+<p>Does Qwen 27B keep its reasoning across tool-call steps in my harness, or only in the vendor's?</p>
+<p>Did the 24GB card force a context window that silently truncates real tasks?</p>
+<p>How much of my 'work' was the zero tier all along: commands I could have just run?</p>
+<p>Do review costs on cheap classes erase the savings from demoting them?</p>
+<p>Which vendor term change would break this router overnight, the way the January 9 change broke @tech.unicorn's?</p>
+<p>How far is my independent rerun from Qwen's self-reported 84.3 on OSWorld?</p>
+<p>Is Friedberg's open-versus-closed flip relevant to my task mix, or only to aggregate token volume?</p>
+<h3>5 · What proves it right</h3>
+<p>Executable tests: pytest or npm test exit codes on held-out tasks per class, comparing local and incumbent pass rates with Wilson 95% CIs.</p>
+<p>Public benchmark harnesses: reruns of 50 Terminal-Bench and 50 SWE-bench Verified tasks on the local model, compared with Qwen's and DeepSeek's self-reported figures.</p>
+<p>Billing exports from the Anthropic and OpenAI consoles: the router ledger must land within 5% for the same dates.</p>
+<p>Inter-rater agreement: Cohen's kappa of 0.6 or higher between two cross-vendor reviewers on a 10% double-graded sample.</p>
+<p>SPRT simulation: empirical promotion error rates on synthetic sequences must match alpha=0.05 and beta=0.10 within 2 points.</p>
+<h3>6 · Failure modes</h3>
+<p>Streak promotion. Tell: a class promoted after 20 passes then fails weekly. Fix: SPRT or a Wilson bound, plus a 10% audit sample.</p>
+<p>Self-preferring reviewer. Tell: the reviewer passes its own family's outputs more often than the tests do. Fix: cross-vendor blind grading, calibrated against test results.</p>
+<p>Silent refusals. Tell: tasks marked done with empty diffs. Fix: treat stop_reason 'refusal' and 'max_tokens' as fails.</p>
+<p>Local context truncation. Tell: failures cluster on large files. Fix: log the prompt token count and route anything over the local limit upward.</p>
+<p>Phantom savings. Tell: the savings figure omits review spend or GPU power. Fix: reconcile to billing and include every cost.</p>
+<p>Terms fragility. Tell: the harness depends on a subscription token. Fix: API keys only, with clauses recorded in compliance.md.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with the billing exports and task history. Without them, savings and class shares are guesses. Cache the GGUF, its hash and the llama-bench output, and do not re-download per run. Spawn one sub-agent for the independent benchmark rerun (step 3), which is long and isolated. Spawn another for the grading harness (step 4). Keep the promotion statistics and the final verdict in the main thread. Never read, print or copy API key values. Check only that the environment variables exist. Stop and ask the human before connecting any subscription account, before any promoted local-tier output ships to production, and if the GPU cannot fit Q4 with at least 16k context. Return router/, ledger.sqlite, grading/, bench/, costs.csv, report.md and audit.md. The final message is the per-class verdict table and the falsifier result.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 <h2>Related deep dives</h2>
 <p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
-<p>Generated 2026-10-21 · curated by @6ab3 for DejaViewed</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Earned Autonomy — a three-tier router that demotes work to your own GPU
 
@@ -243,7 +362,7 @@ David Friedberg on All-In says token usage flipped from 80/20 closed-to-open to 
 
 [View original post](https://www.instagram.com/p/DeIOphnT7Yq/)
 ### Anthropic blocks Claude Max subscription tokens in 3rd-party tools
-**Creator:** [@tech.unicorn](https://instagram.com/tech.unicorn) · **Tier:** A
+**Creator:** [@tech.unicorn](https://instagram.com/tech.unicorn) · **Tier:** B
 **Tools:** Anthropic, Claude, Claude Max, DeepSeek, GPT-4o, Gemini, Llama, Notion, Open Claw
 
 > Vendor risk — one ToS change multiplied effective cost overnight
@@ -291,10 +410,10 @@ Xiaomi showed a prototype AI Cube with 80GB unified memory running 3B and 120B m
 
 ## Action sketch — how to implement this
 
-- Log every delegated task for two weeks with a class label (rename, test-writing, data cleanup, UI tweak) and the reviewer's pass/fail
-- Stand up Qwen 27B via llama.cpp or Ollama behind the same subagent interface; route one low-stakes class to it in shadow mode and grade it with the same frontier reviewer
-- Add the promotion rule: 20 consecutive passes moves a class one tier down, any fail moves it back up; track dollars saved per class
-- Falsifier: if after a month no task class sustains a 90%+ pass rate on the local tier, the local floor is not there yet for your work — stay two-tier
+Log every delegated task for two weeks with a class label (rename, test-writing, data cleanup, UI tweak) and the reviewer's pass/fail
+Stand up Qwen 27B via llama.cpp or Ollama behind the same subagent interface; route one low-stakes class to it in shadow mode and grade it with the same frontier reviewer
+Add the promotion rule: 20 consecutive passes moves a class one tier down, any fail moves it back up; track dollars saved per class
+Falsifier: if after a month no task class sustains a 90%+ pass rate on the local tier, the local floor is not there yet for your work — stay two-tier
 
 ---
 
@@ -344,13 +463,266 @@ Xiaomi showed a prototype AI Cube with 80GB unified memory running 3B and 120B m
 
 ---
 
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Build a three-tier task router (frontier, mid-tier, and a local Qwen 27B on one 24GB GPU) plus a zero tier for plain shell commands, wired into an existing orchestrator-worker setup. Each task class earns its way down the stack only through statistically justified review pass rates. The router doubles as a measuring instrument: per task class, it reports where open models have caught up and what that saves in dollars. Done means 14 days of logged tasks, a shadow-mode local tier graded blind by a reviewer from a different vendor, a promotion rule with a confidence bound, a cost ledger reconciled to billing, and a verdict on the falsifier.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** An ML platform engineer would notice that '20 passes then promote' proves less than it sounds. With 20 passes out of 20, the 95% upper bound on the true fail rate is still about 14%, by the rule of three: 3/n. So they would gate promotion on a Wilson lower bound or a sequential probability ratio test (SPRT), not a raw streak. They would grade blind to which tier produced the output, with a reviewer from a different vendor so the grader does not favor its own family. They would rerun the vendor benchmarks themselves, because Qwen's 84.3 on OSWorld and DeepSeek's 61.8 to 82.7 on Terminal Bench 2.1 are self-reported. They would keep every tier compliant with vendor terms: API keys for automation, never subscription OAuth tokens in third-party tools.
+- **Rawest material to start from:** The team's own logs: 14 or more days of delegated tasks with class labels, diffs, test results and reviewer verdicts. Billing exports from the Anthropic and OpenAI consoles, not plan-value estimates. The Qwen model card and the Unsloth GGUF quant files. llama.cpp llama-bench output on the actual GPU. The public Terminal-Bench and SWE-bench Verified harnesses for independent reruns. Anthropic's Consumer Terms and Usage Policy on subscription use in third-party tools. The Messages API reference for stop_reason values, including 'refusal'. The only-cli/oc repo for compact page views.
+- **Methods and tools:** llama.cpp llama-server (OpenAI-compatible) or Ollama, serving a Qwen 27B Q4_K_M or Unsloth dynamic quant (about 17GB) on an RTX 3090/4090. One router interface: task, then class, then tier, then executor, then reviewer. A SQLite ledger. Wald SPRT (p0=0.85, p1=0.95, alpha=0.05, beta=0.10) and Wilson score intervals for promotion and demotion. Blind grading with tier labels stripped. Cohen's kappa between two reviewers. A deterministic zero-tier detector for commands already defined in package.json, the Makefile or scripts/, following the PromptOps Smart Action Detector. nvidia-smi power logging for local cost. oc for browsing inside local-tier tasks.
+- **What proves it right (other than you or the model):** Executable tests (pytest or npm test exit codes) on each class's held-out tasks, where the local tier must match incumbent pass rates within the confidence bound. Independent reruns of 50 Terminal-Bench and 50 SWE-bench Verified tasks, compared with the vendor-reported numbers. Billing exports reconciled with the router's ledger to within 5%. Cohen's kappa of 0.6 or higher between two cross-vendor reviewers. The pre-registered falsifier: no class sustaining a 90% or higher local pass rate after a month.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+You are an ML platform engineer. Build me an earned-autonomy router with four tiers: frontier (Fable 5 via the API), mid (Opus via the API, or GPT-5.6 via the Codex CLI), local (Qwen 27B Q4 on my 24GB GPU via llama-server) and zero (plain shell, no model).
+1. Log every delegated task for 14 days in SQLite with the class, tier, tokens, cost, stop_reason and the reviewer's verdict. Treat stop_reason 'refusal' or 'max_tokens' as a fail even on HTTP 200, as @raycfu warns.
+2. Run the local tier in shadow mode on two low-stakes classes. Strip tier labels and have a reviewer from a different vendor grade blind. Double-grade 10% and report kappa.
+3. Promotion is not '20 in a row'. Use SPRT with p0=0.85 and p1=0.95, plus a Wilson bound, and demote when the upper bound falls below 0.90.
+4. Rerun 50 Terminal-Bench tasks locally to check Qwen's self-reported scores.
+5. Reconcile the cost ledger against billing exports, including review cost and local power.
+6. Use API keys only. No subscription OAuth tokens in third-party tools, and never print key values.
+Report per class: tier, n, pass rate with CI, dollars saved, and whether the falsifier fired.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE
+You are an ML platform engineer. You build measurement before automation and treat vendor benchmarks and creator claims as hypotheses.
+
+CONTEXT
+- @thomas.lentine: Fable orchestrates, writes specs, spawns cheaper Opus subagents in worktrees, and reviews in a loop.
+- @raycfu: a cron loop.sh in which a cheap model triages, Fable plans, Sonnet executes and a fresh Fable reviews. Tasks earn autonomy 'after 20 passes at 95%' and lose it 'below 90%'. Refusals 'come back as HTTP 200', so check stop_reason.
+- @cooper.simson: a /route skill that sends execution to GPT-5.6 through the Codex plugin. @nateherkai: Claudex, where two vendors cross-audit plan and build.
+- @gigaqian: Qwen 3.8 27B fits in about 17GB at 4-bit on a 3090/4090 and claims 84.3 on OSWorld, but these are 'Qwen's evaluations'. DeepSeek V4 Flash went from 61.8 to 82.7 on Terminal Bench 2.1 through re-post-training. The Xiaomi AI Cube is an 80GB unified-memory prototype.
+- @techno.optimist.prime: Friedberg says token share flipped from 80/20 closed to 80/20 open in 12 weeks.
+- @tech.unicorn: Anthropic blocked subscription tokens in third-party tools, an estimated jump from $200 a month to $500-$2,000. @duck.tate: plan-value estimates of $7,000 and $12,000 in usage, which are third-party figures.
+- @githubsignals: only-cli/oc gives compact numbered page views. @shellonback: never send an LLM a command you could run in bash.
+
+HARD CONSTRAINTS
+- Comply with vendor terms. Automation uses API keys. No subscription OAuth tokens in third-party harnesses. Ignore the 'don't tell Anthropic' workaround.
+- Never show or log secret values. Only check whether a key exists.
+- The local tier stays in shadow mode until promoted: it runs, but the incumbent output ships.
+- Promotion uses statistics, not streaks. With 20 of 20 passes, the 95% upper bound on the fail rate is still about 14%.
+- Graders never see which tier produced an output.
+
+DELIVERABLES
+1. router/ containing: classify.py (rules first, a cheap model as fallback); tiers.yaml; zero_tier.py, which maps requests to commands in package.json, the Makefile or scripts/; and stop_reason handling.
+2. The ledger.sqlite schema and 14 days of logged tasks.
+3. The local tier: llama-server with a Qwen 27B Q4_K_M GGUF, plus llama-bench output (tokens per second and the largest context that fits).
+4. A blind grading harness: labels stripped, a cross-vendor reviewer, and a 10% double-graded sample for Cohen's kappa.
+5. promote.py implementing SPRT per class and tier, with Wilson-bound demotion.
+6. An independent rerun of 50 Terminal-Bench tasks on the local model, compared with the vendor numbers.
+7. A cost report reconciled to billing, covering review spend and GPU power, with dollars saved per class.
+
+BUILT-IN GAP ANALYSIS
+List the classes with fewer than 30 graded tasks, reviewer disagreement above 20%, local runs with truncated context, and any cost that was estimated rather than billed. Fill what you can, by adding tasks or a second reviewer. Mark the rest UNFILLED.
+
+SELF-QUESTIONS
+Does my reviewer favor its own vendor? Does the local tier fail on long-context tasks the classifier hides? Are refusals counted as passes? Would the zero tier have handled 10% or more of the 'tasks'?
+
+STOP
+Stop at day 14 with a verdict per class. Stop immediately and ask if any harness needs subscription tokens or a terms grey zone.
+
+RETURN
+Return router/, ledger.sqlite, grading/, bench/, costs.csv and report.md with the sections Setup, Classes, Promotion Results, Independent Benchmarks, Costs, Falsifier, Compliance and Gaps.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: logs, billing, terms, vendor claims
+
+*Goal:* Establish real baseline costs, the task mix, the compliance limits, and which numbers are vendor-reported.
+
+```text
+Collect the raw material before writing any router code.
+(1) Export 30 days of billing from the Anthropic and OpenAI consoles as CSV, with dollars and tokens by model.
+(2) Pull the last 200 delegated tasks from the orchestrator's history: agent branches, task files or transcripts. Hand-label each with a class: rename, test-writing, data cleanup, UI tweak, docs, refactor or research.
+(3) Quote the Anthropic Consumer Terms and Usage Policy clause on subscription credentials in third-party tools that made @tech.unicorn's setup non-compliant. Quote the equivalent OpenAI Codex terms.
+(4) Build claims.csv for Qwen's 84.3 on OSWorld, the 17GB quant size, DeepSeek's 61.8 to 82.7, Friedberg's 80/20 flip, and @duck.tate's $7,000 and $12,000 plan values. Mark each one vendor-reported, third-party or independently verified.
+(5) Read the Messages API docs and list every stop_reason value.
+```
+
+**Expect:** billing.csv, tasks_labeled.csv with 200 rows and class shares, compliance.md with quoted clauses, and claims.csv.
+
+**Audit before moving on:** Billing totals must equal the console totals. If more than 15% of tasks fit no class, revise the taxonomy first. Fail if any credential value appears in any file. Check for key presence only.
+
+#### Step 2 — Zero tier and router skeleton
+
+*Goal:* Send deterministic work to the shell and put every tier behind one interface.
+
+```text
+Write router/ in Python.
+classify.py applies regex and AST rules first: a 'rename' touches identifiers only, and a 'test-writing' change only adds test files. A cheap model is the fallback and returns a class and a confidence score.
+zero_tier.py parses package.json scripts, Makefile targets and scripts/*.sh. When a request maps to an existing command, such as 'run the tests' or 'build', it runs the command directly and logs tier=zero and cost=0, as in @shellonback's detector.
+tiers.yaml maps tier names to endpoints. Frontier is Fable 5 via the API. Mid is Opus via the API or GPT-5.6 via the Codex CLI. Local is http://localhost:8080/v1.
+Every model call records stop_reason. 'refusal' or 'max_tokens' marks the task failed.
+The ledger table is tasks(id, ts, class, tier, shadow, model, in_tokens, out_tokens, cost_usd, latency_s, stop_reason, tests_pass, reviewer, verdict).
+```
+
+**Expect:** A working router CLI, ledger.sqlite, and unit tests for classification, zero-tier detection and refusal handling.
+
+**Audit before moving on:** Replay the 200 labeled tasks through classify.py. Agreement with the hand labels must be 85% or better. The zero tier must have no false positives on tasks that need reasoning. A mocked refusal must be logged as a fail.
+
+#### Step 3 — Local tier, benchmarked independently
+
+*Goal:* Serve Qwen 27B on the 24GB card and check the vendor claims yourself.
+
+```text
+Download a Qwen 27B Q4_K_M GGUF, or the Unsloth dynamic 4-bit quant, from Hugging Face and record its SHA-256.
+Run llama-bench to get prompt and generation tokens per second. Find the largest context that fits in 24GB with the KV cache at q8_0.
+Serve it with: llama-server -m <gguf> -c <ctx> -ngl 99 --port 8080.
+Run 50 Terminal-Bench and 50 SWE-bench Verified tasks through the same agent harness and tool access the router uses, with oc for web reads. Run a frontier baseline on the same 100 tasks.
+Compare the pass rates with Qwen's self-reported figures.
+Record where the model drops reasoning across tool calls, and how much it degrades past 32k tokens. Log GPU memory headroom at the chosen context, so you know how much room is left for longer agent sessions. Note which failure types are tool-format errors rather than reasoning errors, because a better system prompt or grammar constraint can fix the former.
+```
+
+**Expect:** bench/llama_bench.txt, bench/results.csv with 100 tasks in local and frontier columns, and bench/notes.md.
+
+**Audit before moving on:** Confirm the GGUF hash matches the published one. Rerun 10 tasks. If the pass rate swings by more than 10 points, use 3 seeds. Fail if the server logs show n_ctx overflow, meaning context was silently truncated.
+
+#### Step 4 — Shadow mode with blind cross-vendor review
+
+*Goal:* Run the local tier in shadow on two low-stakes classes and grade without bias.
+
+```text
+Pick two classes with low blast radius and executable checks, such as test-writing and data cleanup.
+For 14 days, send every task in those classes to both the incumbent and the local tier. Only the incumbent output ships.
+The grading harness strips model names, tier labels, signature comments and whitespace tells, then shuffles the order.
+The primary reviewer comes from a different vendor than the producer. This is @nateherkai's Claudex rule: never let one model plan, build and grade its own work.
+A second reviewer double-grades 10% of the tasks, and you compute Cohen's kappa.
+The verdict requires both tests_pass (exit code) and the reviewer's pass against the spec. Log rows with shadow=1. Seed the shuffle and store the mapping from blind ID to tier in a separate file the reviewers never see. Record reviewer cost per graded task, because step 6 needs it.
+```
+
+**Expect:** grading/ harness code, 60 or more shadow rows per class, and a kappa report.
+
+**Audit before moving on:** If kappa is below 0.6, rewrite the rubric and regrade a sample before trusting any rate. Grep all grader prompts for model or tier names. Fail if any class has fewer than 30 shadow tasks.
+
+#### Step 5 — Promotion engine with stated error rates
+
+*Goal:* Replace '20 in a row' with promotion and demotion rules that have known error rates.
+
+```text
+Implement promote.py.
+For each class and tier, run Wald's SPRT on the pass-or-fail sequence with H0 p=0.85 and H1 p=0.95, alpha=0.05 and beta=0.10. Accepting H1 promotes the class one tier down.
+Compute the Wilson 95% interval in parallel. Demote immediately when its upper bound falls below 0.90, which is @raycfu's 'below 90%' rule in statistical form.
+Document why a streak is weak: 0 fails in 20 leaves a 95% upper bound of about 0.14 on the fail rate.
+Promotion is per class, never global. Promoted classes keep a 10% audit sample graded by the frontier reviewer.
+Add goals/, @raycfu's daily regression suite, which replays 10 frozen tasks per promoted class every morning via cron. Store every decision with its timestamp and the evidence count, so the report can show exactly when and why each class moved. Expose the thresholds in tiers.yaml rather than hard-coding them.
+```
+
+**Expect:** promote.py with tests, a per-class decision table, and goals/ with the regression suite and its cron entry.
+
+**Audit before moving on:** Simulate sequences at p=0.80, 0.90 and 0.97. Empirical promotion rates must match alpha and beta within 2 points. Fail if any class was promoted with fewer than 30 graded tasks.
+
+#### Step 6 — Cost ledger reconciled to billing
+
+*Goal:* Measure dollars saved per class against real invoices.
+
+```text
+For every task row, compute the cost from metered tokens at current list prices.
+For the local tier, compute power as watts from nvidia-smi --query-gpu=power.draw, times latency, times the local $/kWh, and add hardware amortization over 36 months.
+Reconcile the router's frontier and mid cost against the billing exports for the same days, to within 5%.
+Per class, compute the counterfactual: the cost if every task ran on frontier, minus actual cost.
+Include review spend. Reviews can erase the savings on cheap classes.
+Treat @duck.tate's plan values and @tech.unicorn's $500-$2,000 estimate as claims to compare against, never as inputs. Store every price used, with a source URL and date, in prices.yaml so the numbers can be recomputed when list prices change. Show per-class savings both with and without review cost.
+```
+
+**Expect:** costs.csv by class and day, reconciliation.md with the variance against billing, and a savings table that includes review cost.
+
+**Audit before moving on:** If the variance against billing is above 5%, find the missing calls (retries, untagged subagents) before reporting any savings. Fail if local cost omits power or amortization.
+
+#### Step 7 — Validate against oracles and write the gap report
+
+*Goal:* Deliver the per-class verdict, the falsifier result and the ranked gaps.
+
+```text
+Run the oracle pass:
+(a) Per class, the local pass rate with a Wilson CI against the incumbent, on executable tests.
+(b) The independent benchmark reruns against the vendor-reported numbers.
+(c) The billing reconciliation within 5%.
+(d) Reviewer kappa of 0.6 or higher.
+(e) The falsifier: does any class sustain a Wilson lower bound of 0.90 or higher on the local tier?
+Write report.md with the sections Setup, Classes, Promotion Results, Independent Benchmarks, Costs, Falsifier, Compliance and Gaps.
+If the falsifier fires, say plainly that you stay two-tier because the local floor is not there yet for this work. Rank the gaps by dollars at stake. Include one row per class showing what would change the verdict, for example 'needs 40 more graded tasks' or 'kappa too low to trust'. Recommend the next class to put in shadow mode.
+```
+
+**Expect:** report.md, a five-row oracle table, and a per-class verdict table with tier, n, pass rate, CI and $ saved.
+
+**Audit before moving on:** Every promotion in the report must match promote.py output on the ledger. Mark any unreconciled savings figure as estimated. compliance.md must show no subscription-token use anywhere in the pipeline.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent reviewer. Open report.md, ledger.sqlite, promote.py, grading/, bench/ and costs.csv.
+1. Enumerate every claim: pass rates, promotions, benchmark comparisons, savings and compliance. Mark each one verified (with a SQL query or file reference), unverified, or false.
+2. Recompute the per-class pass rates and Wilson intervals from ledger.sqlite and diff them against the report.
+3. Rerun promote.py on the ledger and check that the promotions match.
+4. Check blindness: grep the grader prompts for model and tier names, and recompute kappa.
+5. Check refusals: count rows with stop_reason 'refusal' and confirm none is marked pass.
+6. Check that savings include review spend and local power, and that they reconcile to billing.
+7. Check compliance: no subscription OAuth tokens in configs, and no key-shaped strings in logs. Search by pattern and report counts without printing any match.
+8. Rank the issues by impact. Fix the top three now. Report what you could not fix and why.
+Return audit.md with the columns claim, status, evidence and fix, plus 'Remaining gaps' and an A-F grade.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Did any class get promoted on a streak shorter than SPRT allows, or with fewer than 30 graded tasks?
+- Was every graded task reviewed by a different vendor than the one that produced it?
+- Could the grader infer the tier from style, latency or formatting?
+- Are refusal and max_tokens stops counted as fails, given the HTTP 200 trap?
+- Does Qwen 27B keep its reasoning across tool-call steps in my harness, or only in the vendor's?
+- Did the 24GB card force a context window that silently truncates real tasks?
+- How much of my 'work' was the zero tier all along: commands I could have just run?
+- Do review costs on cheap classes erase the savings from demoting them?
+- Which vendor term change would break this router overnight, the way the January 9 change broke @tech.unicorn's?
+- How far is my independent rerun from Qwen's self-reported 84.3 on OSWorld?
+- Is Friedberg's open-versus-closed flip relevant to my task mix, or only to aggregate token volume?
+
+### 5 · What proves it right
+
+- Executable tests: pytest or npm test exit codes on held-out tasks per class, comparing local and incumbent pass rates with Wilson 95% CIs.
+- Public benchmark harnesses: reruns of 50 Terminal-Bench and 50 SWE-bench Verified tasks on the local model, compared with Qwen's and DeepSeek's self-reported figures.
+- Billing exports from the Anthropic and OpenAI consoles: the router ledger must land within 5% for the same dates.
+- Inter-rater agreement: Cohen's kappa of 0.6 or higher between two cross-vendor reviewers on a 10% double-graded sample.
+- SPRT simulation: empirical promotion error rates on synthetic sequences must match alpha=0.05 and beta=0.10 within 2 points.
+
+### 6 · Failure modes
+
+- Streak promotion. Tell: a class promoted after 20 passes then fails weekly. Fix: SPRT or a Wilson bound, plus a 10% audit sample.
+- Self-preferring reviewer. Tell: the reviewer passes its own family's outputs more often than the tests do. Fix: cross-vendor blind grading, calibrated against test results.
+- Silent refusals. Tell: tasks marked done with empty diffs. Fix: treat stop_reason 'refusal' and 'max_tokens' as fails.
+- Local context truncation. Tell: failures cluster on large files. Fix: log the prompt token count and route anything over the local limit upward.
+- Phantom savings. Tell: the savings figure omits review spend or GPU power. Fix: reconcile to billing and include every cost.
+- Terms fragility. Tell: the harness depends on a subscription token. Fix: API keys only, with clauses recorded in compliance.md.
+
+### 7 · Agent direction (unattended runs)
+
+Start with the billing exports and task history. Without them, savings and class shares are guesses. Cache the GGUF, its hash and the llama-bench output, and do not re-download per run. Spawn one sub-agent for the independent benchmark rerun (step 3), which is long and isolated. Spawn another for the grading harness (step 4). Keep the promotion statistics and the final verdict in the main thread. Never read, print or copy API key values. Check only that the environment variables exist. Stop and ask the human before connecting any subscription account, before any promoted local-tier output ships to production, and if the GPU cannot fit Q4 with at least 16k context. Return router/, ledger.sqlite, grading/, bench/, costs.csv, report.md and audit.md. The final message is the per-class verdict table and the falsifier result.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
 ## Related deep dives
 
 Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
 
 ---
 
-*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -358,4 +730,26 @@ Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across t
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
 </script></body></html>

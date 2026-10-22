@@ -21,6 +21,10 @@ DEEP_DIVES_JSON = ROOT / "data" / "deep_dives.json"
 DEEPER_DIR = ROOT / "site" / "deeper"
 DEEPER_DATA = ROOT / "data" / "deeper_dives.json"
 TEMPLATE = ROOT / "scripts" / "deeper_template.html"
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from prompt_systems import load_packs, section_html, PS_CSS, COPY_JS  # noqa: E402
+PACKS = load_packs()
 
 
 def load_catalog():
@@ -125,6 +129,8 @@ def render_html(deeper: dict) -> str:
 </div>\n'''
 
     tools_html = " · ".join(f"<span class='tool-pill'>{_esc(t)}</span>" for t in deeper.get("tools", []))
+    pack = PACKS.get(deeper.get("source_dive_id", "").replace("dd-insight-", ""))
+    prompt_html = section_html(pack) if pack else ""
 
     return f'''<!doctype html>
 <html lang="en"><head>
@@ -165,6 +171,7 @@ a.dd-entry-title:hover{{text-decoration:underline;color:var(--accent)}}
 .action-sketch h3{{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}}
 .action-sketch p{{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}}
 .prereqs{{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}}
+{PS_CSS}
 </style>
 </head><body>
 <main class="deeper-wrap">
@@ -189,10 +196,13 @@ a.dd-entry-title:hover{{text-decoration:underline;color:var(--accent)}}
 {entries_html}
 </div>
 
+{prompt_html}
+
 <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
   Deeper Dive generated {deeper.get("generated_at", "")} · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
 </div>
 </main>
+{COPY_JS}
 </body></html>'''
 
 

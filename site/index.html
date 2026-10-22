@@ -323,6 +323,7 @@ footer.site code{font-family:'JetBrains Mono',monospace;color:var(--accent)}
     const nDives = dives.length;
     const nGuides = guideSlugs ? guideSlugs.length : curated.length;
     const nDeeper = deeperSlugs ? deeperSlugs.length : curated.length;
+    const nPrompts = (meta && meta.promptCount) || null;
     const nTools = Object.keys((cat && cat.indices && cat.indices.by_tool) || {}).length;
     const nTech = Object.keys((cat && cat.indices && cat.indices.by_technique) || {}).length;
 
@@ -369,6 +370,8 @@ footer.site code{font-family:'JetBrains Mono',monospace;color:var(--accent)}
         p:'Long-form write-ups that stitch several saves into one plan &mdash; with the links the creators never gave you.' },
       { g:'⬢', gc:'g-pink', t:'Deeper dives',   href:'#insight-dives',    n:nDeeper,  u:'deeper',
         p:'The second pass on each insight &mdash; sources chased down, steps spelled out, rough edges named.' },
+      { g:'❯', gc:'g-ok',   t:'Prompt systems', href:'prompts.html',      n:nPrompts, u:'systems',
+        p:'One pasteable prompting system per dive and guide: deeper-not-bigger rewrite, one-shot, step prompts with audits, gap analysis, oracles.' },
       { g:'⬡', gc:'g-blue', t:'Graph · Force',  href:'graph.html',        n:nCreators, u:'creators',
         p:'A force-directed map of the creators you keep saving, and the tools and techniques they share.' },
       { g:'✦', gc:'g-blue', t:'Graph · Cosmos', href:'graph-cosmos.html', n:nTools + nTech, u:'tools + techniques',
@@ -377,7 +380,7 @@ footer.site code{font-family:'JetBrains Mono',monospace;color:var(--accent)}
         p:'A drag-to-connect thought board. Pull saves onto a canvas and wire them into projects and ideas.' },
       { g:'❯', gc:'g-ok',   t:'API for agents', href:null,                n:null,
         p:'Machine-readable everything. Point your agent at it and skip the scraping.',
-        chips:[['api/catalog.json','api/catalog.json'],['llms.txt','llms.txt'],['context.md','context.md']] },
+        chips:[['api/catalog.json','api/catalog.json'],['api/prompts.json','api/prompts.json'],['llms.txt','llms.txt'],['context.md','context.md']] },
       { g:'▪', gc:'',       t:'About',          href:'about/',            n:null,
         p:'Who curates this pile, and the rest of what they build.' },
       { g:'↗', gc:'g-gold', t:'Links',          href:'links/',            n:null,

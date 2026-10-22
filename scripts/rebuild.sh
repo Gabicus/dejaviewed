@@ -21,7 +21,8 @@
 #   curate      scripts/curation_export.py     digest for the researcher curation pass (Phase 5c)
 #   dives       scripts/deep_dives.py          auto + curated dives
 #   deeper      scripts/deeper_dives.py        narrative pages for curated dives
-#   guides      scripts/build_guides.py        full guide pages + guides/index.html
+#   prompts     scripts/prompt_systems.py      export targets; run prompt-system agents (SPEC.md); merge; render
+#   guides      scripts/build_guides.py        full guide pages + guides/index.html (embeds prompt systems)
 #   landing     scripts/build_landing_meta.py  site/landing_meta.js (guide/deeper slugs for the showcase index)
 #   digest      scripts/digest.py              summaries.json / recommendations.json
 #   rebuild     scripts/cms.py rebuild         crosslinks + exports
@@ -31,7 +32,7 @@
 #   js          scripts/catalog_js.py          window.__CATALOG wrappers for file:// previews
 #   search      scripts/build_search.sh        search_prep.py + Pagefind 1.3.0 -> site/pagefind/ (committed)
 #
-# Phases that need a human/agent in the loop (llm, curate) stop with instructions instead of running.
+# Phases that need a human/agent in the loop (llm, curate, prompts) stop with instructions instead of running.
 set -euo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -93,8 +94,27 @@ if ! should_skip curate; then
 fi
 
 run_py dives   scripts/deep_dives.py
+if ! should_skip prompts; then
+  # every curated dive + hand-written guide needs a prompt-system pack before pages are rendered
+  missing=$(python3 - <<'PY'
+import json,sys
+sys.path.insert(0,'scripts')
+from prompt_systems import targets, load_packs
+packs=load_packs(); print(" ".join(t["slug"] for t in targets() if t["slug"] not in packs))
+PY
+)
+  if [[ -n "$missing" ]]; then
+    run_py prompts scripts/prompt_systems.py export
+    echo "[stop] prompts — packs missing for: $missing"
+    echo "       run prompt-system agents per data/prompt_systems/SPEC.md (one Opus agent per batch), then:"
+    echo "       python3 scripts/prompt_systems.py merge 'data/prompt_systems/out_*.json'"
+    echo "       re-run with --skip pull,media,ingest,transcribe,sync,enrich,llm,gate,curate,prompts"
+    exit 0
+  fi
+  run_py prompts scripts/prompt_systems.py render
+fi
 run_py deeper  scripts/deeper_dives.py --all-curated
-run_py guides  scripts/build_guides.py
+run_py guides  scripts/build_guides.py --force
 run_py landing scripts/build_landing_meta.py
 run_py digest  scripts/digest.py
 run_py rebuild scripts/cms.py rebuild

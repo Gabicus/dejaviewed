@@ -37,6 +37,22 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 .action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
 .action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
 .prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+
 </style>
 </head><body>
 <main class="deeper-wrap" data-pagefind-body data-pagefind-filter="kind:Deep dive">
@@ -52,9 +68,12 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 
 
-<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Split two years of SPY and QQQ returns into close-to-open and open-to-close legs, then subtract realistic open-gap spreads to see whether the overnight leg survives costs., Export your own broker fills and compare each to the NBBO at the time, so you measure the price improvement or slippage you actually got., For one paid or free-to-play app you use, run REA MCP on your own install and list every model or rule that adapts to you (authorized analysis only)., falsifier: if the overnight leg disappears after costs and your fills match or beat the NBBO, the counterparty isn't taking much from you at your size — move your effort to the strategy-loop dive.</p></div>
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Split two years of SPY and QQQ returns into close-to-open and open-to-close legs, then subtract realistic open-gap spreads to see whether the overnight leg survives costs.
+Export your own broker fills and compare each to the NBBO at the time, so you measure the price improvement or slippage you actually got.
+For one paid or free-to-play app you use, run REA MCP on your own install and list every model or rule that adapts to you (authorized analysis only).
+falsifier: if the overnight leg disappears after costs and your fills match or beat the NBBO, the counterparty isn't taking much from you at your size — move your effort to the strategy-loop dive.</p></div>
 
-<div class='prereqs'><strong>Prerequisites:</strong> Free daily open/close price data, Broker fill export, Ghidra and REA MCP for the app audit</div>
+
 
 <div class="dd-entries">
 <h2>Connected Posts (9)</h2>
@@ -142,8 +161,148 @@ a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
 
 </div>
 
+<section class="ps" id="prompt-system"><h2>Prompt system — run this yourself</h2>
+<p class="ps-lead">Pasteable into Claude Code, Claude, or any agent. One-shot for the whole result, step prompts when you want to steer. Every step carries its own audit; the gap audit makes the agent find and fill what it missed.</p>
+<p><strong>Mission.</strong> Running this system measures the edge already being taken from you before you look for your own. It replicates the overnight-versus-intraday return split on SPY and QQQ with realistic costs and a control, measures your own broker fills against the national best bid and offer (NBBO), and, for one app you use, documents on your own install every model or rule that adapts to you, under authorized analysis only. It is for an individual trader and app user. Done means three reports with reproducible code, a paper-only verdict on the overnight leg, a slippage number in basis points, and an app findings list where every claim cites decompiled evidence.</p>
+<h3>1 · Deeper, not bigger</h3><ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A market-microstructure researcher would replicate the overnight anomaly from primary data with dividends and splits assigned to the correct leg, use opening and closing auction prices rather than the first and last trade, and charge realistic auction costs per side before calling anything an edge. They would compare against the published literature (Cliff, Cooper and Gulen 2008; Lou, Polk and Skouras 2019; Knuteson 2020) and test out of sample by decade. For fills they would read the broker&#x27;s SEC Rule 605 and 606 reports and match each fill to a consolidated quote at millisecond resolution. For the app they would work only on their own device and their own install, record legal basis, and treat findings as hypotheses until a second method confirms them.</li>
+<li><strong>Rawest material to start from:</strong> 1) Knuteson, &#x27;Strikingly Suspicious Overnight and Intraday Returns&#x27; (arXiv, 2020) and its data appendix. 2) Lou, Polk and Skouras, &#x27;A Tug of War: Overnight Versus Intraday Expected Returns&#x27; (Journal of Financial Economics, 2019). 3) Daily open, close and dividend data for SPY and QQQ from at least two vendors (for example Stooq and yfinance) to cross-check. 4) Your broker&#x27;s fill export with timestamps and the broker&#x27;s published Rule 605 and 606 reports. 5) Consolidated quote data at fill timestamps (a paid tick source such as Databento or Polygon). 6) The REA MCP repository and Ghidra documentation. 7) The CFTC-SEC joint report on the May 6, 2010 market events. 8) Cong, Li, Tang and Yang, &#x27;Crypto Wash Trading&#x27;, for detection methods.</li>
+<li><strong>Methods and tools:</strong> Python with pandas and numpy; overnight return = open_t / close_(t-1) - 1 with dividends credited to the overnight leg; intraday return = close_t / open_t - 1; compounding both legs must reproduce buy-and-hold within rounding; cost model of 1, 2 and 5 basis points per side with market-on-open and market-on-close orders; Newey-West standard errors; out-of-sample split by period; a placebo leg (random 50/50 assignment of days) as control; for fills, an as-of merge of each fill to the NBBO at or before its timestamp, signed slippage in bps; for the app, Ghidra with REA MCP on your own device&#x27;s install, plus jadx for Java layers and Il2CppDumper if it is a Unity IL2CPP build; xgboost to load any embedded model file and list its features; Benford and trade-size clustering tests for wash-trading detection on public exchange data.</li>
+<li><strong>What proves it right:</strong> Reproduction of the published overnight and intraday decomposition for SPY within a stated tolerance over the paper&#x27;s period. Agreement between two independent price vendors. The broker&#x27;s own Rule 605 price-improvement statistics as an outside check on your measured slippage. For the app, a second method (network traffic of your own device, or a controlled two-account experiment you own) confirming any adaptive rule claimed from code.</li></ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Before I look for trading edge, I want to measure the edge being taken from me. Act as a market-microstructure researcher. Paper only; no real orders. (1) Replicate the overnight versus intraday split for SPY and QQQ over 2 years and over the full history, using auction-relevant open and close prices, dividends credited to the overnight leg, and costs of 1, 2 and 5 basis points per side. Check that the legs compound to buy-and-hold. Use a placebo leg and an out-of-sample period as controls, and compare with Knuteson 2020 and Lou, Polk and Skouras 2019. (2) Match each fill in my broker export to the NBBO at its timestamp, report signed slippage in basis points by order type and time of day, and compare with my broker&#x27;s Rule 605 report. (3) On my own phone, for one app I use, run Ghidra with REA MCP to list every model or rule that adapts to me, citing decompiled evidence per finding; analysis of my own install only, no redistribution, no bypass of protections, and stop if the terms forbid it. Report each claim from the source posts as replicated, not replicated or untested.</pre></div>
+<h3>2 · One-shot prompt</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>ROLE AND STANCE
+You are a forensic market-microstructure researcher and a defensive software analyst. Your job is to measure what counterparties take from one individual, not to find a strategy to trade. Paper only: no orders, no real money, no position recommendations.
+
+CONTEXT
+- quantpapers on Knuteson: Micron since 1990 shows +138 million percent overnight and -99.9% intraday on paper, a sawtooth in 21 indices; the paper alleges firms push prices at the open. A claim, not a proof.
+- eliteoptionstrader2: same anomaly, mechanism &#x27;retail trades the open, institutions trade into the close&#x27;, costs ignored.
+- ayoships on Block Blast: a local XGBoost model on phone model, country, past ad revenue and vibration setting predicts ad value and tunes difficulty; rules named &#x27;Boost Then Kill&#x27; and &#x27;High Value Ad Harvest&#x27;. Evidence promised, not shown.
+- backsla.sh: REA MCP lets an agent drive Ghidra and cite evidence per call; authorized use only.
+- thestockguytwitch: Navinder Sarao spoofed E-mini S&amp;P futures in the 2010 Flash Crash.
+- cbcgem: an interviewee claims 90-95% of crypto volume is wash trading, unaudited.
+- itsfinancenote: Katsuyama versus BATS on direct feeds versus the SIP; IEX&#x27;s speed bump came out of that debate.
+- 7am.research: Manoj Narang&#x27;s breadth-based weekly reversal across about 4,500 stocks.
+- bennjordan&#x27;s Cochlea: encrypted traffic still leaks activity through timing and volume.
+
+HARD CONSTRAINTS
+- No real trades. If the overnight leg survives costs, the next step is a 6-month paper log against a buy-and-hold control, with a planned position cap of 5% of capital and a 10% drawdown stop written down before any real money; nothing real until that paper log beats the control after costs.
+- App analysis only on your own device and your own legally obtained install; check the terms of service and local law first, do not bypass DRM or anti-tamper, do not publish code, and do not touch servers or other users&#x27; data.
+- Cochlea-style traffic analysis only on your own network and devices.
+- Spoofing and wash trading are studied to detect them, never to perform them.
+
+DELIVERABLES, IN ORDER
+1. claims.md: each creator claim, with replicated / not replicated / untested.
+2. overnight/: code and report for SPY and QQQ, 2 years and full history, gross and at 1, 2 and 5 bps per side, with a placebo leg, an out-of-sample split, Newey-West t-stats and a leg-compounding check.
+3. fills/: as-of join of your fills to NBBO, signed slippage in bps by order type, size and time of day, compared with the broker&#x27;s Rule 605 statistics.
+4. app_audit/: legal-basis note, tool setup, and a findings table (rule or model, inputs, effect, evidence file and address, confidence), plus a second-method confirmation for each high-impact finding.
+5. detectors.md: how you would detect spoofing-style order-book pressure and wash trading in public data you can access, with one worked example on a crypto pair using trade-size clustering.
+6. verdict.md: how much the counterparty takes at your size, and whether to move effort to the strategy-loop dive.
+
+GAP ANALYSIS (BUILT IN)
+Maintain gaps.md: data vendor disagreements; dividend handling; whether opens are auction prints or first trades; fill timestamp precision versus quote precision; app findings that rest on one method only; anything the terms forbade. Fill what you can; name what is missing.
+
+SELF-QUESTIONS
+- Do my two legs multiply back to buy-and-hold?
+- Would the overnight leg survive at 2 bps per side, and at 5?
+- Is the anomaly stable across decades or concentrated in one era?
+- Is my slippage measured against the quote that existed when I sent the order or when it filled?
+- Is any app finding just a naming guess from a decompiled symbol?
+
+STOP CONDITIONS
+Stop if the app&#x27;s terms or local law prohibit the analysis, if data vendors disagree by more than 0.5% on more than 1% of days, or if fills lack timestamps. Otherwise stop when all six deliverables exist.
+
+RETURN FORMAT
+Table of deliverable, path, status; the overnight table at each cost level; median slippage in bps; top app findings with confidence; the falsifier verdict; top five gaps.</pre></div>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: papers, data, legal basis</h4><p><em>Goal:</em> Collect primary sources and confirm what you are allowed to analyze.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Paper research only. 1. Download Knuteson &#x27;Strikingly Suspicious Overnight and Intraday Returns&#x27; (arXiv 2020) and Lou, Polk and Skouras 2019. Extract their exact return definitions, periods, data sources and headline numbers into papers.md.
+2. Pull SPY and QQQ daily open, close, adjusted close and dividends from two vendors. Report days where opens differ by more than 0.1%. Record whether each vendor&#x27;s open is the official opening auction price.
+3. Export your broker fills. Record timestamp precision, order types present and whether routing venue is included. Download your broker&#x27;s latest Rule 605 and 606 reports.
+4. Pick one app on your own phone. Read its terms of service for reverse-engineering clauses and note the jurisdiction. Write legal_basis.md stating what you may do. If the terms forbid decompilation and no legal exception clearly applies, pick a different app or skip the app arm.
+5. Write claims.md from the creators&#x27; statements: &#x27;+138 million percent overnight, -99.9% intraday&#x27; (Micron), &#x27;21 indices&#x27;, &#x27;XGBoost on phone model, country, ad revenue, vibration&#x27;, &#x27;90-95% of crypto volume is fake&#x27;, &#x27;never had a losing month&#x27; (Narang).</pre></div>
+<p><strong>Expect:</strong> papers.md, vendor_check.csv, fills_profile.md, rule605_notes.md, legal_basis.md, claims.md.</p>
+<p><strong>Audit before moving on:</strong> Recompute one paper headline you can check with your data, such as SPY&#x27;s overnight share for a sub-period. If legal_basis.md does not name a clear permission, the app arm stays off.</p>
+<h4>Step 2 — Overnight decomposition with costs and controls</h4><p><em>Goal:</em> Find out whether the overnight leg survives realistic costs.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Build overnight/decompose.py. For each day: overnight = (open_t + dividend_t if ex-date) / close_(t-1) - 1; intraday = close_t / open_t - 1. Assert that the product of (1+overnight)(1+intraday) over the period matches buy-and-hold total return within 0.1%.
+Compute for SPY and QQQ over the last 2 years and full history: annualized return, volatility, max drawdown and Sharpe for overnight, intraday and buy-and-hold. Apply costs of 1, 2 and 5 bps per side (two sides per day for the overnight strategy). Add a placebo control: randomly assign each day&#x27;s full return to two groups 1,000 times and report where the real overnight leg sits in that distribution. Split full history into decades and report each. Use Newey-West t-stats for mean daily returns.
+Plot cumulative curves on a log scale. Do not use leverage. No real orders.</pre></div>
+<p><strong>Expect:</strong> overnight/report.md with tables per ticker, cost level and decade, placebo percentile, and log-scale charts.</p>
+<p><strong>Audit before moving on:</strong> The compounding assertion must pass. If the overnight leg&#x27;s edge disappears at 2 bps, say so in bold in the report. Check one random day&#x27;s legs by hand from raw data.</p>
+<h4>Step 3 — Your fills against the NBBO</h4><p><em>Goal:</em> Measure what you actually pay on execution.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Load your fill export and consolidated quotes for each fill&#x27;s symbol and day from your tick source. As-of join each fill to the last NBBO at or before its timestamp. If your broker gives order-sent times, also join to the quote at send time.
+Signed slippage in bps: for buys (fill - midpoint) / midpoint, for sells (midpoint - fill) / midpoint; also report price improvement versus the far side (ask for buys, bid for sells).
+Break down by order type (market, limit, marketable limit), size bucket, time of day (first 15 minutes, midday, last 15 minutes) and venue if present. Compare your average price improvement with the broker&#x27;s Rule 605 statistics for similar order sizes.
+Estimate annual cost: average slippage times your annual traded notional.</pre></div>
+<p><strong>Expect:</strong> fills/report.md with tables and the annual cost estimate; fills/joined.parquet.</p>
+<p><strong>Audit before moving on:</strong> If fill timestamps are only to the second, report the slippage range across all quotes within that second, not a single number. Any fill outside the day&#x27;s high-low range indicates a data join error; fix before continuing.</p>
+<h4>Step 4 — Defensive audit of one app on your own device</h4><p><em>Goal:</em> List rules and models that adapt to you, with evidence.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>Only proceed if legal_basis.md permits. Work on your own device and your own install. Do not bypass DRM or anti-tamper, do not contact the app&#x27;s servers beyond normal use, do not publish code.
+Set up Ghidra and REA MCP on Ubuntu per the REA repository. Pull the APK from your device with adb. If it is a Unity IL2CPP build, recover metadata with Il2CppDumper; inspect Java layers with jadx.
+Ask the agent, through REA, to find: embedded model files (for example XGBoost JSON or UBJ under assets), feature names fed to them, remote-config keys controlling difficulty or ad timing, and any rule names similar to &#x27;Boost Then Kill&#x27; claimed in ayoships&#x27;s post. Require every finding to cite file, function and address.
+If a model file exists, load it with xgboost and list features and tree count. Do not run it on anyone else&#x27;s data.</pre></div>
+<p><strong>Expect:</strong> app_audit/findings.csv (rule or model, inputs, effect, evidence, confidence) and setup.md.</p>
+<p><strong>Audit before moving on:</strong> Drop any finding without a cited address. Mark findings inferred only from symbol names as low confidence. If REA&#x27;s output disagrees with your manual reading in Ghidra, trust the manual reading and note the disagreement.</p>
+<h4>Step 5 — Confirm app findings and build detectors</h4><p><em>Goal:</em> Back each high-impact claim with a second method and turn market tricks into detectors.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>For each high-confidence app finding, design a second-method check on your own device: for example, log your own network traffic with mitmproxy on your own phone to see if ad-value or difficulty config is fetched, or compare two accounts you own on one device with different settings for vibration or region. Record results.
+Detectors: using public data you can access, write detectors.md covering spoofing-style pressure (large resting orders cancelled before execution within N ms, measured from an exchange&#x27;s public order-book feed) and wash trading (trade-size clustering at round numbers and Benford deviations, following Cong et al.). Run the wash-trading test on one crypto pair from a public trade API and report the result against the interviewee&#x27;s &#x27;90-95% fake&#x27; claim. Note Cochlea&#x27;s lesson: timing and volume reveal intent even when content is hidden, so check what your own devices leak on your own network.</pre></div>
+<p><strong>Expect:</strong> app_audit/confirmations.md, detectors.md with one worked crypto example and code.</p>
+<p><strong>Audit before moving on:</strong> A finding confirmed by only one method stays &#x27;unconfirmed&#x27;. The crypto test must state its sample and limits; it cannot prove fraud on its own.</p>
+<h4>Step 6 — Validate against oracles and write the gap report</h4><p><em>Goal:</em> Answer the falsifier and record what remains unknown.</p>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>1. Compare your SPY overnight and intraday results with the published papers over overlapping periods; report the difference and likely causes.
+2. Cross-check results using the second vendor&#x27;s data.
+3. Compare your measured fill slippage with your broker&#x27;s Rule 605 statistics.
+4. Apply the falsifier: if the overnight leg disappears after costs and your fills match or beat the NBBO, the counterparty is not taking much at your size; recommend moving effort to the strategy-loop dive.
+5. If the overnight leg survives at 2 bps, write a paper-trading plan only: a 6-month log with a buy-and-hold control, a planned 5% position cap and 10% drawdown stop, and the rule &#x27;no real money until the paper log beats the control after costs&#x27;.
+6. Write gaps.md: every claim from claims.md with replicated / not replicated / untested and evidence; data and timestamp limits; app findings resting on one method; anything skipped for legal reasons. Fix what you can now.</pre></div>
+<p><strong>Expect:</strong> verdict.md, gaps.md, and if applicable paper_plan.md.</p>
+<p><strong>Audit before moving on:</strong> Re-run decompose.py from a clean environment and confirm identical tables. Confirm no real orders were placed and no app code was published.</p>
+<h3>4 · Gap analysis and audit</h3>
+<div class="ps-pre"><button class="ps-copy" type="button">Copy</button><pre>You are auditing a counterparty-forensics project you did not build. Read claims.md, overnight/, fills/, app_audit/, detectors.md, verdict.md and legal_basis.md.
+1. List every claim: return figures per leg and cost level, slippage numbers, app rules and models, wash-trading results.
+2. Mark each verified, unverified or false, citing a table, a query, a decompiled address or a second-vendor check.
+3. Re-check: the legs compound to buy-and-hold; dividends are in the overnight leg; costs are applied on both sides each day; the placebo control exists; slippage uses quotes at or before the timestamp; every app finding has an address and a second-method status; legal_basis.md permits what was done; no real orders were placed.
+4. List missing pieces: intraday auction data, taxes on daily round trips, borrow or margin constraints, app findings not confirmed.
+5. Rank gaps by whether they change the falsifier verdict.
+6. Fix the top three now.
+7. Report what you could not fix and why.</pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p><ul>
+<li>Do my overnight and intraday legs multiply back to buy-and-hold total return?</li>
+<li>Did I credit dividends to the overnight leg, or did ex-dividend drops bias it down?</li>
+<li>Are my opens official auction prints or first trades?</li>
+<li>At 2 bps per side, does the overnight leg still beat buy-and-hold on a risk-adjusted basis?</li>
+<li>Is the anomaly concentrated in one decade?</li>
+<li>Is my slippage measured at order-send time or fill time, and does it matter at my timestamp precision?</li>
+<li>How does my price improvement compare with my broker&#x27;s Rule 605 numbers?</li>
+<li>Does each app finding rest on code evidence, or on a symbol name that sounds damning?</li>
+<li>Did legal_basis.md actually permit the decompilation I did?</li>
+<li>Am I treating the &#x27;90-95% fake crypto volume&#x27; figure as data when it is an interview claim?</li>
+<li>What does my own home network leak about my activity, Cochlea-style?</li>
+</ul><h3>5 · What proves it right</h3><ul>
+<li>Knuteson 2020 and Lou, Polk and Skouras 2019: SPY overnight and intraday figures reproduced over overlapping periods within a stated tolerance.</li>
+<li>A second price vendor: identical conclusions at each cost level.</li>
+<li>The broker&#x27;s SEC Rule 605 report: price-improvement statistics consistent with measured slippage for similar order sizes.</li>
+<li>A second method on your own device (mitmproxy traffic logs or a two-account test you own) confirming each high-impact app finding.</li>
+<li>The CFTC-SEC joint report on May 6, 2010 as the reference for how spoofed depth propagated, used to check the detector design.</li>
+</ul><h3>6 · Failure modes</h3><ul>
+<li>Dividend leak. Tell: overnight leg underperforms the papers by roughly the dividend yield. Fix: credit dividends on ex-dates to the overnight leg.</li>
+<li>Costless anomaly. Tell: spectacular curves with no cost line. Fix: report at 1, 2 and 5 bps per side and lead with the 2 bps result.</li>
+<li>Timestamp mismatch. Tell: fills appear outside the NBBO often. Fix: join on quotes at or before send time and report a range at coarse precision.</li>
+<li>Symbol-name findings. Tell: app claims rest on function names like &#x27;kill&#x27;. Fix: require code paths and a second method.</li>
+<li>Legal overreach. Tell: bypassing anti-tamper or publishing decompiled code. Fix: stop, delete, restate the scope in legal_basis.md.</li>
+<li>Paper edge becomes real trades. Tell: orders placed before the paper log exists. Fix: enforce the 6-month paper gate with a control.</li>
+<li>Anecdote as data. Tell: &#x27;90-95% fake&#x27; repeated as fact. Fix: label as an interview claim and report your own measured result.</li>
+</ul><h3>7 · Agent direction (unattended runs)</h3>
+<p>Run the overnight arm first; it needs only free daily data and gives the fastest falsifier signal. Cache raw vendor downloads under data/raw/ with retrieval dates, and quotes for fill days under data/quotes/. Spawn a sub-agent for the fills arm once data is in place, and keep the app arm in the main loop because it needs legal judgment. Stop and ask before any app analysis if legal_basis.md is unclear, before buying tick data, and whenever a step would place an order. Never place trades and never publish decompiled code. Treat REA&#x27;s agent output as leads to verify in Ghidra by hand, not as findings. Return README.md with links to claims.md, overnight/report.md, fills/report.md, app_audit/, detectors.md, verdict.md and gaps.md, each with a one-line status and the falsifier verdict.</p>
+<p class="ps-foot">Prompt system updated 2026-10-22 · <a href="../prompts.html">all prompt systems</a> · <a href="../api/prompts.json">JSON</a></p></section>
+
 <div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
-  Deeper Dive generated 2026-10-22T00:39:52.743679 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
+  Deeper Dive generated 2026-10-22T10:32:34.986249 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
 </div>
 </main>
+<script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script>
 </body></html>

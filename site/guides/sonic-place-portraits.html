@@ -88,10 +88,10 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Visual reference — volumetric glowing reconstructions that look like what a splat room becomes</p>
 <p>Schmidt Ocean Institute's ROV on the Falkor (too) uses MBARI's DeepPIV system: a laser flattened into a thin sheet is swept through semi-transparent animals to capture planes that stack into full 3D reconstructions, without killing the specimen. The subject is a siphonophore, a colony of specialized zooids acting as one animal.</p>
 <p>View original post</p>
-<h3>Disclaimer: do not pour liquid on speakers. Cymatics is literally kickin...</h3>
-<p>Creator: @vibra.genix · Tier: B</p>
+<h3>Bubble cymatics — speaker-driven soap film patterns (with pseudoscience)</h3>
+<p>Creator: @vibra.genix · Tier: C</p>
 <p>Conceptual anchor — cymatics, sound visibly reshaping matter</p>
-<p>Disclaimer: do not pour liquid on speakers. Cymatics is literally kicking the doors of perception off the hinges! — @vibra.genix.</p>
+<p>A soap bubble mounted on a speaker under a ring light shows standing-wave cymatic patterns as frequencies change. The visual is real and easy to reproduce; the account wraps it in rife-frequency and '4D shape' healing claims you should ignore.</p>
 <p>View original post</p>
 <h3>The khaen — Lao bamboo free-reed organ that plays on inhale and exhale</h3>
 <p>Creator: @pop.music.culture · Tier: A Tools: Khaen</p>
@@ -104,10 +104,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>honeycrush's 'My Dog', a folk-horror tinged song about pursuit and cyclical love, longing and loathing, with a video shot entirely DIY by two people with one camera. Reference for low-budget music video mood.</p>
 <p>View original post</p>
 <h2>Action sketch — how to implement this</h2>
-<p>Scan one meaningful room (a porch, a church, a barn) with a phone splat app (Polycam or Luma), then load the .ply into Gausseous and drive it with a rough recording of one tune</p>
-<p>In the same session, record a clap or sine-sweep impulse response of the room and convolve your dry instrument recording with it, so the audio carries that room's acoustics</p>
-<p>Cut a 60-second vertical piece — real performance footage intercut with the reacting splat — and A/B it against a plain performance video on the same account</p>
-<p>Falsifier: if low-light interior scans come out too noisy to read, or the splat cut loses watch-through to the plain performance video, the format is a gimmick</p>
+<p>Scan one meaningful room (a porch, a church, a barn) with a phone splat app (Polycam or Luma), then load the .ply into Gausseous and drive it with a rough recording of one tune In the same session, record a clap or sine-sweep impulse response of the room and convolve your dry instrument recording with it, so the audio carries that room's acoustics Cut a 60-second vertical piece — real performance footage intercut with the reacting splat — and A/B it against a plain performance video on the same account Falsifier: if low-light interior scans come out too noisy to read, or the splat cut loses watch-through to the plain performance video, the format is a gimmick</p>
 <h2>Prerequisites</h2>
 <p>Phone with a splat-capture app</p>
 <p>A room with a story and permission to scan it</p>
@@ -132,9 +129,130 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>@peppes_ghost</p>
 <p>@pop.music.culture</p>
 <p>@vibra.genix</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Produce one 60-second vertical music video for a roots or folk act where a single real place is captured twice in one session: as a 3D Gaussian splat that reacts to the music in the browser, and as the room's own acoustics convolved into the recording. The pieces are a phone splat scan, a measured impulse response, a dry performance take, a Gausseous-driven reactive render, and an edit. Done means the splat loads and reacts in the browser, the audio carries that room's reverb by a measurable match, and the splat cut has been A/B watch-tested against a plain performance video on the same account.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A location-recording engineer and a volumetric-capture artist would treat the room as data captured once, correctly. They would shoot the splat with enough overlapping coverage and even exposure to reconstruct cleanly, knowing low light is the enemy. They would measure the room's impulse response properly, with a sine sweep and the deconvolution method (Farina's exponential sine sweep), not just a clap, and they would capture a dry DI or close-mic take so the room can be added deliberately rather than baked in badly. They would treat the audio-reactive mapping as a mix decision: which band drives which splat parameter, gated and smoothed so it reads as musical, not twitchy. And they would test watch-through, because a format that loses the viewer is a failed format.</p>
+<p>Rawest material to start from: The actual room: a porch, a church, a barn, the 200-year-old Girardeau House that @chancemccoymusic plays for its resonance. A phone with a splat app (Polycam or Luma) producing a .ply or .splat. A sine-sweep file and a recording of the swept response, for a measured impulse response. A dry, close-miked or DI performance take, uncolored by the room. The Lomax field-recording tradition (@dimestoreradio, Nimrod Workman filmed at home) as the model: place and song captured together. Gausseous (github.com/quixbrics/gausseous) and its SparkJS renderer. The khaen or another drone instrument for sustained tones that make the reactivity readable.</p>
+<p>Methods and tools: Phone Gaussian-splat capture (Polycam or Luma), exported as .ply or .splat. Impulse-response measurement by exponential sine sweep and deconvolution (Python with numpy and scipy, or Room EQ Wizard), producing a convolution reverb IR. A DAW with a convolution reverb (such as a free IR loader) to apply that IR to the dry take. Gausseous in the browser for audio-reactive rendering, depth of field, lens curvature and film emulation, with the reactivity mapped per frequency band using the Web Audio AnalyserNode. A 2-hour-safe render-export path. A/B testing on one platform with matched posting times.</p>
+<p>What proves it right (other than you or the model): The .splat opens and reacts in Gausseous in a desktop browser at an acceptable frame rate, with no missing-geometry holes in the performance area. The convolution match: the reverb decay time (RT60) of the processed dry take within about 10% of the RT60 measured from the room's impulse response. A blind listening test where people match the processed audio to the room better than chance. The A/B watch-through and completion rate of the splat cut versus a plain performance video, over matched posts. The falsifier: if interior scans are too noisy to read, or the splat cut loses watch-through, the format is a gimmick.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>You are a location-recording engineer and a volumetric-capture artist making one roots-music video. Capture one real room twice in a single session.</p>
+<p>Scan the room as a Gaussian splat with a phone (Polycam or Luma). Shoot for even, overlapping coverage so the performance area has no holes.</p>
+<p>In the same session, measure the room's impulse response with an exponential sine sweep and deconvolution, and record a dry, close-miked performance take.</p>
+<p>Convolve the dry take with the measured IR so the recording carries that room's acoustics. Check that the processed RT60 is within 10% of the measured RT60.</p>
+<p>Load the .splat into Gausseous and map audio-reactivity per frequency band (bass drives scale, highs drive shimmer), gated and smoothed so it reads musically. Use a drone instrument for sustained, readable tones.</p>
+<p>Cut a 60-second vertical piece intercutting real performance footage with the reacting splat.</p>
+<p>A/B it against a plain performance video on the same account, matched for posting time, and report watch-through and completion.</p>
+<p>Return the splat, the IR, the processed audio, the Gausseous project, the edit, and the A/B result with the falsifier verdict.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE You are a location-recording engineer and a volumetric-capture artist. You capture a place correctly once, then build both the sound and the image from that one capture.</p>
+<p>CONTEXT</p>
+<p>@chancemccoymusic tests the resonance of the 200-year-old Girardeau House, treating the walls as part of the instrument.</p>
+<p>@dimestoreradio: Alan Lomax filmed Nimrod and Molly Workman singing at home in 1983. Place and song, recorded together.</p>
+<p>@murphydoesnotmatter: a tune filmed at The Palace in Yancey County, the kind of specific room worth scanning.</p>
+<p>@6ab3 and @gerrylistudio: TouchDesigner, MediaPipe and Gaussian splats, including Polycam scanning.</p>
+<p>@peppes_ghost: a DIY Raspberry Pi LiDAR scanner for rooms and caves where phone photogrammetry struggles.</p>
+<p>@dave_bewick: Gausseous, a free browser tool that makes splats audio-reactive with depth of field, lens curvature, film emulation and render export, built on World Labs' SparkJS.</p>
+<p>@howtown_videos: DeepPIV sweeps a laser sheet through a transparent creature to reconstruct it in 3D, a reference for volumetric glowing forms.</p>
+<p>@pop.music.culture: the khaen, a free-reed instrument that sustains drones on both inhale and exhale.</p>
+<p>@honeycrush.online: a folk-horror video shot DIY by two people with one camera, proof the audience accepts small-crew music videos.</p>
+<p>HARD CONSTRAINTS</p>
+<p>One place, one session. The splat scan, the impulse response and the dry performance take all come from the same room on the same day.</p>
+<p>The audio must carry the room's measured acoustics, not a generic reverb preset.</p>
+<p>Get permission to scan the room, and name the place and musicians honestly. This is documentary, not synthetic: no generated faces.</p>
+<p>The reactivity must read as musical. Gate and smooth it.</p>
+<p>DELIVERABLES</p>
+<p>capture/: the phone splat as .ply or .splat, a coverage note, the sine-sweep recording, the deconvolved impulse response (IR), and the dry performance take.</p>
+<p>audio/: the dry take convolved with the IR, plus a measurement showing the processed RT60 against the room's measured RT60.</p>
+<p>render/: a Gausseous project loading the splat, with a per-band reactivity map (which band drives scale, position, shimmer), gated and smoothed, and an exported clip.</p>
+<p>edit/: a 60-second vertical cut intercutting real performance footage with the reacting splat.</p>
+<p>ab_test/: the plain-performance control video, the posting plan matched for time of day, and a metrics sheet for watch-through and completion.</p>
+<p>report.md.</p>
+<p>BUILT-IN GAP ANALYSIS List the parts of the scan with holes or noise (low light is the usual cause), whether the IR was a proper sweep or only a clap, whether a dry take exists or the room was baked in, and whether the A/B has enough views to read. Fill what you can: rescan in better light, redo the sweep. Mark the rest UNFILLED.</p>
+<p>SELF-QUESTIONS Does the splat have holes where the performer stands? Is the reverb the real room, measured, or a preset? Does the reactivity read as musical or twitchy? Does the splat cut hold the viewer as long as the plain video?</p>
+<p>STOP Stop when the splat reacts in-browser, the audio carries the measured room, and the A/B has run on matched posts. Stop and ask before posting publicly on the act's account.</p>
+<p>RETURN Return capture/, audio/, render/, edit/, ab_test/ and report.md with the sections Capture, Acoustics, Render, Edit, A/B Result and Gaps.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Scan the room and measure its sound</h4>
+<p>Goal: Capture one place as both a clean splat and a measured impulse response, in one session.</p>
+<p>At the chosen room (a porch, church, barn or resonant old house like the Girardeau House), do three captures in one session. (1) Splat scan with Polycam or Luma on a phone. Move slowly in overlapping passes, keep exposure even, and over-cover the area where the performer will stand. Export .ply or .splat. Where phone photogrammetry struggles in low light or large caves, note the @peppes_ghost DIY LiDAR option as a fallback. (2) Impulse response: play an exponential sine sweep through a speaker and record it with a flat mic at the performer's position. You will deconvolve this into an IR. (3) Dry performance take: record the instrument and voice close-miked or DI, so the room is not already baked into the sound. Log the room name, permission, lighting and mic positions.</p>
+<p>Expect: capture/ with the .splat, the sweep recording, the dry take, and capture_notes.md covering coverage, lighting and positions.</p>
+<p>Audit before moving on: Open the .splat in a viewer. If the performance area has holes or heavy noise, rescan in better light before continuing. Confirm the dry take has minimal room sound. Fail if the IR is only a clap when a sweep was possible, or if no dry take exists.</p>
+<h4>Step 2 — Deconvolve the impulse response</h4>
+<p>Goal: Turn the sweep into a usable convolution reverb IR with a measured RT60.</p>
+<p>Deconvolve the recorded sweep against the reference sweep to recover the room's impulse response, using Farina's exponential-sine-sweep method. Do it in Python with numpy and scipy, or in Room EQ Wizard. From the IR, compute the room's RT60 (the time for the energy to decay 60 dB, usually via the T30 or T20 extrapolation from the Schroeder integral). Save the IR as a WAV ready for a convolution reverb. Inspect the IR for artifacts: a clean exponential decay, no pre-ringing, no clipping in the sweep recording. Record the RT60 and the IR length. This measured RT60 is the target the processed audio must match later. Keep the reference sweep file and the recorded sweep together, labeled, so the deconvolution is reproducible. Note the speaker and mic used, since the IR carries their coloration and you may want to compensate.</p>
+<p>Expect: capture/room_ir.wav, a plot of the IR and its decay curve, and the measured RT60 value.</p>
+<p>Audit before moving on: Check the sweep recording for clipping before trusting the IR. If the decay curve is not roughly linear in dB, the measurement is contaminated, so remeasure. Fail if RT60 cannot be computed or the IR shows pre-ringing from a bad deconvolution.</p>
+<h4>Step 3 — Convolve the room into the recording</h4>
+<p>Goal: Make the dry take carry the real room's acoustics and verify the match.</p>
+<p>Load the dry performance take into a DAW with a convolution reverb, or convolve in Python (scipy.signal.fftconvolve), using capture/room_ir.wav. Balance the dry and wet signal so the result sounds like the performance happened in that room, not drowned in reverb. Then verify: measure the RT60 of the processed take (from a decaying note or by analysis) and compare it with the room's measured RT60 from step 2. They should agree within about 10%. If you have a wet reference recording of the same performance in the room, compare the convolved version to it as a second check. Export the processed audio. Keep both the dry and the processed takes, so the edit can choose. Note the wet/dry ratio you settled on, because it is the single biggest taste decision here and you will want to recall it for the next room.</p>
+<p>Expect: audio/performance_room.wav and a short match report: processed RT60 versus measured RT60, with the percentage difference.</p>
+<p>Audit before moving on: If the processed RT60 differs from the measured room by more than 10%, re-check the wet/dry balance and the IR normalization. Fail if a generic reverb preset was used instead of the measured IR, or if the match report is missing.</p>
+<h4>Step 4 — Make the splat react to the music</h4>
+<p>Goal: Load the splat into Gausseous and drive it musically from the audio.</p>
+<p>Load the .splat into Gausseous (quixbrics.github.io/gausseous). Confirm it renders without holes in the performance area. Use the Web Audio AnalyserNode to split the processed audio into bands. Map them deliberately: bass drives overall scale or a slow pulse, mids drive position drift, highs drive shimmer or point size. Gate each mapping with a threshold and smooth it with an attack/release envelope so the motion reads as musical rather than twitchy. Use a sustained, droning passage, like the khaen or a bowed note, to tune the response, because long tones make reactivity legible. Add Gausseous's depth of field, a little lens curvature and film emulation for the volumetric glow in the DeepPIV reference, without burying the room. Export a reactive clip at least as long as the final edit.</p>
+<p>Expect: render/ with the Gausseous project or settings, a per-band reactivity map, and an exported reactive clip.</p>
+<p>Audit before moving on: Watch the clip against the audio. If the motion looks random or disconnected from the beat, raise the gates and lengthen the smoothing. Confirm no missing-geometry holes show in frame. Fail if the reactivity is unsmoothed strobing or if the splat reveals holes where the performer is.</p>
+<h4>Step 5 — Cut the 60-second piece</h4>
+<p>Goal: Edit a vertical cut intercutting real performance and the reacting splat.</p>
+<p>Assemble a 60-second vertical (9:16) edit. Intercut real performance footage, honest and documentary in the Lomax spirit, with the reacting splat. The place itself should move with the tune. Sync the cut to the processed room audio. Open on something that establishes the real place, so the splat reads as that same room transformed, not a generic effect. Follow the @honeycrush.online proof that a two-person, one-camera shoot can carry a strong mood. Keep the musicians and the place named in the caption. No generated faces, no synthetic performance. Export at the platform's preferred vertical resolution and frame rate. Keep the project file and a frame-accurate marker list so re-exports match. Export a square or landscape version too if the act wants it for other platforms, from the same timeline.</p>
+<p>Expect: edit/final_60s.mp4, a vertical cut synced to the room audio, with an honest caption naming the place and players.</p>
+<p>Audit before moving on: Confirm the edit opens on the real place and that the viewer can tell the splat is that room. Confirm the audio is the convolved room take, not the dry take. Fail if the piece hides the real performance behind effects, or runs long enough to lose a short-form viewer.</p>
+<h4>Step 6 — A/B against a plain performance video</h4>
+<p>Goal: Test whether the splat format earns its complexity with the audience.</p>
+<p>Make a control: a plain performance video of the same tune in the same room, same length, no splat. Post the splat cut and the control on the same account, matched for day and time of day, far enough apart not to cannibalize each other, and ideally counterbalanced across two tunes. Pre-register the metric: average watch-through (percent of the video watched) and completion rate. Collect the platform analytics for both after a set window (for example 7 days). State the pass rule in advance: the splat cut holds watch-through at least as well as the plain video. If it loses watch-through, the format is decoration, per the dive's falsifier. Record the view count, likes and shares alongside retention, but judge on retention, since reach depends on the algorithm. Keep the raw analytics screenshots in ab_test/ as evidence for the audit.</p>
+<p>Expect: ab_test/ with the control video, the posting log, and a metrics sheet of watch-through and completion for both.</p>
+<p>Audit before moving on: Confirm the two posts are matched for time and length, or the comparison is confounded. If total views are too low to distinguish the two, extend the window rather than calling a result. Fail if the metric was chosen after seeing the numbers.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4>
+<p>Goal: Judge the piece by capture quality, acoustic match and audience retention.</p>
+<p>Run the oracle pass: (a) The .splat opens and reacts in a desktop browser with no holes in the performance area. (b) The processed RT60 is within 10% of the room's measured RT60. (c) A blind listening test: people match the processed audio to the room better than chance. (d) The A/B watch-through and completion of the splat cut versus the control. (e) The falsifier: are interior scans too noisy to read, or does the splat cut lose watch-through? If either, say the format is a gimmick for this room. Write report.md with the sections Capture, Acoustics, Render, Edit, A/B Result, Falsifier and Gaps. State plainly whether the format earned its complexity. Rank the gaps by effect on the result.</p>
+<p>Expect: report.md, a five-row oracle table, and a ranked gap list.</p>
+<p>Audit before moving on: Any acoustic 'match' without the RT60 numbers is downgraded to unverified. Any A/B 'win' without matched posts is downgraded to inconclusive. Confirm the report names the real place and musicians. Fail if the falsifier section is missing.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are an independent reviewer: a recording engineer plus a volumetric artist. Open report.md, capture/, audio/, render/, edit/ and ab_test/.</p>
+<p>Enumerate every claim: scan quality, the acoustic match, the reactivity, and the A/B result. Mark each verified, unverified or false.</p>
+<p>Open the .splat yourself and look for holes in the performance area. Load it in Gausseous and confirm it reacts.</p>
+<p>Recompute the processed take's RT60 and compare it with the measured room RT60. Is it within 10%?</p>
+<p>Confirm the audio in the final edit is the convolved room take, not the dry take or a preset reverb.</p>
+<p>Check the A/B: are the posts matched for time and length, and was the metric pre-registered?</p>
+<p>List what is missing: scan holes, a clap-not-sweep IR, no dry take, an underpowered A/B.</p>
+<p>Rank the gaps by effect on the result. Fix the top three now where possible (re-balance the wet/dry, raise the reactivity gates). Report what needs a reshoot and why.</p>
+<p>Return audit.md with the columns claim, status, evidence and fix, plus 'Remaining gaps' and an A-F grade on whether the format earned its complexity.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Does the splat have holes or noise where the performer stands?</p>
+<p>Was the impulse response a proper sine sweep, or just a clap I am overselling?</p>
+<p>Is the dry take actually dry, or is the room already baked into it?</p>
+<p>Is the processed RT60 within 10% of the measured room RT60?</p>
+<p>Does the audio-reactivity read as musical, or is it twitchy strobing?</p>
+<p>Did I use the convolved room audio in the final edit, not the dry take?</p>
+<p>Does the edit establish the real place before showing the splat?</p>
+<p>Are the A/B posts matched for time of day and length?</p>
+<p>Did I pre-register the watch-through metric before seeing the numbers?</p>
+<p>Does the splat cut hold the viewer as long as the plain performance video?</p>
+<p>Did I name the place and musicians honestly, with no synthetic performance?</p>
+<h3>5 · What proves it right</h3>
+<p>The exported .splat opens and reacts in Gausseous in a desktop browser at an acceptable frame rate, with no holes in the performance area.</p>
+<p>Acoustic match: the processed take's RT60 is within about 10% of the room's measured RT60 from the impulse response.</p>
+<p>Blind listening test: people match the processed audio to the correct room better than chance.</p>
+<p>A/B retention: watch-through and completion of the splat cut versus a matched plain-performance control on the same account.</p>
+<p>The pre-registered falsifier: interior scans too noisy to read, or the splat cut losing watch-through, means the format is a gimmick for this room.</p>
+<h3>6 · Failure modes</h3>
+<p>Noisy low-light scan. Tell: holes and floaters where the performer stands. Fix: rescan with even light and overlapping coverage, or fall back to DIY LiDAR for big dark rooms.</p>
+<p>Fake room sound. Tell: a reverb preset instead of the measured IR. Fix: deconvolve a real sweep and match RT60 within 10%.</p>
+<p>Baked-in room on the source. Tell: no dry take, so the IR adds reverb on top of reverb. Fix: always capture a dry close-mic or DI take.</p>
+<p>Twitchy reactivity. Tell: the splat strobes on transients unrelated to the music. Fix: gate and smooth each band, and tune on sustained drones.</p>
+<p>Effect over substance. Tell: the real place and performance vanish behind filters. Fix: open on the room and keep the documentary core.</p>
+<p>Confounded A/B. Tell: the two posts went out at different times or lengths. Fix: match posting time and length and pre-register the metric.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Capture is the bottleneck, so get the room right in one session: a clean splat, a proper sine-sweep IR, and a dry take. A bad scan cannot be fixed later. Cache the .splat, the IR and the dry take under capture/ and never overwrite the originals. Do the deconvolution and convolution in the main thread, since the RT60 match gates everything downstream. Spawn a sub-agent for the Gausseous reactivity tuning, giving it the processed audio and the per-band mapping goals. Do not post to the act's public account, and do not publish anyone's likeness, without explicit permission. Ask the human for the room, the permission to scan it, and the performance footage at the start. Return capture/, audio/, render/, edit/, ab_test/, report.md and audit.md. The final message states the RT60 match, whether the splat reacts cleanly, and the A/B watch-through verdict.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 <h2>Related deep dives</h2>
 <p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
-<p>Generated 2026-10-21 · curated by @6ab3 for DejaViewed</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Capture the Room Twice — Splat Scans and Song for Roots Music
 
@@ -217,12 +335,12 @@ Open-source, browser-based Gaussian splat manipulator: load 3DGS scans and add a
 Schmidt Ocean Institute's ROV on the Falkor (too) uses MBARI's DeepPIV system: a laser flattened into a thin sheet is swept through semi-transparent animals to capture planes that stack into full 3D reconstructions, without killing the specimen. The subject is a siphonophore, a colony of specialized zooids acting as one animal.
 
 [View original post](https://www.instagram.com/p/Da20EPjsSNP/)
-### Disclaimer: do not pour liquid on speakers. Cymatics is literally kickin...
-**Creator:** [@vibra.genix](https://instagram.com/vibra.genix) · **Tier:** B
+### Bubble cymatics — speaker-driven soap film patterns (with pseudoscience)
+**Creator:** [@vibra.genix](https://instagram.com/vibra.genix) · **Tier:** C
 
 > Conceptual anchor — cymatics, sound visibly reshaping matter
 
-Disclaimer: do not pour liquid on speakers. Cymatics is literally kicking the doors of perception off the hinges! — @vibra.genix.
+A soap bubble mounted on a speaker under a ring light shows standing-wave cymatic patterns as frequencies change. The visual is real and easy to reproduce; the account wraps it in rife-frequency and '4D shape' healing claims you should ignore.
 
 [View original post](https://www.instagram.com/p/CvsDXJbJh6O/)
 ### The khaen — Lao bamboo free-reed organ that plays on inhale and exhale
@@ -247,10 +365,10 @@ honeycrush's 'My Dog', a folk-horror tinged song about pursuit and cyclical love
 
 ## Action sketch — how to implement this
 
-- Scan one meaningful room (a porch, a church, a barn) with a phone splat app (Polycam or Luma), then load the .ply into Gausseous and drive it with a rough recording of one tune
-- In the same session, record a clap or sine-sweep impulse response of the room and convolve your dry instrument recording with it, so the audio carries that room's acoustics
-- Cut a 60-second vertical piece — real performance footage intercut with the reacting splat — and A/B it against a plain performance video on the same account
-- Falsifier: if low-light interior scans come out too noisy to read, or the splat cut loses watch-through to the plain performance video, the format is a gimmick
+Scan one meaningful room (a porch, a church, a barn) with a phone splat app (Polycam or Luma), then load the .ply into Gausseous and drive it with a rough recording of one tune
+In the same session, record a clap or sine-sweep impulse response of the room and convolve your dry instrument recording with it, so the audio carries that room's acoustics
+Cut a 60-second vertical piece — real performance footage intercut with the reacting splat — and A/B it against a plain performance video on the same account
+Falsifier: if low-light interior scans come out too noisy to read, or the splat cut loses watch-through to the plain performance video, the format is a gimmick
 
 ---
 
@@ -288,13 +406,258 @@ honeycrush's 'My Dog', a folk-horror tinged song about pursuit and cyclical love
 
 ---
 
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Produce one 60-second vertical music video for a roots or folk act where a single real place is captured twice in one session: as a 3D Gaussian splat that reacts to the music in the browser, and as the room's own acoustics convolved into the recording. The pieces are a phone splat scan, a measured impulse response, a dry performance take, a Gausseous-driven reactive render, and an edit. Done means the splat loads and reacts in the browser, the audio carries that room's reverb by a measurable match, and the splat cut has been A/B watch-tested against a plain performance video on the same account.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A location-recording engineer and a volumetric-capture artist would treat the room as data captured once, correctly. They would shoot the splat with enough overlapping coverage and even exposure to reconstruct cleanly, knowing low light is the enemy. They would measure the room's impulse response properly, with a sine sweep and the deconvolution method (Farina's exponential sine sweep), not just a clap, and they would capture a dry DI or close-mic take so the room can be added deliberately rather than baked in badly. They would treat the audio-reactive mapping as a mix decision: which band drives which splat parameter, gated and smoothed so it reads as musical, not twitchy. And they would test watch-through, because a format that loses the viewer is a failed format.
+- **Rawest material to start from:** The actual room: a porch, a church, a barn, the 200-year-old Girardeau House that @chancemccoymusic plays for its resonance. A phone with a splat app (Polycam or Luma) producing a .ply or .splat. A sine-sweep file and a recording of the swept response, for a measured impulse response. A dry, close-miked or DI performance take, uncolored by the room. The Lomax field-recording tradition (@dimestoreradio, Nimrod Workman filmed at home) as the model: place and song captured together. Gausseous (github.com/quixbrics/gausseous) and its SparkJS renderer. The khaen or another drone instrument for sustained tones that make the reactivity readable.
+- **Methods and tools:** Phone Gaussian-splat capture (Polycam or Luma), exported as .ply or .splat. Impulse-response measurement by exponential sine sweep and deconvolution (Python with numpy and scipy, or Room EQ Wizard), producing a convolution reverb IR. A DAW with a convolution reverb (such as a free IR loader) to apply that IR to the dry take. Gausseous in the browser for audio-reactive rendering, depth of field, lens curvature and film emulation, with the reactivity mapped per frequency band using the Web Audio AnalyserNode. A 2-hour-safe render-export path. A/B testing on one platform with matched posting times.
+- **What proves it right (other than you or the model):** The .splat opens and reacts in Gausseous in a desktop browser at an acceptable frame rate, with no missing-geometry holes in the performance area. The convolution match: the reverb decay time (RT60) of the processed dry take within about 10% of the RT60 measured from the room's impulse response. A blind listening test where people match the processed audio to the room better than chance. The A/B watch-through and completion rate of the splat cut versus a plain performance video, over matched posts. The falsifier: if interior scans are too noisy to read, or the splat cut loses watch-through, the format is a gimmick.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+You are a location-recording engineer and a volumetric-capture artist making one roots-music video. Capture one real room twice in a single session.
+1. Scan the room as a Gaussian splat with a phone (Polycam or Luma). Shoot for even, overlapping coverage so the performance area has no holes.
+2. In the same session, measure the room's impulse response with an exponential sine sweep and deconvolution, and record a dry, close-miked performance take.
+3. Convolve the dry take with the measured IR so the recording carries that room's acoustics. Check that the processed RT60 is within 10% of the measured RT60.
+4. Load the .splat into Gausseous and map audio-reactivity per frequency band (bass drives scale, highs drive shimmer), gated and smoothed so it reads musically. Use a drone instrument for sustained, readable tones.
+5. Cut a 60-second vertical piece intercutting real performance footage with the reacting splat.
+6. A/B it against a plain performance video on the same account, matched for posting time, and report watch-through and completion.
+Return the splat, the IR, the processed audio, the Gausseous project, the edit, and the A/B result with the falsifier verdict.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE
+You are a location-recording engineer and a volumetric-capture artist. You capture a place correctly once, then build both the sound and the image from that one capture.
+
+CONTEXT
+- @chancemccoymusic tests the resonance of the 200-year-old Girardeau House, treating the walls as part of the instrument.
+- @dimestoreradio: Alan Lomax filmed Nimrod and Molly Workman singing at home in 1983. Place and song, recorded together.
+- @murphydoesnotmatter: a tune filmed at The Palace in Yancey County, the kind of specific room worth scanning.
+- @6ab3 and @gerrylistudio: TouchDesigner, MediaPipe and Gaussian splats, including Polycam scanning.
+- @peppes_ghost: a DIY Raspberry Pi LiDAR scanner for rooms and caves where phone photogrammetry struggles.
+- @dave_bewick: Gausseous, a free browser tool that makes splats audio-reactive with depth of field, lens curvature, film emulation and render export, built on World Labs' SparkJS.
+- @howtown_videos: DeepPIV sweeps a laser sheet through a transparent creature to reconstruct it in 3D, a reference for volumetric glowing forms.
+- @pop.music.culture: the khaen, a free-reed instrument that sustains drones on both inhale and exhale.
+- @honeycrush.online: a folk-horror video shot DIY by two people with one camera, proof the audience accepts small-crew music videos.
+
+HARD CONSTRAINTS
+- One place, one session. The splat scan, the impulse response and the dry performance take all come from the same room on the same day.
+- The audio must carry the room's measured acoustics, not a generic reverb preset.
+- Get permission to scan the room, and name the place and musicians honestly. This is documentary, not synthetic: no generated faces.
+- The reactivity must read as musical. Gate and smooth it.
+
+DELIVERABLES
+1. capture/: the phone splat as .ply or .splat, a coverage note, the sine-sweep recording, the deconvolved impulse response (IR), and the dry performance take.
+2. audio/: the dry take convolved with the IR, plus a measurement showing the processed RT60 against the room's measured RT60.
+3. render/: a Gausseous project loading the splat, with a per-band reactivity map (which band drives scale, position, shimmer), gated and smoothed, and an exported clip.
+4. edit/: a 60-second vertical cut intercutting real performance footage with the reacting splat.
+5. ab_test/: the plain-performance control video, the posting plan matched for time of day, and a metrics sheet for watch-through and completion.
+6. report.md.
+
+BUILT-IN GAP ANALYSIS
+List the parts of the scan with holes or noise (low light is the usual cause), whether the IR was a proper sweep or only a clap, whether a dry take exists or the room was baked in, and whether the A/B has enough views to read. Fill what you can: rescan in better light, redo the sweep. Mark the rest UNFILLED.
+
+SELF-QUESTIONS
+Does the splat have holes where the performer stands? Is the reverb the real room, measured, or a preset? Does the reactivity read as musical or twitchy? Does the splat cut hold the viewer as long as the plain video?
+
+STOP
+Stop when the splat reacts in-browser, the audio carries the measured room, and the A/B has run on matched posts. Stop and ask before posting publicly on the act's account.
+
+RETURN
+Return capture/, audio/, render/, edit/, ab_test/ and report.md with the sections Capture, Acoustics, Render, Edit, A/B Result and Gaps.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Scan the room and measure its sound
+
+*Goal:* Capture one place as both a clean splat and a measured impulse response, in one session.
+
+```text
+At the chosen room (a porch, church, barn or resonant old house like the Girardeau House), do three captures in one session.
+(1) Splat scan with Polycam or Luma on a phone. Move slowly in overlapping passes, keep exposure even, and over-cover the area where the performer will stand. Export .ply or .splat. Where phone photogrammetry struggles in low light or large caves, note the @peppes_ghost DIY LiDAR option as a fallback.
+(2) Impulse response: play an exponential sine sweep through a speaker and record it with a flat mic at the performer's position. You will deconvolve this into an IR.
+(3) Dry performance take: record the instrument and voice close-miked or DI, so the room is not already baked into the sound.
+Log the room name, permission, lighting and mic positions.
+```
+
+**Expect:** capture/ with the .splat, the sweep recording, the dry take, and capture_notes.md covering coverage, lighting and positions.
+
+**Audit before moving on:** Open the .splat in a viewer. If the performance area has holes or heavy noise, rescan in better light before continuing. Confirm the dry take has minimal room sound. Fail if the IR is only a clap when a sweep was possible, or if no dry take exists.
+
+#### Step 2 — Deconvolve the impulse response
+
+*Goal:* Turn the sweep into a usable convolution reverb IR with a measured RT60.
+
+```text
+Deconvolve the recorded sweep against the reference sweep to recover the room's impulse response, using Farina's exponential-sine-sweep method. Do it in Python with numpy and scipy, or in Room EQ Wizard.
+From the IR, compute the room's RT60 (the time for the energy to decay 60 dB, usually via the T30 or T20 extrapolation from the Schroeder integral).
+Save the IR as a WAV ready for a convolution reverb.
+Inspect the IR for artifacts: a clean exponential decay, no pre-ringing, no clipping in the sweep recording.
+Record the RT60 and the IR length. This measured RT60 is the target the processed audio must match later. Keep the reference sweep file and the recorded sweep together, labeled, so the deconvolution is reproducible. Note the speaker and mic used, since the IR carries their coloration and you may want to compensate.
+```
+
+**Expect:** capture/room_ir.wav, a plot of the IR and its decay curve, and the measured RT60 value.
+
+**Audit before moving on:** Check the sweep recording for clipping before trusting the IR. If the decay curve is not roughly linear in dB, the measurement is contaminated, so remeasure. Fail if RT60 cannot be computed or the IR shows pre-ringing from a bad deconvolution.
+
+#### Step 3 — Convolve the room into the recording
+
+*Goal:* Make the dry take carry the real room's acoustics and verify the match.
+
+```text
+Load the dry performance take into a DAW with a convolution reverb, or convolve in Python (scipy.signal.fftconvolve), using capture/room_ir.wav.
+Balance the dry and wet signal so the result sounds like the performance happened in that room, not drowned in reverb.
+Then verify: measure the RT60 of the processed take (from a decaying note or by analysis) and compare it with the room's measured RT60 from step 2. They should agree within about 10%.
+If you have a wet reference recording of the same performance in the room, compare the convolved version to it as a second check.
+Export the processed audio. Keep both the dry and the processed takes, so the edit can choose. Note the wet/dry ratio you settled on, because it is the single biggest taste decision here and you will want to recall it for the next room.
+```
+
+**Expect:** audio/performance_room.wav and a short match report: processed RT60 versus measured RT60, with the percentage difference.
+
+**Audit before moving on:** If the processed RT60 differs from the measured room by more than 10%, re-check the wet/dry balance and the IR normalization. Fail if a generic reverb preset was used instead of the measured IR, or if the match report is missing.
+
+#### Step 4 — Make the splat react to the music
+
+*Goal:* Load the splat into Gausseous and drive it musically from the audio.
+
+```text
+Load the .splat into Gausseous (quixbrics.github.io/gausseous). Confirm it renders without holes in the performance area.
+Use the Web Audio AnalyserNode to split the processed audio into bands. Map them deliberately: bass drives overall scale or a slow pulse, mids drive position drift, highs drive shimmer or point size. Gate each mapping with a threshold and smooth it with an attack/release envelope so the motion reads as musical rather than twitchy.
+Use a sustained, droning passage, like the khaen or a bowed note, to tune the response, because long tones make reactivity legible.
+Add Gausseous's depth of field, a little lens curvature and film emulation for the volumetric glow in the DeepPIV reference, without burying the room.
+Export a reactive clip at least as long as the final edit.
+```
+
+**Expect:** render/ with the Gausseous project or settings, a per-band reactivity map, and an exported reactive clip.
+
+**Audit before moving on:** Watch the clip against the audio. If the motion looks random or disconnected from the beat, raise the gates and lengthen the smoothing. Confirm no missing-geometry holes show in frame. Fail if the reactivity is unsmoothed strobing or if the splat reveals holes where the performer is.
+
+#### Step 5 — Cut the 60-second piece
+
+*Goal:* Edit a vertical cut intercutting real performance and the reacting splat.
+
+```text
+Assemble a 60-second vertical (9:16) edit. Intercut real performance footage, honest and documentary in the Lomax spirit, with the reacting splat. The place itself should move with the tune.
+Sync the cut to the processed room audio.
+Open on something that establishes the real place, so the splat reads as that same room transformed, not a generic effect. Follow the @honeycrush.online proof that a two-person, one-camera shoot can carry a strong mood.
+Keep the musicians and the place named in the caption. No generated faces, no synthetic performance.
+Export at the platform's preferred vertical resolution and frame rate. Keep the project file and a frame-accurate marker list so re-exports match. Export a square or landscape version too if the act wants it for other platforms, from the same timeline.
+```
+
+**Expect:** edit/final_60s.mp4, a vertical cut synced to the room audio, with an honest caption naming the place and players.
+
+**Audit before moving on:** Confirm the edit opens on the real place and that the viewer can tell the splat is that room. Confirm the audio is the convolved room take, not the dry take. Fail if the piece hides the real performance behind effects, or runs long enough to lose a short-form viewer.
+
+#### Step 6 — A/B against a plain performance video
+
+*Goal:* Test whether the splat format earns its complexity with the audience.
+
+```text
+Make a control: a plain performance video of the same tune in the same room, same length, no splat.
+Post the splat cut and the control on the same account, matched for day and time of day, far enough apart not to cannibalize each other, and ideally counterbalanced across two tunes.
+Pre-register the metric: average watch-through (percent of the video watched) and completion rate.
+Collect the platform analytics for both after a set window (for example 7 days).
+State the pass rule in advance: the splat cut holds watch-through at least as well as the plain video. If it loses watch-through, the format is decoration, per the dive's falsifier. Record the view count, likes and shares alongside retention, but judge on retention, since reach depends on the algorithm. Keep the raw analytics screenshots in ab_test/ as evidence for the audit.
+```
+
+**Expect:** ab_test/ with the control video, the posting log, and a metrics sheet of watch-through and completion for both.
+
+**Audit before moving on:** Confirm the two posts are matched for time and length, or the comparison is confounded. If total views are too low to distinguish the two, extend the window rather than calling a result. Fail if the metric was chosen after seeing the numbers.
+
+#### Step 7 — Validate against oracles and write the gap report
+
+*Goal:* Judge the piece by capture quality, acoustic match and audience retention.
+
+```text
+Run the oracle pass:
+(a) The .splat opens and reacts in a desktop browser with no holes in the performance area.
+(b) The processed RT60 is within 10% of the room's measured RT60.
+(c) A blind listening test: people match the processed audio to the room better than chance.
+(d) The A/B watch-through and completion of the splat cut versus the control.
+(e) The falsifier: are interior scans too noisy to read, or does the splat cut lose watch-through? If either, say the format is a gimmick for this room.
+Write report.md with the sections Capture, Acoustics, Render, Edit, A/B Result, Falsifier and Gaps. State plainly whether the format earned its complexity. Rank the gaps by effect on the result.
+```
+
+**Expect:** report.md, a five-row oracle table, and a ranked gap list.
+
+**Audit before moving on:** Any acoustic 'match' without the RT60 numbers is downgraded to unverified. Any A/B 'win' without matched posts is downgraded to inconclusive. Confirm the report names the real place and musicians. Fail if the falsifier section is missing.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent reviewer: a recording engineer plus a volumetric artist. Open report.md, capture/, audio/, render/, edit/ and ab_test/.
+1. Enumerate every claim: scan quality, the acoustic match, the reactivity, and the A/B result. Mark each verified, unverified or false.
+2. Open the .splat yourself and look for holes in the performance area. Load it in Gausseous and confirm it reacts.
+3. Recompute the processed take's RT60 and compare it with the measured room RT60. Is it within 10%?
+4. Confirm the audio in the final edit is the convolved room take, not the dry take or a preset reverb.
+5. Check the A/B: are the posts matched for time and length, and was the metric pre-registered?
+6. List what is missing: scan holes, a clap-not-sweep IR, no dry take, an underpowered A/B.
+7. Rank the gaps by effect on the result. Fix the top three now where possible (re-balance the wet/dry, raise the reactivity gates). Report what needs a reshoot and why.
+Return audit.md with the columns claim, status, evidence and fix, plus 'Remaining gaps' and an A-F grade on whether the format earned its complexity.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Does the splat have holes or noise where the performer stands?
+- Was the impulse response a proper sine sweep, or just a clap I am overselling?
+- Is the dry take actually dry, or is the room already baked into it?
+- Is the processed RT60 within 10% of the measured room RT60?
+- Does the audio-reactivity read as musical, or is it twitchy strobing?
+- Did I use the convolved room audio in the final edit, not the dry take?
+- Does the edit establish the real place before showing the splat?
+- Are the A/B posts matched for time of day and length?
+- Did I pre-register the watch-through metric before seeing the numbers?
+- Does the splat cut hold the viewer as long as the plain performance video?
+- Did I name the place and musicians honestly, with no synthetic performance?
+
+### 5 · What proves it right
+
+- The exported .splat opens and reacts in Gausseous in a desktop browser at an acceptable frame rate, with no holes in the performance area.
+- Acoustic match: the processed take's RT60 is within about 10% of the room's measured RT60 from the impulse response.
+- Blind listening test: people match the processed audio to the correct room better than chance.
+- A/B retention: watch-through and completion of the splat cut versus a matched plain-performance control on the same account.
+- The pre-registered falsifier: interior scans too noisy to read, or the splat cut losing watch-through, means the format is a gimmick for this room.
+
+### 6 · Failure modes
+
+- Noisy low-light scan. Tell: holes and floaters where the performer stands. Fix: rescan with even light and overlapping coverage, or fall back to DIY LiDAR for big dark rooms.
+- Fake room sound. Tell: a reverb preset instead of the measured IR. Fix: deconvolve a real sweep and match RT60 within 10%.
+- Baked-in room on the source. Tell: no dry take, so the IR adds reverb on top of reverb. Fix: always capture a dry close-mic or DI take.
+- Twitchy reactivity. Tell: the splat strobes on transients unrelated to the music. Fix: gate and smooth each band, and tune on sustained drones.
+- Effect over substance. Tell: the real place and performance vanish behind filters. Fix: open on the room and keep the documentary core.
+- Confounded A/B. Tell: the two posts went out at different times or lengths. Fix: match posting time and length and pre-register the metric.
+
+### 7 · Agent direction (unattended runs)
+
+Capture is the bottleneck, so get the room right in one session: a clean splat, a proper sine-sweep IR, and a dry take. A bad scan cannot be fixed later. Cache the .splat, the IR and the dry take under capture/ and never overwrite the originals. Do the deconvolution and convolution in the main thread, since the RT60 match gates everything downstream. Spawn a sub-agent for the Gausseous reactivity tuning, giving it the processed audio and the per-band mapping goals. Do not post to the act's public account, and do not publish anyone's likeness, without explicit permission. Ask the human for the room, the permission to scan it, and the performance footage at the start. Return capture/, audio/, render/, edit/, ab_test/, report.md and audit.md. The final message states the RT60 match, whether the splat reacts cleanly, and the A/B watch-through verdict.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
 ## Related deep dives
 
 Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
 
 ---
 
-*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -302,4 +665,26 @@ Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across t
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
 </script></body></html>

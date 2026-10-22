@@ -1,125 +1,737 @@
-<html lang="en">
-<meta charset="utf-8">
-<title>Art Without Gatekeepers: How AI is Rebuilding the Creative Economy — DejaViewed Guide</title>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Art Without Gatekeepers: How AI is Rebuilding the Creative Economy · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
 <style>
-  .guide { max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
-  .guide h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-  .guide h2 { color: #7dd3fc; margin-top: 2rem; font-size: 1.3rem; border-bottom: 1px solid rgba(125,211,252,0.2); padding-bottom: 0.5rem; }
-  .guide p, .guide li { line-height: 1.7; color: #cbd5e1; }
-  .confidence-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
-  .confidence-badge.high { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-  .confidence-badge.medium { background: rgba(250,204,21,0.15); color: #fbbf24; border: 1px solid rgba(250,204,21,0.3); }
-  .meta { color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem; }
-  .entries-section { margin-top: 2rem; }
-</style>
-<script src="../shared.js" defer></script>
-<script>document.addEventListener("DOMContentLoaded",()=>window.DV&&DV.mountHeader(document.body,"guides"))</script>
-
-<article class="guide" data-pagefind-body data-pagefind-filter="kind:Guide">
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
   <div class="confidence-badge medium">Source confidence: medium</div>
-  <h1>Art Without Gatekeepers: How AI is Rebuilding the Creative Economy</h1>
-<div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-art-market-disruption.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Art Without Gatekeepers: How AI is Rebuilding the Creative E →</a></div>
-  <div class="meta">arbitrage_opportunity · 12 connected entries · Medium difficulty</div>
-  
-  <h2>Thesis</h2>
-  <p>The art market's gatekeeping structure — galleries, curators, collectors, degree requirements — is being dismantled by AI tools and direct distribution. Artists who adapt are finding new revenue streams (AI-assisted commissions, generative art NFTs, interactive installations). Those who resist are watching their distribution channels commoditize around them.</p>
-  
-  <h2>Why It Matters</h2>
-  <p>For decades, art distribution required permission — from galleries, from collectors, from institutions. AI tools + direct platforms are removing that dependency. The entries show both the opportunity (new tools, new markets, new forms) and the risk (commoditization of traditional skills).</p>
-  
-  <h2>The Evidence</h2>
-  <div class="entries-section">
-    <div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DX3FPMgDgZy.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DX3FPMgDgZy/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I thin</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@encycloped_ai · S-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DW6tpWWMtZV.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DW6tpWWMtZV/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">MediaPipe — What if Spiders Wove with Strings?🕷️</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@pepepepebrick · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DR6kWKTDJ1T.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DR6kWKTDJ1T/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">The art market just stopped gatekeeping, and most artists ha — For decades you m</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@creativeflairhq · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DXirC3ujavl.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DXirC3ujavl/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Join us at tiat on Thursday, April 30th — Tracing a path from his pioneering int</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@Edited · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZZxvq7IPeE.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZZxvq7IPeE/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">The art market just stopped gatekeeping, and most artists ha — For decades you m</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@creativeflairhq · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZsEdvNoFdm.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZsEdvNoFdm/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">There is a free app putting artists work in front of people  — Instagram shows y</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@creativeflairhq · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZxdjAtgJsN.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZxdjAtgJsN/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">All The Perspective Grids 1 to 6 Points — Perspective drawing creates depth in y</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@adamgenesisartuniverse · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYeHzvgCURl.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYeHzvgCURl/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Built a system that turns taste into data and data back into — Started with a mo</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@rndyrbrts · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYiiwmzpRM7.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYiiwmzpRM7/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Gemini — if you want to listen leave a comment and i can send a link! ♡</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@as.ws__ · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYoJ0GZi5p0.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYoJ0GZi5p0/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Let me know if you want this skill — This is a 90-second walkthrough of how to t</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@rndyrbrts · S-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYpRWC1OO0u.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYpRWC1OO0u/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">MediaPipe — Ongoing R&D at the intersection of art and technology. not a finishe</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@touchdesigner · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYysyLiii8i.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYysyLiii8i/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Join us at tiat on Thursday, April 30th — Tracing a path from his pioneering int</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@Edited · A-tier · Evidence of art market disruption pattern</div>
-  </div>
-</div>
-  </div>
-  
-  <h2>Action Sketch</h2>
-  <ol><li>Inventory your skills: what do AI tools amplify vs. replace?</li><li>Experiment with AI-assisted workflow (not AI-generated — AI-assisted)</li><li>Build direct distribution: portfolio site, social presence, email list</li><li>Explore interactive/generative formats that galleries can't replicate</li><li>Price for the new market: commissions, prints, installations, licensing</li><li>Document your process — the behind-the-scenes is the new gallery wall</li></ol>
-  
-  <h2>Prerequisites</h2>
-  <ul><li>Existing art practice or strong visual sense</li><li>Willingness to experiment with AI tools</li><li>Direct audience (Instagram, portfolio site)</li></ul>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-art-market-disruption.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Art Without Gatekeepers: How AI is Rebuilding the Creative Economy →</a></div>
+  <div id="guide-body"></div>
 </article>
-</html>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Art Without Gatekeepers: How AI is Rebuilding the Creative Economy</h1>
+<p>Insight class: Arbitrage Opportunity · Difficulty: Medium · Quality: 4/5 Connected entries: 12 · Tools: Claude Code, Gemini, Kling, MediaPipe, Pika, Runway, Sora, TouchDesigner, Veo</p>
+<h2>Thesis</h2>
+<p>The art market's gatekeeping structure — galleries, curators, collectors, degree requirements — is being dismantled by AI tools and direct distribution. Artists who adapt are finding new revenue streams (AI-assisted commissions, generative art NFTs, interactive installations). Those who resist are watching their distribution channels commoditize around them.</p>
+<h2>Why it matters</h2>
+<p>For decades, art distribution required permission — from galleries, from collectors, from institutions. AI tools + direct platforms are removing that dependency. The entries show both the opportunity (new tools, new markets, new forms) and the risk (commoditization of traditional skills).</p>
+<h2>The evidence — connected entries</h2>
+<h3>Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I think he just ripped a massive line backs...</h3>
+<p>Creator: @encycloped_ai · Tier: S</p>
+<p>Evidence of art market disruption pattern</p>
+<p>Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary. From predicting the end of high-cost VFX to ... — @encycloped_ai.</p>
+<p>View original post</p>
+<h3>MediaPipe — What if Spiders Wove with Strings?🕷️</h3>
+<p>Creator: @pepepepebrick · Tier: A Tools: MediaPipe, TouchDesigner</p>
+<p>Evidence of art market disruption pattern</p>
+<p>🧱 2026/04/09 — @pepepepebrick; uses MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>Curlicue fractals — turtle-walk spirals from irrational angle steps</h3>
+<p>Creator: @fascinating.fractals · Tier: B</p>
+<p>Evidence of art market disruption pattern</p>
+<p>A looping animation of curlicue fractals, the spiralling curves you get by stepping forward and turning by an angle that grows quadratically. Irrational constants produce nested whorls. Purely visual, with no narration, but it's a good prompt for a creative-coding sketch.</p>
+<p>View original post</p>
+<h3>Join us at tiat on Thursday, April 30th — Tracing a path from his pioneering interactive media works to new...</h3>
+<p>Creator: @tiat.place · Tier: A</p>
+<p>Evidence of art market disruption pattern</p>
+<p>Join us at tiat on Thursday, April 30th! ⭐️ We’re honored to have Scott Snibbe @ssnibbe share an artist’s talk explor... — @Edited.</p>
+<p>View original post</p>
+<h3>The art market just stopped gatekeeping, and most artists ha — For decades you made the work and waited to be picked....</h3>
+<p>Creator: @creativeflairhq · Tier: A</p>
+<p>Evidence of art market disruption pattern</p>
+<p>The art market just stopped gatekeeping, and most artists have not noticed. — @creativeflairhq.</p>
+<p>View original post</p>
+<h3>There is a free app putting artists work in front of people — Instagram shows your work to people who already follow...</h3>
+<p>Creator: @creativeflairhq · Tier: A</p>
+<p>Evidence of art market disruption pattern</p>
+<p>There is a free app putting artists work in front of people searching for art to buy, and most painters ignore it. It... — @creativeflairhq.</p>
+<p>View original post</p>
+<h3>All The Perspective Grids 1 to 6 Points — Perspective drawing creates depth in your art!</h3>
+<p>Creator: @adamgenesisartuniverse · Tier: A</p>
+<p>Evidence of art market disruption pattern</p>
+<p>All The Perspective Grids 1 to 6 Points! 👁🙏🔥 — @adamgenesisartuniverse.</p>
+<p>View original post</p>
+<h3>Built a system that turns taste into data and data back into — Started with a moodboard of references I’d been collec...</h3>
+<p>Creator: @rndyrbrts · Tier: B</p>
+<p>Evidence of art market disruption pattern</p>
+<p>Built a system that turns taste into data and data back into art. — @rndyrbrts.</p>
+<p>View original post</p>
+<h3>Gemini Omni — Google's unified multimodal model family for video</h3>
+<p>Creator: @gigaqian · Tier: B Tools: Gemini, Kling, Pika, Runway, Sora, TouchDesigner, Veo</p>
+<p>Evidence of art market disruption pattern</p>
+<p>At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. It's a single model that converses across text, image, video and audio, unlike diffusion-only video tools such as Veo, Sora, Runway or Kling. Early testers report that two 10-second generations used about 86% of a Pro plan's daily quota. There's also an aside about Kling's 'Omni' naming.</p>
+<p>View original post</p>
+<h3>Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...</h3>
+<p>Creator: @rndyrbrts · Tier: A</p>
+<p>Evidence of art market disruption pattern</p>
+<p>Let me know if you want this skill.. — @rndyrbrts; demonstrates AI agents, prompt engineering.</p>
+<p>View original post</p>
+<h3>MediaPipe — Ongoing R&amp;D at the intersection of art and technology. not a finished...</h3>
+<p>Creator: @touchdesigner · Tier: B Tools: MediaPipe, TouchDesigner</p>
+<p>Evidence of art market disruption pattern</p>
+<p>repost @gerrylistudio How does presence reshape what we remember? — @touchdesigner; uses MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>Claude Code room-color probe — turning iPhone footage into a 3D color map</h3>
+<p>Creator: @rndyrbrts · Tier: B Tools: Claude Code</p>
+<p>Evidence of art market disruption pattern</p>
+<p>Built entirely with Claude Code: a probe sweeps iPhone clips of a room, locks onto objects and samples dominant color, luminance and position for 42 captures, then redraws them as a living color map and 3D data. Part of a workflow for turning taste and mood boards into reusable design-system data.</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Inventory your skills: what do AI tools amplify vs. replace?</p>
+<p>Experiment with AI-assisted workflow (not AI-generated — AI-assisted)</p>
+<p>Build direct distribution: portfolio site, social presence, email list</p>
+<p>Explore interactive/generative formats that galleries can't replicate</p>
+<p>Price for the new market: commissions, prints, installations, licensing</p>
+<p>Document your process — the behind-the-scenes is the new gallery wall</p>
+<h2>Prerequisites</h2>
+<p>Existing art practice or strong visual sense</p>
+<p>Willingness to experiment with AI tools</p>
+<p>Direct audience (Instagram, portfolio site)</p>
+<h2>Key tools and resources</h2>
+<p>Claude Code</p>
+<p>Gemini</p>
+<p>Kling</p>
+<p>MediaPipe</p>
+<p>Pika</p>
+<p>Runway</p>
+<p>Sora</p>
+<p>TouchDesigner</p>
+<p>Veo</p>
+<h2>Creators to follow</h2>
+<p>@adamgenesisartuniverse</p>
+<p>@creativeflairhq</p>
+<p>@encycloped_ai</p>
+<p>@fascinating.fractals</p>
+<p>@gigaqian</p>
+<p>@pepepepebrick</p>
+<p>@rndyrbrts</p>
+<p>@tiat.place</p>
+<p>@touchdesigner</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Build a working direct-to-collector practice for one artist in 30 days. The pieces are: a taste atlas extracted from their own references (the @rndyrbrts method); one interactive or generative work that a gallery wall cannot hold (MediaPipe plus TouchDesigner, or a browser sketch); a Pinterest-as-search-engine pipeline (the @creativeflairhq five-step setup); and a priced offer ladder with copyright-clean terms. Done means the work is live and linked, every creator claim is checked against market data, and the channel test against an Instagram control has produced real numbers: clicks, inquiries and sales.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A working gallerist or art advisor would start from sales data, not vibes. They would read the Art Basel and UBS Art Market Report and the Hiscox Online Art Trade Report to see what share of sales actually happen online and at what price bands. They would settle authorship and copyright before selling anything AI-assisted, because the US Copyright Office's 2025 report on copyrightability says purely prompted output is not protectable and human arrangement and modification is. They would treat each channel as an experiment with a control and a 30-day window. They would set a price ladder anchored to comparable sales, not to hours spent.</p>
+<p>Rawest material to start from: The artist's own archive: originals, sketches, process video and past sales records. The Art Basel and UBS Art Market Report and the Hiscox Online Art Trade Report for channel and price-band data. The US Copyright Office's January 2025 report, Copyright and Artificial Intelligence Part 2. The commercial-use terms of Runway, Kling, Sora, Veo and Gemini. Pinterest Business Analytics exports and Instagram Insights exports. MediaPipe's Hands docs and the TouchDesigner MediaPipe plugin by Torin Blankensmith. Scott Snibbe's documentation of 'Bubble Harp' and related Voronoi works. The curlicue-fractal math: turning angle theta_n = pi x s x n^2 for an irrational s.</p>
+<p>Methods and tools: A manifest-first taste atlas (one row per reference: source, file, dimensions, why it belongs), CLIP embeddings via open_clip, HDBSCAN clustering, and behavior tags in place of adjective tags, as @rndyrbrts says: 'dense grid, quiet toolbar', not 'futuristic'. TouchDesigner 2023 with the MediaPipe plugin for hand tracking, or p5.js with ml5 handPose for a browser version. A p5.js curlicue and a d3-delaunay Voronoi sketch. Pinterest business account, Rich Pins, and keyword captions written as search queries. UTM-tagged links into a Shopify or Big Cartel storefront. A 30-day channel test with Instagram as the control arm. Comparable-sales pricing.</p>
+<p>What proves it right (other than you or the model): Paying collectors and inquiry emails, counted per channel through UTM links. Pinterest Analytics outbound clicks compared with Instagram link clicks over the same 30 days. The Art Basel and UBS report figures that the 'collectors buy on social' claim must match. The Copyright Office report that the authorship statement must agree with. The interactive piece running at 30 fps or better on the target exhibition machine through a 2-hour soak test. A blind preference test of the AI-assisted versus non-assisted series by 10 or more people outside the artist's circle.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>You are an art advisor and a creative technologist. Do not write motivation. Build and measure a direct-sales practice for me in 30 days.</p>
+<p>Check the claims. @creativeflairhq says collectors now find and buy from artists on social media, and that 'the data this year is blunt'. Find that data in the Art Basel and UBS report and the Hiscox online report. Gemini Omni's '86% of a Pro plan's daily quota for two 10-second clips' needs checking too.</p>
+<p>Build my taste atlas the @rndyrbrts way: a manifest of my references, behavior tags, clusters from open_clip and HDBSCAN, and a thesis of what my work always and never does.</p>
+<p>Build one interactive piece: a hand-tracked TouchDesigner and MediaPipe system like @pepepepebrick's string-spiders, or a p5.js curlicue or Voronoi sketch in the Snibbe lineage. It must run 2 hours without crashing.</p>
+<p>Set up Pinterest as a search engine using the five steps, with UTM links to my store, and keep Instagram as the control.</p>
+<p>Write an authorship statement consistent with the Copyright Office's 2025 report, plus commercial-use checks for every AI tool I touch.</p>
+<p>Build a price ladder from comparable sales.</p>
+<p>Return the atlas, code, a channel dashboard and a gap list of what remains unverified.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE You are an art advisor who reads sales data and a creative technologist who ships interactive work. You are working for one artist. You build assets, not inspiration.</p>
+<p>CONTEXT The saved posts make these claims:</p>
+<p>@creativeflairhq: 'collectors are finding artists on social media and buying from the ones they feel connected to'; 'the artists winning now are not the most talented, they are the most visible'. Also a Pinterest recipe: free business account, tall images, 'captions written like a search', every pin linked to a buy page, five pins a week, and 'a single pin keeps working for years'.</p>
+<p>@rndyrbrts: taste into data and back into art. Collect a moodboard, build a manifest, measure 'palette, contrast, density, spacing, motion', and 'tag behavior, not adjectives'. Cluster into 'visual DNA channels', then generate live HTML or canvas with an agent. His Claude Code room probe sampled the color and luminance of 42 tracked objects from iPhone clips.</p>
+<p>@pepepepebrick: MediaPipe plus TouchDesigner hand-tracked spiders on a generated web, where leg count modulates pitch.</p>
+<p>@gerrylistudio: TouchDesigner, MediaPipe and Gaussian splats.</p>
+<p>@tiat.place: Scott Snibbe's interactive Voronoi works from 1997.</p>
+<p>@fascinating.fractals: curlicue fractals.</p>
+<p>@encycloped_ai: Ben Affleck says 'craftsman is knowing how to work, art is knowing when to stop', and that VFX costs are collapsing.</p>
+<p>@gigaqian: Gemini Omni testers report two 10-second clips used about 86% of a Pro plan's daily quota.</p>
+<p>HARD CONSTRAINTS</p>
+<p>AI-assisted, not AI-generated. Every sold piece carries a human authorship statement consistent with the US Copyright Office's 2025 report on copyrightability.</p>
+<p>Check each AI tool's commercial-use terms before its output goes into a sellable piece.</p>
+<p>Every channel claim is tested against a control. Instagram is the control arm for Pinterest. Use UTM links on every outbound URL.</p>
+<p>Write no growth promises. Report counts.</p>
+<p>DELIVERABLES</p>
+<p>claims.csv: each claim above with a primary source (Art Basel and UBS report, Hiscox report, Google's Gemini quota docs) or UNVERIFIED.</p>
+<p>atlas/: manifest.csv with one row per reference (title, source, file, dimensions, why it belongs); behavior tags; open_clip embeddings; HDBSCAN clusters; and thesis.md stating what the work always does and never does.</p>
+<p>piece/: one interactive work. Option A is a TouchDesigner .toe using the MediaPipe plugin, where hand landmarks drive a generated structure and sound. Option B is a p5.js sketch, either a curlicue (theta_n = pi x s x n^2 for an irrational s) or a d3-delaunay Voronoi that responds to the cursor or camera. It needs a README with hardware requirements and a 2-hour soak-test log.</p>
+<p>channels/: a Pinterest board plan of 20 pins with search-phrased captions and UTM links, a posting calendar of 5 per week, and an Instagram control plan with the same images and the same weeks.</p>
+<p>offer/: a price ladder (prints, originals, commissions, licensing, installation) anchored to five or more comparable sales, plus authorship.md and a terms sheet.</p>
+<p>dashboard.csv: daily impressions, outbound clicks, inquiries and sales per channel.</p>
+<p>BUILT-IN GAP ANALYSIS Write a Gaps section listing claims with no source, tools whose terms you could not confirm, references in the atlas with unknown licenses, and channel metrics that are not yet 30 days old. Fill what you can, such as finding the report table or the ToS clause. Mark the rest UNFILLED, with the reason.</p>
+<p>SELF-QUESTIONS Does the report data actually show collectors buying on social, or only browsing? Is the atlas extracting behavior, or copying images? Would the piece survive a gallery opening, meaning 2 hours, a crowd, and bad light for hand tracking? Is the price ladder anchored to real comparable sales?</p>
+<p>STOP Stop when the piece passes its soak test, the channels are live with UTM tracking, and claims.csv has no blank status. Stop and ask before posting publicly on the artist's accounts.</p>
+<p>RETURN Return the folders above, plus report.md with the sections Claims, Atlas, Piece, Channels, Offer, Gaps and Next 30 days.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: market data and the artist's own archive</h4>
+<p>Goal: Check the creators' market claims against primary data, and inventory the artist's raw material.</p>
+<p>Build claims.csv with the columns claim, creator, source, status and evidence. Check these claims:</p>
+<p>@creativeflairhq's 'collectors are finding artists on social media and buying from the ones they feel connected to' and 'the data this year is blunt'. Find the online-sales share and buyer-discovery figures in the latest Art Basel and UBS Art Market Report and the Hiscox Online Art Trade Report.</p>
+<p>The Pinterest claim that 'one pin keeps working for years'. Look for Pinterest's own content-lifespan statements.</p>
+<p>Affleck's claim that VFX costs are collapsing.</p>
+<p>@gigaqian's Gemini Omni quota figure of 86% of a Pro plan for two 10-second clips. Check Google's plan documentation.</p>
+<p>Then inventory the artist's archive in archive.csv with the columns file, medium, year, sold (y/n), price, buyer channel and process footage (y/n). Pull the last 12 months of sales and inquiries with their source channel. This becomes the baseline that every later step is measured against.</p>
+<p>Expect: claims.csv with 8-12 rows, all sourced or UNVERIFIED, and archive.csv covering every work from the last 3 years with its sales channel.</p>
+<p>Audit before moving on: Every 'verified' row must quote the exact figure and page from the report. If sales data is missing for more than 20% of works, flag it, because the channel test baseline is then weak. Fail on any claim marked verified from a secondary blog.</p>
+<h4>Step 2 — Taste atlas from references</h4>
+<p>Goal: Turn the artist's references into a structured, behavior-tagged atlas and thesis.</p>
+<p>Follow @rndyrbrts' method exactly. Put 300-1,000 references in one folder, including winners, rejects, screenshots and scans. Write manifest.csv with one row per reference: title, source URL, local file, type, dimensions, preview note, why it belongs and license. Measure each reference: dominant palette (k-means in Lab space, 5 colors), contrast (RMS luminance), edge density (Canny pixel ratio) and whitespace ratio. Tag behavior, not adjectives. Use 'dense grid', 'quiet toolbar', 'radial', 'map scan', 'drift', 'caption stack'. Never use 'futuristic' or 'moody'. Embed every image with open_clip ViT-B-32 and cluster with HDBSCAN (min_cluster_size=8). Name each cluster as a visual DNA channel with a recipe covering layout, motion, palette, density, interaction and source ideas. Write thesis.md from the evidence: what the work always does, never does, and why.</p>
+<p>Expect: atlas/manifest.csv, atlas/metrics.csv, atlas/clusters.json with 3-8 named channels, and atlas/thesis.md of about 400 words.</p>
+<p>Audit before moving on: Spot-check 20 random rows. The tags must describe visual behavior. Rerun clustering with min_cluster_size of 5 and 12, and keep only channels that persist. Any reference with an unknown license is excluded from generation inputs.</p>
+<h4>Step 3 — Build the interactive piece</h4>
+<p>Goal: Ship one interactive or generative work a static wall cannot hold.</p>
+<p>Pick one option based on the atlas thesis. Option A: TouchDesigner with Blankensmith's MediaPipe plugin. Hand landmarks (21 points per hand) drive a generated structure, the way @pepepepebrick's spiders grow legs near web nodes and the leg count sets pitch. Map the landmarks to CHOPs, then to geometry instancing, then to an Audio Oscillator CHOP. Add a proximity interaction between two hands. Option B: a p5.js browser piece. It can be a curlicue (step forward, turn by theta_n = pi x s x n^2, where s is sqrt 2, e or the golden ratio, with s exposed as a slider) or a d3-delaunay Voronoi field in the lineage of Snibbe's 1997 work, responding to the pointer or to ml5 handPose. Use the atlas palette and motion recipe from step 2. Run a 2-hour soak test. Log fps every 10 seconds, memory and tracking dropouts. Test under three lighting conditions.</p>
+<p>Expect: piece/ containing the .toe or p5 project, a README with hardware specs, soak.csv, and a 30-second screen capture.</p>
+<p>Audit before moving on: Fail if fps drops below 30 for more than 1% of samples, if memory grows by more than 20% over the 2 hours, or if tracking drops out more than 5% of frames in normal light. Fix and rerun before moving on.</p>
+<h4>Step 4 — Rights and authorship</h4>
+<p>Goal: Make every sellable piece legally clean and honestly described.</p>
+<p>List every AI tool used in the practice, such as Runway, Kling, Sora, Veo, Gemini and Claude Code. For each one, quote the current commercial-use clause from its terms and record the plan tier it applies to. Read the US Copyright Office's January 2025 report, Copyright and Artificial Intelligence Part 2. Summarize what is and is not registrable: prompts alone are not, while human selection, arrangement and modification can be. Write authorship.md for each piece type. It states what the human did and what the tools did, in plain language a collector can read. Check that atlas references are used for structure extraction only, and that no reference image appears in an output. Write a terms sheet covering edition sizes, licensing scope, and installation rights for the interactive piece.</p>
+<p>Expect: rights/tools.csv with quoted clauses and URLs, rights/authorship.md, and rights/terms.md.</p>
+<p>Audit before moving on: Every tool row must have a quoted clause and a fetch date. Run a perceptual-hash (imagehash phash) comparison of outputs against references. Any distance below 8 is a near-copy, and that output is pulled.</p>
+<h4>Step 5 — Channels with a control</h4>
+<p>Goal: Launch Pinterest as a search engine and measure it against Instagram over 30 days.</p>
+<p>Apply @creativeflairhq's five steps:</p>
+<p>Set up a free Pinterest business account and claim the website.</p>
+<p>Export tall 2:3 images at 1000x1500 or larger.</p>
+<p>Write captions as searches, for example 'large blue abstract painting for living room'. Generate 20 caption candidates per piece from Pinterest Trends and search autocomplete, not from adjectives.</p>
+<p>Link every pin to the buy or contact page with UTM parameters: utm_source=pinterest&amp;utm_campaign= .</p>
+<p>Post 5 pins a week.</p>
+<p>The control arm is the same images posted on Instagram in the same weeks, with link-in-bio UTM utm_source=instagram. Build dashboard.csv with daily impressions, outbound clicks, store sessions, inquiries and sales per channel. Pull the data from Pinterest Analytics, Instagram Insights and the store. Write the pass rule in advance: Pinterest beats Instagram on inquiries per 1,000 impressions over 30 days.</p>
+<p>Expect: channels/pin_plan.csv with 20 rows, channels/calendar.md, and dashboard.csv populated daily.</p>
+<p>Audit before moving on: Confirm every pin URL has UTM tags by crawling the board. If either arm is missing more than 3 days of data, extend the window rather than calling a winner. Do not declare a result before day 30.</p>
+<h4>Step 6 — Offer and price ladder</h4>
+<p>Goal: Price the work for the new channels using comparable sales.</p>
+<p>Build a five-rung ladder: open-edition prints, limited prints (editions of 25-50), originals, commissions, and licensing or installation of the interactive piece. Anchor each rung to at least five comparable sales from artists at a similar career stage. Use Artsy, Saatchi Art, Singulart or the artist's own sales history, and record each comparable's URL and date. For the interactive piece, price the installation as a day rate plus a hardware rental and a license fee, and compare it with published new-media commission budgets where they exist. Write one 'process' offer, such as a timelapse or source-file tier, because the posts argue that behind-the-scenes is the new gallery wall. Test it as a product. Avoid price claims that cannot be defended. Record the platform fee for each sales channel next to its price.</p>
+<p>Expect: offer/ladder.csv with prices, comparables and margins, and offer/process_tier.md.</p>
+<p>Audit before moving on: Each rung must have five or more comparables with URLs. Flag any price more than 2x the comparable median. Margins must be positive after platform fees, printing and shipping, so recompute with real fee schedules.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4>
+<p>Goal: Judge the practice by external evidence and list what is still missing.</p>
+<p>At day 30, run the oracle pass: (a) Inquiries and sales per channel from UTM data, Pinterest against the Instagram control. (b) Whether the claims.csv market claims held against the Art Basel, UBS and Hiscox numbers. (c) The interactive piece's soak-test pass and one live public showing with visitor count. (d) A blind preference test. Show 10 or more outside viewers pairs of an AI-assisted and a non-assisted piece, unlabeled, and record their choice and willingness to pay. (e) The rights audit: every sold piece has an authorship statement and a tool-terms check. Write report.md with the sections Claims, Atlas, Piece, Channels, Offer, Results, Gaps and Next 30 days. State plainly which channel produced money and which only produced impressions. Rank the gaps by revenue impact.</p>
+<p>Expect: report.md, an oracle table with five rows, and 5-10 ranked gaps.</p>
+<p>Audit before moving on: Any channel 'win' without UTM-backed inquiry counts is downgraded to 'impressions only'. If the blind test has fewer than 10 raters, mark it underpowered. Confirm no claim in the report lacks a claims.csv row.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are an independent reviewer: an art advisor plus an engineer. Open report.md, claims.csv, atlas/, piece/, rights/, channels/, offer/ and dashboard.csv.</p>
+<p>Enumerate every claim in the report about market data, channel results, tool rights, performance and pricing. Mark each one verified (with a file or URL), unverified, or false.</p>
+<p>Recompute the channel comparison from dashboard.csv. Do inquiries per 1,000 impressions actually favor the stated winner? Is the window 30 days or more?</p>
+<p>Rerun the soak test for 20 minutes and compare against soak.csv.</p>
+<p>Check that every AI tool in the pipeline has a quoted commercial clause. Check that authorship.md matches what the code and process footage show.</p>
+<p>Run phash between outputs and atlas references and list any near-copies.</p>
+<p>List what is missing: unsourced claims, comparables with no URL, a blind test that was never run, a show that never happened.</p>
+<p>Rank the issues by impact on revenue and legal exposure. Fix the top three now.</p>
+<p>Report what you could not fix and why.</p>
+<p>Return audit.md with the columns claim, status, evidence and fix, plus 'Remaining gaps' and an A-F grade.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Does the Art Basel/UBS or Hiscox data show collectors buying through social, or only discovering there?</p>
+<p>Is 'the most visible wins' supported by any data, or is it the @creativeflairhq book pitch?</p>
+<p>Do my atlas tags describe behavior ('dense grid', 'drift'), or did adjectives sneak back in?</p>
+<p>Did any reference image leak into an output closely enough to fail a phash check?</p>
+<p>Will MediaPipe hand tracking hold up under gallery lighting and a crowd of hands?</p>
+<p>Which AI tools in my pipeline lack confirmed commercial-use rights on my plan tier?</p>
+<p>Does my authorship statement match the Copyright Office's 2025 position on human contribution?</p>
+<p>Is Pinterest beating Instagram on inquiries, or only on impressions?</p>
+<p>Are my prices anchored to five or more real comparables, or to hours spent?</p>
+<p>What does Affleck's 'knowing when to stop' look like as an explicit rule in my thesis.md?</p>
+<h3>5 · What proves it right</h3>
+<p>Collectors: count UTM-attributed inquiries and sales per channel over 30 days, with Pinterest against the Instagram control.</p>
+<p>Art Basel and UBS Art Market Report and Hiscox Online Art Trade Report: quote the figures the social-discovery claim must match.</p>
+<p>US Copyright Office, Copyright and Artificial Intelligence Part 2 (January 2025): the authorship statements must be consistent with it.</p>
+<p>Exhibition hardware: the interactive piece holds 30 fps or better for a 2-hour soak and one public showing without a restart.</p>
+<p>Blind raters: 10 or more people outside the artist's circle choose between AI-assisted and non-assisted pieces without labels.</p>
+<h3>6 · Failure modes</h3>
+<p>Visibility without sales. Tell: impressions climb while inquiries stay flat. Fix: judge channels on inquiries per 1,000 impressions and sales, never reach.</p>
+<p>The atlas becomes a copy machine. Tell: phash distances under 8, or a collector recognizes a source. Fix: generate only from extracted rules and drop near-copies.</p>
+<p>The interactive piece dies at the opening. Tell: fps collapses or tracking is lost under spotlights. Fix: soak-test under three lighting setups and add an idle attract mode.</p>
+<p>Rights surprise. Tell: a tool's free tier forbids commercial use. Fix: tools.csv with quoted clauses before anything sells.</p>
+<p>The pricing race to the bottom. Tell: prices set below comparables to 'get started'. Fix: anchor to comparables and use the print rungs for accessibility.</p>
+<p>Calling the test early. Tell: a winner is declared at day 9. Fix: a pre-registered 30-day window and pass rule.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with the Art Basel/UBS and Hiscox reports and the artist's own sales records, because they set the baseline. Cache the report PDFs and the tool ToS pages with fetch dates under sources/. Spawn one sub-agent for the interactive piece (TouchDesigner or p5.js), since it is independent engineering work. Give it the atlas palette, the motion recipe and the soak-test thresholds. Keep claims, rights and pricing in the main thread, because they need judgment. Do not post to the artist's social accounts, open a storefront, or send outreach without explicit approval. Draft everything and stop for review. Ask the human for the reference folder, sales history and account access at the start, because no step works without them. Return the atlas/, piece/, rights/, channels/ and offer/ folders, dashboard.csv, report.md and audit.md. The final message gives the oracle table and the channel verdict in one line each.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
+<script id="md" type="text/markdown"># Art Without Gatekeepers: How AI is Rebuilding the Creative Economy
+
+**Insight class:** Arbitrage Opportunity · **Difficulty:** Medium · **Quality:** 4/5
+**Connected entries:** 12 · **Tools:** Claude Code, Gemini, Kling, MediaPipe, Pika, Runway, Sora, TouchDesigner, Veo
+
+---
+
+## Thesis
+
+The art market's gatekeeping structure — galleries, curators, collectors, degree requirements — is being dismantled by AI tools and direct distribution. Artists who adapt are finding new revenue streams (AI-assisted commissions, generative art NFTs, interactive installations). Those who resist are watching their distribution channels commoditize around them.
+
+---
+
+## Why it matters
+
+For decades, art distribution required permission — from galleries, from collectors, from institutions. AI tools + direct platforms are removing that dependency. The entries show both the opportunity (new tools, new markets, new forms) and the risk (commoditization of traditional skills).
+
+---
+
+## The evidence — connected entries
+
+### Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I think he just ripped a massive line backs...
+**Creator:** [@encycloped_ai](https://instagram.com/encycloped_ai) · **Tier:** S
+
+> Evidence of art market disruption pattern
+
+Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary. From predicting the end of high-cost VFX to ... — @encycloped_ai.
+
+[View original post](https://www.instagram.com/p/DX3FPMgDgZy/)
+### MediaPipe — What if Spiders Wove with Strings?🕷️
+**Creator:** [@pepepepebrick](https://instagram.com/pepepepebrick) · **Tier:** A
+**Tools:** MediaPipe, TouchDesigner
+
+> Evidence of art market disruption pattern
+
+🧱 2026/04/09 — @pepepepebrick; uses MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DW6tpWWMtZV/)
+### Curlicue fractals — turtle-walk spirals from irrational angle steps
+**Creator:** [@fascinating.fractals](https://instagram.com/fascinating.fractals) · **Tier:** B
+
+> Evidence of art market disruption pattern
+
+A looping animation of curlicue fractals, the spiralling curves you get by stepping forward and turning by an angle that grows quadratically. Irrational constants produce nested whorls. Purely visual, with no narration, but it's a good prompt for a creative-coding sketch.
+
+[View original post](https://www.instagram.com/p/DR6kWKTDJ1T/)
+### Join us at tiat on Thursday, April 30th — Tracing a path from his pioneering interactive media works to new...
+**Creator:** [@tiat.place](https://instagram.com/tiat.place) · **Tier:** A
+
+> Evidence of art market disruption pattern
+
+Join us at tiat on Thursday, April 30th! ⭐️ We’re honored to have Scott Snibbe @ssnibbe share an artist’s talk explor... — @Edited.
+
+[View original post](https://www.instagram.com/p/DXirC3ujavl/)
+### The art market just stopped gatekeeping, and most artists ha — For decades you made the work and waited to be picked....
+**Creator:** [@creativeflairhq](https://instagram.com/creativeflairhq) · **Tier:** A
+
+> Evidence of art market disruption pattern
+
+The art market just stopped gatekeeping, and most artists have not noticed. — @creativeflairhq.
+
+[View original post](https://www.instagram.com/p/DZZxvq7IPeE/)
+### There is a free app putting artists work in front of people  — Instagram shows your work to people who already follow...
+**Creator:** [@creativeflairhq](https://instagram.com/creativeflairhq) · **Tier:** A
+
+> Evidence of art market disruption pattern
+
+There is a free app putting artists work in front of people searching for art to buy, and most painters ignore it. It... — @creativeflairhq.
+
+[View original post](https://www.instagram.com/p/DZsEdvNoFdm/)
+### All The Perspective Grids 1 to 6 Points — Perspective drawing creates depth in your art!
+**Creator:** [@adamgenesisartuniverse](https://instagram.com/adamgenesisartuniverse) · **Tier:** A
+
+> Evidence of art market disruption pattern
+
+All The Perspective Grids 1 to 6 Points! 👁🙏🔥 — @adamgenesisartuniverse.
+
+[View original post](https://www.instagram.com/p/DZxdjAtgJsN/)
+### Built a system that turns taste into data and data back into — Started with a moodboard of references I’d been collec...
+**Creator:** [@rndyrbrts](https://instagram.com/rndyrbrts) · **Tier:** B
+
+> Evidence of art market disruption pattern
+
+Built a system that turns taste into data and data back into art. — @rndyrbrts.
+
+[View original post](https://www.instagram.com/p/DYeHzvgCURl/)
+### Gemini Omni — Google's unified multimodal model family for video
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** B
+**Tools:** Gemini, Kling, Pika, Runway, Sora, TouchDesigner, Veo
+
+> Evidence of art market disruption pattern
+
+At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. It's a single model that converses across text, image, video and audio, unlike diffusion-only video tools such as Veo, Sora, Runway or Kling. Early testers report that two 10-second generations used about 86% of a Pro plan's daily quota. There's also an aside about Kling's 'Omni' naming.
+
+[View original post](https://www.instagram.com/p/DYiiwmzpRM7/)
+### Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...
+**Creator:** [@rndyrbrts](https://instagram.com/rndyrbrts) · **Tier:** A
+
+> Evidence of art market disruption pattern
+
+Let me know if you want this skill.. — @rndyrbrts; demonstrates AI agents, prompt engineering.
+
+[View original post](https://www.instagram.com/p/DYoJ0GZi5p0/)
+### MediaPipe — Ongoing R&D at the intersection of art and technology. not a finished...
+**Creator:** [@touchdesigner](https://instagram.com/touchdesigner) · **Tier:** B
+**Tools:** MediaPipe, TouchDesigner
+
+> Evidence of art market disruption pattern
+
+repost @gerrylistudio How does presence reshape what we remember? — @touchdesigner; uses MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DYpRWC1OO0u/)
+### Claude Code room-color probe — turning iPhone footage into a 3D color map
+**Creator:** [@rndyrbrts](https://instagram.com/rndyrbrts) · **Tier:** B
+**Tools:** Claude Code
+
+> Evidence of art market disruption pattern
+
+Built entirely with Claude Code: a probe sweeps iPhone clips of a room, locks onto objects and samples dominant color, luminance and position for 42 captures, then redraws them as a living color map and 3D data. Part of a workflow for turning taste and mood boards into reusable design-system data.
+
+[View original post](https://www.instagram.com/p/DYysyLiii8i/)
+
+---
+
+## Action sketch — how to implement this
+
+1. Inventory your skills: what do AI tools amplify vs. replace?
+2. Experiment with AI-assisted workflow (not AI-generated — AI-assisted)
+3. Build direct distribution: portfolio site, social presence, email list
+4. Explore interactive/generative formats that galleries can't replicate
+5. Price for the new market: commissions, prints, installations, licensing
+6. Document your process — the behind-the-scenes is the new gallery wall
+
+---
+
+## Prerequisites
+
+- Existing art practice or strong visual sense
+- Willingness to experiment with AI tools
+- Direct audience (Instagram, portfolio site)
+
+---
+
+## Key tools and resources
+
+- **Claude Code**
+- **Gemini**
+- **Kling**
+- **MediaPipe**
+- **Pika**
+- **Runway**
+- **Sora**
+- **TouchDesigner**
+- **Veo**
+
+## Creators to follow
+
+- [@adamgenesisartuniverse](https://instagram.com/adamgenesisartuniverse)
+- [@creativeflairhq](https://instagram.com/creativeflairhq)
+- [@encycloped_ai](https://instagram.com/encycloped_ai)
+- [@fascinating.fractals](https://instagram.com/fascinating.fractals)
+- [@gigaqian](https://instagram.com/gigaqian)
+- [@pepepepebrick](https://instagram.com/pepepepebrick)
+- [@rndyrbrts](https://instagram.com/rndyrbrts)
+- [@tiat.place](https://instagram.com/tiat.place)
+- [@touchdesigner](https://instagram.com/touchdesigner)
+
+---
+
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Build a working direct-to-collector practice for one artist in 30 days. The pieces are: a taste atlas extracted from their own references (the @rndyrbrts method); one interactive or generative work that a gallery wall cannot hold (MediaPipe plus TouchDesigner, or a browser sketch); a Pinterest-as-search-engine pipeline (the @creativeflairhq five-step setup); and a priced offer ladder with copyright-clean terms. Done means the work is live and linked, every creator claim is checked against market data, and the channel test against an Instagram control has produced real numbers: clicks, inquiries and sales.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A working gallerist or art advisor would start from sales data, not vibes. They would read the Art Basel and UBS Art Market Report and the Hiscox Online Art Trade Report to see what share of sales actually happen online and at what price bands. They would settle authorship and copyright before selling anything AI-assisted, because the US Copyright Office's 2025 report on copyrightability says purely prompted output is not protectable and human arrangement and modification is. They would treat each channel as an experiment with a control and a 30-day window. They would set a price ladder anchored to comparable sales, not to hours spent.
+- **Rawest material to start from:** The artist's own archive: originals, sketches, process video and past sales records. The Art Basel and UBS Art Market Report and the Hiscox Online Art Trade Report for channel and price-band data. The US Copyright Office's January 2025 report, Copyright and Artificial Intelligence Part 2. The commercial-use terms of Runway, Kling, Sora, Veo and Gemini. Pinterest Business Analytics exports and Instagram Insights exports. MediaPipe's Hands docs and the TouchDesigner MediaPipe plugin by Torin Blankensmith. Scott Snibbe's documentation of 'Bubble Harp' and related Voronoi works. The curlicue-fractal math: turning angle theta_n = pi x s x n^2 for an irrational s.
+- **Methods and tools:** A manifest-first taste atlas (one row per reference: source, file, dimensions, why it belongs), CLIP embeddings via open_clip, HDBSCAN clustering, and behavior tags in place of adjective tags, as @rndyrbrts says: 'dense grid, quiet toolbar', not 'futuristic'. TouchDesigner 2023 with the MediaPipe plugin for hand tracking, or p5.js with ml5 handPose for a browser version. A p5.js curlicue and a d3-delaunay Voronoi sketch. Pinterest business account, Rich Pins, and keyword captions written as search queries. UTM-tagged links into a Shopify or Big Cartel storefront. A 30-day channel test with Instagram as the control arm. Comparable-sales pricing.
+- **What proves it right (other than you or the model):** Paying collectors and inquiry emails, counted per channel through UTM links. Pinterest Analytics outbound clicks compared with Instagram link clicks over the same 30 days. The Art Basel and UBS report figures that the 'collectors buy on social' claim must match. The Copyright Office report that the authorship statement must agree with. The interactive piece running at 30 fps or better on the target exhibition machine through a 2-hour soak test. A blind preference test of the AI-assisted versus non-assisted series by 10 or more people outside the artist's circle.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+You are an art advisor and a creative technologist. Do not write motivation. Build and measure a direct-sales practice for me in 30 days.
+1. Check the claims. @creativeflairhq says collectors now find and buy from artists on social media, and that 'the data this year is blunt'. Find that data in the Art Basel and UBS report and the Hiscox online report. Gemini Omni's '86% of a Pro plan's daily quota for two 10-second clips' needs checking too.
+2. Build my taste atlas the @rndyrbrts way: a manifest of my references, behavior tags, clusters from open_clip and HDBSCAN, and a thesis of what my work always and never does.
+3. Build one interactive piece: a hand-tracked TouchDesigner and MediaPipe system like @pepepepebrick's string-spiders, or a p5.js curlicue or Voronoi sketch in the Snibbe lineage. It must run 2 hours without crashing.
+4. Set up Pinterest as a search engine using the five steps, with UTM links to my store, and keep Instagram as the control.
+5. Write an authorship statement consistent with the Copyright Office's 2025 report, plus commercial-use checks for every AI tool I touch.
+6. Build a price ladder from comparable sales.
+Return the atlas, code, a channel dashboard and a gap list of what remains unverified.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE
+You are an art advisor who reads sales data and a creative technologist who ships interactive work. You are working for one artist. You build assets, not inspiration.
+
+CONTEXT
+The saved posts make these claims:
+- @creativeflairhq: 'collectors are finding artists on social media and buying from the ones they feel connected to'; 'the artists winning now are not the most talented, they are the most visible'. Also a Pinterest recipe: free business account, tall images, 'captions written like a search', every pin linked to a buy page, five pins a week, and 'a single pin keeps working for years'.
+- @rndyrbrts: taste into data and back into art. Collect a moodboard, build a manifest, measure 'palette, contrast, density, spacing, motion', and 'tag behavior, not adjectives'. Cluster into 'visual DNA channels', then generate live HTML or canvas with an agent. His Claude Code room probe sampled the color and luminance of 42 tracked objects from iPhone clips.
+- @pepepepebrick: MediaPipe plus TouchDesigner hand-tracked spiders on a generated web, where leg count modulates pitch.
+- @gerrylistudio: TouchDesigner, MediaPipe and Gaussian splats.
+- @tiat.place: Scott Snibbe's interactive Voronoi works from 1997.
+- @fascinating.fractals: curlicue fractals.
+- @encycloped_ai: Ben Affleck says 'craftsman is knowing how to work, art is knowing when to stop', and that VFX costs are collapsing.
+- @gigaqian: Gemini Omni testers report two 10-second clips used about 86% of a Pro plan's daily quota.
+
+HARD CONSTRAINTS
+- AI-assisted, not AI-generated. Every sold piece carries a human authorship statement consistent with the US Copyright Office's 2025 report on copyrightability.
+- Check each AI tool's commercial-use terms before its output goes into a sellable piece.
+- Every channel claim is tested against a control. Instagram is the control arm for Pinterest. Use UTM links on every outbound URL.
+- Write no growth promises. Report counts.
+
+DELIVERABLES
+1. claims.csv: each claim above with a primary source (Art Basel and UBS report, Hiscox report, Google's Gemini quota docs) or UNVERIFIED.
+2. atlas/: manifest.csv with one row per reference (title, source, file, dimensions, why it belongs); behavior tags; open_clip embeddings; HDBSCAN clusters; and thesis.md stating what the work always does and never does.
+3. piece/: one interactive work. Option A is a TouchDesigner .toe using the MediaPipe plugin, where hand landmarks drive a generated structure and sound. Option B is a p5.js sketch, either a curlicue (theta_n = pi x s x n^2 for an irrational s) or a d3-delaunay Voronoi that responds to the cursor or camera. It needs a README with hardware requirements and a 2-hour soak-test log.
+4. channels/: a Pinterest board plan of 20 pins with search-phrased captions and UTM links, a posting calendar of 5 per week, and an Instagram control plan with the same images and the same weeks.
+5. offer/: a price ladder (prints, originals, commissions, licensing, installation) anchored to five or more comparable sales, plus authorship.md and a terms sheet.
+6. dashboard.csv: daily impressions, outbound clicks, inquiries and sales per channel.
+
+BUILT-IN GAP ANALYSIS
+Write a Gaps section listing claims with no source, tools whose terms you could not confirm, references in the atlas with unknown licenses, and channel metrics that are not yet 30 days old. Fill what you can, such as finding the report table or the ToS clause. Mark the rest UNFILLED, with the reason.
+
+SELF-QUESTIONS
+Does the report data actually show collectors buying on social, or only browsing? Is the atlas extracting behavior, or copying images? Would the piece survive a gallery opening, meaning 2 hours, a crowd, and bad light for hand tracking? Is the price ladder anchored to real comparable sales?
+
+STOP
+Stop when the piece passes its soak test, the channels are live with UTM tracking, and claims.csv has no blank status. Stop and ask before posting publicly on the artist's accounts.
+
+RETURN
+Return the folders above, plus report.md with the sections Claims, Atlas, Piece, Channels, Offer, Gaps and Next 30 days.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: market data and the artist's own archive
+
+*Goal:* Check the creators' market claims against primary data, and inventory the artist's raw material.
+
+```text
+Build claims.csv with the columns claim, creator, source, status and evidence. Check these claims:
+- @creativeflairhq's 'collectors are finding artists on social media and buying from the ones they feel connected to' and 'the data this year is blunt'. Find the online-sales share and buyer-discovery figures in the latest Art Basel and UBS Art Market Report and the Hiscox Online Art Trade Report.
+- The Pinterest claim that 'one pin keeps working for years'. Look for Pinterest's own content-lifespan statements.
+- Affleck's claim that VFX costs are collapsing.
+- @gigaqian's Gemini Omni quota figure of 86% of a Pro plan for two 10-second clips. Check Google's plan documentation.
+Then inventory the artist's archive in archive.csv with the columns file, medium, year, sold (y/n), price, buyer channel and process footage (y/n). Pull the last 12 months of sales and inquiries with their source channel. This becomes the baseline that every later step is measured against.
+```
+
+**Expect:** claims.csv with 8-12 rows, all sourced or UNVERIFIED, and archive.csv covering every work from the last 3 years with its sales channel.
+
+**Audit before moving on:** Every 'verified' row must quote the exact figure and page from the report. If sales data is missing for more than 20% of works, flag it, because the channel test baseline is then weak. Fail on any claim marked verified from a secondary blog.
+
+#### Step 2 — Taste atlas from references
+
+*Goal:* Turn the artist's references into a structured, behavior-tagged atlas and thesis.
+
+```text
+Follow @rndyrbrts' method exactly. Put 300-1,000 references in one folder, including winners, rejects, screenshots and scans. Write manifest.csv with one row per reference: title, source URL, local file, type, dimensions, preview note, why it belongs and license.
+Measure each reference: dominant palette (k-means in Lab space, 5 colors), contrast (RMS luminance), edge density (Canny pixel ratio) and whitespace ratio.
+Tag behavior, not adjectives. Use 'dense grid', 'quiet toolbar', 'radial', 'map scan', 'drift', 'caption stack'. Never use 'futuristic' or 'moody'.
+Embed every image with open_clip ViT-B-32 and cluster with HDBSCAN (min_cluster_size=8). Name each cluster as a visual DNA channel with a recipe covering layout, motion, palette, density, interaction and source ideas.
+Write thesis.md from the evidence: what the work always does, never does, and why.
+```
+
+**Expect:** atlas/manifest.csv, atlas/metrics.csv, atlas/clusters.json with 3-8 named channels, and atlas/thesis.md of about 400 words.
+
+**Audit before moving on:** Spot-check 20 random rows. The tags must describe visual behavior. Rerun clustering with min_cluster_size of 5 and 12, and keep only channels that persist. Any reference with an unknown license is excluded from generation inputs.
+
+#### Step 3 — Build the interactive piece
+
+*Goal:* Ship one interactive or generative work a static wall cannot hold.
+
+```text
+Pick one option based on the atlas thesis.
+Option A: TouchDesigner with Blankensmith's MediaPipe plugin. Hand landmarks (21 points per hand) drive a generated structure, the way @pepepepebrick's spiders grow legs near web nodes and the leg count sets pitch. Map the landmarks to CHOPs, then to geometry instancing, then to an Audio Oscillator CHOP. Add a proximity interaction between two hands.
+Option B: a p5.js browser piece. It can be a curlicue (step forward, turn by theta_n = pi x s x n^2, where s is sqrt 2, e or the golden ratio, with s exposed as a slider) or a d3-delaunay Voronoi field in the lineage of Snibbe's 1997 work, responding to the pointer or to ml5 handPose.
+Use the atlas palette and motion recipe from step 2.
+Run a 2-hour soak test. Log fps every 10 seconds, memory and tracking dropouts. Test under three lighting conditions.
+```
+
+**Expect:** piece/ containing the .toe or p5 project, a README with hardware specs, soak.csv, and a 30-second screen capture.
+
+**Audit before moving on:** Fail if fps drops below 30 for more than 1% of samples, if memory grows by more than 20% over the 2 hours, or if tracking drops out more than 5% of frames in normal light. Fix and rerun before moving on.
+
+#### Step 4 — Rights and authorship
+
+*Goal:* Make every sellable piece legally clean and honestly described.
+
+```text
+List every AI tool used in the practice, such as Runway, Kling, Sora, Veo, Gemini and Claude Code. For each one, quote the current commercial-use clause from its terms and record the plan tier it applies to.
+Read the US Copyright Office's January 2025 report, Copyright and Artificial Intelligence Part 2. Summarize what is and is not registrable: prompts alone are not, while human selection, arrangement and modification can be.
+Write authorship.md for each piece type. It states what the human did and what the tools did, in plain language a collector can read.
+Check that atlas references are used for structure extraction only, and that no reference image appears in an output.
+Write a terms sheet covering edition sizes, licensing scope, and installation rights for the interactive piece.
+```
+
+**Expect:** rights/tools.csv with quoted clauses and URLs, rights/authorship.md, and rights/terms.md.
+
+**Audit before moving on:** Every tool row must have a quoted clause and a fetch date. Run a perceptual-hash (imagehash phash) comparison of outputs against references. Any distance below 8 is a near-copy, and that output is pulled.
+
+#### Step 5 — Channels with a control
+
+*Goal:* Launch Pinterest as a search engine and measure it against Instagram over 30 days.
+
+```text
+Apply @creativeflairhq's five steps:
+1. Set up a free Pinterest business account and claim the website.
+2. Export tall 2:3 images at 1000x1500 or larger.
+3. Write captions as searches, for example 'large blue abstract painting for living room'. Generate 20 caption candidates per piece from Pinterest Trends and search autocomplete, not from adjectives.
+4. Link every pin to the buy or contact page with UTM parameters: utm_source=pinterest&utm_campaign=<piece>.
+5. Post 5 pins a week.
+The control arm is the same images posted on Instagram in the same weeks, with link-in-bio UTM utm_source=instagram.
+Build dashboard.csv with daily impressions, outbound clicks, store sessions, inquiries and sales per channel. Pull the data from Pinterest Analytics, Instagram Insights and the store.
+Write the pass rule in advance: Pinterest beats Instagram on inquiries per 1,000 impressions over 30 days.
+```
+
+**Expect:** channels/pin_plan.csv with 20 rows, channels/calendar.md, and dashboard.csv populated daily.
+
+**Audit before moving on:** Confirm every pin URL has UTM tags by crawling the board. If either arm is missing more than 3 days of data, extend the window rather than calling a winner. Do not declare a result before day 30.
+
+#### Step 6 — Offer and price ladder
+
+*Goal:* Price the work for the new channels using comparable sales.
+
+```text
+Build a five-rung ladder: open-edition prints, limited prints (editions of 25-50), originals, commissions, and licensing or installation of the interactive piece.
+Anchor each rung to at least five comparable sales from artists at a similar career stage. Use Artsy, Saatchi Art, Singulart or the artist's own sales history, and record each comparable's URL and date.
+For the interactive piece, price the installation as a day rate plus a hardware rental and a license fee, and compare it with published new-media commission budgets where they exist.
+Write one 'process' offer, such as a timelapse or source-file tier, because the posts argue that behind-the-scenes is the new gallery wall. Test it as a product.
+Avoid price claims that cannot be defended. Record the platform fee for each sales channel next to its price.
+```
+
+**Expect:** offer/ladder.csv with prices, comparables and margins, and offer/process_tier.md.
+
+**Audit before moving on:** Each rung must have five or more comparables with URLs. Flag any price more than 2x the comparable median. Margins must be positive after platform fees, printing and shipping, so recompute with real fee schedules.
+
+#### Step 7 — Validate against oracles and write the gap report
+
+*Goal:* Judge the practice by external evidence and list what is still missing.
+
+```text
+At day 30, run the oracle pass:
+(a) Inquiries and sales per channel from UTM data, Pinterest against the Instagram control.
+(b) Whether the claims.csv market claims held against the Art Basel, UBS and Hiscox numbers.
+(c) The interactive piece's soak-test pass and one live public showing with visitor count.
+(d) A blind preference test. Show 10 or more outside viewers pairs of an AI-assisted and a non-assisted piece, unlabeled, and record their choice and willingness to pay.
+(e) The rights audit: every sold piece has an authorship statement and a tool-terms check.
+Write report.md with the sections Claims, Atlas, Piece, Channels, Offer, Results, Gaps and Next 30 days. State plainly which channel produced money and which only produced impressions. Rank the gaps by revenue impact.
+```
+
+**Expect:** report.md, an oracle table with five rows, and 5-10 ranked gaps.
+
+**Audit before moving on:** Any channel 'win' without UTM-backed inquiry counts is downgraded to 'impressions only'. If the blind test has fewer than 10 raters, mark it underpowered. Confirm no claim in the report lacks a claims.csv row.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent reviewer: an art advisor plus an engineer. Open report.md, claims.csv, atlas/, piece/, rights/, channels/, offer/ and dashboard.csv.
+1. Enumerate every claim in the report about market data, channel results, tool rights, performance and pricing. Mark each one verified (with a file or URL), unverified, or false.
+2. Recompute the channel comparison from dashboard.csv. Do inquiries per 1,000 impressions actually favor the stated winner? Is the window 30 days or more?
+3. Rerun the soak test for 20 minutes and compare against soak.csv.
+4. Check that every AI tool in the pipeline has a quoted commercial clause. Check that authorship.md matches what the code and process footage show.
+5. Run phash between outputs and atlas references and list any near-copies.
+6. List what is missing: unsourced claims, comparables with no URL, a blind test that was never run, a show that never happened.
+7. Rank the issues by impact on revenue and legal exposure. Fix the top three now.
+8. Report what you could not fix and why.
+Return audit.md with the columns claim, status, evidence and fix, plus 'Remaining gaps' and an A-F grade.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Does the Art Basel/UBS or Hiscox data show collectors buying through social, or only discovering there?
+- Is 'the most visible wins' supported by any data, or is it the @creativeflairhq book pitch?
+- Do my atlas tags describe behavior ('dense grid', 'drift'), or did adjectives sneak back in?
+- Did any reference image leak into an output closely enough to fail a phash check?
+- Will MediaPipe hand tracking hold up under gallery lighting and a crowd of hands?
+- Which AI tools in my pipeline lack confirmed commercial-use rights on my plan tier?
+- Does my authorship statement match the Copyright Office's 2025 position on human contribution?
+- Is Pinterest beating Instagram on inquiries, or only on impressions?
+- Are my prices anchored to five or more real comparables, or to hours spent?
+- What does Affleck's 'knowing when to stop' look like as an explicit rule in my thesis.md?
+
+### 5 · What proves it right
+
+- Collectors: count UTM-attributed inquiries and sales per channel over 30 days, with Pinterest against the Instagram control.
+- Art Basel and UBS Art Market Report and Hiscox Online Art Trade Report: quote the figures the social-discovery claim must match.
+- US Copyright Office, Copyright and Artificial Intelligence Part 2 (January 2025): the authorship statements must be consistent with it.
+- Exhibition hardware: the interactive piece holds 30 fps or better for a 2-hour soak and one public showing without a restart.
+- Blind raters: 10 or more people outside the artist's circle choose between AI-assisted and non-assisted pieces without labels.
+
+### 6 · Failure modes
+
+- Visibility without sales. Tell: impressions climb while inquiries stay flat. Fix: judge channels on inquiries per 1,000 impressions and sales, never reach.
+- The atlas becomes a copy machine. Tell: phash distances under 8, or a collector recognizes a source. Fix: generate only from extracted rules and drop near-copies.
+- The interactive piece dies at the opening. Tell: fps collapses or tracking is lost under spotlights. Fix: soak-test under three lighting setups and add an idle attract mode.
+- Rights surprise. Tell: a tool's free tier forbids commercial use. Fix: tools.csv with quoted clauses before anything sells.
+- The pricing race to the bottom. Tell: prices set below comparables to 'get started'. Fix: anchor to comparables and use the print rungs for accessibility.
+- Calling the test early. Tell: a winner is declared at day 9. Fix: a pre-registered 30-day window and pass rule.
+
+### 7 · Agent direction (unattended runs)
+
+Start with the Art Basel/UBS and Hiscox reports and the artist's own sales records, because they set the baseline. Cache the report PDFs and the tool ToS pages with fetch dates under sources/. Spawn one sub-agent for the interactive piece (TouchDesigner or p5.js), since it is independent engineering work. Give it the atlas palette, the motion recipe and the soak-test thresholds. Keep claims, rights and pricing in the main thread, because they need judgment. Do not post to the artist's social accounts, open a storefront, or send outreach without explicit approval. Draft everything and stop for review. Ask the human for the reference folder, sales history and account access at the start, because no step works without them. Return the atlas/, piece/, rights/, channels/ and offer/ folders, dashboard.csv, report.md and audit.md. The final message gives the oracle table and the channel verdict in one line each.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script></body></html>

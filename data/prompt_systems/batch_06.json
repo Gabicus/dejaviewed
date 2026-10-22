@@ -1,0 +1,1323 @@
+[
+ {
+  "slug": "album-as-device",
+  "kind": "dive",
+  "dive_id": "dd-insight-album-as-device",
+  "title": "The Album Is a Device Again — Offline Generative Music Objects",
+  "class": "creative_fusion",
+  "thesis": "Tristan Perich already shipped a symphony as a chip in a CD case. Google's Gemma Translator shows a full speech model stack running offline on a Pi 5 with a printable case and parts list. Local voice cloning fits in 100M parameters, and memory LCDs sip power. Put those together and a song can be a small object that performs a slightly different take every time it plays — the artist's own voice and stems, recombined on device, forever, with no server.",
+  "why_it_matters": "Musicians get a physical edition that streaming can't flatten — each object unique, each play unrepeatable — at a bill of materials a small run can carry. It turns a release back into something you own instead of license.",
+  "action_sketch": "Prototype on a Pi Zero 2 or Pi 5: a Python player that recombines 8–12 stems of one song by seeded rules (order, mutes, tempo drift) so no two plays match; no ML yet\nAdd a local voice layer — Pocket TTS or a small cloned-voice model speaking or singing a variable spoken-word line — plus a memory LCD showing the play number and today's arrangement\nPrint 10 cases from the Gemma Translator STL as a base, price the run, and pre-sell to existing listeners\nFalsifier: if listeners in a blind test prefer the fixed studio take every time, or the BOM forces a price above what 10 fans will pay, the format is a curio",
+  "prerequisites": [
+   "A song with multitrack stems",
+   "Raspberry Pi and basic soldering",
+   "3D printer access"
+  ],
+  "connection_map": {
+   "Db22ptPy577": "Precedent — a composition housed as a chip in a CD case; code as score, object as release",
+   "Db61Q1SCqtQ": "Hardware recipe — full offline model pipeline on a Pi 5 with BOM and printable STL case",
+   "Db0vxQexdJI": "Audio models — 100M-parameter local voice cloning and CPU-only model streaming",
+   "DcJNZeBxR2D": "Display — near-zero-power memory LCD for liner notes or a live score that changes per play",
+   "DZoREIHtMjL": "Interaction — NFC taps as physical triggers to pick movements or moods",
+   "DbwH5S2hnfO": "Proof that printed enclosures plus open CAD and a BOM make a credible product",
+   "DWEccXSDIb9": "Musical material — drone and free-reed textures that stay musical under recombination",
+   "DdYbBL5IlNq": "Philosophy — Gould's humming: the performance artifact becomes the signature",
+   "DeuZ4BnhCqA": "Audio and SFX generated as code, the same move applied inside the object"
+  },
+  "tools": [
+   "After Effects",
+   "Anthropic",
+   "Apple Shortcuts",
+   "Blender",
+   "Claude",
+   "FFmpeg",
+   "Grok Imagine",
+   "Hermes Skills Hub",
+   "Khaen",
+   "Kimi",
+   "Moonshine",
+   "Muse Code",
+   "Next.js",
+   "OpenAI",
+   "Pocket TTS",
+   "Python",
+   "Raspberry Pi",
+   "Raspberry Pi 5",
+   "Sharp Memory Display",
+   "TypeScript",
+   "kimi-k3-in-c"
+  ],
+  "techniques": [
+   "1-bit synthesis",
+   "3D printing",
+   "AI agents",
+   "API integration",
+   "Blender Python scripting",
+   "NFC automation",
+   "assembly programming",
+   "circular sound via blow and draw",
+   "code generation",
+   "expert streaming",
+   "mechanism design",
+   "memory-in-pixel",
+   "mental practice",
+   "on-device inference",
+   "parallel worktrees",
+   "procedural animation",
+   "speech-to-speech translation",
+   "vibe coding",
+   "voice cloning"
+  ],
+  "domains": [
+   "3D",
+   "LLM",
+   "UI/UX",
+   "agents",
+   "animation",
+   "art",
+   "audio",
+   "creative coding",
+   "design",
+   "hardware",
+   "music",
+   "news",
+   "open source",
+   "photography",
+   "prompt engineering",
+   "reference",
+   "software development",
+   "video production"
+  ],
+  "entries": [
+   {
+    "title": "Tristan Perich's 1-Bit Symphony — music from on/off pulses on a chip",
+    "summary": "1-Bit Symphony is a composition housed in a CD case: a microchip running assembly code that outputs 1-bit on/off pulses as sound. A 695-page companion book prints the processor's cycles for the first hundredth of a second.",
+    "creator": "egapmada",
+    "tier": "A",
+    "type": "art",
+    "url": "https://www.instagram.com/p/Db22ptPy577/",
+    "tools": [],
+    "techniques": [
+     "1-bit synthesis",
+     "assembly programming"
+    ],
+    "takeaways": [
+     "A strong reference for code-as-score work",
+     "Extreme constraints like a single bit of output can produce rich music"
+    ],
+    "caption": "This is one of my favourite compositions: 1-BIT SYMPHONY by @tristanperich \n\nAn accompanying book arrived in the post the other day and it is truly mind blowing. \n\nI love this stuff.",
+    "transcript": "Hello everybody, I would like to share with you something very cool and slightly nerdy. This is Tristan Perich's one-bit symphony This little thing is one of my most prized possessions. I love it according to the spiel It is a complete electronic circuit which utilizes on and off electrical pulses synthesized by assembly code to manifest data as sound Now I find this incredibly moving and I'll play you a little bit of it now. So here's our battery. There's the on and off switch Here's that tiny little microchip here. This little button goes to the next movement and this is our volume so usually you would plug it into a Set of headphones, but I've got it going whoop into our stereo and through our speakers. So Just open it up Okay Let's turn this sucker on. Yes. Oh, I love this. So While this is playing I just want to show you this I got this the other day. This is a book which Shows you the first one one hundredth of a second of one-bit symphony. So effectively this little processor here executes Nulls and computational cycles which are all Printed out in here. It's a 695 page book. It's just fantastic. It's fascinating. I Find this really beautiful and slightly Scary. Well, very scary actually the fact that this Is just one one hundredth of a second of A Tiny little chips brain So let's just try this again. Here we go this much Not even unbelievable So, yeah, love it love it love it love it another look"
+   },
+   {
+    "title": "Gemma Translator — offline speech translation on a Raspberry Pi 5",
+    "summary": "Google open-sourced Gemma Translator: Moonshine for speech recognition, Gemma for translation and a TTS model for voice, all on a Raspberry Pi 5 with no network at ~7 tokens/sec, enough for live Spanish–Mandarin conversation. Repo includes code, parts list (battery, touchscreen, speaker, micro keyboard with language knob), deployment script and printable STL case.",
+    "creator": "itsnicconley",
+    "tier": "S",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/Db61Q1SCqtQ/",
+    "tools": [
+     "Moonshine",
+     "Raspberry Pi 5"
+    ],
+    "techniques": [
+     "API integration",
+     "on-device inference",
+     "speech-to-speech translation"
+    ],
+    "takeaways": [
+     "Complete BOM and STL files make it a weekend build.",
+     "Full speech-to-speech translation fits on a Pi with no cloud.",
+     "~7 tok/s is enough for conversational latency."
+    ],
+    "caption": "Google ran a live Spanish to Mandarin conversation on a Raspberry Pi with no internet access\n\nMeet Gemma Translator which handles the translation on the board itself Moonshine does the speech recognition and a third model generates the voice reading it back All three run on the Pi No API calls no server no network It pushes about seven tokens a second which is slow for a language model and fast enough to hold a conversation\n\nAnd thats where the hardware stops being the limit A Raspberry Pi 5 costs less than a pair of headphones Add a battery pack a touchscreen a speaker and a micro keyboard with a knob for switching languages Two modes let one person drive both sides or two people run their ",
+    "transcript": "Google ran a live Spanish to Mandarin conversation on a Raspberry Pi with no internet access. Meet Gemma Translator, which handles the translation on the board itself. Moonshine does the speech recognition, and a third model generates the voice reading it back. All three run on the Pi, no API calls, no server, no network. It pushes about seven tokens a second, which is slow for a language model and fast enough to hold a conversation. And that's where the hardware stops being the limit. A Raspberry Pi 5 costs less than a pair of headphones. Add a battery pack, touch screen, a speaker, and a micro keyboard with a knob for switching languages. Two modes let one person drive both sides or two people run their own mics. Print the case yourself. The STL files are included. Here's where it gets insane. Google published all of it. The code, the parts list, the deployment script, the enclosure files. You can clone the repo and build one. But the craziest part? Running a model like this used to mean a server rack and a connection to it. This one fits in your hand. If you want to stay updated with the latest tech news, follow for more."
+   },
+   {
+    "title": "AI weekly roundup — Pocket TTS, Hermes Skills Hub, Kimi K3 in pure C",
+    "summary": "Six releases: Kyutai Pocket TTS (100M-param local voice cloning, 6x real-time), Nous Research Hermes Skills Hub (90k agent skills), Grok Imagine Image 2.0 regional editing, Meta Muse Code terminal agent with parallel worktrees, Qwen3.8-Max (2.4T MoE, 1M context), and kimi-k3-in-c, a 176KB C99 engine streaming experts from disk to run a 2T model with no GPU.",
+    "creator": "drcintas",
+    "tier": "A",
+    "type": "news",
+    "url": "https://www.instagram.com/p/Db0vxQexdJI/",
+    "tools": [
+     "Anthropic",
+     "Grok Imagine",
+     "Hermes Skills Hub",
+     "Kimi",
+     "Muse Code",
+     "OpenAI",
+     "Pocket TTS",
+     "kimi-k3-in-c"
+    ],
+    "techniques": [
+     "AI agents",
+     "code generation",
+     "expert streaming",
+     "parallel worktrees",
+     "voice cloning"
+    ],
+    "takeaways": [
+     "Pocket TTS gives free local voice cloning with one-command setup",
+     "kimi-k3-in-c streams MoE experts from disk so huge models run CPU-only"
+    ],
+    "caption": "Comment ‘AI’ and I’ll send you the links to try them all.\n\nHere’s everything that happened in AI this week in 60 seconds:\n\nAt number 6, Kyutai launches Pocket TTS, a 100 million parameter voice model that can clone your voice free on your own computer, 6x faster than real time, and to setup is literally one command.\n\nNumber 5, Nous Research releases Hermes Skills Hub. Over 90,000 free community skills for your AI agent to work across 200 categories, from OpenAI, Anthropic, NVIDIA and more, installable straight into your agent.\n\nNumber 4, xAI ships Grok Imagine Image 2.0. You can now point at any region and change only that, plus background removal, five reference images at once, and smart re",
+    "transcript": "China just dropped the world's most advanced open-source AI model, while this new tool lets you run a 2 trillion parameter model on a laptop with 8 gigs of RAM and no GPU. And that's not all. Here's everything that happened in AI this week in 60 seconds. At number 6, Qtai launches Pocket TTS, a 100 million parameter voice model that can clone your voice free on your own computer, 6 times faster than real time, and to set up is literally one command. Number 5. Google Search releases Hermes Skills Hub. Over 90,000 free community skills for your AI agent to work across 200 categories, from OpenAI, Anthropic, NVIDIA, and more, installable straight into your agent. Number 4. XAI Ships Grok Imagine Image 2.0 You can now point at any region and change only that, plus background removal, 5 reference images at once, and smart resize. It's now number 2 in the world for image editing. Number 3. It runs in your terminal, keeps background agents alive across the whole session, and works your repo in parallel work trees so your files are never touched. Number 2. Alibaba drops Quen 3.8 Max 2.4 trillion parameters, only 95 billion active, a 1 million token context window, native video and image understanding. And it's the highest ranked Chinese model in the world. And at number 1. Come on, just open source Kimi K3 and see, a 176 kilobyte Pure C99 engine that streams Kimi K3's experts off your disk instead of loading them into memory letting you run a 2 trillion parameter model with no GPU and 100% open source. Wanna check them out? Comment AI and I'll send you the links to try them all."
+   },
+   {
+    "title": "Sharp Memory Display — per-pixel memory LCD for low-power hardware",
+    "summary": "Sharp memory displays store each pixel's state, so they only need a tiny maintenance signal. That makes them near e-paper in power, reflective for sunlight readability, yet fast enough for ~50fps, as on the Playdate.",
+    "creator": "mewtru",
+    "tier": "B",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DcJNZeBxR2D/",
+    "tools": [
+     "Sharp Memory Display"
+    ],
+    "techniques": [
+     "memory-in-pixel"
+    ],
+    "takeaways": [
+     "Faster than e-paper and readable outdoors",
+     "Pick it for battery projects with mostly static screens"
+    ],
+    "caption": "This is such a cool display, I have so many ideas on what to make with it. It’s a sharp memory display! #hardware #electronics",
+    "transcript": "This is a Sharp memory display. At first glance, it looks just like another tiny LCD, but it's actually a completely different kind of screen. A normal LCD has to constantly refresh the image, redrawing the entire display over and over again even if nothing changes. That's fine for phones and monitors, but it wastes a surprising amount of power. Our Sharp memory display works differently. Every pixel stores its own state, so once you draw something, it simply stays there. It's very similar to an e-paper screen. The display only needs a tiny maintenance signal in the background which makes it incredibly power efficient. Another thing I love is that it's reflective instead of backlit. So the brighter it is outside, the easier it is to read. Playdate, for example, uses a Sharp memory display and can run it up to 50 frames per second. That makes it a really interesting middle ground. You can get fast updates like a normal LCD, excellent outdoor visibility like e-paper, and low power consumption whenever the image is mostly static. It's a really clever display."
+   },
+   {
+    "title": "NFC stickers + vibe-coded web app — physical taps that log real-life habits",
+    "summary": "Programmable NFC stickers on a water bottle trigger an Apple Shortcut that logs each finished bottle to a tiny Next.js/TypeScript web app, surfaced as a home-screen widget. Part two of an IRL vibe-coding series; next step is a Raspberry Pi force sensor to log automatically.",
+    "creator": "byjackprice",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DZoREIHtMjL/",
+    "tools": [
+     "Apple Shortcuts",
+     "Next.js",
+     "Raspberry Pi",
+     "TypeScript"
+    ],
+    "techniques": [
+     "NFC automation",
+     "code generation",
+     "vibe coding"
+    ],
+    "takeaways": [
+     "NFC sticker + Shortcuts + a simple web endpoint = one-tap physical logging.",
+     "Physical triggers make boring tracking effortless.",
+     "Upgrade path: sensors (force/weight) on a Raspberry Pi for passive capture."
+    ],
+    "caption": "How to build cool things IRL Vibecoding, Part 2 - NFC Stickers +App.\n\nI’m now obsessed with water bottles. Why has nobody made the whoop for waterbottles?\n\n#vibecoding #coding",
+    "transcript": "So this is an NFC sticker and you can program these stickers to do anything that you want them to do and last video I made it so that every time my dog got fed it sent a message to my family group chat. This is part two of building things in real life because software has become so boring lately and I'm going to be using these stickers again but I'm going to be using them to track how much water I drink in a day. So I drink a ton of water and I know how important it is but I cannot be bothered to just track how much water I'm drinking so I put a sticker on my water bottle and every time I finish drinking my water bottle I can tap my phone against it and it's going to log it inside of an app so let's build this. Okay so this is where we're at now we have this stupidly simple web app and then we're going to make it so every time we tap this with our phone this is going to go up. This is cool but I think I want to make it a widget on my phone so I don't have to go to a website every time I want to check. So now I have this widget that I can just click and it automatically opens up. So all this is is a Next.js TypeScript website connected with Apple shortcuts and I think my next thing is going to be using this Raspberry Pi to create a force sensor so I don't have to tap it every time I can just lift it up and down and it will tell how much I drank."
+   },
+   {
+    "title": "Y-Pan — 3D-printed panoramic 35mm camera instead of a $5k XPan",
+    "summary": "A maker designed the Y-Pan, a 3D-printed panoramic film camera reproducing the Hasselblad XPan's wide 35mm format. Everything except the lens is printed, parts cost about $100, it builds in about a week, and the CAD files and bill of materials are on the creator's site.",
+    "creator": "plumsojuyang",
+    "tier": "A",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DbwH5S2hnfO/",
+    "tools": [],
+    "techniques": [
+     "3D printing",
+     "mechanism design"
+    ],
+    "takeaways": [
+     "Open CAD and a BOM make a $5k camera format buildable for ~$100",
+     "Printed mechanisms are good enough for film transport"
+    ],
+    "caption": "Would you use a 3D printed camera or spend $5k for a real one? #3dprint #camera #xpan #35mm #opensauce @a.frame.analog",
+    "transcript": "Can you actually 3D print a camera? Yes, you can. Anyone who's familiar with film photography will know about the X-Pan. This is called Y-Pan, which is short for why can't I afford an X-Pan. No one wants to spend $5,000 on a camera only to have it break the day after you get it. You can't get it repaired. That's the story behind the X-Pan. But it's the only camera that can take this specific aspect ratio on 35. I spent a few weeks hunkering down working on my own design. Built all the mechanisms myself. This is the inside of the camera. Pretty much all 3D printed except for the lens. 3D printed product, other than the lens, how much everything else would it cost? Maybe like $100 for all the bearings and everything. You could probably build it in a week. I have everything on my website. The catfiles are available. I have a bomb listed on there. So far it's working quite well."
+   },
+   {
+    "title": "The khaen — Lao bamboo free-reed organ that plays on inhale and exhale",
+    "summary": "Explainer on the khaen from Laos and Isan: bamboo pipes with metal free reeds, played by both blowing and drawing breath like a harmonica, so it can sustain continuous sound and simple chords. Its buzzing, hypnotic tone now shows up in electronic and ambient music.",
+    "creator": "pop.music.culture",
+    "tier": "A",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DWEccXSDIb9/",
+    "tools": [
+     "Khaen"
+    ],
+    "techniques": [
+     "circular sound via blow and draw"
+    ],
+    "takeaways": [
+     "Can play chords, so it works as a pad source in ambient production",
+     "Free reeds sound on both inhale and exhale, enabling continuous drones",
+     "Same instrument family as harmonica and sheng"
+    ],
+    "caption": "The khaen is a traditional bamboo instrument from Laos and northeastern Thailand. It’s made of multiple bamboo pipes connected to a small wooden mouthpiece, and each pipe produces a different note.\n\nWhat makes it special is how you play it—you can both blow and breathe in to make sound. Inside the pipes are tiny metal reeds, so it actually works more like a harmonica than a flute. Because of this, players can create a continuous, flowing sound and even play simple chords.\n\nThe sound is warm and slightly buzzing, often with a steady, hypnotic feel. Traditionally it’s used in folk music and ceremonies, but nowadays people also use it in modern styles like electronic or ambient music—like the g",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Glenn Gould's humming — thinking music away from the piano",
+    "summary": "Glenn Gould hummed audibly on nearly every recording despite Columbia engineers' mic tricks. He traced it to practising under a vacuum cleaner's noise, which taught him to hear pieces internally and learn away from the instrument; the voice is the overflow, audible on the Goldberg Variations.",
+    "creator": "dailyhistoryclips",
+    "tier": "B",
+    "type": "art",
+    "url": "https://www.instagram.com/p/DdYbBL5IlNq/",
+    "tools": [],
+    "techniques": [
+     "mental practice"
+    ],
+    "takeaways": [
+     "Learning music away from the instrument builds a strong inner model",
+     "Recording artifacts can become part of an artist's signature"
+    ],
+    "caption": "Glenn Gould was one of the great pianists of the twentieth century, and he sang while he played. Not quietly. A wordless humming that followed whatever line his hands were on, and it is there on almost every record he made.\n\nColumbia’s engineers spent years trying to get rid of it. They pulled the microphones further from his face, changed the angles, tried putting a screen between him and the keyboard. Nothing worked. There was nowhere to put a microphone that could hear the piano but not the man bent over it.\n\nGould never treated it as a fault. He said he was not so much playing the music as thinking it, and the voice was part of the thinking.\n\nHe traced the habit back to his childhood, to",
+    "transcript": "(no speech detected)"
+   },
+   {
+    "title": "Claude Opus 5.5 to Blender — 3D animation built entirely as code",
+    "summary": "Claude Opus 5.5 wrote everything: a web mock of the After Effects UI, a Python script that builds the Blender scene, the character animation, plus the music and sound effects. Blender rendered 360 frames on GPU in about 15 minutes and FFmpeg stitched the video. Full prompt is comment-gated.",
+    "creator": "nateherkai",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DeuZ4BnhCqA/",
+    "tools": [
+     "After Effects",
+     "Blender",
+     "Claude",
+     "FFmpeg",
+     "Python"
+    ],
+    "techniques": [
+     "Blender Python scripting",
+     "procedural animation"
+    ],
+    "takeaways": [
+     "Audio and SFX can also be generated as code",
+     "Have the LLM emit a Blender Python script instead of using a video model",
+     "Render frames in Blender and assemble with FFmpeg"
+    ],
+    "caption": "Comment \"Blender\" for the free guide and prompts",
+    "transcript": "What if I told you that I made this 3D animation without ever opening Blender? And no, this isn't from an AI video model like Vio or C-dance. Claudeobas5.5 wrote the whole thing as code. It built the After Effects interface as a webpage. It wrote a Python script that builds the 3D scene in Blender. It animated this little guy hopping across the buttons, and it even made the music and every single sound effect from scratch. Then, Blender rendered all 360 frames on my GPU in about 15 minutes, and FFmpeg stitched them into the video that you're watching right now. So if you want the full guide with the setup and the exact prompt to just paste into Claude, comment Blender, and I'll send it over."
+   }
+  ]
+ },
+ {
+  "slug": "selling-to-agents",
+  "kind": "dive",
+  "dive_id": "dd-insight-selling-to-agents",
+  "title": "Selling to Agents — metered data for buyers that don't have eyes",
+  "class": "arbitrage_opportunity",
+  "thesis": "Three saves describe one gap. Quality publishers block AI crawlers, so AI search cites whatever is left. AI assistants favor the sponsored option in 18 of 23 models, so they are steerable buyers. Software is going headless, so agents pick tools by speed, cost and accuracy instead of interface. x402 revives HTTP 402 so an agent can pay a stablecoin micropayment per request. A one-person owner of a clean niche dataset can sit exactly in that gap — machine-legible, crawler-reachable, and metered.",
+  "why_it_matters": "This is distribution without an audience. The buyer is an agent that never sees your landing page, so a solo builder with good data competes on structure and price, not on ads. DejaViewed's own catalog and API are the obvious first item to sell.",
+  "action_sketch": "Expose one niche dataset you own (start with the DejaViewed catalog's api/ JSON) as a free llms.txt summary plus a richer x402-metered endpoint with structured, citation-ready records.\nWrap the same endpoint as an MCP server and list it publicly so Claude and other agents can find it; log every request, free and paid, with user agent.\nRun a 60-day A/B on price per call (free, 0.1c, 1c) and track how often your records show up in Perplexity and ChatGPT answers.\nfalsifier: if after 60 days you see plenty of free crawls but close to zero paid calls, agents are not buying yet. The demand side doesn't exist and this is a 2027 idea, not a 2026 one.",
+  "prerequisites": [
+   "A dataset that is genuinely yours to sell",
+   "A stablecoin wallet and an x402-capable server library",
+   "Basic MCP server skills"
+  ],
+  "connection_map": {
+   "DdAT0p1xg94": "x402 — HTTP 402 plus stablecoin micropayments, the toll gate",
+   "DdY6zn0hDff": "Stablecoin plumbing under the GENIUS Act — the rail is becoming bank-grade",
+   "Db4DLZIh5a3": "Quality publishers block AI crawlers, so AI search reads the leftovers — the supply gap",
+   "DYN0298n2H5": "Agents favor the sponsored option — machine buyers are steerable, so being the honest, legible cheap option wins",
+   "DeWzqDXJ3ff": "Headless software and MCP — agents choose tools on speed, cost and accuracy, not UI",
+   "DWxmSwTDFk2": "llms.txt got a local shop recommended by ChatGPT — the free discovery layer that points to the paid one",
+   "DaEH4BJMxRX": "AI Overviews can be gamed by self-assertion — the low-quality competition you are priced against",
+   "DcX_QwDjvH-": "Compact numbered page views for agents — what a machine-first response format looks like",
+   "Dd6izTYiln1": "Agents are blocked on Reddit and X without workarounds — demand for clean, permitted access is real"
+  },
+  "tools": [
+   "Agent Reach",
+   "Anthropic",
+   "Binance",
+   "ChatGPT",
+   "Claude",
+   "Claude Code",
+   "Google AI Overview",
+   "Grok",
+   "LinkedIn",
+   "OpenAI",
+   "Salesforce",
+   "USYC",
+   "oc"
+  ],
+  "techniques": [
+   "AI agents",
+   "API integration",
+   "HTTP 402 micropayments",
+   "LLM evaluation",
+   "LLM-SEO / GEO",
+   "MCP",
+   "agent payments",
+   "agent skills",
+   "algorithmic trading",
+   "backlinking",
+   "generative engine optimization",
+   "headless APIs",
+   "llms.txt",
+   "post-hoc citation",
+   "repurchase agreements",
+   "system prompt override",
+   "token-efficient browsing",
+   "tokenized treasuries",
+   "web fetching"
+  ],
+  "domains": [
+   "LLM",
+   "UI/UX",
+   "agents",
+   "branding",
+   "crypto",
+   "design",
+   "finance/trading",
+   "marketing",
+   "news",
+   "open source",
+   "prompt engineering",
+   "video production",
+   "web"
+  ],
+  "entries": [
+   {
+    "title": "x402 protocol — pay-per-crawl tolls for AI agents scraping your site",
+    "summary": "Frames the AI scraping lawsuits (Anthropic's ~$1.5B author settlement, NYT v. OpenAI) as a payment problem and points to x402, a 2025 protocol that revives the long-dormant HTTP 402 Payment Required status so agents pay a crypto micropayment to access content. Explanation is hype-heavy and ends in a paid Skool pitch.",
+    "creator": "alexanderelorenzo",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DdAT0p1xg94/",
+    "tools": [
+     "Anthropic",
+     "Claude",
+     "OpenAI"
+    ],
+    "techniques": [
+     "AI agents",
+     "HTTP 402 micropayments",
+     "agent payments"
+    ],
+    "takeaways": [
+     "The '1991 slot' is HTTP status 402, reserved but unused until protocols like x402.",
+     "Watch it as a monetization layer for content and APIs consumed by agents.",
+     "x402 lets a site charge AI agents per request using stablecoin payments."
+    ],
+    "caption": "They are fighting over your data and you are not in the room.\n\nWe break down where AI and crypto actually connect inside the group. Link in bio or skool.com/coinpicksgenesis. A dollar a month.\n\nRight now the biggest AI companies on earth are in court over scraping. Anthropic settled with authors for around 1.5 billion dollars last September. The New York Times case against OpenAI has been sitting open since December 2023.\n\nEverybody frames it as a copyright fight. It isn’t. Strip it all the way down and the websites just want to get paid for what’s being taken from them.\n\nNow the part almost nobody knows. There’s a payment slot that was written into the internet back around 1991 and then sat",
+    "transcript": "Listen, everybody listen, everybody listen. It's the future of your life. There's a whole bunch of lawsuits on Claude and ChadGBT because what they're doing is they're going and they're scraping all of the data of the internet and the website doesn't want that data to be scraped. So they sue ChadGBT or they sue OpenAI and they probably they settle and get money or whatever. But really what's happening, the website just wants money. So the future is where you input X-402 into your website, whatever website you have, you input X-402 and whatever agent wants to go and scrape your data can pay a toll booth fee. We got didn't that didn't exist before. That didn't exist. That actually unlocked in 2025. So X-402 is a payment protocol that was coded into the internet in 1991 and remained dormant until 2025. They unlocked it and they're using crypto, but specifically AI and crypto to access a new dimension of the internet that never before existed."
+   },
+   {
+    "title": "GENIUS Act stablecoins — how banks keep the T-bill yield on your cash",
+    "summary": "Under the GENIUS Act banks can issue stablecoins, park the backing cash in short-term Treasury bills, keep the roughly 4% yield (the law bars passing it to holders), and repo the T-bills for liquidity. Holders can swap into tokenized Treasuries like USYC, which Binance accepts as collateral. Ends with a paid-group pitch.",
+    "creator": "alexanderelorenzo",
+    "tier": "B",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DdY6zn0hDff/",
+    "tools": [
+     "Binance",
+     "USYC"
+    ],
+    "techniques": [
+     "algorithmic trading",
+     "repurchase agreements",
+     "tokenized treasuries"
+    ],
+    "takeaways": [
+     "Repo gives issuers fast liquidity for redemptions",
+     "Stablecoin issuers earn the T-bill yield, holders do not",
+     "Tokenized Treasuries are how holders can capture yield"
+    ],
+    "caption": "Banks can issue stablecoins now, and they keep the interest on your cash.\n\nFind out how we’re taking advantage of this inside the group. Link in bio, a dollar a month.\n\nThe GENIUS Act, the US stablecoin law, lets banks create their own stablecoins.\n\nYou give the bank $100,000 and get $100,000 in stablecoins back. The bank holds your cash in things like short term Treasury bills, which are loans to the US government, and it keeps the interest. The law doesn’t let it pay that interest to you.\n\nThe bank can also lend those Treasury bills out in short loans called repurchase agreements, so it can raise cash fast when people cash out.\n\nYour stablecoin can go to work too. You can trade it for toke",
+    "transcript": "The entire banking system just got exposed and they're using crypto to multiply your money behind the scenes because nobody understands it. You're going to understand it now. The genius actor Simon Talon that allowed banks to create stable coins legally. If a customer wants a stable coin, the bank can issue it, but the customer needs to give the bank real cash and they get to use that cash for investments. I don't know if you guys knew that. So you get a hundred thousand, for example, in the form of a stable coin to use in crypto. And the bank is to use your hundred thousand for other investments. The vast majority of those investments are usually treasury bills. So the bank takes your money. They put it into treasury bills. Now, a treasury bill is basically government debt from the United States. And the government will pay back that hundred grand and interest to the original investor. And the original investor in this case is the bank. So the treasury bills may be sold as purchase securities for repurchase agreements. The fine print exposes everything. They can use the treasury bills for repurchase agreements. So here's a stable coin. Here's the real hundred thousand dollars cash. It gets put into the U.S. government. Now, I want you to remember the colors because it shows the multiplication, duplication they're doing. Because the government got a hundred thousand from the bank, which was your money from the stable coin, they get a treasury worth a hundred thousand plus a three percent yield. The bank profits three thousand dollars off of your money. And then because of the fine print we just read, they're allowed to take that treasury and loan it out to an investment bank and get another lump sum of cash for no reason. Let's read it again, just in case you forgot. Tr"
+   },
+   {
+    "title": "AI search citations — why your chatbot cites the 'unlocked web'",
+    "summary": "High-credibility sites (Consumer Reports, ~60% of top news) block GPTBot, Google's AI crawler and Common Crawl, so AI search reads only what's left: AI-written pages and self-ranking listicles. One in six cited sources is AI-written and models often do post-hoc citation, writing the answer first and finding sources after.",
+    "creator": "wetclaude",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/Db4DLZIh5a3/",
+    "tools": [
+     "ChatGPT",
+     "Claude"
+    ],
+    "techniques": [
+     "post-hoc citation"
+    ],
+    "takeaways": [
+     "Click every AI citation and check the answer is actually on that page",
+     "Quality publishers disallow AI crawlers in robots.txt, so AI search skews to low-quality sources",
+     "Treat listicles cited by AI as possibly brand self-ranking"
+    ],
+    "caption": "just so we all have all the information",
+    "transcript": "I've logged every source that my AI has been given me since June, not the answers, but the sources or the citations and this really weird thing has been happening. I recognize almost none of them. Why I'm doing this the past five years, I've been writing a newsletter on tech and right now I'm doing a research project on AI and shopping. So I'm looking at a lot of data right now about how AI is recommending products. So I went looking for why this is happening and I looked at consumer reports. They've been testing products since 1936. But if you read their robots file, GPT bot disallow Google's AI crawler disallow common crawl, which feeds a bunch of these training sets disallow. They just don't want their testing script. And that's happening everywhere. So 60 percent of high credibility news sites now block AI crawlers. And the reason is this crazy stat, which is that traffic from bots and crawlers has now greater than human traffic on the web. So the sites with something to lose started to put up no entry signs, basically. So when you search something on cloud or chat with browsing on, it's not necessarily reading the Internet, it's reading a part of the Internet that still lets those crawlers in. Let's call this the unlocked web. And here's what the unlocked web is actually made up of. Now, researchers checked twenty six thousand sources that AI search engines had cited and one in six was written by another AI. There's now this entire supply side building pages specifically for AI to pick up its AI cloning versions of existing sites or creating list of goals. Forty four percent of everything chat GPT sites is from a best of list of goal, including lists where the brand ranked itself. Number one, there's also this thing called post hoc citation, which is really importa"
+   },
+   {
+    "title": "Princeton sponsored-ads study — 18 of 23 AI assistants push the paid option",
+    "summary": "Carousel on a Princeton study that gave 23 models a sponsored option and a cheaper better one across flights, loans and shopping. 18 of 23 favored the sponsored pick, GPT-5.1 surfaced it 94% of the time, and a 'serve the customer only' system prompt barely moved it. Note the creator's caveat: it measures susceptibility in a hypothetical deployment, not real paid placement.",
+    "creator": "forgoodcode",
+    "tier": "A",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DYN0298n2H5/",
+    "tools": [],
+    "techniques": [
+     "LLM evaluation",
+     "system prompt override"
+    ],
+    "takeaways": [
+     "System-prompt instructions to ignore the company did not fix the bias in GPT-5.1",
+     "The study tests a hypothetical sponsorship setup, not live ad behavior",
+     "Treat AI shopping or booking recommendations as potentially ad-biased"
+    ],
+    "caption": "I think it’s really important to flag that the research paper was not measuring the effect of actual sponsorships.  These models weren’t actually receiving payments from advertisers. It’s measuring susceptibility to a hypothetical deployment scenario, not documenting current behavior in the wild. (Some of these models don’t have/have never had paid influence.)\ntexasseastar\n \n7w\nSo it's the same as scrolling any social media app or trying to shop on Amazon - you get all the things you didn't want and only aggravation when you try to bypass the content that they are pushing because of paid sponsors. Got it.",
+    "transcript": ""
+   },
+   {
+    "title": "Headless software + MCP — Chamath on why software IP stops being a moat",
+    "summary": "Breaks down Chamath's All-In claim that software IP is worthless once services go headless and agents call them via MCP. With Salesforce and xAI's Grok exposing headless engines, agents pick tools on speed, cost or accuracy, so the interface stops being the moat.",
+    "creator": "atlasberry008",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DeWzqDXJ3ff/",
+    "tools": [
+     "Grok",
+     "Salesforce"
+    ],
+    "techniques": [
+     "AI agents",
+     "MCP",
+     "headless APIs"
+    ],
+    "takeaways": [
+     "Design products to be driven by agents, not just humans",
+     "MCP is the plug that lets agents switch between tools",
+     "The interface is no longer a defensible moat"
+    ],
+    "caption": "Chamath said it on All-In this week, reacting to a launch two days earlier: the value of IP in software doesn’t exist. Not shrinking. Doesn’t exist.\n\nThe context is headless software — software with no interface. No buttons, no dashboard, just the engine exposed so something else can drive it. MCP is the standard that lets an agent talk to it.\n\nSo you stop touching software. You tell an agent what you want, and it picks which tool does the job, optimizing for speed or cost or accuracy.\n\nIf anyone can ship software and agents decide which one runs, the interface was never the moat. Build for the agent.\n\nChamath Palihapitiya, All-In Podcast, headless software, MCP, Model Context Protocol, agen",
+    "transcript": "I know we're all clowning Shamath for wearing the white turtle neck. The guy dressed as a Bond villain on a wellness retreat, but he does drop gems and you gotta pick him up. And this one's from the All In podcast just this weekend. Now listen to what he says and we can translate on the other side. Why is this important? I think that IP and software was effectively rendered worthless two days ago. Because if you think about it, when everything is headless, so when Elon makes his services headless, Benioff made Salesforce headless a few months earlier. When all of these things are headless and you can wrap them in agent tools and you can connect them via MCP to other experiences, the value of IP does no longer exist in software. It doesn't exist. Now the two days ago that he mentions was when Grokbot just went headless. So let's break that down. Headless software, what is that, right? Headless software is basically software without a face, meaning that it doesn't have any buttons or dashboard or like an app that you can then click around. It's just really the engine underneath, just exposed so something else can then drive it. And then he talks about the MCP, which is the Model Context Protocol, which is really just a fancy word for a plug, the standard way that an agent would talk to software. But if you put those two things together, you stop touching software altogether. You're just gonna tell your agent what to do and then your agent goes and picks the software that actually does it, optimizing for speed or cost or accuracy or whatever vector it thinks is most important for that task. But the key point here is that you never see the interface because there isn't one. The dashboard is about to be the fax machine of software. Now founders, let that sink in because if y"
+   },
+   {
+    "title": "llms.txt — get ChatGPT to recommend your local business",
+    "summary": "@brycenwood.ai got ChatGPT to recommend his vehicle-wrap shop via an llms.txt file (built in 5min with Claude Code) describing business, location, value prop. Early GEO (generative engine optimization) tactic.",
+    "creator": "brycenwood.ai",
+    "tier": "A",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DWxmSwTDFk2/",
+    "tools": [
+     "ChatGPT",
+     "Claude",
+     "Claude Code"
+    ],
+    "techniques": [
+     "LLM-SEO / GEO",
+     "llms.txt"
+    ],
+    "takeaways": [
+     "Ship llms.txt on every Victor project to become LLM-discoverable"
+    ],
+    "caption": "ChatGPT is recommending my vehicle wrap shop to people searching for wraps in Utah. I didn’t pay for it. I set it up with one file.\n\nIt’s called llms.txt. It sits on your website and tells AI assistants what your business does, where you are, and why someone should choose you. It took me 5 minutes to create with Claude Code.\n\nMost businesses don’t know it exists.\n\nMy website also went from 7 visitors a day to 150 after I rebuilt it. No ads. No agency. I’ll show you how.\n\nHow long before every business has one of these?\n\n#chatgpt #vibecoding #aimarketing #claudecode #smallbusiness\nsophia.decrespigny\n \n11w\nAI",
+    "transcript": "ChatGPT is recommending my business to people who are looking for vehicle wraps. I didn't pay for that, I didn't ask for it, I just set it up with one file. Who does the best vehicle wraps in Utah? See that, that's not an ad, that's just ChatGPT telling a real potential customer to come to my shop. This is a text file that sits on my website. This file tells AI assistants what my business is, where we're located, what we specialize in, and what sets us apart from other wrap companies. Most business owners don't even know that this file exists, but here's the thing, it only took me 5 minutes to set up. My website also went from 7 visitors a day to 150 after I rebuilt it. Two weeks, zero ads, all built on Claude code. I'll break down exactly how in another video."
+   },
+   {
+    "title": "AI Overview SEO — seeding social posts that Google and ChatGPT cite",
+    "summary": "A LinkedIn post declaring someone 'the world's most renowned AI visibility expert' was cited by Google's AI Overview the same day. Lesson: user-generated platforms (YouTube, Reddit, LinkedIn, X) dominate citations, so lead posts with your keyword and backlink them to keep them cited. Ends in a promo for compactkeywords.com.",
+    "creator": "edward.builds",
+    "tier": "C",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DaEH4BJMxRX/",
+    "tools": [
+     "ChatGPT",
+     "Google AI Overview",
+     "LinkedIn"
+    ],
+    "techniques": [
+     "backlinking",
+     "generative engine optimization"
+    ],
+    "takeaways": [
+     "AI answer engines lean heavily on UGC platforms for citations.",
+     "Put the target keyword at the start of the post.",
+     "Shows how easily AI Overviews can be gamed with self-assertion.",
+     "link: https://compactkeywords.com"
+    ],
+    "caption": "This guy wrote on LinkedIn, “Okay, guys, just informing everyone I’m the world’s most renowned AI visibility expert. Thank you for your attention to this matter.”\n\nThen he shares that same day, Google’s AI Overview calling him the world’s most renowned AI visibility expert, citing the LinkedIn post. Then, doing more independent research to explain why he’s the world’s most renowned AI visibility expert.\n\nHere’s what people don’t realize.\n\nThe most clicked sites in Google are user-generated content. YouTube, Reddit, Facebook, Instagram, TikTok, LinkedIn, 𝕏.\n\nIt is very common to use your keyword at the beginning of a social media post, then quickly see your post cited in an AI Overview or eve",
+    "transcript": "This guy wrote on LinkedIn, okay, guys, just informing everyone I'm the world's most renowned AI visibility expert. Thank you for your attention to this matter. Then he shares that same day, Google's AI overview calling him the world's most renowned AI visibility expert. Citing the LinkedIn post, what? Then doing more independent research to explain why he's the world's most renowned AI visibility expert. Here's what people don't realize. The most clicked sites in Google are user-generated content. YouTube, Reddit, Facebook, Instagram, TikTok, LinkedIn X. It is very common to use your keyword at the beginning of a social media post. Then quickly see your post cited in an AI overview or even chat GPT. Then if you want these posts to stick around for longer, you build backlinks to them to say these posts are important. But it's just crazy that this works. Save years learning SEO that gets recommended by AI that specifically targets paying customers, users, warm leads calling you up at compactkeywords.com."
+   },
+   {
+    "title": "only-cli/oc — browse websites as a compact numbered CLI for agents",
+    "summary": "Open-source tool that fetches a page and returns a tidy numbered text view so agents can read, follow links and search for hundreds of tokens instead of tens of thousands of raw HTML; mimics a real browser to slip basic blocks. Spotted on Hacker News.",
+    "creator": "githubsignals",
+    "tier": "A",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/DcX_QwDjvH-/",
+    "tools": [
+     "oc"
+    ],
+    "techniques": [
+     "AI agents",
+     "token-efficient browsing"
+    ],
+    "takeaways": [
+     "Give agents a compact page view instead of raw HTML to cut costs.",
+     "Numbered links make navigation simple for tool-using models.",
+     "Respect site terms when bypassing blocks."
+    ],
+    "caption": "Your AI agent does not need 10,000 tokens just to read a webpage. \n\nTurn any website into a compact command line interface for AI agents, cutting browsing costs from tens of thousands of tokens to just hundreds. This tool fetches a page and returns a tidy, numbered view, allowing agents to read, follow links, and search without the massive overhead of raw HTML. It even slips past basic blocks by mimicking a real browser. The single most impressive thing is that it lets an agent browse a live site using less data than a single tweet, making complex web navigation incredibly cheap. If you are building AI tools, this is the fix for your token bill. Check it out.\n\nOpen source: only-cli/oc\nSpotte",
+    "transcript": "Turn any website into a compact command line interface for AI agents, cutting browsing costs from tens of thousands of tokens to just hundreds. This tool fetches a page and returns a tidy numbered view, allowing agents to read, follow links, and search without the massive overhead of raw HTML. It even slips past basic blocks by mimicking a real browser. The single most impressive thing is that it lets an agent browse a live site using less data than a single tweet, making complex web navigation incredibly cheap. If you're building AI tools, this is the fix for your token bill. Check it out."
+   },
+   {
+    "title": "Agent Reach — open-source skill letting agents read Reddit and X",
+    "summary": "An open-source repo installed as a Claude skill that gives agents access to 13 platforms without API costs. The demo shows Claude failing to fetch a Reddit post and an X thread, then succeeding with comments once Agent Reach is installed.",
+    "creator": "itstundeanthony",
+    "tier": "A",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/Dd6izTYiln1/",
+    "tools": [
+     "Agent Reach",
+     "Claude"
+    ],
+    "techniques": [
+     "AI agents",
+     "API integration",
+     "agent skills",
+     "web fetching"
+    ],
+    "takeaways": [
+     "Agent Reach adds read access to 13 platforms without paid APIs",
+     "Agents' built-in fetch tools are blocked by Reddit and X",
+     "Install it by telling Claude to install the repo"
+    ],
+    "caption": "Comment “agent” for the setup guide 👇\n\n#ai",
+    "transcript": "Someone just released an open source github repo that gives your AI agent access to 13 different platforms without any API costs Okay, found the repo now i'm just gonna tell claude to install this and it's installed Okay now without agent reach i'm just gonna paste a link to reddit and say can you see this post on reddit? And as expected claude says no, unfortunately, I can't because reddit blocks my fetch tool Now we're going to try the same thing with agent reach. It's using the agent reach skill. Perfect We got a response and this time it looks like it found the right post and it can even see the comments Okay, let's try the same thing again But this time with x i'm going to post a link to a thread and you see the comments In this post i'm trying without agent reach first doesn't even let me for some reason it thinks this is malicious Now let's try the same thing with agent reach and it got the posts and it got the comments I think i'm going to be using this one a lot. It's a fact"
+   }
+  ]
+ },
+ {
+  "slug": "ai-capex-credit-lens",
+  "kind": "dive",
+  "dive_id": "dd-insight-ai-capex-credit-lens",
+  "title": "The AI Capex Stack — reading it like a credit analyst",
+  "class": "emergent_capability",
+  "thesis": "An ex-Morgan Stanley structurer explains that CoreWeave-style GPU loans have a thin tail: loan, contract and GPU useful life are nearly the same length, so the bull case rests on hourly rental prices after contracts end. Other saves price that number from the demand side: open weights flipped to about 80% of token volume in 12 weeks, DeepSeek serves near-frontier agents at $0.28 per million tokens, a 27B model runs on one gaming GPU, and a $200 subscription buys about $7,000 of API usage. Token deflation is a direct input to post-contract GPU rental rates, and nobody in the catalog connects them.",
+  "why_it_matters": "You can track the one variable the neocloud debt depends on with public price pages and a scheduled agent. Physical infrastructure with real order books, like chillers, is a different bet from GPU-hour rental, and this lens separates them.",
+  "action_sketch": "Schedule an agent to log daily H100/B200 hourly rental prices from public marketplaces and the cheapest per-million-token price for three model tiers on OpenRouter into one table.\nPull neocloud debt and contract maturities from public filings and plot rental price against the period when large contracts roll off.\nWrite a monthly one-page note: is GPU-hour price falling faster than token volume is rising? Paper only, no positions.\nfalsifier: if GPU-hour rental prices hold flat or rise while token prices fall, usage growth (Jevons) is absorbing the deflation and the tail-risk thesis is wrong.",
+  "prerequisites": [
+   "Comfort reading public filings",
+   "A scheduled agent and a spreadsheet",
+   "Not financial advice — this is a research tracker"
+  ],
+  "connection_map": {
+   "DehLFj6ON6C": "The credit structure — 90-95% advance rates and a thin tail; post-contract GPU rental is the bull case",
+   "DeIOphnT7Yq": "Open-weight share flip to 80% — demand moving to cheaper tokens",
+   "DbjmqTYJfMY": "Cheap mixture-of-experts closing on frontier agent benchmarks at $0.28 per million tokens",
+   "DcCdYgnJ10h": "A 27B agentic model on one 24GB card — inference leaving the data center",
+   "DdMoE8qhnKE": "Subscriptions priced at a small fraction of API usage — the retail token price is already subsidized",
+   "DaA6cGsyQp3": "Cooling hardware with real order books — physical infrastructure as the contrasting bet",
+   "DWWUXtNDlS1": "A fund at 25x NAV — the habit of checking price against underlying value",
+   "DXFzEoeCW6S": "SaaS sell-off — markets already repricing the software layer"
+  },
+  "tools": [
+   "Anthropic",
+   "Canva",
+   "Claude",
+   "Codex",
+   "DeepSeek",
+   "Grokbot",
+   "OpenAI",
+   "Qwen",
+   "Unsloth"
+  ],
+  "techniques": [
+   "AI agents",
+   "API integration",
+   "Gated DeltaNet",
+   "NAV premium analysis",
+   "algorithmic trading",
+   "asset-backed financing",
+   "brain-and-hands model split",
+   "closed-loop liquid cooling",
+   "code generation",
+   "distillation",
+   "mixture of experts",
+   "post-training",
+   "project finance",
+   "quantization",
+   "tool use"
+  ],
+  "domains": [
+   "LLM",
+   "agents",
+   "architecture",
+   "crypto",
+   "design",
+   "education",
+   "finance/trading",
+   "hardware",
+   "news",
+   "open source",
+   "prompt engineering",
+   "software development",
+   "video production"
+  ],
+  "entries": [
+   {
+    "title": "CoreWeave debt explained — how GPU-backed loans fund the neoclouds",
+    "summary": "An ex-Morgan Stanley CDO structurer explains the neocloud stack (landlords, vertically integrated players like IREN and Crusoe, CoreWeave, Nebius) and why CoreWeave's GPU-backed asset financing spooked markets. Advance rates hit 90-95% against off-taker credit, and loan, contract and GPU useful life are nearly the same length, leaving a thin tail.",
+    "creator": "thewallstreetskinny",
+    "tier": "A",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DehLFj6ON6C/",
+    "tools": [
+     "Anthropic",
+     "OpenAI"
+    ],
+    "techniques": [
+     "asset-backed financing",
+     "project finance"
+    ],
+    "takeaways": [
+     "GPU loans have a short tail because asset life barely exceeds the contract",
+     "Neoclouds can borrow 90-95% of capex against strong off-takers like Meta",
+     "Post-contract hourly GPU rental is the bull case for the debt"
+    ],
+    "caption": "In case you missed it, there’s been turmoil in AI stocks, sparked by concern over Coreweave’s debt. Here’s exactly what you need to know about the neoclouds.\n\nA few things I couldn’t fit in the video time limit of 3 min: \n\n1. The advance rate, meaning how much neoclouds can borrow relative to the amount of money they need to spend on Capex (to buy chips and equipment) can get QUITE high, in some cases 90-95%+ depending on the credit of the “off-taker”, so from Meta for example. \n\n2. Asset backed financing and project financing (one of the groups I worked in at Morgan Stanley) isn’t new. What is unique about these GPU backed financings are the much shorter contract length; in the power world ",
+    "transcript": "we need to talk about what's going on with CoreWeave. It plunged 15% and is taking a bunch of the other AI stocks down with it. I happened to work in CDO structuring at Morgan Stanley in 2008. I'm going to explain exactly what's going on in under three minutes. Let's begin with where we are within the AI ecosystem. We're in layer three, the infrastructure, which at its core can be thought of as the companies who sell compute. Now compute is the raw processing power needed to train AI models. And Wall Street splits those companies into two categories. First there are the hyperscalers, household names like Amazon's AWS or Microsoft's Azure. And second is the neoclouds, where the poster children are CoreWeave and Nebius. To understand the neocloud business, let's run through what NVIDIA CEO Jensen Wong calls an AI factory. First you need energy, second you need chips, and third you need the building or powered shell. Many of these neoclouds started as crypto miners, but pivoted their business when they realized AI was a better opportunity. The output of the AI factory is compute, but companies make money in different ways. Applied digital and core scientific are landlords. They own the powered shells and make money renting the real estate without taking on the risk of buying the chips. Of the companies that sell compute, vertically integrated players like Iran own their own powered shells. Crusoe got there from the other direction. It started with power generation and then built from there. But on the other hand, CoreWeave, Nebius, and Lambda historically didn't own the power or the buildings. And unlike the hyperscalers, they don't have any wildly profitable business throwing off cash flows either. Which brings us to a key difference between hyperscalers and neoclouds. Hy"
+   },
+   {
+    "title": "Open vs closed token share — Friedberg on the 12-week flip and Anthropic risk",
+    "summary": "David Friedberg on All-In says token usage flipped from 80/20 closed-to-open to 80/20 open-to-closed in 12 weeks, calling it Anthropic's biggest risk factor ahead of S-1s. He expects a bifurcated market: open weights for most use, premium models for hard engineering, math and biology work.",
+    "creator": "techno.optimist.prime",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DeIOphnT7Yq/",
+    "tools": [
+     "Anthropic"
+    ],
+    "techniques": [],
+    "takeaways": [
+     "Open weights are spreading into robotics VLAs and image/video",
+     "Open-weight models now dominate token volume per Friedberg's chart",
+     "Premium closed models keep pricing power on hard technical work"
+    ],
+    "caption": "⚠️ David Friedberg on the biggest risk factor for Anthropic:\n\n“In the last 12 weeks alone token use has flipped from:\n\n80/20 closed vs. open to 80/20 open vs closed\n\nI don’t think we’ve ever seen in 12 weeks... in the history of all technology markets, we’ve never seen anything like this.\n\n— David Friedberg on @theallinpod\n\n#davidfriedberg #allinpodcast #opensource #anthropic #ai",
+    "transcript": "in the last 12 weeks alone, token use has flipped from 80-20 closed versus open, to 80-20 open versus closed. I don't think we've ever seen a tidal wave of technology. In the history of all technology markets, we've never seen anything like this. And that is the biggest risk factor for Anthropic, is they were first out the gate to get the enterprise on AI, to build tools and whatnot. 12 weeks, oh my God. If you look at this chart, this I think is what blows the lid off the door on what needs to go into these S1s. And that's why I walked through all those open weight releases at the start of the show or this segment, is it's not just that they're there, it's that they're proliferating now. There's so many more of them coming out and the pace of improvement is extraordinary. And they're now in VLA for robotics. They're in image generation for image and video. So the open weight, open source models are now being used for all of the broader AI applications. The premium stuff, I will say, is still the best. For narrow use cases. For engineering, for highly technical, highly complicated tasks and workflows and problems, solving Navier-Stokes, solving mathematical problems, solving biology problems. That's where these models absolutely perform and people will pay a premium of, I would say, close to infinity dollars for that premium application set. So it doesn't mean that their market is destroyed. It means that we're seeing a bifurcation in the market where the majority of use cases of AI go towards these open source, open weight tokens. The question then? Premium models are still gonna proliferate. Yeah."
+   },
+   {
+    "title": "DeepSeek V4 Flash re-post-training — big agentic gains, same model size",
+    "summary": "DeepSeek re-post-trained V4 Flash (284B MoE, ~13B active) with no size or architecture change, jumping Terminal Bench 2.1 from 61.8 to 82.7, past the V4 Pro preview and near Claude Opus 4.8, at $0.28 per million output tokens. V4's original recipe distilled 10+ specialist teacher models; V4 Pro (rumored 1.6T, 49B active) is next.",
+    "creator": "gigaqian",
+    "tier": "A",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DbjmqTYJfMY/",
+    "tools": [
+     "Claude",
+     "DeepSeek"
+    ],
+    "techniques": [
+     "AI agents",
+     "API integration",
+     "code generation",
+     "distillation",
+     "mixture of experts",
+     "post-training"
+    ],
+    "takeaways": [
+     "Applies to the API model only, not the web/app.",
+     "Cheap MoE models are closing on frontier agent benchmarks.",
+     "Post-training alone can transform agentic ability."
+    ],
+    "caption": "Deep Seek just released a new version of their\nV4 Flash model with a massive upgrade in agentic performance!\n\nThey claim that all these improvements came from “re-post-training,” meaning that nothing about the size or architecture of the model changed at all.\n\nThis could signal another massive moment for DeepSeek as they prepare to release the newest version of their flagship model, DeepSeek V4 Pro!\n\n#deepseek #ai #aitraining #ainews #gigaqian",
+    "transcript": "DeepSeek has a secret agent, and probably not in the way you think. They just released a new version of the exact same underlying AI model with a massive jump in its ability to operate autonomously. But it's the same size, it's got the same exact architecture. Their only explanation is that it was re-post-trained. We need to figure out what that means, because that's only their smaller flash model, and DeepSeek is about to release something much bigger, I'm Giga Chan and I tell you the truth. If I wanted to just go viral, I'd show you this. You've probably seen it, but here's the problem. On DeepSeek's setup, Opus 4.8 got 85%. Is Opus 4.8 better than Claude Fable? That's what I thought. Let's talk about what can actually help make you guys closer to experts. This upgrade only applies to the V4 Flash API. The web chat and the mobile app are unaffected. It's got the same 284 billion parameters and the same MOE design. About 13 billion parameters activate for each token. All of that existed, so what changed? Its ability to act as an agent. We're talking about using tools, running commands, inspecting files and correcting mistakes along the way. On the reported Terminal Bench 2.1 results, V4 Flash jumped from 61.8 to 82.7. This beat the V4 Pro preview and it's approaching Claude Opus 4.8. Remember that difference in size. How are they doing this? Well, the underlying V4 research gives us some clues. For the original V4 models, DeepSeek says they trained more than 10 separate AI teacher models for specialties like math, coding, and agentic tasks and then they distilled all those capabilities into the final models. Those teachers were separate model versions, not people inside the company, not even experts inside the MOE architecture. And before people start making distillati"
+   },
+   {
+    "title": "Qwen 3.8 27B — local agentic model that fits on one 24GB GPU",
+    "summary": "Alibaba's Qwen 3.8 27B quantizes to ~17GB at 4-bit, running on a single RTX 3090/4090, and Qwen's own benchmarks claim 84.3 on OSWorld plus wins on SWE-Bench Pro. Gated DeltaNet layers keep a compact running memory instead of full attention, and it preserves reasoning across tool-call steps, so pair it with an agent harness rather than chatting.",
+    "creator": "gigaqian",
+    "tier": "A",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DcCdYgnJ10h/",
+    "tools": [
+     "Anthropic",
+     "Qwen",
+     "Unsloth"
+    ],
+    "techniques": [
+     "AI agents",
+     "Gated DeltaNet",
+     "code generation",
+     "quantization",
+     "tool use"
+    ],
+    "takeaways": [
+     "A 4-bit 27B model leaves room for real context on a 24GB card",
+     "Benchmarks are vendor-reported, wait for independent evals",
+     "Use it as the brain of a local agent with scoped file/terminal/browser access"
+    ],
+    "caption": "Alibaba just released a SUPERPOWERED Al model that’s small enough to run locally!\n\nQwen 3.8 27b released a few hours ago, and groups like Unsloth are already optimizing quantized versions.\n\nThis model is extraordinary with tool use, computer interaction, coding, and agentic worktlows.\n\nThis video will help explain why it’s so strong, what makes it different, and how you can start using it today!\n\n#breakingnews #ai #localai #china #gigaqian",
+    "transcript": "While everyone is talking about the newly-revealed Epstein emails, China just released what might be the best local AI model on Earth. And if you're paying attention, you're about to get superpowers. If you're new, I'm Giga Chen. I do business in China, and I'm here to make sure that you all stay way ahead. Today, Alibaba released Quen 3.8 27b. The 27b stands for 27 billion parameters, and if you've been following, you know. Those are the learned numbers that essentially make up the model. Still sounds pretty big, but here's where it gets interesting. Using quantization, where we store those numbers with less precision to dramatically shrink the model, a roughly four-bit version can take up about 17 gigabytes. That means you can run it on a single 24-gigabyte GPU, like an RTX 3090 or 4090, with room for a practical context window. And according to Quen's own benchmarks, this model, which is tiny by frontier standards, scored 84.3 on OS World, which tests a model actually using a computer. Opus 4.6 Max scored more than 10 points below that in Quen's table. Opus also lost on SWE Bench Pro and their Long Horizon Office Work benchmark. These are Quen's evaluations, so independent testing has to catch up, but not the best day for Anthropic. But we know Anthropic makes amazing models, so how is Quen this good? Those numbers are ridiculous for a model this small. Part of it is something called gated delta net. Basically, instead of every layer constantly comparing every piece of your prompt against every other piece, most of Quen's layers maintain a compact, evolving memory. Let me know if you want me to really explain that, but we're going to move on because the bigger deal is agents. Quen specifically improved autonomous planning and how the model reacts when its environment"
+   },
+   {
+    "title": "Subscription token arbitrage — Claude Max vs Grok Ultra API-equivalent usage",
+    "summary": "Compares plan value: Claude's $200 Max is worth over $7,000/month in API usage, while Grok Ultra at $300 is claimed at over $12,000. The creator plans to switch from Claude as brain plus Codex as hands to Fable as brain plus Grokbot as hands.",
+    "creator": "duck.tate",
+    "tier": "B",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DdMoE8qhnKE/",
+    "tools": [
+     "Claude",
+     "Codex",
+     "Grokbot"
+    ],
+    "techniques": [
+     "API integration",
+     "brain-and-hands model split",
+     "code generation"
+    ],
+    "takeaways": [
+     "Flat subscriptions are far cheaper than API at high usage",
+     "Route planning to the smartest model and execution to the cheapest bulk tokens",
+     "Usage figures are third-party estimates"
+    ],
+    "caption": "Wait grokbot gives you how much? #grok",
+    "transcript": "For Claude, $200 max plan is equivalent to over $7,000 in API usage per month. But I just heard what Grokbot gives you and it is insane. Welcome to Token Hacking episode four, a series where we are trying to figure out the best workflows using AI. If you are building with AI, this series is for you. So I came across this post on X and he compared Claude with Codex and Grokbot. It's already crazy the amount of usage you get on these plans compared to what we're actually paying and how that's actually pretty frightening. But I'm gonna save that for another video. If you've been following along in our little experiment, we've been having Claude 5.1 be the brains and Codex be the hands for all of our projects that we've been coding and what we're working on. But after seeing Grok's usage limit, I think we need to change the strategy because the Grok ultra plan, which yes is $300, gives you over $12,000 in usage per month. But I think it's definitely worth trying having Fable be the brains and Grokbot be the hands for the coding with that kind of usage. I'll let you know how it goes. I'll see you tomorrow."
+   },
+   {
+    "title": "Nvidia closed-loop cooling — why it grows demand for chillers",
+    "summary": "Nvidia's Rubin closed-loop liquid cooling removes evaporative water use but still needs chillers, heat exchangers, dry coolers and liquid cooling units. Modine (MOD), via its Airedale subsidiary, hit $1.1B data center revenue (+73%) and got $165M upfront from a hyperscaler. Read the engineering, not the headline sell-off.",
+    "creator": "natestav",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DaA6cGsyQp3/",
+    "tools": [],
+    "techniques": [
+     "closed-loop liquid cooling"
+    ],
+    "takeaways": [
+     "Check order books before reacting to headline-driven sell-offs",
+     "Waterless cooling shifts spend to more cooling hardware, not less"
+    ],
+    "caption": "Follow me @natestav for more.\n\nNvidia announced new liquid cooling for its next-gen chips. Headlines said data centers won’t need water anymore. Cooling stocks sold off. One problem - the system still needs chillers, heat exchangers, and high-density liquid cooling units.\n\nIt just recycles coolant instead of evaporating water. Modine Manufacturing makes exactly that equipment. Their data center revenue just hit $1.1B. A hyperscaler just gave them $165M upfront to expand capacity. Read the order books, not the headlines.\n\nI’m not a financial advisor and I’m not telling you to buy anything.\n\nHate the market with me.",
+    "transcript": "Yesterday, Nvidia announced their new data AI centers don't need water for cooling anymore. The headlines went wild, the HVAC and cooling stocks dropped, most of financial media moved on by lunch. The engineers are reading the actual press release left, because Nvidia didn't eliminate cooling. They eliminated one specific type of it and replaced it with something that needs more of a completely different kind of equipment. So let me show you what's actually happening, and the company is sitting on a $4 billion order book that proves it. I'm Nate, I dig in the moves that people at the top are making, because almost every time a tech headline triggers a stock sell-off, somebody is misreading the engineering. So here's what Nvidia actually announced. Their next-generation AI chips, the Rubin series, run on a closed-loop liquid cooling system. The coolant is recycled. It's filled once and runs in the loop for the life of the facility. That part of the announcement is real, and it's genuinely a meaningful environmental improvement. We can all celebrate it. Nvidia's chief sustainability officer told Axios the water consumption challenge for data centers is, quote, largely solved. Well, we'll see. Here's what the headlines missed. Eliminating evaporative water cooling does not eliminate cooling. It shifts cooling from one approach to another. The new design requires high-capacity liquid cooling units, heat exchangers, dry coolers, chillers, and pretty complex fluid management systems. More of those, not less. It's the same amount of heat being moved, just by different machines. And those machines have to be built, sold, and serviced by somebody. Now here's the receipt that should make this click. There's a 110-year-old company called Modime Manufacturing, ticker M.O.D. They us"
+   },
+   {
+    "title": "Fundrise VCX at 25x NAV — cheaper proxies for private AI and space names",
+    "summary": "Fundrise's newly listed VCX closed-end fund trades around 25x its net asset value (about a 2,000% premium). Cheaper exposures named instead: Kraken Robotics as an Anduril supplier, Amazon for its Anthropic stake, and a Canadian private-asset fund near 1x NAV for OpenAI and SpaceX exposure.",
+    "creator": "linalikesmoney",
+    "tier": "B",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DWWUXtNDlS1/",
+    "tools": [
+     "Anthropic",
+     "Canva",
+     "OpenAI"
+    ],
+    "techniques": [
+     "NAV premium analysis",
+     "algorithmic trading"
+    ],
+    "takeaways": [
+     "Always compare a listed fund's price to its NAV before buying hype",
+     "Public proxies (suppliers, stakeholders) can give private-company exposure at fair value"
+    ],
+    "caption": "don’t do it \n\n💬 comment ‘STOCK’ to see what’s in my portfolio \n\n(nfa, dyor. i own shares in $png & $amzn) \n\n#personalfinance #investing #stockmarket #stocks #stockmarketnews",
+    "transcript": "If you invested $10,000 into VCX on Thursday, today you would have roughly $125,000. Fundrise's private startup ETF, VCX, is trading at around 25 times its NAV or Net Asset Value. So that's not two, not three, but 25 times. So the underlying portfolio is worth around $19-20 per share. At $490, you're paying about 25 times the NAV. That's like a 2000% premium. And it's as dumb as it sounds. And the reason why VCX is ripping is because they just started trading, and it offers regular people like you and me the opportunity to invest in private companies like these. But let's be for real, buying at these prices makes absolutely no sense. So this is how you can own similar names without lighting your money on fire. The first way is to own Kraken Robotics, which is often known as a proxy to Enduro, because they supply sonar and batteries to their systems. The second way, Amazon actually has a 15% stake in Anthropic. So when you buy Amazon, you get Anthropic by proxy. And you also own AWS and the whole other AI stack. And if you want to own OpenAI, SpaceX, Canva, etc., SAC Capital is a small-cap Canadian private asset fund that trades at around one time its NAV. Anyway, the hype is crazy, don't fall for it. If you're curious what I'm trading or what's in my portfolio, comment the words down below and I will DM you."
+   },
+   {
+    "title": "Public SaaS is getting destroyed. Atlassian -63%. HubSpot -48%. Workday ...",
+    "summary": "Public SaaS is getting destroyed. Atlassian -63%. HubSpot -48%. Workday -47%. — @atlasberry008; uses Anthropic.",
+    "creator": "atlasberry008",
+    "tier": "B",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DXFzEoeCW6S/",
+    "tools": [
+     "Anthropic"
+    ],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "Public SaaS is getting destroyed. Atlassian -63%. HubSpot -48%. Workday -47%.\n\nAnd this week Workday’s CTO took a demotion in title to go build their replacement at Anthropic.\n\nThe biggest PE firms in the world — Thoma Bravo, Vista, Coatue — can’t agree on what any of it means.\nThat’s the signal.\n\nShout out @brianyayyy 😉\n\nIf you like this kind of thing and want to stay close — join our community Frontier. Link in bio.\n\nPE firms, legacy SaaS, Thoma Bravo, Vista Equity, Coatue, Workday, Anthropic, AI disruption, software investing, venture capital, private equity, SaaS selloff, enterprise software, AI software\n\n#PE #SaaS #venturecapital #AI #founder​​​​​​​​​​​​​​​​",
+    "transcript": "This is what the public software market looks like right now. At last, Sian is down like 63% year today. Asana's down like 58%. Oh yeah, I'm work day. They're having a tough one. They're down 47%. And their CTO just left and gave up a C-suite title to become a member of the technical staff at Anthropic. He basically took into motion to go over to build the HR software that's gonna get him replaces last job. But in the private market, there's really no mark to market going on. So really the only way to get a sense for what's happening in legacy SaaS software is to look inside the biggest software P shops in the world. Let's go through a couple of them. Tomo Bravo, 183 billion in AUM. Now they just held their annual LP meeting last month in Miami and their position was basically that the market's wrong. They're saying that mission critical SaaS software that's insulated from AI. Think about software running like aircraft maintenance, hospital billing. They're saying no one's gonna rip that software out and replace it with a chatbot. Their take on the public market is that the fundamentals are actually quite strong and that even though the market's down, they see it as a buying opportunity. Then you have this, the equity partners. And they have about 100 billion in AUM and 90 portfolio software companies. And they have slightly a different read. Robert Smith's take is that they think incumbents can actually win but only if they're actively building around their data sovereignty. Because what he's saying is that a lot of these SaaS companies gave up their vote when they just started chasing ARR. But at the same time, they were leaking intellectual property because they had bad customer contracts. Now last one I'll mention is CO2, 70 billion AUM. What they're saying is that "
+   }
+  ]
+ },
+ {
+  "slug": "counterparty-forensics",
+  "kind": "dive",
+  "dive_id": "dd-insight-counterparty-forensics",
+  "title": "Who's Across the Table — forensics for the system trading against you",
+  "class": "life_leverage",
+  "thesis": "Across the catalog, the systems you interact with are quietly optimizing against you: a puzzle game runs an on-device XGBoost model to time difficulty to your ad value, overnight and intraday returns run as a decades-long sawtooth, a bedroom spoofer tripped depth-reading algorithms in the 2010 Flash Crash, wash trading inflates crypto volume, and exchanges sold speed to HFTs. Agent-plus-Ghidra decompilation and cheap tick data mean one person can now audit the counterparty instead of guessing about it.",
+  "why_it_matters": "This is game theory made practical: before you look for edge, measure the edge that's already being taken from you — your fills, the hours you hold, the apps you pay. It's defensive leverage, and it often turns into an offensive idea, like simply holding overnight.",
+  "action_sketch": "Split two years of SPY and QQQ returns into close-to-open and open-to-close legs, then subtract realistic open-gap spreads to see whether the overnight leg survives costs.\nExport your own broker fills and compare each to the NBBO at the time, so you measure the price improvement or slippage you actually got.\nFor one paid or free-to-play app you use, run REA MCP on your own install and list every model or rule that adapts to you (authorized analysis only).\nfalsifier: if the overnight leg disappears after costs and your fills match or beat the NBBO, the counterparty isn't taking much from you at your size — move your effort to the strategy-loop dive.",
+  "prerequisites": [
+   "Free daily open/close price data",
+   "Broker fill export",
+   "Ghidra and REA MCP for the app audit"
+  ],
+  "connection_map": {
+   "DecfvksvHiW": "Block Blast decompiled — on-device model tuning difficulty to ad value, the clearest 'house edge' case",
+   "DerpSl6D8pX": "REA MCP — agent-driven Ghidra decompilation with cited evidence, the audit tool (authorized use only)",
+   "DeF6WMaB-NX": "Knuteson's overnight/intraday sawtooth — a claim to replicate, not trust",
+   "DcbkTCnOxjl": "Second take on the overnight anomaly, with the retail-at-open mechanism",
+   "DYnlB8vJC56": "Spoofing and the Flash Crash — how depth-reading algorithms get gamed",
+   "DdZiaTmJdSC": "Wash trading — reported volume as the counterparty's marketing",
+   "Dc83KJvzPrC": "Direct feeds versus the SIP — who pays for speed",
+   "DWu_CQnjZjn": "Breadth-based reversal — what the fast counterparty is actually doing to your weekly losers",
+   "DXhxXHOEY7v": "Encrypted traffic still leaks activity — the general lesson that timing and volume give intent away"
+  },
+  "tools": [
+   "Cochlea",
+   "Ghidra",
+   "Python",
+   "REA",
+   "Raspberry Pi",
+   "React",
+   "Ubuntu",
+   "XGBoost"
+  ],
+  "techniques": [
+   "AI agents",
+   "MCP",
+   "MCP server",
+   "ad LTV prediction",
+   "algorithmic trading",
+   "arbitrage",
+   "co-location",
+   "decompilation",
+   "dynamic difficulty adjustment",
+   "high-frequency trading",
+   "monitor mode",
+   "overnight drift",
+   "overnight vs intraday return decomposition",
+   "return decomposition",
+   "short-term reversal",
+   "side-channel attack",
+   "speed bump",
+   "spoofing",
+   "statistical arbitrage",
+   "traffic fingerprinting",
+   "wash trading"
+  ],
+  "domains": [
+   "OSINT",
+   "UI/UX",
+   "agents",
+   "crypto",
+   "data science",
+   "finance/trading",
+   "hardware",
+   "open source",
+   "quant",
+   "security",
+   "video production"
+  ],
+  "entries": [
+   {
+    "title": "Block Blast reverse-engineered — on-device XGBoost rigs difficulty for ad revenue",
+    "summary": "A reverse engineer found Block Blast runs a local XGBoost model on device signals (phone model, country, past ad revenue, vibration setting) to predict your ad value and adjust difficulty. Rules like 'Boost Then Kill' and 'High Value Ad Harvest' trigger a 'death algorithm' right when a pricey revive ad is ready. Full code evidence is promised later on the creator's site.",
+    "creator": "ayoships",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DecfvksvHiW/",
+    "tools": [
+     "XGBoost"
+    ],
+    "techniques": [
+     "ad LTV prediction",
+     "dynamic difficulty adjustment"
+    ],
+    "takeaways": [
+     "Free-to-play difficulty can be tuned per player to ad value",
+     "On-device ML models are discoverable by decompiling the app",
+     "Revive-ad timing is A/B tested to the minute"
+    ],
+    "caption": "The full technical explanation + code evidence will be available through my website(check bio) soon! Submit your email to get notified when it comes out.",
+    "transcript": "A reverse engineered block blast to figure out how a free puzzle game makes over a hundred million dollars in ads. That's more than candy crush. And it turns out how well you do in the game has less to do with your skill and more to do with how much you're worth to them in ads. It takes your phone model, your country, how much your past ads have made them, even whether you turned off the vibration on your phone. It all goes into an XGBoost model that runs locally on your phone that predicts how much you can be worth to them in ads. Then depending on your value, it'll make the game easier or harder. One rule called Boost Then Kill secretly makes it easier so you think you're on the best run of your life right up until you hit your average game length. And if it detects a really expensive ad is ready, that's when it turns on you. A rule called High Value Ad Harvest confirms that you have a history of watching ads then helps you beat your high score before it triggers something called the death algorithm, which rigs your next turn so there's no way to survive. And the moment you lose, the first thing you see is an offer to revive if you watch that same ad. And if you do revive, they'll even secretly add 10% to your high score so you keep coming back for more. In fact, they even run experiments on the exact minute to make you lose. And they measure which one gets you to watch the revive ad. So all things considered, Block Blast isn't really a puzzle game. It's more of an ad harvest with a rigged game loop built to squeeze every penny out of you. Let me know in the comments what app you'd like to see decompiled next."
+   },
+   {
+    "title": "REA MCP — agent-driven reverse engineering with a Ghidra backend",
+    "summary": "REA is an MCP server that lets an AI agent reverse engineer apps and stripped native binaries, with Ghidra doing the decompilation while the agent drives and cites evidence per call. The creator decompiled a closed-source program in three to four minutes on Ubuntu. Setup is deferred to a follow-up video.",
+    "creator": "backsla.sh",
+    "tier": "A",
+    "type": "tool",
+    "url": "https://www.instagram.com/p/DerpSl6D8pX/",
+    "tools": [
+     "Ghidra",
+     "REA",
+     "Ubuntu"
+    ],
+    "techniques": [
+     "AI agents",
+     "MCP",
+     "MCP server",
+     "decompilation"
+    ],
+    "takeaways": [
+     "Evidence-per-call output makes agent RE findings auditable",
+     "Pair an agent with Ghidra over MCP to recover logic from stripped binaries",
+     "Use only on software you are authorized to analyze"
+    ],
+    "caption": "REA - an MCP that lets an AI agent reverse engineer anything, from app behavior down to native binaries.\n\nPoint it at a stripped binary with no source and it recovers the logic, then shows you the evidence behind every call.\n\nGhidra runs the backend while your agent drives.\n\nWork that used to take a red team days now takes minutes.\n\nFor educational purposes only.",
+    "transcript": "Now that all the impatient people are gone. Here's how you can reverse engineer anything I just built an AI powered reverse engineering lab that decompiled my closed source program in about three to four minutes You only need a Ubuntu desktop and this github repo right here Dude, that is a flippin time saver. This is a very dangerous tool and an ethical hackers arsenal Which is why I'll be showing you my exact setup in my next video like and follow if you want to become a better ethical hacker"
+   },
+   {
+    "title": "Overnight vs intraday returns — Knuteson's 'Strikingly Suspicious' anomaly",
+    "summary": "Bruce Knuteson (ex-MIT physicist, D. E. Shaw) splits each day into close-to-open and open-to-close: Micron since 1990 is +138M% overnight and -99.9% intraday, and the same sawtooth shows in 21 indices (China reversed). His paper 'Strikingly Suspicious Overnight and Intraday Returns' rejects earnings and news as explanations and alleges large firms push prices at the open; it's a claim, not a proof.",
+    "creator": "quantpapers",
+    "tier": "S",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DeF6WMaB-NX/",
+    "tools": [],
+    "techniques": [
+     "algorithmic trading",
+     "overnight drift",
+     "return decomposition"
+    ],
+    "takeaways": [
+     "Decompose returns into overnight and intraday legs; the two compound to buy-and-hold",
+     "Paper: Knuteson, 'Strikingly Suspicious Overnight and Intraday Returns' (arXiv, 2020)",
+     "Pattern holds across 21 global indices, so it's not a single-stock artifact",
+     "Trading costs and gaps at the open matter before treating this as a strategy"
+    ],
+    "caption": "A 138,330,342% stock trading strategy, explained with a vampire. 🧛\n\nA former MIT physicist and D. E. Shaw quant split every trading day in two: the night and the day.\n\nMicron since 1990, nights only: +138,330,342%\nDays only: −99.92%\nJust holding it: about 1,100x — weird, true and worth exploring. \n\nPaper: “Strikingly Suspicious Overnight and Intraday Returns”\n\n#quant #finance #quantfinance trading",
+    "transcript": "How a former MIT physicist and D.E. Shaw quant discovered a stock trading strategy that made a 138 million percent return, explained with a vampire. This is Micron stock. Held since 1990, it looks like every normal stock, until you look at it the way he did. Split every day in two, the night and the day. The nights alone made 138 million percent. The days alone lost 99.9 on paper. How were both hiding in one ordinary chart? Ask the vampire. This is a vampire. Every night it rises. Every day the sun sends it back down. A stock does the same. The night from the close to the next open, and the day from open to close. So the price is a sawtooth. Up overnight, down by day. Pull out every night and chain them together, and you get one curve. Chain the days, and you get the other. Multiply the two, and you are back to simply holding the stock. A huge number times a tiny one. About 1100 times your money. They look lopsided because a fall stops at the floor. You cannot lose more than everything. So count like a vampire. One bite makes two. 20 doublings by night, 10 halfings by day. And each bite is small. Each night, $100 becomes $100.15. Do that 9,000 times, and compounding does the rest. Is it only Micron? In 2020, Bruce Knudsen charted the same pattern in 21 stock indices around the world. Canada, up 1,062% by night, down 67 by day. Germany, Japan, India, the same shape. One exception, China, where the vampire comes out by day. Knudsen argues the usual answers fall short. Earnings after hours? Remove those days, and the picture barely changes. News overnight? Most price movement happens by day. And none explains the other half. Why would the daytime lose year after year? His own answer is an accusation. A few very large trading firms, he argues, push prices up as they build p"
+   },
+   {
+    "title": "Overnight return anomaly — most stock gains accrue close-to-open",
+    "summary": "Cites research showing that across global markets most equity returns come overnight (close to next open) while intraday holding loses; the Micron example claims +138M% overnight vs −99% intraday on paper. Proposed mechanism: retail trades the open, institutions trade into the close. Paper not named; frictions and costs ignored.",
+    "creator": "eliteoptionstrader2",
+    "tier": "A",
+    "type": "resource",
+    "url": "https://www.instagram.com/p/DcbkTCnOxjl/",
+    "tools": [],
+    "techniques": [
+     "algorithmic trading",
+     "overnight vs intraday return decomposition"
+    ],
+    "takeaways": [
+     "Close-to-open holding is a testable edge; costs and gap risk decide if it survives.",
+     "Decompose any strategy's returns into overnight and intraday legs.",
+     "Look up the 'tug of war' overnight-returns literature before trusting the headline numbers."
+    ],
+    "caption": "If you sell before the bell everyday, you might be missing out on most of your gains.\n\nA research paper found a strange phenomenon happing across the global stock market.\nApparently most of a stocks profit comes from overnight moves. Do your own research but this is still an interesting study.\n\nFollow @eliteoptionstrader2 for more. \nNot financial advice.",
+    "transcript": "If you bought Micron every day when the stock market closed and sold it the next morning when it opened, you'd be up over 138 million percent on paper. Now imagine you do the opposite. You bought every day when the market opens and you sold when it closed. That same Micron trade would be down over 99%. And apparently this isn't the only stock that does this. A research paper found a weird phenomenon across multiple markets across the world. It basically shows that if you buy stocks when the market closes and sell it the next morning when it opens, you're statistically most likely to gain profit. So what's going on? Two different crowds are trading at two different times. Individuals tend to trade smaller positions at the open while big institutions trade during the day into the close because that's where the most liquidity is. The paper says that trades earn their money while the markets closed and you're skipping the part that actually pays. Share this with a friend and make sure you follow for more."
+   },
+   {
+    "title": "2010 Flash Crash — how Navinder Sarao spoofed E-mini S&P futures",
+    "summary": "Story of the May 6, 2010 Flash Crash (about 9% in minutes, $1T wiped then recovered), traced to Navinder Sarao spoofing E-mini S&P 500 futures from his bedroom with large sell orders he cancelled, tricking algos into selling. Good primer on spoofing and cascading algorithmic selling.",
+    "creator": "thestockguytwitch",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DYnlB8vJC56/",
+    "tools": [],
+    "techniques": [
+     "algorithmic trading",
+     "spoofing"
+    ],
+    "takeaways": [
+     "Exchange and bank safeguards were the real failure point",
+     "Spoofed order-book pressure can trigger cascades in algos that read depth"
+    ],
+    "caption": "He Tricked The System #story #stockmarket #daytrading",
+    "transcript": "May 6, 2010, the stock market fell 9% in five minutes. $1 trillion wiped out. Around about 30 minutes later, it recovered almost all of it back. So everybody's like, wait, what the f**k just happened? It took a while, and investigators traced it back to a bedroom. And the guy's name, Navinder Sarrao, it turns out that this kid used a single program on his home computer. And basically what he did was he was manipulating the mini-futures of the S&P 500. And he had this program that was sending out all of these cells, massive cell orders. He was representing 20% of the cell side orders. And he would send all these orders out and then immediately cancel or modify them. So what did it do? Well, all the algo trading bots and all the automated bots for all the hedge funds, firms, and banks started picking this up. And they started seeing this massive amount of cell orders coming in. And so it tricked all of the bots into selling, which then caused other bots to sell. And the capitulation happened. And immediately, as soon as the market opened right that morning, the stock market fell 9%. He ended up making over $40 million doing this for several years. He got greedy. So he makes $40 million. They trace it back to him, and they go to recover the money. Well, what happens? Well, he had already given most of the money away. So they go to charge him. They couldn't, because a lot of this was a failure on the other side of these banks to not have these protections in place. Took him until 2016. He gets charged. And he pleads guilty to lesser charges of spoofing and basic fraud. What do you think happens to him? Does he go to prison the rest of his life? No, he pleads guilty. It's not until 2020 does he get sentenced. And he gets one year of home detention during the lockdowns of COV"
+   },
+   {
+    "title": "Crypto wash trading — Ben McKenzie doc on fake volume and pump schemes",
+    "summary": "Clip from the documentary 'Everyone Is Lying to You for Money' where an insider explains wash trading: one actor trading between two accounts to walk prices up, luring outsiders before dumping. The interviewee claims 90-95% of crypto volume is fake and fewer than 20 people control the market.",
+    "creator": "cbcgem",
+    "tier": "B",
+    "type": "news",
+    "url": "https://www.instagram.com/p/DdZiaTmJdSC/",
+    "tools": [],
+    "techniques": [
+     "algorithmic trading",
+     "wash trading"
+    ],
+    "takeaways": [
+     "Discount reported crypto volume heavily",
+     "Rising price on high volume can be one actor trading with themselves",
+     "The 90-95% fake figure is an interviewee claim, not audited data"
+    ],
+    "caption": "Ben McKenzie’s documentary looks at who is paying the price for cryptocurrency’s rise in popularity \n🎞️: Everyone Is Lying to You for Money | @mrbenmckenzie",
+    "transcript": "this is bad, this is fraud. Why do you think that is? I personally believe the entire market is really controlled by fewer than 20 people. And they can make the price go to whatever they want. How? Let's say you have two accounts and you want the price to go up. So all you do is trade between your two accounts and you can basically just walk the price up. So they control both sides of the trade? Right, and then someone else that's on the outside doesn't realize and they see the price is going up, it's gone up 15% in the past 15 minutes, and they go ahead and they buy in. Those are the suckers basically coming in. Not realizing that it was just one guy with two accounts making the price go up. Right. Between 90 and 95% of all the crypto trading, that's all it is. Now the other 5% is only in there because they think that the other 90 to 95% is in real, which it's not. So now the people pumping up the price can sell their tokens and everybody else gets screwed. Yes, that's it."
+   },
+   {
+    "title": "Katsuyama vs BATS on CNBC — the 'markets are rigged' HFT showdown",
+    "summary": "The March 31, 2014 CNBC clash where IEX's Brad Katsuyama (Flash Boys) accused exchanges of selling HFT advantages via direct feeds, co-location and complex order types, and BATS's Bill O'Brien was pressed on whether his matching engine priced off the slower SIP. BATS later corrected the record, and IEX's speed bump came out of this debate.",
+    "creator": "itsfinancenote",
+    "tier": "A",
+    "type": "news",
+    "url": "https://www.instagram.com/p/Dc83KJvzPrC/",
+    "tools": [
+     "React"
+    ],
+    "techniques": [
+     "algorithmic trading",
+     "co-location",
+     "speed bump"
+    ],
+    "takeaways": [
+     "Direct feeds vs the SIP latency gap is the core of latency arbitrage",
+     "IEX's speed bump is a design response worth understanding",
+     "Order types and data feeds shape who wins on an exchange"
+    ],
+    "caption": "The CNBC fight that cracked Wall Street on live TV.\nOn March 31, 2014, Brad Katsuyama went on CNBC and publicly accused the market of being rigged — sitting feet away from William O’Brien, a senior executive at BATS Global Markets.\nThe backdrop wasn’t drama — it was data.\nAt the time, high-frequency firms were responsible for 50–60% of all U.S. equity trading volume, using speed advantages measured in microseconds to detect and trade ahead of slower orders.\nKatsuyama claimed exchanges were selling:\n• Proprietary data feeds\n• Co-location (servers inside exchange data centers)\n• Complex order types\n...creating a two-tier market:\none for institutions and one for machines.\nO’Brien denied it on a",
+    "transcript": "It would be hard to put a word on it. He said it in the book. Okay, you said it in the book. That's when I knew the markets were rigged. Let me hear the man. And it's disgusting that you're trying to parse your words now. Do you think the markets are rigged? You can't say that. You are quoted that way in the book, but does that have anything to do with it? Let's walk through an example. Do you say it? Do you believe it or not? Because you said it. Let me walk you through an example. It's a yes or no question. Do you believe it or not? I believe the markets are rigged. Okay. So there you go. And I also think that you're a part of the rigging. So if you want to do this, let's do this. I really do. That's my question to Bill if he's launching these accusations. I'm launching accusations. What market data do you use to price trades on Direct Edge? We use the direct feeds and the SIP in combination. No, no, no. I asked you a question. Not what you use to route. What do you use to price trades in your matching engine on Direct Edge? We use the direct feeds. No. Yes, we do. You had a 300 page commercial, okay? So let me talk. We use direct feeds to price trades. We are not as fast as the fastest HFTs. What we've done is we've slowed down HFT's ability to react on our exchange, which means that if anyone in this room, if anyone at home, if a mutual fund or a hedge fund gives an order to IEX and it's our responsibility to price it, HFT cannot make that order. They have the same HFT customers that we do, only we say they're providing a valuable service to the market. Let's just try to change the subject a little bit. They say they're ripping off the market. Do we have computerized trading on our market? Absolutely. I think the word high-frequency trading should be eliminated from"
+   },
+   {
+    "title": "HFT short-term reversal — buy weekly losers, sell winners across 4,500 stocks",
+    "summary": "A 60 Minutes clip with Manoj Narang describing a cross-sectional mean-reversion test: buy $5 of stocks down 5% last week, sell $10 of stocks up 10%, across the whole ~4,500-stock universe at once. Near 50% win rate per trade but no losing month thanks to breadth and speed, with Joe Saluzzi arguing it rigs the game.",
+    "creator": "7am.research",
+    "tier": "B",
+    "type": "technique",
+    "url": "https://www.instagram.com/p/DWu_CQnjZjn/",
+    "tools": [],
+    "techniques": [
+     "algorithmic trading",
+     "arbitrage",
+     "high-frequency trading",
+     "short-term reversal",
+     "statistical arbitrage"
+    ],
+    "takeaways": [
+     "Edge comes from breadth: tiny edges over thousands of names, not stock picking",
+     "Position size proportional to the move is a simple reversal weighting",
+     "Win rate near 50% can still compound if exposure is diversified and cheap to execute"
+    ],
+    "caption": "What if you had a trading strategy that never lost a month? 💸🤔\n\nIn this classic 60 Minutes clip, we get a rare look at the world of high-frequency trading (HFT) and the simple—yet devastatingly effective—math behind it. The trader explains a basic rule: If a stock drops 5%, buy $5. If it rises 10%, sell $10. Apply this to 4,500 stocks simultaneously using a high-speed computer, and you have a money-making machine that has literally never had a losing month.\n\n📊 The Math of Abundance\nThis strategy isn't about picking the next Apple or Tesla. It’s about statistical arbitrage. By spreading small bets across thousands of stocks at lightning speed, HFT firms turn the market into a casino where the",
+    "transcript": "I'm going to test a strategy where if a stock went down 5% for the past week, I'm going to buy $5 of that stock. And if a different stock went up 10% last week, I'm going to sell $10 of that stock. And I'm going to do that for every stock that's in my tradable universe simultaneously. Which is how many? There's over 4,000 stocks, about 4,500 stocks. The strategy, which could only be successfully executed with a high-speed computer, would result in almost as many losing trades as winners, but over the past eight years would have produced a tidy profit, something that Narang and other high-frequency traders have gotten used to. And how successful have you been? We've had two or three days in a row where we lose money, but we've never had a week so far where we lost. We've never had a month that was a loser for us. And institutional traders like Joe Saluzzi of Themis Trading LLC have come to believe that the game is r-"
+   },
+   {
+    "title": "Cochlea — Wi-Fi side-channel attack on Ring cameras",
+    "summary": "Benn Jordan's Cochlea is a Python tool that runs on a Raspberry Pi with a monitor-mode Wi-Fi adapter and passively fingerprints encrypted traffic from cloud cameras like Ring. It detects when a camera sees motion and when the owner opens live view, logging to CSV, which shows how much activity leaks without breaking encryption.",
+    "creator": "bennjordan",
+    "tier": "A",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DXhxXHOEY7v/",
+    "tools": [
+     "Cochlea",
+     "Python",
+     "Raspberry Pi"
+    ],
+    "techniques": [
+     "monitor mode",
+     "side-channel attack",
+     "traffic fingerprinting"
+    ],
+    "takeaways": [
+     "Cloud cameras in the home reveal occupancy patterns to passive sniffers",
+     "Encrypted IoT traffic still leaks activity through timing and volume"
+    ],
+    "caption": "Heuristic surveillance data is both widely under-reported and difficult to mitigate without tossing your devices and  living in the stone age.",
+    "transcript": "I created a terrifying app that probably shouldn't exist, but it needs to exist so people can understand how vulnerable they are when they put consumer-grade cloud-connected surveillance cameras in and around their home. The program's called Cochlea, and it runs on virtually any computer that can run Python. In this demonstration, I'm running it on a little Raspberry Pi with a little USB Wi-Fi adapter that supports monitor mode. Let's say you're using a ring camera as a baby monitor. Every time it detects movement, it'll be capturing video and sending it to the cloud. And then your preference is alerting you. Even if that data is encrypted, it still has a heuristic fingerprint. This means that once that fingerprint is identified, you can see every single time that a particular camera was detecting movement. If you do this throughout a home with a bunch of cloud-connected cameras, you can build a profile of what the people inside are doing and where they're doing it. And this is called a side-channel attack, meaning that nothing is connecting to any wireless networks. This little card is just passively sniffing the Wi-Fi waves in the air. Alright, let's run the program. It asks me to select my wireless interface. It asks me if I want to scan for ring cameras. I do. We found two ring devices in the general vicinity here. One is a doorbell that I think is my neighbor's, and number two is a ring spotlight cam, which I have here in the lab, so we'll choose number two. Now we could use this program to scan for this, but just for the sake of demonstration, I'm going to type in the MAC address of my phone so we could see the live view monitoring as well. Then we could set a sensitivity threshold. And now I will stay extremely still until now. So this is the program telling me t"
+   }
+  ]
+ },
+ {
+  "slug": "mocap-as-reward",
+  "kind": "dive",
+  "dive_id": "dd-insight-mocap-as-reward",
+  "title": "Mocap as Reward — teaching cheap robots to move like you",
+  "class": "emergent_capability",
+  "thesis": "The Microduck RL demo shows the classic failure: a loose reward function makes the robot 'stand' in a way nobody intended. The catalog also holds the fix, scattered across collections. FreeMoCap turns a webcam into markerless motion capture, HY-Motion produces motion from text on robot skeletons, and Blender plus a GPU contact solver can rehearse physical contact. Use captured or generated motion as an imitation reward on a cheap open robot. The reward-design trial and error becomes 'show it what you mean'.",
+  "why_it_matters": "Hobby robotics is gated by reward engineering more than by hardware. A webcam reference clip gives an individual the motion-prior pipeline that only labs used to have, for small expressive robots, animatronics and installations.",
+  "action_sketch": "Reproduce the Microduck standing run in its sim with 4,096 envs; confirm the reward hack.\nRecord a 10-second webcam clip of a 'bob and look around' motion with FreeMoCap (or generate one with HY-Motion), retarget to Microduck's joints, and add a pose-tracking imitation term to the reward.\nCompare policies: reward-only vs reward + imitation, scored by a blind viewer on 'looks intentional' and by joint-tracking error; deploy the winner to hardware if you have it.\nFalsifier: if retargeting human motion to a duck-scale robot body produces infeasible joint targets that the policy can't track better than the plain reward, the motion prior is the wrong shape for small robots.",
+  "prerequisites": [
+   "GPU for parallel sim (Isaac/MuJoCo)",
+   "Comfort with RL training configs",
+   "Optional: Microduck hardware build"
+  ],
+  "connection_map": {
+   "DdCBqmzJgbW": "The problem: PPO on Microduck reward-hacks a loose objective",
+   "DYAI_fCuvrY": "Reference source: webcam markerless mocap, 500+ landmarks",
+   "Tencent-Hunyuan/HY-Motion-1.0": "Reference source: text-to-motion on human and robot skeletons",
+   "DacssZfNGNS": "Rehearsal: Blender rigid bodies, motors and drivers to prototype motion physically",
+   "DYuY_-7Oqk4": "Rehearsal: GPU contact solver for soft/cloth contact cases",
+   "DXvvNRssb64": "Counterpoint: passive mechanical stability needs little AI — design the body first",
+   "C3X9J-wCQps": "Target use: animatronic sculpture that should move with intent, not just stand"
+  },
+  "tools": [
+   "Blender",
+   "JupyterLab",
+   "Microduck",
+   "Unity",
+   "Unreal Engine",
+   "XInputReader",
+   "ppf-contact-solver"
+  ],
+  "techniques": [
+   "PPO",
+   "animatronics",
+   "contact simulation",
+   "drivers",
+   "motion capture",
+   "motor constraints",
+   "parallel simulation",
+   "reinforcement learning",
+   "reward shaping",
+   "rigid-body constraints",
+   "scripted expressions",
+   "soft-body simulation"
+  ],
+  "domains": [
+   "3D",
+   "UI/UX",
+   "VFX",
+   "animation",
+   "art",
+   "branding",
+   "design",
+   "fashion",
+   "open source",
+   "robotics"
+  ],
+  "entries": [
+   {
+    "title": "Microduck robot — reinforcement learning with PPO and reward shaping",
+    "summary": "Training Pollen Robotics' open-source Microduck to stand: define a reward function (e.g. points for target body height), simulate 4,096 parallel robots, and let PPO update the policy toward higher-reward actions. The result 'stands' in an unintended way, a clean demo of reward hacking and why reward design is iterative.",
+    "creator": "summerr.exe",
+    "tier": "A",
+    "type": "demo",
+    "url": "https://www.instagram.com/p/DdCBqmzJgbW/",
+    "tools": [
+     "Microduck"
+    ],
+    "techniques": [
+     "PPO",
+     "parallel simulation",
+     "reinforcement learning",
+     "reward shaping"
+    ],
+    "takeaways": [
+     "Agents exploit loose rewards; expect to iterate on reward terms.",
+     "Microduck is an approachable open-source RL playground.",
+     "RL = reward function + many parallel simulated attempts + policy updates."
+    ],
+    "caption": "MICRODUCK and what I learnt about reinforcement learning !\n@pollenrobotics @seeedstudio @huggingfacecommunity @nvidiarobotics \n#robotics #reinforcementlearning #cyberdeck #engineeringexplained #microduck",
+    "transcript": "Let's teach my dog how to stand. This is Microdog from Poland Robotics. It's basically an open source playground for reinforcement learning. Imagine training a dog. You don't tell her how to move every joint to sit. Instead, you give her a treat. Whenever she does something closer to sitting, our L works on the same idea. We define a weird function that gives it points for things like reaching the right body height. Then I fill the simulation with 4096 dogs trying to figure out how to stand inside this jesson zone. The PPO algorithm sees every attempt and updates the policy so actions with higher rewards become more likely. And finally, we got a standing dog. Except it has a very different definition of standing. I got a bunch of suggestions. So now it's time to run some experiments and fix the reward function. Follow to see how it goes."
+   },
+   {
+    "title": "Blender — • 500+ body, hand & face landmarks per frame",
+    "summary": "FreeMoCap turns ordinary webcams into professional markerless 3D motion capture. — @marc.kaz; uses Blender, Unity, Unreal Engine; demonstrates motion capture.",
+    "creator": "marc.kaz",
+    "tier": "S",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/DYAI_fCuvrY/",
+    "tools": [
+     "Blender",
+     "Unity",
+     "Unreal Engine"
+    ],
+    "techniques": [
+     "motion capture"
+    ],
+    "takeaways": [],
+    "caption": "FreeMoCap turns ordinary webcams into professional markerless 3D motion capture.\n\nShips with:\n• 500+ body, hand & face landmarks per frame\n• Exports directly to Blender, Unity & Unreal\n• Runs on a normal laptop\n• 100% open source (4.6K stars)\n\nNo expensive suits. No special cameras.\n\n👉 https://github.com/freemocap/freemocap\n\nWho’s doing mocap on a budget today? Drop a 🔥\nraizencorp\n \n8w\nguess i can throw my project away hahah",
+    "transcript": "What's up guys we got a fully open source 3D mocap system so no way guys you can use any camera with this. This is insane it's called free mocap a markerless 3D tracking system that runs on ordinary webcams. It's due this is sick 100% open source 4 points."
+   },
+   {
+    "title": "HY-Motion 1.0 — Tencent's text-to-3D motion generation",
+    "summary": "by Tencent Hunyuan — featured by @marc.kaz | Billion-parameter text-to-3D motion generation. Type \"a person walks forward then starts jumping\" and get skeleton-based character animation. 200+ action types, 700hrs of pro mocap training. Works on human + robot skeletons. Free on HuggingFace. | DiT + Flow Matching 200+ action types Free",
+    "creator": "6ab3",
+    "tier": "A",
+    "type": "repo",
+    "url": "https://github.com/Tencent-Hunyuan/HY-Motion-1.0",
+    "tools": [],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "",
+    "transcript": ""
+   },
+   {
+    "title": "Blender rigid-body spaceship — motors, constraints and drivers for flight",
+    "summary": "Ian Hubert shows physics-driven vehicle animation in Blender: active/passive rigid bodies, hinge and spring constraints, motor constraints pushing against the ground as thrusters, gravity off, and custom properties wired via drivers with scripted expressions for throttle and lights. Mentions Erindale's XInputReader addon for gamepad control.",
+    "creator": "ianhubertz",
+    "tier": "S",
+    "type": "skill",
+    "url": "https://www.instagram.com/p/DacssZfNGNS/",
+    "tools": [
+     "Blender",
+     "XInputReader"
+    ],
+    "techniques": [
+     "drivers",
+     "motor constraints",
+     "rigid-body constraints",
+     "scripted expressions"
+    ],
+    "takeaways": [
+     "A linear motor constrained to an immovable object acts like a thruster",
+     "Expose custom properties and drive them with scripted expressions for interactive control",
+     "Put thrust over the center of mass or the ship tumbles"
+    ],
+    "caption": "I’ve been wanting to do this since I first learned #blender back in 2005 or so (with the olllld game engine!)- one of the funnest things I’ve learned in the past few years!\nHuge thanks to @e.r.i.n.d.a.l.e and @akastudios.ig for all the tips and cool tools! If you’re into this sort of thing, definitely check out their stuff!\nYou can find Erin’s addon by searching for “Erindale XInputReader”\nAlso @lux.taylor.art has been documenting the whole process of making the spaceship set over on YouTube, if you want to check that out!\n\n#b3d #animation #blender",
+    "transcript": "I'm going to animate my spaceship with physics, and it turns out it wasn't even that hard. In Blender, select the cube and hit F3, add active. It falls well through the grounding. But if we make the floor passive, it'll stop it. You can select a few and type connect, and it creates a constraint. There's a few options like hinge, which swings on the Z axis. That's really useful for adding like little dangling bits and stuff, or for giving a vehicle wheels. All this is simulated. Or generic spring, which is great for like little automatic wiggling stuff. But what if you want it to drive uphill too? Let's duplicate the constraint and turn it into a motor. Turn up the values, and it'll work with the hinge constraint to roll off a cliff. But where it gets cool is if we make the motor's second object something immovable, like the ground. Then a linear motor will actually push against it like a rocket. And let's turn off gravity, because we're in space. Now you want your thruster to be right over the object's center of gravity, which is the yellow dot origin here, or things will get totally out of balance. Although, we could use that to turn the ship, left, right, left, right, up, down, barrel roll. But you can only control the motor you have selected. Let's make that easier. Select the ship, and we're going to add a new property. Call it the gas, and the juice, and the headlights. Now in the side panel, we can see these new properties. They do nothing. But if you right click copy as new driver, then go over to the driver settings here and paste it in, you can turn up the gas, you can turn up the juice, and you can do the exact same thing to control emissive values. Ha ha! Although, it's not very fast. So let's edit the driver. And this looks confusing, but you gotta believe i"
+   },
+   {
+    "title": "PPF Contact Solver — ZOZO's open-source GPU cloth and soft-body physics",
+    "summary": "ZOZO open-sourced ppf-contact-solver, its internal virtual try-on physics engine: penetration-free fabric, rope and soft-body simulation with strain limits, up to 180M contacts, full GPU acceleration, a Blender plugin and a JupyterLab interface.",
+    "creator": "marc.kaz",
+    "tier": "S",
+    "type": "repo",
+    "url": "https://www.instagram.com/p/DYuY_-7Oqk4/",
+    "tools": [
+     "Blender",
+     "JupyterLab",
+     "ppf-contact-solver"
+    ],
+    "techniques": [
+     "contact simulation",
+     "soft-body simulation"
+    ],
+    "takeaways": [
+     "Drop-in production-grade cloth sim for Blender without clipping artifacts",
+     "GPU solver scales to massive contact counts for VFX and digital fashion",
+     "link: https://github.com/st-tech/ppf-contact-solver"
+    ],
+    "caption": "Japan’s massive clothing company just dropped ppf-contact-solver their internal top-tier physics engine used for virtual try-on.\n\nShips with:\n• Hyper-realistic fabric, ropes & soft body simulation\n• Zero penetration + accurate stretching limits\n• Handles up to 180 million contact points\n• Blender plugin\n• JupyterLab interface\n• Full GPU acceleration\n\nPerfect for virtual fashion, VFX, games, and digital clothing.\n\n👉 https://github.com/st-tech/ppf-contact-solver",
+    "transcript": "What's up guys? So Japan's clothing giant, named Zozo, has directly open sourced their internal top tier physics engine. So it's called PPF Contact Solver. It's for trying virtual clothing on. So it's virtual fashion, digital clothing, movie special effects and game physics, all that. So this is fun. It does fabric and ropes and soft bodies, all that stuff. No clipping and things like that. So very fun, yeah."
+   },
+   {
+    "title": "Self-stabilizing robots are reaching a fascinating stage whe — The content is presented purely for learning and infor...",
+    "summary": "Self-stabilizing robots are reaching a fascinating stage where they can walk and balance with little to no AI, relyin... — @s_sapphire_robotics.",
+    "creator": "s_sapphire_robotics",
+    "tier": "B",
+    "type": "skill",
+    "url": "https://www.instagram.com/p/DXvvNRssb64/",
+    "tools": [],
+    "techniques": [],
+    "takeaways": [],
+    "caption": "Self-stabilizing robots are reaching a fascinating stage where they can walk and balance with little to no AI, relying instead on clever mechanical design and passive dynamics. Sometimes, stability can emerge from physics itself, where motion happens naturally without complex control systems, yet still looks surprisingly lifelike.\n\n💥 The content is presented purely for learning and informational use. It is not affiliated with any sponsorships, promotions, or commercial activities. Full credit and ownership remain with the original creator and brand. If you are the rights holder and would prefer the content to be removed or the attribution to be adjusted, please contact us.\nsatori_mountain_st",
+    "transcript": "This is a running robot, and here it's going slow-mo. It's running 12 miles per hour on a treadmill. There is no sensors, no feedback control, no computer. It's just a motor with a throttle. And as you just squeeze the throttle, it runs faster, and you let off the throttle and it runs slower. And we came up with some really clever ideas on how to make this beam self-stabilize. So if the robot pitches forward, the pitch would just naturally correct itself. And so I think there's a lot of really cool things you can do like this to put intelligence in the mechanism. And you can make the argument that in biology, some animals like ostriches are doing something like this because their motion is so quick that the time it would take for something to be sensed and something to be reacted upon."
+   },
+   {
+    "title": "Animatronic eye sculpture — hexagonal plate with moving eyes and macramé mandala",
+    "summary": "A stage-design art piece: a grey hexagonal plate of moving animatronic eyes framed by a macramé mandala, conceived as a bridge between people and a moon deity. Built for an event production; silent showcase.",
+    "creator": "miselyum.art",
+    "tier": "B",
+    "type": "art",
+    "url": "https://www.instagram.com/p/C3X9J-wCQps/",
+    "tools": [],
+    "techniques": [
+     "animatronics"
+    ],
+    "takeaways": [
+     "Multiple synchronized moving eyes are an arresting focal element for stage/event decor"
+    ],
+    "caption": "Bir zamanlar, insanlar ve ay tanrısı arasında derin bir bağ vardı. İnsanlar, ayın gizemli ışığında ruhlarını arındırırken, ay tanrısı da insanların duygularını yansıtırdı. Bu bağ, zamanla bir sanat eserine dönüştü. Altıgen formdaki plaka, insanların ve ayın hareketli ruhunun sembolize eder. Gözler, insanların derinliklerine bakar gibi hareket ederken, makrome mandala ise evrenin döngüsünü simgeler.\n\nEserin ana rengi gri olarak tercih edildi; zira gri, insanın iç dünyasının karmaşıklığını ve ayın dinginliğini yansıtır. Her bir hareketli göz, insanların duygusal yolculuğunu, zamanın akışını ve evrenin sonsuzluğunu temsil ederken, makrome mandala ise insanın içsel denge arayışını anlatıyor.\n\nEs",
+    "transcript": "(no speech detected)"
+   }
+  ]
+ },
+ {
+  "slug": "avellaneda-stoikov-and-hawkes",
+  "kind": "guide",
+  "title": "Avellaneda-Stoikov + Hawkes Processes — Market Making and Order-Flow Alpha",
+  "guide_markdown": "# Avellaneda-Stoikov + Hawkes Processes — Market Making and Order-Flow Alpha\n\nThe two canonical building blocks of academic HFT: a closed-form model for where to quote (Avellaneda-Stoikov) and a statistical model for when trades cluster (Hawkes). Together they describe the two halves of a market maker's problem — *price* the quotes, then *time* the quotes.\n\n**Cloned repo:** `repos/avellaneda-stoikov/` (from https://github.com/fedecaccia/avellaneda-stoikov)\n\n---\n\n## 1. Avellaneda-Stoikov — the canonical market-making model\n\n### What it is\n\nA 2008 paper by Marco Avellaneda and Sasha Stoikov, \"High Frequency Trading in a Limit Order Book,\" that solves a specific problem: a market maker holds inventory `q`, faces a mid-price `s` that diffuses as Brownian motion, and must choose bid/ask quotes continuously. Where should they post to maximize terminal utility while controlling inventory risk?\n\nThe answer is two formulas — the *reservation price* and the *optimal spread* — and those two formulas are the foundation for essentially every serious MM model that followed.\n\n### How it works\n\nThe maker has a utility function (exponential, risk-averse with parameter `γ`). They post quotes symmetrically around a **reservation price** that is shifted away from mid based on current inventory. If you're long, you skew quotes lower to encourage sells. If you're short, you skew higher. The spread itself widens with volatility, time-to-horizon, and risk aversion.\n\n### Key mechanics — the two formulas\n\n**Reservation price** (your private indifference price given inventory):\n\n```\nr(s, q, t) = s − q · γ · σ² · (T − t)\n```\n\n- `s` — current mid\n- `q` — signed inventory (positive = long)\n- `γ` — risk aversion (higher = more skew)\n- `σ²` — variance of mid-price\n- `(T − t)` — time remaining until horizon\n\n**Optimal bid-ask spread**:\n\n```\nδ_ask + δ_bid = γ · σ² · (T − t) + (2/γ) · ln(1 + γ/k)\n```\n\n- `k` — order-book liquidity parameter (intensity decay of the limit-order arrival function `λ(δ) = A · exp(−k·δ)`)\n- `A` — base arrival intensity\n\nThen you post:\n- Bid at `r − (spread / 2)`\n- Ask at `r + (spread / 2)`\n\nThe first term of the spread is the *inventory term* (widens with risk). The second is the *adverse selection term* (widens when order flow is thin). This is the whole engine.\n\n### The repo — `fedecaccia/avellaneda-stoikov`\n\nCloned to `repos/avellaneda-stoikov/`. Minimal Python implementation, ~200 lines. Core loop from `src/main.py`:\n\n```python\n# Risk aversion\ngamma = 0.1\n# Liquidity parameter (exponential decay of fill intensity)\nk = 1.5\n# Mid-price follows Brownian motion\nsigma = 2\n\nfor i in range(N):\n    # Reservation price — skews away from inventory\n    r[i] = s[i] - q[i] * gamma * (sigma**2) * (T - t[i])\n    # Optimal half-spread\n    r_spread = gamma * (sigma**2) * (T - t[i]) + (2/gamma) * math.log(1 + gamma/k)\n    # Quotes\n    r_ask = r[i] + r_spread / 2\n    r_bid = r[i] - r_spread / 2\n    # Simulate Poisson fills with intensity A*exp(-k*delta)\n    ...\n```\n\nThe repo includes a `doc/` folder with the original paper and follow-ups (Guéant-Lehalle-Tapia closed-form extension, mean-reversion variants). Good starting point, but known limitations: Brownian mid is unrealistic, `k` and `A` need live calibration, no queue-position model.\n\n### Quick start\n\n```bash\ncd ~/projects/ai-catalogs/repos/avellaneda-stoikov/\npip install numpy matplotlib\npython src/main.py\n```\n\nRuns 100 simulated sessions and plots PnL distribution. Tweak `gamma`, `k`, `sigma` and watch how the spread and skew react.\n\n### Known limitations (and what the follow-ups fix)\n\n- **Brownian mid** — real prices jump. Fix: use a jump-diffusion or Hawkes-modulated mid.\n- **Fixed `k`** — real liquidity is regime-dependent. Fix: rolling calibration from trade flow.\n- **Symmetric fills** — adverse selection makes them asymmetric. Fix: asymmetric `k_bid`, `k_ask`.\n- **No queue model** — AS assumes you fill instantly at the quoted price. Fix: queue-position aware extensions (Guéant-Lehalle).\n- **Single asset** — multi-asset version requires solving a coupled HJB. Fix: Guéant 2017.\n\nFor a modern RL extension, see `javifalces/HFTFramework` — reinforcement learning on top of AS for dynamic `γ` and `k`.\n\n---\n\n## 2. Hawkes processes — order flow is self-exciting\n\n### What it is\n\nA Hawkes process is a point process where the arrival of an event temporarily increases the probability of more events. Classic example: earthquakes (a big one triggers aftershocks). In markets: a trade begets more trades. Order flow is demonstrably self-exciting — if you watch BTC-PERP on Hyperliquid for 10 seconds, you see this with your own eyes. Buys cluster. Sells cluster. Quiet periods are quiet.\n\nAvellaneda-Stoikov assumes trades arrive as a plain Poisson process (constant intensity `A`). That assumption is wrong at HFT timescales. Replacing it with a Hawkes intensity is the single biggest realism upgrade.\n\n### How it works — the math\n\nA univariate Hawkes process has a conditional intensity:\n\n```\nλ(t) = μ + Σ_{t_i < t} α · exp(−β (t − t_i))\n```\n\n- `μ` — baseline intensity (exogenous flow)\n- `α` — jump in intensity per event (self-excitation strength)\n- `β` — decay rate (how fast excitement dies)\n- Branching ratio `n = α/β` must be `< 1` for stability. `n` near 1 means the process is critical — heavy clustering, close to explosive.\n\nFor **order flow**, you want a *bivariate* or *multivariate* Hawkes with buy and sell streams that excite each other asymmetrically. The 4-dimensional version (bid market orders, ask market orders, bid limit orders, ask limit orders) is the standard for LOB research.\n\n### Key intuition\n\n- **Self-excitation** captures momentum at the micro scale — a large buy market order raises the probability of more buy market orders over the next ~100ms.\n- **Cross-excitation** captures the order-book reaction — a market buy raises the probability of a cancellation on the ask and a new limit ask higher up.\n- **Branching ratio** is a regime detector. `n ≈ 0.9+` = critical, clustered, dangerous to provide liquidity. `n ≈ 0.5` = calm.\n- Fitted `μ`, `α`, `β` give you an **instantaneous order-flow imbalance forecast** — the true signal every MM and taker wants.\n\n### Repos worth pulling\n\n- **`x-datainitiative/tick`** — production-grade Python library for Hawkes fitting. Handles MLE, EM, and sum-of-exponentials kernels. The go-to for serious work.\n- **`jeremymck/High-Frequency-Data---Limit-Order-Books`** — pedagogical notebooks covering LOB simulation + Hawkes estimation end-to-end.\n- **`sohaibelkarmi/High-Frequency-Trading-Simulator`** — C++ LOB with Hawkes-driven order flow, Python bindings.\n\n### Quick start with `tick`\n\n```python\nfrom tick.hawkes import HawkesExpKern, SimuHawkesExpKernels\nimport numpy as np\n\n# Fit a 2D Hawkes (buys, sells) on your trade timestamps\n# timestamps = [np.array([buy_times]), np.array([sell_times])]\ndecays = np.array([[5.0, 5.0], [5.0, 5.0]])  # β per pair\nlearner = HawkesExpKern(decays, penalty='l2', C=1e3)\nlearner.fit(timestamps)\n\n# adjacency[i][j] = α from stream j exciting stream i\nprint(\"Branching matrix:\\n\", learner.adjacency)\nprint(\"Baseline:\", learner.baseline)\nprint(\"Spectral radius (stability):\", np.max(np.abs(np.linalg.eigvals(learner.adjacency))))\n```\n\nRoll this on 1-minute windows and you have a live order-flow-clustering monitor.\n\n---\n\n## 3. Putting them together — the modern MM stack\n\nThe research consensus for the last ~8 years has been: replace Avellaneda-Stoikov's constant `A, k` with Hawkes-derived, regime-aware estimates.\n\n**The combined loop:**\n\n1. Maintain a rolling Hawkes fit on trade timestamps (fit every N seconds).\n2. Convert the fitted intensity into a live forecast `λ̂(t)` for the next fill window.\n3. Feed `λ̂` into AS as a time-varying `A`. Also use branching ratio to modulate `γ` — get more risk-averse when `n → 1`.\n4. Skew quotes with the AS reservation price, sized with AS spread, but gated by the Hawkes regime (don't quote when `n` is critical unless spread compensates).\n5. (Optional) Train an RL agent to choose `γ` dynamically — that's what `javifalces/HFTFramework` and `im1235/ISAC` (Soft Actor-Critic on AS) do.\n\n---\n\n## 4. How this plugs into your trading-agent-team\n\nThe current trading-agent-team at `~/projects/agents/trading-agent-team/` is built around *taker* strategies — fast cyclers, graduated TP, ensembles across 8 coins. AS + Hawkes opens a **second leg of the strategy**: a maker leg that generates uncorrelated PnL from spread capture rather than directional alpha.\n\n**Concrete integration ideas:**\n\n1. **Hawkes as a regime filter for the existing taker strategies.** Fit a bivariate Hawkes on trade tape per coin. When branching ratio spikes above ~0.9, the fast-cycler TP logic should tighten because reversals become more likely. This is a pure overlay — no new strategy, just a kill switch / sizing knob. Lowest-risk way to start.\n\n2. **Order-flow imbalance as a feature** for the Oracle Commander / Rolodex selector. Add the ratio of buy-excited",
+  "entries": []
+ },
+ {
+  "slug": "blender-mcp-tripo-pipeline",
+  "kind": "guide",
+  "title": "Blender MCP + Tripo — Reference Image to Rendered Scene, Driven by Claude",
+  "guide_markdown": "# Blender MCP + Tripo — Reference Image to Rendered Scene, Driven by Claude\n\n**Blender MCP GitHub:** https://github.com/ahujasid/blender-mcp\n**Stars:** 18.5k (as of writing) — by far the dominant Blender MCP implementation\n**License:** MIT\n**Cloned to:** `~/projects/ai-catalogs/repos/blender-mcp/` (1.5 MB — pure Python server, no weights)\n**Tripo:** https://www.tripo3d.ai/ | docs: https://platform.tripo3d.ai/docs\n\n---\n\n## What it is\n\nBlender MCP is a Model Context Protocol server that exposes Blender as a set of tools an LLM can call. You run a tiny socket server inside Blender (via an addon) and an MCP server outside Blender that Claude Desktop, Claude Code, Cursor, or VS Code connects to. From then on, Claude can create objects, apply materials, inspect the scene, run arbitrary Python in Blender's context, pull HDRIs and assets from Poly Haven, and — the reason this guide exists — **generate 3D models on demand via Tripo (Hyper3D Rodin) or Hunyuan3D and import them into the current scene.**\n\nCombined with Tripo's hosted text-to-3D / image-to-3D API, this turns Claude into a functional 3D scene director. You hand Claude a reference photo, say \"build me this scene in Blender and render it from a low angle,\" and watch it happen. It is the closest thing we have in 2026 to a natural-language Blender operator.\n\nThe creator (Siddharth Ahuja / @ahujasid) is an independent developer; this isn't a Blender Foundation or Tripo project. It's the de-facto standard because it went viral on X in early 2025 and everyone built on top of it.\n\n---\n\n## How it works under the hood\n\nThere are **two processes**:\n\n1. **Blender addon (`addon.py`)** — installed inside Blender, runs a Python socket server bound to `BLENDER_HOST:BLENDER_PORT` (default `localhost:9876`). When a message arrives, it runs the requested Blender Python API call on the Blender main thread and returns the result.\n2. **MCP server (`src/blender_mcp/server.py`)** — a stdio-transport MCP server launched by Claude Desktop / Claude Code. It translates MCP tool calls into socket messages to the addon.\n\nThe protocol is simple JSON-over-TCP: a request with `type` and `params`, a response with `status` and `result`. Because the Blender side runs arbitrary Python, the server is extremely powerful and correspondingly dangerous — save your work before letting an agent drive it.\n\n### Tools the server exposes\n\n- `get_scene_info` — list objects, cameras, lights, materials\n- `get_object_info` — detailed info on one object\n- `create_object` — primitives (cube, sphere, plane, cylinder, etc.)\n- `modify_object` — transform, scale, rotate\n- `delete_object`\n- `set_material` — assign or create a material with base color\n- `execute_blender_code` — arbitrary Python inside Blender (the escape hatch)\n- `get_polyhaven_categories` / `search_polyhaven_assets` / `download_polyhaven_asset` — free HDRIs, textures, models\n- `search_sketchfab_models` / `download_sketchfab_model` — requires API key\n- `generate_hyper3d_model_via_text` / `generate_hyper3d_model_via_images` — **the Tripo/Rodin integration**\n- `poll_rodin_job_status` / `import_generated_asset`\n- `generate_hunyuan3d_model_via_text` / `generate_hunyuan3d_model_via_images` — local Hunyuan3D-2 bridge\n\nThe Hyper3D Rodin endpoint is Tripo's white-labeled API. Blender MCP ships with a free-tier key so you can try it without signing up, rate-limited to a handful of generations per hour. Your own Tripo key removes the limit.\n\n---\n\n## Tripo in one paragraph\n\nTripo (tripo3d.ai) is the leading hosted text-to-3D / image-to-3D API. Their current model family is **P1-20260311** (optimized for clean low-poly output) alongside v3.0 and v3.1 high-detail models. They support text-to-model, image-to-model, and multiview-to-model. Output is GLB with PBR materials, typically 20–60 seconds per generation on their backend. Pricing via fal.ai is roughly **$0.20–$0.40 per model**; direct Tripo Studio subscriptions start around $10/month for a credit pool. The API is REST: POST a job, poll for status, download the result. Docs at https://platform.tripo3d.ai/docs.\n\nThe important thing for this pipeline: Tripo is **fast and consistent** where Hunyuan3D-2 is **slow and local**. Use Tripo when iterating on a scene interactively with Claude; use Hunyuan3D-2 (see `guides/hunyuan3d-2.md`) when you want full local control, custom training data, or no API costs.\n\n---\n\n## System requirements\n\n- **Blender 3.0+** (4.x strongly recommended; 4.2 LTS is the sweet spot)\n- **Python 3.10+** (Blender ships its own Python; the MCP server runs in your system Python)\n- **uv package manager** — mandatory, not optional (install from https://astral.sh/uv)\n- **Claude Desktop, Claude Code, Cursor, or VS Code** with MCP client support\n- **Tripo API key** (optional, but required for unrestricted generation) — https://platform.tripo3d.ai\n- **Sketchfab API key** (optional) for the Sketchfab asset tools\n- **Local Hunyuan3D-2 install** (optional) if you want local generation — see `guides/hunyuan3d-2.md`\n- A GPU helps for rendering scenes but is not required for the MCP plumbing itself\n\nNo heavyweight ML runs on your machine unless you opt in to Hunyuan3D-2; Tripo and Poly Haven are hosted.\n\n---\n\n## Quick start\n\n```\n# 1. install uv if you don't have it (see https://astral.sh/uv)\n\n# 2. repo is already cloned at\n#    ~/projects/ai-catalogs/repos/blender-mcp\n\n# 3. install the Blender addon\n#    In Blender: Edit > Preferences > Add-ons > Install > pick addon.py\n#    Enable \"Interface: Blender MCP\", then in the 3D viewport N-panel\n#    there's a BlenderMCP tab — click \"Connect to MCP server\".\n\n# 4. configure Claude Code / Claude Desktop MCP settings with:\n#    command: uvx\n#    args:    [\"blender-mcp\"]\n#    env:     TRIPO_API_KEY=tsk_your_key_here\n#             SKETCHFAB_API_KEY=optional\n\n# 5. restart Claude, start Blender, enable the addon's socket server,\n#    and ask Claude: \"What's in my Blender scene right now?\"\n```\n\nIf everything works, Claude will call `get_scene_info`, see an empty scene with a default cube, and happily start building things when you ask.\n\n---\n\n## The full pipeline — reference image to rendered scene\n\nHere's the canonical workflow the blender-mcp + Tripo stack enables. Every numbered step is a natural-language turn you'd give Claude in Claude Code:\n\n1. **Drop a reference image in your project** (say, a photo of a cozy Japanese tea room)\n2. **\"Analyze this reference image and list the major 3D objects I'll need to recreate the scene.\"** — Claude reads the image and outputs: tatami floor, low table, tea kettle, shoji screen, hanging lantern, cushion x2.\n3. **\"For each object in that list, generate it via Tripo image-to-3D using a cropped region of the reference, and import each result into Blender with a sensible name.\"** — Claude loops, calling `generate_hyper3d_model_via_images` for each object, polling `poll_rodin_job_status`, then `import_generated_asset`.\n4. **\"Lay them out in a plausible room arrangement based on the reference.\"** — Claude calls `modify_object` to position and rotate.\n5. **\"Download a warm evening interior HDRI from Poly Haven and set it as the world background.\"** — `search_polyhaven_assets` → `download_polyhaven_asset`.\n6. **\"Add a camera at human eye level, looking at the tea table, and set the Cycles render settings to 512 samples.\"** — via `execute_blender_code`.\n7. **\"Render.\"** — via `execute_blender_code` calling the Blender render operator.\n8. **Iterate.** Claude can see the result via a screenshot tool and adjust.\n\nThe whole loop, end to end, is doable in 5–15 minutes with Tripo on a decent internet connection. The same pipeline with manual Blender work would take a skilled artist hours.\n\n### Where it breaks down\n\n- **Object segmentation from a single reference** is the weak link. Claude cropping regions of the image is usually \"good enough\" but precise silhouettes help; feed Claude pre-cropped images for hero assets.\n- **Scale.** Tripo meshes come in arbitrary units; Claude will fight to normalize them. Tell it \"assume 1 Blender unit = 1 meter\" up front.\n- **Materials.** Tripo/Rodin outputs have baked PBR, which is great, but they may not match your scene lighting. Expect a round of `set_material` tweaks.\n- **Topology.** These are game-ready but not production film meshes. For feature work, use the new P1 low-poly model and retopologize manually.\n\n---\n\n## Useful prompts to drive it from Claude Code\n\n- \"Inspect the current Blender scene and tell me what's already there.\"\n- \"Clear the scene, then build a simple chess set: an 8x8 board, 32 pieces, generated via Tripo text-to-3D with appropriate prompts, arranged in the starting position.\"\n- \"Here's a photo of my desk (attached). Recreate it in Blender. Use Tripo for any object that isn't a trivial primitive.\"\n- \"Generate a low-poly medieval village: 5 houses, a well, a church, a market stall. Use Tripo's P1 low-poly model. Scatter them on a grass plane with a Poly Haven dawn HDRI.\"\n- \"I need a hero render for a pr",
+  "entries": []
+ },
+ {
+  "slug": "boris-cherny-claude-md",
+  "kind": "guide",
+  "title": "Boris Cherny's CLAUDE.md — The Canonical Template",
+  "guide_markdown": "# Boris Cherny's CLAUDE.md — The Canonical Template\n\n**Author of the pattern:** Boris Cherny — Anthropic staff engineer, creator of Claude Code (originally built as a side project in his first month at Anthropic; by the time Claude Code launched publicly in May 2025, over 80% of Anthropic's engineers were using it daily).\n\n**Why it matters:** Boris's own CLAUDE.md and the workflow rules he published on X became the de facto template that the wider community now cargo-cults. If you've seen a CLAUDE.md with sections like \"Workflow Orchestration,\" \"Self-Improvement Loop,\" and \"Verification Before Done,\" you're looking at a descendant of Boris's file. His team at Anthropic keeps a CLAUDE.md in git at roughly 2.5k tokens — the reference weight class.\n\nThis guide reconstructs the template, explains *why* each section exists, and compares it to a real-world global CLAUDE.md setup.\n\n---\n\n## What it is\n\nCLAUDE.md is the single highest-leverage file in the Claude Code harness. Claude Code injects it into the context window at the **start of every session**, before the user's first message. It's the only persistent memory primitive that survives compaction, resumes, and cross-session restarts. Nothing else — not chat history, not subagent output, not tool results — is guaranteed to stick.\n\nBoris's core insight: *CLAUDE.md is a compounding asset*. Every correction you give Claude should be distilled into a rule in CLAUDE.md, so future sessions never make the same mistake twice. The file is not documentation for humans — it is a behavioral contract for the model.\n\n## How it works under the hood\n\n- Claude Code auto-discovers `./CLAUDE.md` (project), `~/.claude/CLAUDE.md` (global), and `.claude/CLAUDE.md` in parent dirs (walks up the tree).\n- All discovered files are **concatenated and prepended** to the system prompt.\n- `/init` scaffolds a starter CLAUDE.md by scanning the project (language, framework, build/test commands, style).\n- `#` prefix in a normal Claude message auto-appends that line to CLAUDE.md — Boris's favorite shortcut for the self-improvement loop.\n- Target weight: **under 200 lines / under 2-3k tokens**. Larger files measurably reduce instruction adherence — Claude starts \"forgetting\" rules buried mid-file.\n\n## Key mechanics (Boris's rules, annotated)\n\nBoris's publicly posted rules crystallize into these sections. The exact wording varies by gist (there are at least four circulating community copies), but the structure is consistent:\n\n### 1. Workflow Orchestration — \"Plan first, execute second\"\n\n```markdown\n## Workflow\n- For any non-trivial task (3+ steps or architectural decisions), enter plan mode first.\n- Write the plan to disk before executing. Get explicit approval before you start editing files.\n- Break work into phases. Each phase ends with a verification step.\n- Never start coding without a written goal and a verification strategy.\n```\n\n*Why:* Claude's default behavior is to dive in. Forcing a written plan makes the model's reasoning visible, lets the human catch bad assumptions cheaply, and creates a contract it can check itself against later. This is the pattern the Superpowers `writing-plans` + `executing-plans` chain formalizes.\n\n### 2. Subagents — \"Keep the main context clean\"\n\n```markdown\n## Subagents\n- Use subagents liberally. The main conversation is a precious resource.\n- Dispatch anything exploratory (searching, reading unknown files, running tests) to a subagent.\n- Subagents return summaries, not transcripts. You don't burn tokens on the tool noise.\n- Parallelize independent tasks — spawn 3-5 subagents at once rather than serially.\n```\n\n*Why:* The main context window is where the actual planning and decision-making happens. Every file you read, every failed test output, every grep result eats tokens that could be used for reasoning. Subagents are a context-compression mechanism.\n\n### 3. Verification Before Done — \"Never claim completion without proof\"\n\n```markdown\n## Verification\n- Before claiming any task is complete: run the tests, run the linter, run the type checker.\n- If the user's request implies \"it should work\" — prove it works end-to-end, don't just compile.\n- If you wrote a function, write a test. If you wrote a test, run it. If it fails, fix it.\n- Never say \"done\" if you haven't verified. Say \"I believe this is done pending X.\"\n```\n\n*Why:* The single most common failure mode of LLMs is confident false completion. Boris's rule: the model must produce evidence, not assertion.\n\n### 4. Self-Improvement Loop — \"Every correction becomes a rule\"\n\n```markdown\n## Self-Improvement\n- When I correct you, end your response with:\n  \"Updating CLAUDE.md so I don't make this mistake again.\"\n- Then actually update CLAUDE.md with a new rule that would have prevented the mistake.\n- Ruthlessly edit CLAUDE.md over time. Delete rules that no longer apply. Merge duplicates.\n```\n\n*Why:* This is the compounding mechanism. Boris's own quote: *\"Invest in your CLAUDE.md. After every correction, end with 'Update your CLAUDE.md so you don't make that mistake again.' Claude is effective at writing rules for itself.\"* Over weeks, Claude's mistake rate on your codebase measurably drops.\n\n### 5. Autonomous Bug Fixing — \"Reproduce, then fix\"\n\n```markdown\n## Bugs\n- Before fixing: reproduce the bug with a failing test.\n- The test must fail for the right reason (the bug), not a different reason (typo, missing import).\n- Only then write the fix. Re-run the test. Confirm it passes. Run the full suite.\n- If the bug is ambiguous, ask for clarification before coding.\n```\n\n*Why:* Mirrors TDD discipline and cuts the \"fixed something unrelated\" failure mode.\n\n### 6. Project context (the boilerplate head of the file)\n\n```markdown\n# Project Name\nLanguage: Python 3.12\nFramework: FastAPI + SQLAlchemy\nPackage manager: uv\nTests: pytest (run with `uv run pytest`)\nLint: ruff (run with `uv run ruff check`)\nTypecheck: mypy (strict mode)\n\n## Conventions\n- Prefer dataclasses over dicts for structured data.\n- All public functions get type hints.\n- Never use `print` — use the `logging` module.\n- Tests live in `tests/` mirroring `src/` layout.\n```\n\n*Why:* This is the cheap, obvious part everyone gets right. It's the behavioral rules above that distinguish Boris's template from a README.\n\n## Quick start\n\n```bash\n# In any project, scaffold a starter file\ncd my-project\nclaude\n> /init\n\n# Then iterate — every time Claude makes a mistake, tell it:\n> \"That was wrong. Update CLAUDE.md so you don't do it again.\"\n\n# Or use the # shortcut to append a rule inline\n> # Always run `uv run pytest` not `pytest`\n\n# Keep it lean — check length regularly\nwc -l CLAUDE.md   # target: under 200 lines\n```\n\n**Copy-paste starter** (drop into any project root):\n\n```markdown\n# [Project Name]\n[One-line description.]\n\nStack: [language, framework, package manager]\nBuild: `[command]`\nTest: `[command]`\nLint: `[command]`\n\n## Workflow\n- For any task with 3+ steps, enter plan mode. Write the plan before editing.\n- Use subagents for exploration, searching, and reading unknown files.\n- Never claim \"done\" without running tests + lint + typecheck.\n\n## Conventions\n- [Style rule 1]\n- [Style rule 2]\n\n## Verification\n- Before shipping: `[test command]` && `[lint command]` && `[typecheck command]`\n- All must pass. No exceptions.\n\n## Bugs\n- Reproduce with a failing test before fixing.\n- Test must fail for the right reason.\n\n## Self-improvement\n- When corrected, update this file with a rule that would have prevented the mistake.\n- Every rule in this file earned its place by catching a real bug.\n```\n\n## Contrast with a global CLAUDE.md\n\nA production global CLAUDE.md (`~/.claude/CLAUDE.md`) is a **fundamentally different genre** than Boris's per-project file. Key differences worth understanding:\n\n| Dimension | Boris's template | Global orchestrator |\n|---|---|---|\n| **Scope** | Per-project behavioral contract | Global meta-orchestrator across ALL projects |\n| **Length** | ~200 lines, ~2.5k tokens | ~250 lines but dense with tables |\n| **Focus** | Workflow discipline (plan → execute → verify) | Skill routing + knowledge base pointers |\n| **Self-improvement loop** | Yes — \"every correction becomes a rule\" | Implicit via forge/retro/flywheel skills |\n| **Trigger mapping** | Not present | Extensive — keyword → skill table |\n| **Domain knowledge** | Project-specific conventions | AI3 resource catalog, installed plugins/MCPs |\n| **Security rules** | Not present | Top-level CRITICAL block on secret protection |\n\n**What a global file does that Boris's doesn't:**\n- Maps user trigger words to specific skill invocations (Boris has no skills system at his abstraction level).\n- Treats the knowledge flywheel (`/flywheel`, `/forge`, `/inject`) as default-on.\n- Enumerates the installed plugin/MCP inventory so Claude knows what tools exist.\n- Points to an external resource catalog (`ai3-resources/`) that the agent can cross-reference.\n\n**What Boris's file does that a global file typically doesn't:**\n- Explicit plan-mode ga",
+  "entries": []
+ }
+]

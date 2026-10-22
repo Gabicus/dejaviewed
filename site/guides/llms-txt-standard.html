@@ -212,6 +212,112 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Any future guide on Fern / Mintlify / Docusaurus — the docs platforms most responsible for adoption so far.</p>
 <h2>Should you ship this?</h2>
 <p>Yes, on both 1gabe.com and wv-art.com, today. It is a 30-minute job, zero maintenance cost once wired into a build step, zero downside, and a non-trivial upside as more agents start honoring it. The sample above is deliberately complete enough to paste in, swap the real link URLs for whichever section slugs the sites actually use, and ship. Add an llms-full.txt companion for 1gabe.com once the writing section has enough content to justify it. For wv-art.com, the short version is sufficient — the art is the point, and the role of the file is just to tell the agent that.</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Ship a spec-conformant /llms.txt, an optional /llms-full.txt, and .md twins for the key pages of one real site, generated from the site's own build so they never drift, and measure whether agents actually use them. Done means the files parse with the reference llms-txt parser, every link resolves with the right content type, token sizes are recorded, server logs are watched for AI user agents for at least two weeks, and a fixed set of questions about the site is answered more accurately by agents pointed at llms.txt than by agents crawling the HTML.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A docs or growth engineer would treat llms.txt as a build artifact, not a hand-edited file, generated from the same source of truth as the sitemap so it cannot rot. They would measure the real benefit: token cost per page as HTML versus Markdown, and answer accuracy on a fixed question set with and without the file. They would also be honest that publication is ahead of consumption, so they would instrument access logs for agent user agents (GPTBot, ClaudeBot, Claude-User, PerplexityBot, ChatGPT-User, and others) before claiming anyone reads it, and keep robots.txt policy consistent with what llms.txt invites.</p>
+<p>Rawest material to start from: The spec at llmstxt.org and Jeremy Howard's proposal post (answer.ai/posts/2024-09-03-llmstxt.html); the reference repo github.com/AnswerDotAI/llms-txt with its parser and the llms_txt2ctx CLI; real production files to compare against (docs.anthropic.com/llms.txt and llms-full.txt, Stripe, Cloudflare, Vercel); your site's own sitemap.xml, build output directory, and source content (Markdown, MDX, or CMS export); your host's raw access logs (Cloudflare logs or analytics, nginx access.log); and the published user-agent strings for each AI crawler from the vendors' own docs.</p>
+<p>Methods and tools: pip install llms-txt and use its parse function and llms_txt2ctx to validate structure and expand the context file; a build script (Python or Node) that reads the sitemap or content tree and emits llms.txt, llms-full.txt, and per-page .md files; html-to-markdown conversion with a readability step (for example trafilatura or defuddle) when source Markdown is unavailable; tiktoken or the Anthropic token-counting endpoint for sizes; lychee for link checking; curl -I for status and Content-Type (text/plain or text/markdown, UTF-8); an evaluation set of 15-20 site questions answered by Claude, ChatGPT, and Perplexity with and without being pointed to /llms.txt.</p>
+<p>What proves it right (other than you or the model): Oracles beyond the model: (a) the AnswerDotAI llms-txt parser loads the file and returns the expected title, summary, and sections; (b) lychee reports zero broken links in llms.txt and llms-full.txt; (c) curl shows 200 and a text content type for /llms.txt, /llms-full.txt, and every .md twin; (d) access logs show which AI user agents fetched the files and how often over two weeks; (e) the question-set accuracy with versus without llms.txt, graded against answers written from the site before testing.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Act as a docs engineer adding llms.txt to my site at , built with and hosted on . First read the spec at llmstxt.org and the reference repo github.com/AnswerDotAI/llms-txt, and fetch docs.anthropic.com/llms.txt as a real-world example; write down the required and optional parts. Then inventory my site from sitemap.xml and the build output: list every page, mark the 10-25 that carry the meaning, and draft a one-sentence description for each written for a model deciding whether to fetch it. Write a build step that generates /llms.txt (H1, blockquote summary, optional prose, H2 sections of Title: description bullets, an Optional section), /llms-full.txt from the canonical pages' Markdown if the total is under about 500k tokens, and a .md twin for each listed page. Validate with the llms-txt parser and llms_txt2ctx, lychee, and curl -I for 200 and text content type. Record token counts for each page as HTML and as Markdown. Write 15-20 questions about my site with reference answers before testing, then ask Claude, ChatGPT, and Perplexity each question with and without pointing them at /llms.txt, and grade. Add an access-log query for AI user agents and run it after two weeks. Return the files, the build diff, validation output, the token table, the accuracy table, and a list of guide claims my data contradicts.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are a docs and web-platform engineer adding the llms.txt layer to one real site so agents can understand it from a single fetch. You make it a generated build artifact, validate it with the reference parser, and measure whether it changes anything. You do not overclaim adoption by readers.</p>
+<p>CONTEXT</p>
+<p>Spec (llmstxt.org, proposed by Jeremy Howard, Answer.AI, September 2024): Markdown file at /llms.txt. Exactly one H1 (required). Optional blockquote summary immediately after. Optional prose. H2 sections containing bullets of the form Title: description. A section named Optional is lower priority and may be skipped by context-limited agents. Use absolute URLs.</p>
+<p>Companions: /llms-full.txt (concatenated Markdown of canonical pages, co-developed by Mintlify and Anthropic; ship if under ~500k tokens), and .md twins at page URL + .md.</p>
+<p>Reference implementation: github.com/AnswerDotAI/llms-txt (Python parser, llms_txt2ctx CLI). Real examples: docs.anthropic.com/llms.txt and llms-full.txt; Stripe, Cloudflare, Vercel, Supabase.</p>
+<p>Generators: Mintlify and Fern (automatic), Docusaurus plugin @signalwire/docusaurus-plugin-llms-txt, Nextra, Astro Starlight plugins, llmstxt npm and Python packages.</p>
+<p>Claims to TEST: ~844,000 sites have adopted it (BuiltWith, October 2025); Fern's Markdown serving cuts tokens by 90 percent or more versus HTML; Cursor, Windsurf, Claude Code, Aider check /llms.txt; Claude's WebFetch does not auto-prefer it; publication is ahead of consumption.</p>
+<p>HARD CONSTRAINTS</p>
+<p>Generate the files from the site's source or sitemap in the build; no hand-maintained copy that can drift.</p>
+<p>Absolute https URLs only. Every linked URL must return 200.</p>
+<p>Serve with a text content type and UTF-8; do not let the host serve it as HTML or force a download.</p>
+<p>Keep robots.txt consistent: do not invite agents in llms.txt to paths robots.txt disallows for them, and do not change robots.txt policy without the user's decision.</p>
+<p>Do not include private, draft, or unlisted pages.</p>
+<p>ORDERED DELIVERABLES</p>
+<p>ground-truth.md: the spec rules in a checklist, the parser's behaviour on docs.anthropic.com/llms.txt, current adoption evidence you can find with sources, and verdicts on the claims above where checkable.</p>
+<p>inventory.csv: every page from sitemap.xml with URL, title, word count, include (core, optional, exclude), and a draft one-line description.</p>
+<p>scripts/build_llms.(py mjs): emits dist/llms.txt, dist/llms-full.txt, and dist/ .md twins from source Markdown (or from built HTML via trafilatura/defuddle if no source Markdown exists); wired into the existing build command.</p>
+<p>The generated files, with the blockquote written as a one-sentence answer to 'what is this site and who runs it'.</p>
+<p>Host config for content types and .md routes (for example a _headers file on Cloudflare Pages, nginx types, or a Next.js route).</p>
+<p>validation.md: parser output, llms_txt2ctx output size, lychee report, curl -I results for every file, token counts per page in HTML versus Markdown.</p>
+<p>eval/questions.csv: 15-20 site questions with reference answers written before testing; results per agent (Claude, ChatGPT, Perplexity) with and without the llms.txt pointer; correct y/n.</p>
+<p>logs/agent-ua.sql or script: query for AI user agents hitting /llms.txt, /llms-full.txt, and .md twins; a reminder to re-run after 14 days.</p>
+<p>BUILT-IN GAP ANALYSIS Before finishing, write gaps.md: pages excluded and why; pages whose Markdown conversion lost content (tables, code blocks, images with meaning); claims you could not verify (adoption count, which agents read the file); whether the eval shows a real accuracy gain or just noise at this sample size; whether the build fails loudly if a listed page disappears. Fix what you can now (for example add a build assertion that every llms.txt link exists in the sitemap).</p>
+<p>SELF-QUESTIONS BEFORE FINISHING</p>
+<p>Does the file have exactly one H1, and does the parser read my sections as intended?</p>
+<p>Would a model reading only the blockquote answer 'what is this site' correctly?</p>
+<p>Is each description specific enough for a model to decide whether to fetch the link?</p>
+<p>Are .md twins faithful, including code blocks and tables?</p>
+<p>Is llms-full.txt under the size where a model can actually load it, and did I measure tokens?</p>
+<p>What happens to llms.txt when a page is renamed: does the build fail or silently ship a dead link?</p>
+<p>Do robots.txt rules and llms.txt invitations agree for each AI user agent?</p>
+<p>STOP CONDITIONS Stop when the files are deployed, validated, and the eval is graded; leave the log check scheduled. Stop and ask before changing robots.txt policy, before including any page that requires login, or if the host cannot serve text content types without a plan change.</p>
+<p>RETURN FORMAT One message: the final llms.txt content in a code block; file list; validation summary (parser ok, broken links, content types); token table (page, HTML tokens, Markdown tokens, reduction percent); eval table (agent, with, without); claims verdicts; gaps.md contents; the date to re-run the log query.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: spec, reference parser, real examples</h4>
+<p>Goal: Know the real rules and how the reference tooling reads a file before writing one.</p>
+<p>Read llmstxt.org end to end and Jeremy Howard's proposal at answer.ai/posts/2024-09-03-llmstxt.html. Write a checklist of rules: required H1, blockquote position, section structure, link line format, meaning of the Optional section, URL form, and the .md twin convention. pip install llms-txt (from github.com/AnswerDotAI/llms-txt) and read its README and parser source. Fetch docs.anthropic.com/llms.txt and two other production files (for example Stripe and Cloudflare); run the parser on each and record what it extracts (title, summary, info, sections and link counts). Run llms_txt2ctx on one and record the output size in tokens. Search for current adoption evidence (BuiltWith or similar) and note the figure, date, and source next to the guide's 844,000 figure. Search vendor documentation for which AI agents document fetching llms.txt. Write ground-truth.md with the checklist, the parser results table, and claim verdicts (verified, contradicted, unverified).</p>
+<p>Expect: ground-truth.md with a 7-10 item checklist, a parser results table for 3 real files, and verdicts on the 5 guide claims.</p>
+<p>Audit before moving on: If the parser rejects or misreads a real production file, note it; that tells you how strict validation is. Every verdict must cite a URL. Claims with only blog-post support are 'unverified', not 'verified'.</p>
+<h4>Step 2 — Inventory the site and choose what matters</h4>
+<p>Goal: Decide which pages carry the site's meaning and write model-facing descriptions.</p>
+<p>Fetch /sitemap.xml (or read the build output directory if there is no sitemap) and list every URL in inventory.csv with title, word count from the built HTML, and last modified. Mark each page core, optional, or exclude: core pages answer who, what, and how to use the site; optional pages are useful but not load-bearing (archives, changelogs, colophon); exclude drafts, tag pages, paginated listings, login-gated pages, and near-duplicates. Aim for 10-25 core links. For each included page, write one description of 8-20 words that states what a reader learns there, not marketing copy, and that lets a model decide whether to fetch it. Draft the blockquote: one or two sentences answering 'what is this site and who runs it'. Group core pages into 3-6 H2 sections that match how the site is organized. Check robots.txt and list any included page disallowed for any AI user agent.</p>
+<p>Expect: inventory.csv with every sitemap URL and a decision; a draft outline of sections, 10-25 core links, an Optional section, and the blockquote.</p>
+<p>Audit before moving on: Read only the blockquote and descriptions and try to answer five basic questions about the site; if you cannot, rewrite them. Any included page that robots.txt disallows is a conflict to resolve with the user, not silently kept.</p>
+<h4>Step 3 — Generate the files in the build</h4>
+<p>Goal: Make llms.txt, llms-full.txt, and .md twins build artifacts that cannot drift.</p>
+<p>Write scripts/build_llms.py (or .mjs to match the site's tooling). Inputs: inventory.csv decisions plus the site's source Markdown, or built HTML when no source Markdown exists, converted with trafilatura or defuddle and cleaned (keep headings, code blocks, tables, link text; drop nav, footers, cookie banners). Outputs to the build directory: llms.txt with H1 site name, the blockquote, a short prose paragraph, H2 sections with '- Title: description' lines, and '## Optional'; a .md twin at each included page's path + '.md' with a title header and source URL line; llms-full.txt concatenating the core pages' Markdown with '## Page Title' separators and source URLs. Fail the build if any included URL is missing from the sitemap or build output, or if llms-full.txt exceeds a configured token cap (default 400,000 measured with tiktoken). Wire it into the existing build command and add host config so .txt and .md are served as text/plain or text/markdown with charset utf-8 (for example a _headers file for Cloudflare Pages).</p>
+<p>Expect: A script under 200 lines, generated files in the build output, and a build log line reporting link count and token totals.</p>
+<p>Audit before moving on: Delete one included page from a local build and confirm the build fails with a clear message. Diff three .md twins against their rendered pages and confirm no headings, code blocks, or tables were lost; fix the converter settings if they were.</p>
+<h4>Step 4 — Validate structure, links, and serving</h4>
+<p>Goal: Prove the files are conformant and reachable as text.</p>
+<p>Run the llms-txt parser on the generated llms.txt and confirm it returns the expected title, summary, and every section with the right link count. Run llms_txt2ctx on it and record output tokens. Run lychee --no-progress dist/llms.txt dist/llms-full.txt (or against the deployed URLs after deploy) and require zero broken links. Deploy to a preview environment and run curl -sI for /llms.txt, /llms-full.txt, and five .md twins; require HTTP 200 and a text content type with utf-8, no Content-Disposition attachment, and caching headers you intend. Count tokens for each core page as rendered HTML (fetched) and as its .md twin with tiktoken; compute the reduction percent and compare to the guide's cited 90 percent claim. Write validation.md with all outputs and the exact commands used.</p>
+<p>Expect: validation.md with parser output, lychee summary (0 errors), a curl table, and a token table per page.</p>
+<p>Audit before moving on: Any non-200 or HTML content type is a fail; fix host config and re-test. If the token reduction differs greatly from 90 percent, keep your number and note it; do not adjust the conversion to hit the guide's figure.</p>
+<h4>Step 5 — Measure agent answer accuracy with and without the file</h4>
+<p>Goal: Test whether llms.txt changes what agents can answer about the site.</p>
+<p>Write eval/questions.csv with 15-20 questions about the site and a reference answer for each, written from the site before any agent testing: who runs it, what it offers, where to find a specific page, a specific fact on a deep page, how to contact, what technology or method a project used. For each agent you can access (Claude with web fetch, ChatGPT with browsing, Perplexity), ask each question twice in fresh sessions: once with only the domain name, once with the instruction 'Read https:// /llms.txt first, then answer'. Record the answer, whether it fetched llms.txt or .md twins (from the agent's citations or your access logs by timestamp), and correct, partial, or wrong against the reference. Compute accuracy per agent per condition.</p>
+<p>Expect: eval/questions.csv with reference answers and graded results; a summary table of accuracy per agent with and without the pointer.</p>
+<p>Audit before moving on: Confirm reference answers predate the runs (file timestamp or git commit). Use fresh sessions so earlier answers do not leak. If the sample is under 15 questions or differences are within two answers, label the result inconclusive.</p>
+<h4>Step 6 — Instrument consumption in access logs</h4>
+<p>Goal: Find out who actually reads the files instead of assuming.</p>
+<p>From each vendor's own documentation, collect current user-agent strings for AI crawlers and fetchers (OpenAI GPTBot and ChatGPT-User, Anthropic ClaudeBot and Claude-User, PerplexityBot and Perplexity-User, Google-Extended, and others you find), with source URLs. Write logs/agent-ua.(sql sh) for the host's logs (Cloudflare Logpush or analytics GraphQL, nginx access.log via awk) that counts requests per user agent for /llms.txt, /llms-full.txt, any .md twin, and the matching HTML pages, per day. Run it now, before deployment, to get a baseline from before deployment if logs exist. Schedule or note a re-run 14 days after deployment, and record the exact command so the numbers are comparable. Compare robots.txt directives for each agent with what llms.txt invites and list mismatches for the user to decide on; do not edit robots.txt yourself.</p>
+<p>Expect: A UA list with sources, a runnable log query, a baseline count table, and a re-run date.</p>
+<p>Audit before moving on: Test the query on a log line you generate yourself with curl -A 'ClaudeBot' against /llms.txt; it must count it. Verified-bot claims rely on UA strings that can be spoofed; note that in the results.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4>
+<p>Goal: Consolidate proof and state what is and is not known.</p>
+<p>Re-run the parser, lychee, and curl checks against production after deploy. Collect: parser result, broken-link count, content-type table, token table, eval accuracy table, and (when available) the 14-day agent log counts. Write gaps.md with: claims and verdicts (adoption count, token reduction, which agents read llms.txt, WebFetch behaviour, publication ahead of consumption) each with evidence; pages excluded and why; conversion losses found; eval sample size and whether the effect is real; robots.txt mismatches awaiting a decision; the build's drift protection status. Fix the top fixable gap now, without changing reference answers, (for example improve two weak descriptions that caused wrong answers) and redeploy, then rerun the parser. Also check that the build still fails on a missing page. End with the final llms.txt in a code block.</p>
+<p>Expect: gaps.md with every claim resolved and a final deployed llms.txt.</p>
+<p>Audit before moving on: Every 'verified' must cite a file or log result. If the eval showed no gain, say so plainly and keep the files anyway only if the cost is negligible, stating that reason.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are auditing an llms.txt rollout on built by someone else: scripts/build_llms., the deployed /llms.txt, /llms-full.txt, .md twins, validation.md, eval/questions.csv, logs/agent-ua., gaps.md. Do not trust validation.md. (1) List every claim: spec conformance, link health, content types, token reduction, eval accuracy gain, agent consumption counts, drift protection. (2) Verify each now: run the llms-txt parser against the live file, run lychee against the live URLs, curl -I every file, recount tokens for three pages, rename a page in a local build to test drift protection, and re-grade five eval answers against the reference. Mark verified, unverified, or false with evidence. (3) Look for silent problems: relative URLs, duplicated pages, private or draft pages listed, .md twins missing code blocks or tables, llms-full.txt too large to load, descriptions that are marketing rather than informative, robots.txt contradictions. (4) Check whether the eval was fair (fresh sessions, reference answers written first, same questions). (5) Rank gaps by impact (misleading agents, broken links, exposure of unlisted pages, wasted effort), fix the top three now, redeploy, and report the rest with reproduction steps.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Does my file have exactly one H1 and a blockquote immediately after it, as the spec requires?</p>
+<p>Are all URLs absolute https and do they all return 200 with the right content type?</p>
+<p>Is any page I listed blocked for some AI agent in robots.txt?</p>
+<p>Would a model reading only my blockquote describe the site correctly?</p>
+<p>Did .md twins keep code blocks, tables, and meaningful image alt text?</p>
+<p>How many tokens is llms-full.txt, and can the agents I care about actually load it?</p>
+<p>Does the build fail if a listed page is removed or renamed?</p>
+<p>Did any agent actually fetch llms.txt during the eval, and how do I know?</p>
+<h3>5 · What proves it right</h3>
+<p>The AnswerDotAI llms-txt reference parser loads the live /llms.txt and returns the expected title, summary, and sections.</p>
+<p>lychee reports zero broken links across llms.txt and llms-full.txt on the deployed site.</p>
+<p>curl -I on /llms.txt, /llms-full.txt, and each .md twin returns 200 with a text content type and utf-8.</p>
+<p>Access logs over 14 days, filtered by vendor-documented AI user agents, show who fetched the files.</p>
+<h3>6 · Failure modes</h3>
+<p>Hand-written file drifts. Tell: dead links months later. Fix: generate in the build and fail on missing pages.</p>
+<p>Served as HTML or a download. Tell: curl shows text/html or Content-Disposition attachment. Fix: host header rules for .txt and .md.</p>
+<p>Marketing descriptions. Tell: agents fetch the wrong page or cannot answer basic questions. Fix: rewrite descriptions as what the reader learns there.</p>
+<p>Relative URLs. Tell: links break when read from a cache or mirror. Fix: absolute https URLs only.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Read the spec and run the reference parser on real files before writing anything; cache those fetched examples in ground-truth/ so steps do not re-download. Work from the site's own sitemap and source; prefer source Markdown over HTML conversion. Never edit robots.txt or include gated pages without the user's decision. Deploy to a preview first, validate, then production. Spawn a separate subagent to grade eval answers against reference answers so the builder does not grade itself; give it only questions, references, and answers. The 14-day log check needs time: schedule it or leave a dated reminder, do not fabricate counts. Stop and ask if the host cannot set content types or if the site has no reliable page source. Return in chat the final llms.txt, validation summary, token table, eval table, claim verdicts, and gaps; files: ground-truth.md, inventory.csv, scripts/build_llms., host header config, validation.md, eval/questions.csv, logs/agent-ua., gaps.md.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># llms.txt — The Website Manifest for LLM Agents
 
@@ -518,6 +624,207 @@ Related in this catalog:
 ## Should you ship this?
 
 Yes, on both `1gabe.com` and `wv-art.com`, today. It is a 30-minute job, zero maintenance cost once wired into a build step, zero downside, and a non-trivial upside as more agents start honoring it. The sample above is deliberately complete enough to paste in, swap the real link URLs for whichever section slugs the sites actually use, and ship. Add an `llms-full.txt` companion for `1gabe.com` once the writing section has enough content to justify it. For `wv-art.com`, the short version is sufficient — the art is the point, and the role of the file is just to tell the agent that.
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Ship a spec-conformant /llms.txt, an optional /llms-full.txt, and .md twins for the key pages of one real site, generated from the site's own build so they never drift, and measure whether agents actually use them. Done means the files parse with the reference llms-txt parser, every link resolves with the right content type, token sizes are recorded, server logs are watched for AI user agents for at least two weeks, and a fixed set of questions about the site is answered more accurately by agents pointed at llms.txt than by agents crawling the HTML.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A docs or growth engineer would treat llms.txt as a build artifact, not a hand-edited file, generated from the same source of truth as the sitemap so it cannot rot. They would measure the real benefit: token cost per page as HTML versus Markdown, and answer accuracy on a fixed question set with and without the file. They would also be honest that publication is ahead of consumption, so they would instrument access logs for agent user agents (GPTBot, ClaudeBot, Claude-User, PerplexityBot, ChatGPT-User, and others) before claiming anyone reads it, and keep robots.txt policy consistent with what llms.txt invites.
+- **Rawest material to start from:** The spec at llmstxt.org and Jeremy Howard's proposal post (answer.ai/posts/2024-09-03-llmstxt.html); the reference repo github.com/AnswerDotAI/llms-txt with its parser and the llms_txt2ctx CLI; real production files to compare against (docs.anthropic.com/llms.txt and llms-full.txt, Stripe, Cloudflare, Vercel); your site's own sitemap.xml, build output directory, and source content (Markdown, MDX, or CMS export); your host's raw access logs (Cloudflare logs or analytics, nginx access.log); and the published user-agent strings for each AI crawler from the vendors' own docs.
+- **Methods and tools:** pip install llms-txt and use its parse function and llms_txt2ctx to validate structure and expand the context file; a build script (Python or Node) that reads the sitemap or content tree and emits llms.txt, llms-full.txt, and per-page .md files; html-to-markdown conversion with a readability step (for example trafilatura or defuddle) when source Markdown is unavailable; tiktoken or the Anthropic token-counting endpoint for sizes; lychee for link checking; curl -I for status and Content-Type (text/plain or text/markdown, UTF-8); an evaluation set of 15-20 site questions answered by Claude, ChatGPT, and Perplexity with and without being pointed to /llms.txt.
+- **What proves it right (other than you or the model):** Oracles beyond the model: (a) the AnswerDotAI llms-txt parser loads the file and returns the expected title, summary, and sections; (b) lychee reports zero broken links in llms.txt and llms-full.txt; (c) curl shows 200 and a text content type for /llms.txt, /llms-full.txt, and every .md twin; (d) access logs show which AI user agents fetched the files and how often over two weeks; (e) the question-set accuracy with versus without llms.txt, graded against answers written from the site before testing.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Act as a docs engineer adding llms.txt to my site at <domain>, built with <framework> and hosted on <host>. First read the spec at llmstxt.org and the reference repo github.com/AnswerDotAI/llms-txt, and fetch docs.anthropic.com/llms.txt as a real-world example; write down the required and optional parts. Then inventory my site from sitemap.xml and the build output: list every page, mark the 10-25 that carry the meaning, and draft a one-sentence description for each written for a model deciding whether to fetch it. Write a build step that generates /llms.txt (H1, blockquote summary, optional prose, H2 sections of [Title](absolute URL): description bullets, an Optional section), /llms-full.txt from the canonical pages' Markdown if the total is under about 500k tokens, and a .md twin for each listed page. Validate with the llms-txt parser and llms_txt2ctx, lychee, and curl -I for 200 and text content type. Record token counts for each page as HTML and as Markdown. Write 15-20 questions about my site with reference answers before testing, then ask Claude, ChatGPT, and Perplexity each question with and without pointing them at /llms.txt, and grade. Add an access-log query for AI user agents and run it after two weeks. Return the files, the build diff, validation output, the token table, the accuracy table, and a list of guide claims my data contradicts.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are a docs and web-platform engineer adding the llms.txt layer to one real site so agents can understand it from a single fetch. You make it a generated build artifact, validate it with the reference parser, and measure whether it changes anything. You do not overclaim adoption by readers.
+
+CONTEXT
+- Spec (llmstxt.org, proposed by Jeremy Howard, Answer.AI, September 2024): Markdown file at /llms.txt. Exactly one H1 (required). Optional blockquote summary immediately after. Optional prose. H2 sections containing bullets of the form [Title](URL): description. A section named Optional is lower priority and may be skipped by context-limited agents. Use absolute URLs.
+- Companions: /llms-full.txt (concatenated Markdown of canonical pages, co-developed by Mintlify and Anthropic; ship if under ~500k tokens), and .md twins at page URL + .md.
+- Reference implementation: github.com/AnswerDotAI/llms-txt (Python parser, llms_txt2ctx CLI). Real examples: docs.anthropic.com/llms.txt and llms-full.txt; Stripe, Cloudflare, Vercel, Supabase.
+- Generators: Mintlify and Fern (automatic), Docusaurus plugin @signalwire/docusaurus-plugin-llms-txt, Nextra, Astro Starlight plugins, llmstxt npm and Python packages.
+- Claims to TEST: ~844,000 sites have adopted it (BuiltWith, October 2025); Fern's Markdown serving cuts tokens by 90 percent or more versus HTML; Cursor, Windsurf, Claude Code, Aider check /llms.txt; Claude's WebFetch does not auto-prefer it; publication is ahead of consumption.
+
+HARD CONSTRAINTS
+- Generate the files from the site's source or sitemap in the build; no hand-maintained copy that can drift.
+- Absolute https URLs only. Every linked URL must return 200.
+- Serve with a text content type and UTF-8; do not let the host serve it as HTML or force a download.
+- Keep robots.txt consistent: do not invite agents in llms.txt to paths robots.txt disallows for them, and do not change robots.txt policy without the user's decision.
+- Do not include private, draft, or unlisted pages.
+
+ORDERED DELIVERABLES
+1. ground-truth.md: the spec rules in a checklist, the parser's behaviour on docs.anthropic.com/llms.txt, current adoption evidence you can find with sources, and verdicts on the claims above where checkable.
+2. inventory.csv: every page from sitemap.xml with URL, title, word count, include (core, optional, exclude), and a draft one-line description.
+3. scripts/build_llms.(py|mjs): emits dist/llms.txt, dist/llms-full.txt, and dist/<path>.md twins from source Markdown (or from built HTML via trafilatura/defuddle if no source Markdown exists); wired into the existing build command.
+4. The generated files, with the blockquote written as a one-sentence answer to 'what is this site and who runs it'.
+5. Host config for content types and .md routes (for example a _headers file on Cloudflare Pages, nginx types, or a Next.js route).
+6. validation.md: parser output, llms_txt2ctx output size, lychee report, curl -I results for every file, token counts per page in HTML versus Markdown.
+7. eval/questions.csv: 15-20 site questions with reference answers written before testing; results per agent (Claude, ChatGPT, Perplexity) with and without the llms.txt pointer; correct y/n.
+8. logs/agent-ua.sql or script: query for AI user agents hitting /llms.txt, /llms-full.txt, and .md twins; a reminder to re-run after 14 days.
+
+BUILT-IN GAP ANALYSIS
+Before finishing, write gaps.md: pages excluded and why; pages whose Markdown conversion lost content (tables, code blocks, images with meaning); claims you could not verify (adoption count, which agents read the file); whether the eval shows a real accuracy gain or just noise at this sample size; whether the build fails loudly if a listed page disappears. Fix what you can now (for example add a build assertion that every llms.txt link exists in the sitemap).
+
+SELF-QUESTIONS BEFORE FINISHING
+- Does the file have exactly one H1, and does the parser read my sections as intended?
+- Would a model reading only the blockquote answer 'what is this site' correctly?
+- Is each description specific enough for a model to decide whether to fetch the link?
+- Are .md twins faithful, including code blocks and tables?
+- Is llms-full.txt under the size where a model can actually load it, and did I measure tokens?
+- What happens to llms.txt when a page is renamed: does the build fail or silently ship a dead link?
+- Do robots.txt rules and llms.txt invitations agree for each AI user agent?
+
+STOP CONDITIONS
+Stop when the files are deployed, validated, and the eval is graded; leave the log check scheduled. Stop and ask before changing robots.txt policy, before including any page that requires login, or if the host cannot serve text content types without a plan change.
+
+RETURN FORMAT
+One message: the final llms.txt content in a code block; file list; validation summary (parser ok, broken links, content types); token table (page, HTML tokens, Markdown tokens, reduction percent); eval table (agent, with, without); claims verdicts; gaps.md contents; the date to re-run the log query.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: spec, reference parser, real examples
+
+*Goal:* Know the real rules and how the reference tooling reads a file before writing one.
+
+```text
+Read llmstxt.org end to end and Jeremy Howard's proposal at answer.ai/posts/2024-09-03-llmstxt.html. Write a checklist of rules: required H1, blockquote position, section structure, link line format, meaning of the Optional section, URL form, and the .md twin convention. `pip install llms-txt` (from github.com/AnswerDotAI/llms-txt) and read its README and parser source. Fetch docs.anthropic.com/llms.txt and two other production files (for example Stripe and Cloudflare); run the parser on each and record what it extracts (title, summary, info, sections and link counts). Run llms_txt2ctx on one and record the output size in tokens. Search for current adoption evidence (BuiltWith or similar) and note the figure, date, and source next to the guide's 844,000 figure. Search vendor documentation for which AI agents document fetching llms.txt. Write ground-truth.md with the checklist, the parser results table, and claim verdicts (verified, contradicted, unverified).
+```
+
+**Expect:** ground-truth.md with a 7-10 item checklist, a parser results table for 3 real files, and verdicts on the 5 guide claims.
+
+**Audit before moving on:** If the parser rejects or misreads a real production file, note it; that tells you how strict validation is. Every verdict must cite a URL. Claims with only blog-post support are 'unverified', not 'verified'.
+
+#### Step 2 — Inventory the site and choose what matters
+
+*Goal:* Decide which pages carry the site's meaning and write model-facing descriptions.
+
+```text
+Fetch <domain>/sitemap.xml (or read the build output directory if there is no sitemap) and list every URL in inventory.csv with title, word count from the built HTML, and last modified. Mark each page core, optional, or exclude: core pages answer who, what, and how to use the site; optional pages are useful but not load-bearing (archives, changelogs, colophon); exclude drafts, tag pages, paginated listings, login-gated pages, and near-duplicates. Aim for 10-25 core links. For each included page, write one description of 8-20 words that states what a reader learns there, not marketing copy, and that lets a model decide whether to fetch it. Draft the blockquote: one or two sentences answering 'what is this site and who runs it'. Group core pages into 3-6 H2 sections that match how the site is organized. Check robots.txt and list any included page disallowed for any AI user agent.
+```
+
+**Expect:** inventory.csv with every sitemap URL and a decision; a draft outline of sections, 10-25 core links, an Optional section, and the blockquote.
+
+**Audit before moving on:** Read only the blockquote and descriptions and try to answer five basic questions about the site; if you cannot, rewrite them. Any included page that robots.txt disallows is a conflict to resolve with the user, not silently kept.
+
+#### Step 3 — Generate the files in the build
+
+*Goal:* Make llms.txt, llms-full.txt, and .md twins build artifacts that cannot drift.
+
+```text
+Write scripts/build_llms.py (or .mjs to match the site's tooling). Inputs: inventory.csv decisions plus the site's source Markdown, or built HTML when no source Markdown exists, converted with trafilatura or defuddle and cleaned (keep headings, code blocks, tables, link text; drop nav, footers, cookie banners). Outputs to the build directory: llms.txt with H1 site name, the blockquote, a short prose paragraph, H2 sections with '- [Title](https://absolute/url): description' lines, and '## Optional'; a .md twin at each included page's path + '.md' with a title header and source URL line; llms-full.txt concatenating the core pages' Markdown with '## Page Title' separators and source URLs. Fail the build if any included URL is missing from the sitemap or build output, or if llms-full.txt exceeds a configured token cap (default 400,000 measured with tiktoken). Wire it into the existing build command and add host config so .txt and .md are served as text/plain or text/markdown with charset utf-8 (for example a _headers file for Cloudflare Pages).
+```
+
+**Expect:** A script under 200 lines, generated files in the build output, and a build log line reporting link count and token totals.
+
+**Audit before moving on:** Delete one included page from a local build and confirm the build fails with a clear message. Diff three .md twins against their rendered pages and confirm no headings, code blocks, or tables were lost; fix the converter settings if they were.
+
+#### Step 4 — Validate structure, links, and serving
+
+*Goal:* Prove the files are conformant and reachable as text.
+
+```text
+Run the llms-txt parser on the generated llms.txt and confirm it returns the expected title, summary, and every section with the right link count. Run llms_txt2ctx on it and record output tokens. Run `lychee --no-progress dist/llms.txt dist/llms-full.txt` (or against the deployed URLs after deploy) and require zero broken links. Deploy to a preview environment and run `curl -sI` for /llms.txt, /llms-full.txt, and five .md twins; require HTTP 200 and a text content type with utf-8, no Content-Disposition attachment, and caching headers you intend. Count tokens for each core page as rendered HTML (fetched) and as its .md twin with tiktoken; compute the reduction percent and compare to the guide's cited 90 percent claim. Write validation.md with all outputs and the exact commands used.
+```
+
+**Expect:** validation.md with parser output, lychee summary (0 errors), a curl table, and a token table per page.
+
+**Audit before moving on:** Any non-200 or HTML content type is a fail; fix host config and re-test. If the token reduction differs greatly from 90 percent, keep your number and note it; do not adjust the conversion to hit the guide's figure.
+
+#### Step 5 — Measure agent answer accuracy with and without the file
+
+*Goal:* Test whether llms.txt changes what agents can answer about the site.
+
+```text
+Write eval/questions.csv with 15-20 questions about the site and a reference answer for each, written from the site before any agent testing: who runs it, what it offers, where to find a specific page, a specific fact on a deep page, how to contact, what technology or method a project used. For each agent you can access (Claude with web fetch, ChatGPT with browsing, Perplexity), ask each question twice in fresh sessions: once with only the domain name, once with the instruction 'Read https://<domain>/llms.txt first, then answer'. Record the answer, whether it fetched llms.txt or .md twins (from the agent's citations or your access logs by timestamp), and correct, partial, or wrong against the reference. Compute accuracy per agent per condition.
+```
+
+**Expect:** eval/questions.csv with reference answers and graded results; a summary table of accuracy per agent with and without the pointer.
+
+**Audit before moving on:** Confirm reference answers predate the runs (file timestamp or git commit). Use fresh sessions so earlier answers do not leak. If the sample is under 15 questions or differences are within two answers, label the result inconclusive.
+
+#### Step 6 — Instrument consumption in access logs
+
+*Goal:* Find out who actually reads the files instead of assuming.
+
+```text
+From each vendor's own documentation, collect current user-agent strings for AI crawlers and fetchers (OpenAI GPTBot and ChatGPT-User, Anthropic ClaudeBot and Claude-User, PerplexityBot and Perplexity-User, Google-Extended, and others you find), with source URLs. Write logs/agent-ua.(sql|sh) for the host's logs (Cloudflare Logpush or analytics GraphQL, nginx access.log via awk) that counts requests per user agent for /llms.txt, /llms-full.txt, any .md twin, and the matching HTML pages, per day. Run it now, before deployment, to get a baseline from before deployment if logs exist. Schedule or note a re-run 14 days after deployment, and record the exact command so the numbers are comparable. Compare robots.txt directives for each agent with what llms.txt invites and list mismatches for the user to decide on; do not edit robots.txt yourself.
+```
+
+**Expect:** A UA list with sources, a runnable log query, a baseline count table, and a re-run date.
+
+**Audit before moving on:** Test the query on a log line you generate yourself with curl -A 'ClaudeBot' against /llms.txt; it must count it. Verified-bot claims rely on UA strings that can be spoofed; note that in the results.
+
+#### Step 7 — Validate against oracles and write the gap report
+
+*Goal:* Consolidate proof and state what is and is not known.
+
+```text
+Re-run the parser, lychee, and curl checks against production after deploy. Collect: parser result, broken-link count, content-type table, token table, eval accuracy table, and (when available) the 14-day agent log counts. Write gaps.md with: claims and verdicts (adoption count, token reduction, which agents read llms.txt, WebFetch behaviour, publication ahead of consumption) each with evidence; pages excluded and why; conversion losses found; eval sample size and whether the effect is real; robots.txt mismatches awaiting a decision; the build's drift protection status. Fix the top fixable gap now, without changing reference answers, (for example improve two weak descriptions that caused wrong answers) and redeploy, then rerun the parser. Also check that the build still fails on a missing page. End with the final llms.txt in a code block.
+```
+
+**Expect:** gaps.md with every claim resolved and a final deployed llms.txt.
+
+**Audit before moving on:** Every 'verified' must cite a file or log result. If the eval showed no gain, say so plainly and keep the files anyway only if the cost is negligible, stating that reason.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are auditing an llms.txt rollout on <domain> built by someone else: scripts/build_llms.*, the deployed /llms.txt, /llms-full.txt, .md twins, validation.md, eval/questions.csv, logs/agent-ua.*, gaps.md. Do not trust validation.md. (1) List every claim: spec conformance, link health, content types, token reduction, eval accuracy gain, agent consumption counts, drift protection. (2) Verify each now: run the llms-txt parser against the live file, run lychee against the live URLs, curl -I every file, recount tokens for three pages, rename a page in a local build to test drift protection, and re-grade five eval answers against the reference. Mark verified, unverified, or false with evidence. (3) Look for silent problems: relative URLs, duplicated pages, private or draft pages listed, .md twins missing code blocks or tables, llms-full.txt too large to load, descriptions that are marketing rather than informative, robots.txt contradictions. (4) Check whether the eval was fair (fresh sessions, reference answers written first, same questions). (5) Rank gaps by impact (misleading agents, broken links, exposure of unlisted pages, wasted effort), fix the top three now, redeploy, and report the rest with reproduction steps.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Does my file have exactly one H1 and a blockquote immediately after it, as the spec requires?
+- Are all URLs absolute https and do they all return 200 with the right content type?
+- Is any page I listed blocked for some AI agent in robots.txt?
+- Would a model reading only my blockquote describe the site correctly?
+- Did .md twins keep code blocks, tables, and meaningful image alt text?
+- How many tokens is llms-full.txt, and can the agents I care about actually load it?
+- Does the build fail if a listed page is removed or renamed?
+- Did any agent actually fetch llms.txt during the eval, and how do I know?
+
+### 5 · What proves it right
+
+- The AnswerDotAI llms-txt reference parser loads the live /llms.txt and returns the expected title, summary, and sections.
+- lychee reports zero broken links across llms.txt and llms-full.txt on the deployed site.
+- curl -I on /llms.txt, /llms-full.txt, and each .md twin returns 200 with a text content type and utf-8.
+- Access logs over 14 days, filtered by vendor-documented AI user agents, show who fetched the files.
+
+### 6 · Failure modes
+
+- Hand-written file drifts. Tell: dead links months later. Fix: generate in the build and fail on missing pages.
+- Served as HTML or a download. Tell: curl shows text/html or Content-Disposition attachment. Fix: host header rules for .txt and .md.
+- Marketing descriptions. Tell: agents fetch the wrong page or cannot answer basic questions. Fix: rewrite descriptions as what the reader learns there.
+- Relative URLs. Tell: links break when read from a cache or mirror. Fix: absolute https URLs only.
+
+### 7 · Agent direction (unattended runs)
+
+Read the spec and run the reference parser on real files before writing anything; cache those fetched examples in ground-truth/ so steps do not re-download. Work from the site's own sitemap and source; prefer source Markdown over HTML conversion. Never edit robots.txt or include gated pages without the user's decision. Deploy to a preview first, validate, then production. Spawn a separate subagent to grade eval answers against reference answers so the builder does not grade itself; give it only questions, references, and answers. The 14-day log check needs time: schedule it or leave a dated reminder, do not fabricate counts. Stop and ask if the host cannot set content types or if the site has no reliable page source. Return in chat the final llms.txt, validation summary, token table, eval table, claim verdicts, and gaps; files: ground-truth.md, inventory.csv, scripts/build_llms.*, host header config, validation.md, eval/questions.csv, logs/agent-ua.*, gaps.md.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -525,4 +832,26 @@ Yes, on both `1gabe.com` and `wv-art.com`, today. It is a 30-minute job, zero ma
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

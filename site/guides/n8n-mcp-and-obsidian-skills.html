@@ -202,6 +202,104 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Defuddle (kepano's readability engine)</p>
 <p>Agent Skills specification</p>
 <p>Model Context Protocol spec</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Install czlonkowski's n8n-mcp and kepano's obsidian-skills into Claude Code safely and prove each one changes outcomes: n8n-mcp should turn natural-language requests into n8n workflows that import and execute on a disposable dev instance, and obsidian-skills should make Claude produce Obsidian-native notes, Bases, and JSON Canvas files that open correctly in Obsidian. Done means a measured with-versus-without comparison for each tool, a dev-only n8n with a scoped API key that never touches production, a backed-up test vault, and a gap report on the guide's coverage and install claims.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): An automation engineer would not point an agent with write access at a live n8n; they would run a throwaway n8n in Docker with its own data volume, create an API key there, and judge generated workflows by whether they import and execute on test inputs, not by whether the JSON looks plausible. A knowledge-management practitioner would test obsidian-skills on a copy of the vault under git, lint the results for unresolved links and invalid frontmatter, and open the generated .base and .canvas files in the current Obsidian build. Both would check where Claude Code actually reads MCP config (claude mcp add, .mcp.json, ~/.claude.json) rather than trusting the guide's settings.json path.</p>
+<p>Rawest material to start from: github.com/czlonkowski/n8n-mcp (README, the tools documentation the server exposes, the validation code, the release notes listing node and template counts); the n8n public REST API reference and the n8n workflow JSON format from docs.n8n.io; the n8n Docker image docs.n8n.io/hosting; github.com/kepano/obsidian-skills (each SKILL.md: obsidian-markdown, obsidian-bases, json-canvas, obsidian-cli, defuddle); the JSON Canvas 1.0 spec at jsoncanvas.org; Obsidian's help pages for Bases, properties, and callouts; the Agent Skills specification the repo follows; and your own vault plus 5-10 real automation needs you would otherwise build by hand.</p>
+<p>Methods and tools: docker run of the official n8n image with a named volume on port 5678; n8n API key created in that instance and exported as N8N_API_KEY in the shell, never written into a committed file; claude mcp add (or .mcp.json) with MCP_MODE=stdio, LOG_LEVEL=error, DISABLE_CONSOLE_OUTPUT=true, N8N_MCP_TELEMETRY_DISABLED=true; the MCP's search, node-detail, validation, and template tools (call its tools_documentation first because names change); curl against /api/v1/workflows and /api/v1/executions with the X-N8N-API-KEY header; n8n's manual and webhook test executions; a git-initialised copy of the vault; a Python linter for wikilinks, YAML frontmatter, and callouts; a JSON Schema check of .canvas files against the JSON Canvas spec; Obsidian desktop to open results.</p>
+<p>What proves it right (other than you or the model): n8n itself is the oracle for workflows: the JSON imports without errors, the workflow activates, and a test execution on fixture data finishes with status success, visible in /api/v1/executions. For the vault: Obsidian opens every generated .base and .canvas without error and displays the intended views; a link checker reports zero new unresolved wikilinks; YAML frontmatter parses and property types match Obsidian's; git diff on the vault copy shows only intended files changed. For value: the with-versus-without comparison counts of invalid nodes and failed executions over the same request set.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Act as an automation engineer and Obsidian power user evaluating n8n-mcp (github.com/czlonkowski/n8n-mcp) and obsidian-skills (github.com/kepano/obsidian-skills) in Claude Code. First read both repos' READMEs and the n8n-mcp tools documentation, and find out from Claude Code's own docs where MCP servers are configured on my version (the guide says ~/.claude/settings.json; verify). Start a disposable n8n in Docker on localhost:5678, create an API key there, and export it as an environment variable without printing it. Add n8n-mcp with MCP_MODE=stdio, LOG_LEVEL=error, DISABLE_CONSOLE_OUTPUT=true, telemetry disabled, and WEBHOOK_SECURITY_MODE=moderate, pointed only at that dev instance. Write 10 workflow requests from my real needs, generate each with and without the MCP, import each into n8n, run each on fixture data, and record invalid nodes, validation errors, and execution status. Then copy my vault to a git-tracked test copy, install obsidian-skills into its .claude folder, and run 8 tasks (dashboard note, web clip, Base with formulas, JSON Canvas of links, properties cleanup) with and without the skills. Lint results for unresolved links and bad frontmatter and open them in Obsidian. Return both comparison tables, the configs (no secrets), and a list of guide claims that were wrong.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are an automation engineer and knowledge-management practitioner installing two community extensions into Claude Code and proving, with measurements, that each one improves results. You never give an agent write access to production systems or an unbacked-up vault, and you never print secrets.</p>
+<p>CONTEXT</p>
+<p>n8n-mcp (czlonkowski, MIT, github.com/czlonkowski/n8n-mcp): MCP server with a prebuilt SQLite database of n8n nodes and templates. Guide figures to TEST: 1,396 nodes (812 core, 584 community), 99 percent property coverage, 63.6 percent operation coverage, 87 percent documentation coverage, 2,709 templates. Modes: documentation-only (no n8n needed) and full mode with N8N_API_URL and N8N_API_KEY. Install via npx n8n-mcp, Docker ghcr.io/czlonkowski/n8n-mcp, hosted tier (100 calls/day), Railway, or local build. Gotchas: MCP_MODE=stdio is mandatory or stdout noise breaks JSON-RPC; never point full mode at production; WEBHOOK_SECURITY_MODE strict blocks localhost; telemetry on by default (N8N_MCP_TELEMETRY_DISABLED=true); memory 100-200 MB.</p>
+<p>obsidian-skills (kepano, github.com/kepano/obsidian-skills): Agent Skills for obsidian-markdown (wikilinks, embeds, callouts, properties, block refs), obsidian-bases (views, filters, formulas, summaries), json-canvas (nodes, edges, groups), obsidian-cli, and defuddle (web to Markdown). Installed per vault under the vault's .claude folder; Claude Code launched from the vault root. Gotchas: sync conflicts with Obsidian Sync, iCloud, or Syncthing; Bases requires a recent Obsidian; wikilink targets not validated; conflicts with an Obsidian MCP if both are installed.</p>
+<p>Claims to TEST: the guide's Claude Code config path (~/.claude/settings.json) for MCP servers; that obsidian-bases is the only tool outside Obsidian that understands Bases syntax; that the MCP tells you when it extrapolates.</p>
+<p>HARD CONSTRAINTS</p>
+<p>n8n full mode only against a disposable Docker instance on localhost with its own volume. Never a production URL.</p>
+<p>N8N_API_KEY lives in the environment only; never write it into a committed file, never echo it, never paste it into a prompt.</p>
+<p>Work on a copy of the vault under git; pause any sync on that copy. Never write to the real vault during evaluation.</p>
+<p>Pin versions: n8n image tag, n8n-mcp version, obsidian-skills commit, Obsidian app version.</p>
+<p>ORDERED DELIVERABLES</p>
+<p>ground-truth.md: versions; where this Claude Code version reads MCP config; n8n-mcp's actual tool list from its tools_documentation; the node/template counts the server reports versus the guide; the obsidian-skills SKILL.md list and what each teaches; Obsidian version and whether Bases is available.</p>
+<p>n8n-dev/: docker command or compose file, a fixtures folder (sample webhook payloads, a CSV), and a note on how the API key was created and where it is stored (name only).</p>
+<p>MCP registration (command used, config with secrets referenced by env var only) and a test call to search nodes.</p>
+<p>eval/n8n.csv: 10 workflow requests from the user's real needs, each generated without and with n8n-mcp; per run: unknown node types, invalid parameters, MCP validation errors, import ok, execution status on fixtures, minutes of manual fixing.</p>
+<p>vault-test/: git-initialised copy of the vault with obsidian-skills under .claude/.</p>
+<p>eval/obsidian.csv: 8 tasks (active-projects dashboard with wikilinks, clip a URL with defuddle and frontmatter, Base of in-progress notes sorted by modified with a days-since-touched formula, JSON Canvas of a folder's link graph, callout-formatted meeting note, properties cleanup across 20 notes, block-reference summary, embed-based index) each without and with skills; per run: opens in Obsidian, unresolved links added, frontmatter parse errors, canvas schema errors, files changed outside scope.</p>
+<p>lint/: scripts for wikilink resolution, YAML frontmatter parsing, and JSON Canvas schema validation.</p>
+<p>BUILT-IN GAP ANALYSIS Before finishing, write gaps.md: guide claims with verdicts; workflow requests that failed even with the MCP and why (missing node coverage, credentials, community nodes); Obsidian features the skills did not handle; any time Claude mixed conventions or wrote outside the target folder; anything you could not test (hosted tier, Railway, Codex or OpenCode installs). Fix the fixable now (for example add a CLAUDE.md note in the vault copy forbidding writes outside a folder) and re-run the affected tasks.</p>
+<p>SELF-QUESTIONS BEFORE FINISHING</p>
+<p>Is the n8n instance truly disposable, and could any config path reach a production n8n?</p>
+<p>Did the API key ever appear in a log, transcript, or committed file?</p>
+<p>Did I verify where Claude Code reads MCP servers, or copy the guide's path?</p>
+<p>Do the with-MCP workflows actually execute on fixtures, or only import?</p>
+<p>Does each generated .base and .canvas open in the installed Obsidian version?</p>
+<p>Did Claude create wikilinks to notes that do not exist?</p>
+<p>Did any task change files outside its target folder in the vault copy?</p>
+<p>Is another Obsidian MCP or plugin also acting on the vault?</p>
+<p>STOP CONDITIONS Stop when both comparison tables are filled and gaps.md is written. Stop and ask before connecting to any non-local n8n, before installing skills into the real vault, or if a workflow needs real third-party credentials.</p>
+<p>RETURN FORMAT One message: versions; config snippets with secrets as env var references; n8n comparison summary (without vs with: valid workflows, successful executions, mean fix minutes); Obsidian comparison summary (without vs with: files that open, unresolved links, frontmatter errors); claims verdicts; gaps.md contents; instructions to promote to the real vault if the user chooses.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: repos, config paths, versions</h4>
+<p>Goal: Pin what both extensions really provide and where Claude Code loads them.</p>
+<p>Clone github.com/czlonkowski/n8n-mcp and github.com/kepano/obsidian-skills into repos/ and record commit hashes. From n8n-mcp's README and release notes, record the stated node, template, and coverage figures and the full list of exposed tools and environment variables. From Claude Code's documentation for your installed version (claude --version), find exactly where MCP servers are configured (claude mcp add scopes, .mcp.json, ~/.claude.json) and compare with the guide's claim of ~/.claude/settings.json; record the verdict. Read every SKILL.md in obsidian-skills and summarise what each teaches and any reference files it loads. Check the installed Obsidian version and whether Bases and the current JSON Canvas spec version are supported; read jsoncanvas.org's spec and note required node and edge fields. Write ground-truth.md with: versions, the config-path verdict, the MCP tool list, the guide-versus-repo figure table, and a one-line purpose per skill.</p>
+<p>Expect: ground-truth.md with commit hashes, a config-path verdict citing the docs, a tool list, a figures table, and five skill summaries.</p>
+<p>Audit before moving on: Any figure in the table without a source line in the repo is marked unverified. If the guide's MCP config path is wrong for this version, every later step must use the documented path; note that at the top of the file.</p>
+<h4>Step 2 — Stand up a disposable n8n and register n8n-mcp</h4>
+<p>Goal: Give the MCP a safe target and confirm it works in Claude Code.</p>
+<p>Start n8n with docker run -d --name n8n-dev -p 127.0.0.1:5678:5678 -v n8n_dev_data:/home/node/.n8n docker.n8n.io/n8nio/n8n: . Create the owner account in the UI, then create an API key under settings. Store it in your shell environment or a gitignored env file as N8N_API_KEY; do not echo it. Verify with curl -s -o /dev/null -w '%{http_code}' -H "X-N8N-API-KEY: $N8N_API_KEY" http://localhost:5678/api/v1/workflows expecting 200. Register n8n-mcp using the documented method from step 1, for example claude mcp add n8n-mcp -e MCP_MODE=stdio -e LOG_LEVEL=error -e DISABLE_CONSOLE_OUTPUT=true -e N8N_MCP_TELEMETRY_DISABLED=true -e WEBHOOK_SECURITY_MODE=moderate -e N8N_API_URL=http://localhost:5678 -e N8N_API_KEY=$N8N_API_KEY -- npx n8n-mcp@ , and check where that wrote the key and whether that file is committed anywhere. In Claude Code, call the MCP's documentation tool, then search for the Gmail, Google Sheets, Slack, HTTP Request, and Code nodes, and record the reported node count. Create n8n-dev/fixtures with a sample webhook JSON payload and a 20-row CSV.</p>
+<p>Expect: A running n8n-dev container, a 200 from the API check, the MCP listed by claude mcp list, search results for five nodes, and fixtures.</p>
+<p>Audit before moving on: Grep the repo and home config files you touched for the key's prefix and confirm it appears only in the intended env store with restrictive permissions. If the MCP fails to connect, test once without MCP_MODE to confirm the guide's 'stdout noise' gotcha, then restore it.</p>
+<h4>Step 3 — Evaluate workflow generation with and without the MCP</h4>
+<p>Goal: Measure whether n8n-mcp reduces invalid workflows and failed executions.</p>
+<p>Write 10 workflow requests from the user's real automation needs, mixing simple (webhook to Slack message), medium (CSV in, transform with Code node, append to sheet), and complex (the guide's Gmail invoice example: watch inbox, extract PDF, OpenAI extract vendor/amount/date, append to Sheets, post to Slack). For each, run two fresh Claude Code sessions: one with n8n-mcp disabled, asked to output importable n8n workflow JSON; one with the MCP enabled, asked to search nodes, read schemas, validate with the MCP's validator, and create the workflow on the dev instance. Import the no-MCP JSON via the API (POST /api/v1/workflows). For both, record unknown node types, invalid parameters reported on import or in the editor, validation errors. Execute each using test data: trigger webhooks with the fixture payload, replace nodes needing real credentials with a Set or HTTP Request to a local echo endpoint and note that substitution. Fetch execution status from /api/v1/executions. Log minutes of manual fixing needed to make each run. Save eval/n8n.csv.</p>
+<p>Expect: eval/n8n.csv with 20 rows and a summary: valid imports, successful executions, and mean fix minutes per condition.</p>
+<p>Audit before moving on: Confirm both conditions got identical request text and fresh sessions. Any workflow counted as success must have an execution record with status success in n8n. Credential substitutions must be identical across conditions.</p>
+<h4>Step 4 — Prepare a safe vault copy and install obsidian-skills</h4>
+<p>Goal: Give the skills a realistic vault with an undo button.</p>
+<p>Copy the real vault to ~/vault-test with rsync -a --exclude .obsidian/workspace / ~/vault-test/, then git init &amp;&amp; git add -A &amp;&amp; git commit -m baseline inside the copy. Make sure no sync service (Obsidian Sync, iCloud, Syncthing) watches ~/vault-test. Install the skills per the repo's instructions: git clone https://github.com/kepano/obsidian-skills ~/vault-test/.claude/obsidian-skills or copy each skill directory into ~/vault-test/.claude/skills/ according to the layout Claude Code expects for project skills on this version (verify from docs). Launch claude from the vault root and ask it to list available skills to confirm all five load. Check for any Obsidian MCP server also configured and disable it for this test. Write lint/ scripts: wikilinks.py (find [[targets]] and embeds that do not resolve to a file or alias, counting new ones versus the baseline), frontmatter.py (YAML parse, property types for tags, aliases, dates), canvas.py (validate .canvas against the JSON Canvas 1.0 required fields and ids). Run all three on the baseline and save counts.</p>
+<p>Expect: A git-tracked vault copy, five skills listed in Claude Code, three lint scripts, and baseline lint counts.</p>
+<p>Audit before moving on: Run git status in the copy after launching Claude; it must be clean before tasks start. If the skills do not load from the guide's path, find the correct path and record it as a guide correction.</p>
+<h4>Step 5 — Evaluate Obsidian tasks with and without skills</h4>
+<p>Goal: Measure whether the skills make output Obsidian-native and correct.</p>
+<p>Run 8 tasks, each twice from a clean git state (git stash -u or git checkout . &amp;&amp; git clean -fd between runs): once with the skills folder temporarily moved out, once with it in place. Tasks: (1) read notes tagged #project/active and create 'Active Projects Dashboard' with wikilinks and 2-line summaries; (2) clip a given URL into a note with defuddle-style clean Markdown, frontmatter source, created, tags; (3) create a .base showing notes with status in-progress sorted by last modified with a days-since-touched formula; (4) build a .canvas of how notes in one folder link to each other, grouped by subfolder; (5) write a meeting note with callouts for decisions and risks; (6) normalise properties across 20 notes (tags as list, dates ISO); (7) summarise a long note using block references; (8) build an index note with embeds of three notes. After each run: run the lint scripts, record new unresolved links, frontmatter errors, canvas errors, and files changed outside the task's target (from git diff --name-only); open the created files in Obsidian and record whether they render as intended. Save eval/obsidian.csv.</p>
+<p>Expect: eval/obsidian.csv with 16 rows and a with-versus-without summary per metric.</p>
+<p>Audit before moving on: Confirm git was reset between every run by checking that the 'files changed' list contains only that run's outputs. Any task where Obsidian shows an error opening a .base or .canvas is a fail regardless of lint results.</p>
+<h4>Step 6 — Validate against oracles and write the gap report</h4>
+<p>Goal: Confirm results with n8n and Obsidian themselves and list remaining gaps.</p>
+<p>For n8n: list workflows and executions from the API and confirm every success in eval/n8n.csv has an execution with status success; delete test workflows afterwards or tag them. For Obsidian: open every with-skills output again in Obsidian and confirm it renders; re-run the lint scripts on the final state. Compute final tables. Write gaps.md with: guide claims and verdicts (node and coverage figures, config path, MCP_MODE gotcha, 'only tool that understands Bases', extrapolation warnings, install layout); requests that failed in both conditions and why; Obsidian features the skills missed; any write outside scope; untested install paths (hosted tier, Railway, Codex, OpenCode). Rank by impact and fix the top fixable item now: add a vault-test/CLAUDE.md limiting writes to named folders and requiring lint after edits, then re-run the worst task. Write promotion.md with backup and sync-pause commands for the real vault and a documentation-only n8n-mcp default, but do not execute it. Finally, stop the n8n-dev container (keep the volume unless the user wants it removed) and confirm claude mcp list still points only at localhost.</p>
+<p>Expect: Final comparison tables, gaps.md with every claim resolved, and n8n-dev stopped.</p>
+<p>Audit before moving on: Every claimed success must map to an n8n execution id or an Obsidian render check. If the with-tool advantage is within noise for either extension, say so and recommend accordingly.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are auditing an n8n-mcp and obsidian-skills evaluation built by someone else: n8n-dev/, MCP registration, eval/n8n.csv, vault-test/, lint/, eval/obsidian.csv, promotion.md, gaps.md. Do not trust the summaries. (1) List every claim: safety (dev-only n8n, no key exposure, vault copy only), each eval verdict, and each guide-claim verdict. (2) Verify: grep every config file, shell history, and Claude transcript you can access for the API key prefix; confirm N8N_API_URL points to localhost; re-execute three 'successful' workflows and check execution ids; reset vault-test to a run's commit and re-open its .base and .canvas in Obsidian; re-run the lint scripts. Mark verified, unverified, or false. (3) Hunt silent failures: workflows that import but contain disabled or placeholder nodes; credential substitutions that make a run trivially pass; lint scripts that skip aliases or embeds; skills that did not actually load in the with-skills runs. (4) Check fairness: same prompts, fresh sessions, git reset between runs. (5) Rank gaps by impact (secret exposure, production risk, vault damage, wrong recommendation), fix the top three now, and report the remainder with a reproduction command each.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Where does my Claude Code version actually read MCP server config, and did the key land in a file that could be committed or synced?</p>
+<p>Is the n8n instance bound to 127.0.0.1 and holding no production data or credentials?</p>
+<p>Do the guide's node and coverage numbers match what the installed n8n-mcp reports?</p>
+<p>Did with-MCP workflows execute successfully, or only import?</p>
+<p>Were credential substitutions applied identically in both conditions?</p>
+<p>Did the obsidian-skills actually load in the with-skills runs, and how do I know?</p>
+<p>Do generated .base and .canvas files open in my installed Obsidian version?</p>
+<p>How many new unresolved wikilinks did each condition create?</p>
+<h3>5 · What proves it right</h3>
+<p>n8n's /api/v1/executions on the dev instance shows status success for every workflow counted as working, using fixture inputs.</p>
+<p>n8n imports each generated workflow JSON without unknown-node or parameter errors in the editor.</p>
+<p>Obsidian desktop (pinned version) opens every generated .base and .canvas and renders the intended view.</p>
+<p>Lint scripts report new unresolved wikilinks, YAML frontmatter parse errors, and JSON Canvas 1.0 schema errors against the baseline vault.</p>
+<h3>6 · Failure modes</h3>
+<p>Full mode against production. Tell: workflows appear or change in a live n8n. Fix: dev Docker instance bound to localhost only, separate API key.</p>
+<p>API key leaks. Tell: the key appears in a committed config or transcript. Fix: env var only, rotate the key, scan with gitleaks.</p>
+<p>Missing MCP_MODE=stdio. Tell: opaque JSON parse errors on connect. Fix: set MCP_MODE=stdio and silence console output.</p>
+<p>Plausible but non-running workflows. Tell: imports fine, executions fail. Fix: count only executed successes, validate with the MCP before create.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Read both repos and Claude Code's MCP docs first; correct the config path before registering anything. Bring up n8n-dev and the vault copy before any generation so every write has a safe target. Use the MCP's documentation tool at the start of each n8n session because tool names change. Never print, log, or paste N8N_API_KEY; reference it by name only. Spawn subagents for the paired with/without runs so each gets a fresh context, and a separate grader for opening and checking Obsidian outputs. Stop and ask before any non-local n8n URL, any write to the real vault, or any workflow needing real third-party credentials. Do not execute promotion.md. Return in chat versions, safety confirmations, both comparison summaries, claim verdicts, and gaps; files: ground-truth.md, n8n-dev/, eval/n8n.csv, vault-test/ (with CLAUDE.md), lint/, eval/obsidian.csv, promotion.md, gaps.md.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># n8n-mcp + obsidian-skills — Two High-Leverage Claude Code Extensions
 
@@ -493,6 +591,192 @@ Both are worth keeping — n8n-mcp for the pre-built SQLite schema database (use
 - [Defuddle (kepano's readability engine)](https://github.com/kepano/defuddle)
 - [Agent Skills specification](https://github.com/anthropics/skills)
 - [Model Context Protocol spec](https://modelcontextprotocol.io)
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Install czlonkowski's n8n-mcp and kepano's obsidian-skills into Claude Code safely and prove each one changes outcomes: n8n-mcp should turn natural-language requests into n8n workflows that import and execute on a disposable dev instance, and obsidian-skills should make Claude produce Obsidian-native notes, Bases, and JSON Canvas files that open correctly in Obsidian. Done means a measured with-versus-without comparison for each tool, a dev-only n8n with a scoped API key that never touches production, a backed-up test vault, and a gap report on the guide's coverage and install claims.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** An automation engineer would not point an agent with write access at a live n8n; they would run a throwaway n8n in Docker with its own data volume, create an API key there, and judge generated workflows by whether they import and execute on test inputs, not by whether the JSON looks plausible. A knowledge-management practitioner would test obsidian-skills on a copy of the vault under git, lint the results for unresolved links and invalid frontmatter, and open the generated .base and .canvas files in the current Obsidian build. Both would check where Claude Code actually reads MCP config (`claude mcp add`, .mcp.json, ~/.claude.json) rather than trusting the guide's settings.json path.
+- **Rawest material to start from:** github.com/czlonkowski/n8n-mcp (README, the tools documentation the server exposes, the validation code, the release notes listing node and template counts); the n8n public REST API reference and the n8n workflow JSON format from docs.n8n.io; the n8n Docker image docs.n8n.io/hosting; github.com/kepano/obsidian-skills (each SKILL.md: obsidian-markdown, obsidian-bases, json-canvas, obsidian-cli, defuddle); the JSON Canvas 1.0 spec at jsoncanvas.org; Obsidian's help pages for Bases, properties, and callouts; the Agent Skills specification the repo follows; and your own vault plus 5-10 real automation needs you would otherwise build by hand.
+- **Methods and tools:** docker run of the official n8n image with a named volume on port 5678; n8n API key created in that instance and exported as N8N_API_KEY in the shell, never written into a committed file; `claude mcp add` (or .mcp.json) with MCP_MODE=stdio, LOG_LEVEL=error, DISABLE_CONSOLE_OUTPUT=true, N8N_MCP_TELEMETRY_DISABLED=true; the MCP's search, node-detail, validation, and template tools (call its tools_documentation first because names change); curl against /api/v1/workflows and /api/v1/executions with the X-N8N-API-KEY header; n8n's manual and webhook test executions; a git-initialised copy of the vault; a Python linter for wikilinks, YAML frontmatter, and callouts; a JSON Schema check of .canvas files against the JSON Canvas spec; Obsidian desktop to open results.
+- **What proves it right (other than you or the model):** n8n itself is the oracle for workflows: the JSON imports without errors, the workflow activates, and a test execution on fixture data finishes with status success, visible in /api/v1/executions. For the vault: Obsidian opens every generated .base and .canvas without error and displays the intended views; a link checker reports zero new unresolved wikilinks; YAML frontmatter parses and property types match Obsidian's; git diff on the vault copy shows only intended files changed. For value: the with-versus-without comparison counts of invalid nodes and failed executions over the same request set.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Act as an automation engineer and Obsidian power user evaluating n8n-mcp (github.com/czlonkowski/n8n-mcp) and obsidian-skills (github.com/kepano/obsidian-skills) in Claude Code. First read both repos' READMEs and the n8n-mcp tools documentation, and find out from Claude Code's own docs where MCP servers are configured on my version (the guide says ~/.claude/settings.json; verify). Start a disposable n8n in Docker on localhost:5678, create an API key there, and export it as an environment variable without printing it. Add n8n-mcp with MCP_MODE=stdio, LOG_LEVEL=error, DISABLE_CONSOLE_OUTPUT=true, telemetry disabled, and WEBHOOK_SECURITY_MODE=moderate, pointed only at that dev instance. Write 10 workflow requests from my real needs, generate each with and without the MCP, import each into n8n, run each on fixture data, and record invalid nodes, validation errors, and execution status. Then copy my vault to a git-tracked test copy, install obsidian-skills into its .claude folder, and run 8 tasks (dashboard note, web clip, Base with formulas, JSON Canvas of links, properties cleanup) with and without the skills. Lint results for unresolved links and bad frontmatter and open them in Obsidian. Return both comparison tables, the configs (no secrets), and a list of guide claims that were wrong.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are an automation engineer and knowledge-management practitioner installing two community extensions into Claude Code and proving, with measurements, that each one improves results. You never give an agent write access to production systems or an unbacked-up vault, and you never print secrets.
+
+CONTEXT
+- n8n-mcp (czlonkowski, MIT, github.com/czlonkowski/n8n-mcp): MCP server with a prebuilt SQLite database of n8n nodes and templates. Guide figures to TEST: 1,396 nodes (812 core, 584 community), 99 percent property coverage, 63.6 percent operation coverage, 87 percent documentation coverage, 2,709 templates. Modes: documentation-only (no n8n needed) and full mode with N8N_API_URL and N8N_API_KEY. Install via `npx n8n-mcp`, Docker ghcr.io/czlonkowski/n8n-mcp, hosted tier (100 calls/day), Railway, or local build. Gotchas: MCP_MODE=stdio is mandatory or stdout noise breaks JSON-RPC; never point full mode at production; WEBHOOK_SECURITY_MODE strict blocks localhost; telemetry on by default (N8N_MCP_TELEMETRY_DISABLED=true); memory 100-200 MB.
+- obsidian-skills (kepano, github.com/kepano/obsidian-skills): Agent Skills for obsidian-markdown (wikilinks, embeds, callouts, properties, block refs), obsidian-bases (views, filters, formulas, summaries), json-canvas (nodes, edges, groups), obsidian-cli, and defuddle (web to Markdown). Installed per vault under the vault's .claude folder; Claude Code launched from the vault root. Gotchas: sync conflicts with Obsidian Sync, iCloud, or Syncthing; Bases requires a recent Obsidian; wikilink targets not validated; conflicts with an Obsidian MCP if both are installed.
+- Claims to TEST: the guide's Claude Code config path (~/.claude/settings.json) for MCP servers; that obsidian-bases is the only tool outside Obsidian that understands Bases syntax; that the MCP tells you when it extrapolates.
+
+HARD CONSTRAINTS
+- n8n full mode only against a disposable Docker instance on localhost with its own volume. Never a production URL.
+- N8N_API_KEY lives in the environment only; never write it into a committed file, never echo it, never paste it into a prompt.
+- Work on a copy of the vault under git; pause any sync on that copy. Never write to the real vault during evaluation.
+- Pin versions: n8n image tag, n8n-mcp version, obsidian-skills commit, Obsidian app version.
+
+ORDERED DELIVERABLES
+1. ground-truth.md: versions; where this Claude Code version reads MCP config; n8n-mcp's actual tool list from its tools_documentation; the node/template counts the server reports versus the guide; the obsidian-skills SKILL.md list and what each teaches; Obsidian version and whether Bases is available.
+2. n8n-dev/: docker command or compose file, a fixtures folder (sample webhook payloads, a CSV), and a note on how the API key was created and where it is stored (name only).
+3. MCP registration (command used, config with secrets referenced by env var only) and a test call to search nodes.
+4. eval/n8n.csv: 10 workflow requests from the user's real needs, each generated without and with n8n-mcp; per run: unknown node types, invalid parameters, MCP validation errors, import ok, execution status on fixtures, minutes of manual fixing.
+5. vault-test/: git-initialised copy of the vault with obsidian-skills under .claude/.
+6. eval/obsidian.csv: 8 tasks (active-projects dashboard with wikilinks, clip a URL with defuddle and frontmatter, Base of in-progress notes sorted by modified with a days-since-touched formula, JSON Canvas of a folder's link graph, callout-formatted meeting note, properties cleanup across 20 notes, block-reference summary, embed-based index) each without and with skills; per run: opens in Obsidian, unresolved links added, frontmatter parse errors, canvas schema errors, files changed outside scope.
+7. lint/: scripts for wikilink resolution, YAML frontmatter parsing, and JSON Canvas schema validation.
+
+BUILT-IN GAP ANALYSIS
+Before finishing, write gaps.md: guide claims with verdicts; workflow requests that failed even with the MCP and why (missing node coverage, credentials, community nodes); Obsidian features the skills did not handle; any time Claude mixed conventions or wrote outside the target folder; anything you could not test (hosted tier, Railway, Codex or OpenCode installs). Fix the fixable now (for example add a CLAUDE.md note in the vault copy forbidding writes outside a folder) and re-run the affected tasks.
+
+SELF-QUESTIONS BEFORE FINISHING
+- Is the n8n instance truly disposable, and could any config path reach a production n8n?
+- Did the API key ever appear in a log, transcript, or committed file?
+- Did I verify where Claude Code reads MCP servers, or copy the guide's path?
+- Do the with-MCP workflows actually execute on fixtures, or only import?
+- Does each generated .base and .canvas open in the installed Obsidian version?
+- Did Claude create wikilinks to notes that do not exist?
+- Did any task change files outside its target folder in the vault copy?
+- Is another Obsidian MCP or plugin also acting on the vault?
+
+STOP CONDITIONS
+Stop when both comparison tables are filled and gaps.md is written. Stop and ask before connecting to any non-local n8n, before installing skills into the real vault, or if a workflow needs real third-party credentials.
+
+RETURN FORMAT
+One message: versions; config snippets with secrets as env var references; n8n comparison summary (without vs with: valid workflows, successful executions, mean fix minutes); Obsidian comparison summary (without vs with: files that open, unresolved links, frontmatter errors); claims verdicts; gaps.md contents; instructions to promote to the real vault if the user chooses.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: repos, config paths, versions
+
+*Goal:* Pin what both extensions really provide and where Claude Code loads them.
+
+```text
+Clone github.com/czlonkowski/n8n-mcp and github.com/kepano/obsidian-skills into repos/ and record commit hashes. From n8n-mcp's README and release notes, record the stated node, template, and coverage figures and the full list of exposed tools and environment variables. From Claude Code's documentation for your installed version (`claude --version`), find exactly where MCP servers are configured (`claude mcp add` scopes, .mcp.json, ~/.claude.json) and compare with the guide's claim of ~/.claude/settings.json; record the verdict. Read every SKILL.md in obsidian-skills and summarise what each teaches and any reference files it loads. Check the installed Obsidian version and whether Bases and the current JSON Canvas spec version are supported; read jsoncanvas.org's spec and note required node and edge fields. Write ground-truth.md with: versions, the config-path verdict, the MCP tool list, the guide-versus-repo figure table, and a one-line purpose per skill.
+```
+
+**Expect:** ground-truth.md with commit hashes, a config-path verdict citing the docs, a tool list, a figures table, and five skill summaries.
+
+**Audit before moving on:** Any figure in the table without a source line in the repo is marked unverified. If the guide's MCP config path is wrong for this version, every later step must use the documented path; note that at the top of the file.
+
+#### Step 2 — Stand up a disposable n8n and register n8n-mcp
+
+*Goal:* Give the MCP a safe target and confirm it works in Claude Code.
+
+```text
+Start n8n with `docker run -d --name n8n-dev -p 127.0.0.1:5678:5678 -v n8n_dev_data:/home/node/.n8n docker.n8n.io/n8nio/n8n:<pinned-tag>`. Create the owner account in the UI, then create an API key under settings. Store it in your shell environment or a gitignored env file as N8N_API_KEY; do not echo it. Verify with `curl -s -o /dev/null -w '%{http_code}' -H "X-N8N-API-KEY: $N8N_API_KEY" http://localhost:5678/api/v1/workflows` expecting 200. Register n8n-mcp using the documented method from step 1, for example `claude mcp add n8n-mcp -e MCP_MODE=stdio -e LOG_LEVEL=error -e DISABLE_CONSOLE_OUTPUT=true -e N8N_MCP_TELEMETRY_DISABLED=true -e WEBHOOK_SECURITY_MODE=moderate -e N8N_API_URL=http://localhost:5678 -e N8N_API_KEY=$N8N_API_KEY -- npx n8n-mcp@<version>`, and check where that wrote the key and whether that file is committed anywhere. In Claude Code, call the MCP's documentation tool, then search for the Gmail, Google Sheets, Slack, HTTP Request, and Code nodes, and record the reported node count. Create n8n-dev/fixtures with a sample webhook JSON payload and a 20-row CSV.
+```
+
+**Expect:** A running n8n-dev container, a 200 from the API check, the MCP listed by `claude mcp list`, search results for five nodes, and fixtures.
+
+**Audit before moving on:** Grep the repo and home config files you touched for the key's prefix and confirm it appears only in the intended env store with restrictive permissions. If the MCP fails to connect, test once without MCP_MODE to confirm the guide's 'stdout noise' gotcha, then restore it.
+
+#### Step 3 — Evaluate workflow generation with and without the MCP
+
+*Goal:* Measure whether n8n-mcp reduces invalid workflows and failed executions.
+
+```text
+Write 10 workflow requests from the user's real automation needs, mixing simple (webhook to Slack message), medium (CSV in, transform with Code node, append to sheet), and complex (the guide's Gmail invoice example: watch inbox, extract PDF, OpenAI extract vendor/amount/date, append to Sheets, post to Slack). For each, run two fresh Claude Code sessions: one with n8n-mcp disabled, asked to output importable n8n workflow JSON; one with the MCP enabled, asked to search nodes, read schemas, validate with the MCP's validator, and create the workflow on the dev instance. Import the no-MCP JSON via the API (POST /api/v1/workflows). For both, record unknown node types, invalid parameters reported on import or in the editor, validation errors. Execute each using test data: trigger webhooks with the fixture payload, replace nodes needing real credentials with a Set or HTTP Request to a local echo endpoint and note that substitution. Fetch execution status from /api/v1/executions. Log minutes of manual fixing needed to make each run. Save eval/n8n.csv.
+```
+
+**Expect:** eval/n8n.csv with 20 rows and a summary: valid imports, successful executions, and mean fix minutes per condition.
+
+**Audit before moving on:** Confirm both conditions got identical request text and fresh sessions. Any workflow counted as success must have an execution record with status success in n8n. Credential substitutions must be identical across conditions.
+
+#### Step 4 — Prepare a safe vault copy and install obsidian-skills
+
+*Goal:* Give the skills a realistic vault with an undo button.
+
+```text
+Copy the real vault to ~/vault-test with `rsync -a --exclude .obsidian/workspace* <vault>/ ~/vault-test/`, then `git init && git add -A && git commit -m baseline` inside the copy. Make sure no sync service (Obsidian Sync, iCloud, Syncthing) watches ~/vault-test. Install the skills per the repo's instructions: `git clone https://github.com/kepano/obsidian-skills ~/vault-test/.claude/obsidian-skills` or copy each skill directory into ~/vault-test/.claude/skills/ according to the layout Claude Code expects for project skills on this version (verify from docs). Launch `claude` from the vault root and ask it to list available skills to confirm all five load. Check for any Obsidian MCP server also configured and disable it for this test. Write lint/ scripts: wikilinks.py (find [[targets]] and embeds that do not resolve to a file or alias, counting new ones versus the baseline), frontmatter.py (YAML parse, property types for tags, aliases, dates), canvas.py (validate .canvas against the JSON Canvas 1.0 required fields and ids). Run all three on the baseline and save counts.
+```
+
+**Expect:** A git-tracked vault copy, five skills listed in Claude Code, three lint scripts, and baseline lint counts.
+
+**Audit before moving on:** Run `git status` in the copy after launching Claude; it must be clean before tasks start. If the skills do not load from the guide's path, find the correct path and record it as a guide correction.
+
+#### Step 5 — Evaluate Obsidian tasks with and without skills
+
+*Goal:* Measure whether the skills make output Obsidian-native and correct.
+
+```text
+Run 8 tasks, each twice from a clean git state (`git stash -u` or `git checkout . && git clean -fd` between runs): once with the skills folder temporarily moved out, once with it in place. Tasks: (1) read notes tagged #project/active and create 'Active Projects Dashboard' with wikilinks and 2-line summaries; (2) clip a given URL into a note with defuddle-style clean Markdown, frontmatter source, created, tags; (3) create a .base showing notes with status in-progress sorted by last modified with a days-since-touched formula; (4) build a .canvas of how notes in one folder link to each other, grouped by subfolder; (5) write a meeting note with callouts for decisions and risks; (6) normalise properties across 20 notes (tags as list, dates ISO); (7) summarise a long note using block references; (8) build an index note with embeds of three notes. After each run: run the lint scripts, record new unresolved links, frontmatter errors, canvas errors, and files changed outside the task's target (from git diff --name-only); open the created files in Obsidian and record whether they render as intended. Save eval/obsidian.csv.
+```
+
+**Expect:** eval/obsidian.csv with 16 rows and a with-versus-without summary per metric.
+
+**Audit before moving on:** Confirm git was reset between every run by checking that the 'files changed' list contains only that run's outputs. Any task where Obsidian shows an error opening a .base or .canvas is a fail regardless of lint results.
+
+#### Step 6 — Validate against oracles and write the gap report
+
+*Goal:* Confirm results with n8n and Obsidian themselves and list remaining gaps.
+
+```text
+For n8n: list workflows and executions from the API and confirm every success in eval/n8n.csv has an execution with status success; delete test workflows afterwards or tag them. For Obsidian: open every with-skills output again in Obsidian and confirm it renders; re-run the lint scripts on the final state. Compute final tables. Write gaps.md with: guide claims and verdicts (node and coverage figures, config path, MCP_MODE gotcha, 'only tool that understands Bases', extrapolation warnings, install layout); requests that failed in both conditions and why; Obsidian features the skills missed; any write outside scope; untested install paths (hosted tier, Railway, Codex, OpenCode). Rank by impact and fix the top fixable item now: add a vault-test/CLAUDE.md limiting writes to named folders and requiring lint after edits, then re-run the worst task. Write promotion.md with backup and sync-pause commands for the real vault and a documentation-only n8n-mcp default, but do not execute it. Finally, stop the n8n-dev container (keep the volume unless the user wants it removed) and confirm `claude mcp list` still points only at localhost.
+```
+
+**Expect:** Final comparison tables, gaps.md with every claim resolved, and n8n-dev stopped.
+
+**Audit before moving on:** Every claimed success must map to an n8n execution id or an Obsidian render check. If the with-tool advantage is within noise for either extension, say so and recommend accordingly.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are auditing an n8n-mcp and obsidian-skills evaluation built by someone else: n8n-dev/, MCP registration, eval/n8n.csv, vault-test/, lint/, eval/obsidian.csv, promotion.md, gaps.md. Do not trust the summaries. (1) List every claim: safety (dev-only n8n, no key exposure, vault copy only), each eval verdict, and each guide-claim verdict. (2) Verify: grep every config file, shell history, and Claude transcript you can access for the API key prefix; confirm N8N_API_URL points to localhost; re-execute three 'successful' workflows and check execution ids; reset vault-test to a run's commit and re-open its .base and .canvas in Obsidian; re-run the lint scripts. Mark verified, unverified, or false. (3) Hunt silent failures: workflows that import but contain disabled or placeholder nodes; credential substitutions that make a run trivially pass; lint scripts that skip aliases or embeds; skills that did not actually load in the with-skills runs. (4) Check fairness: same prompts, fresh sessions, git reset between runs. (5) Rank gaps by impact (secret exposure, production risk, vault damage, wrong recommendation), fix the top three now, and report the remainder with a reproduction command each.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Where does my Claude Code version actually read MCP server config, and did the key land in a file that could be committed or synced?
+- Is the n8n instance bound to 127.0.0.1 and holding no production data or credentials?
+- Do the guide's node and coverage numbers match what the installed n8n-mcp reports?
+- Did with-MCP workflows execute successfully, or only import?
+- Were credential substitutions applied identically in both conditions?
+- Did the obsidian-skills actually load in the with-skills runs, and how do I know?
+- Do generated .base and .canvas files open in my installed Obsidian version?
+- How many new unresolved wikilinks did each condition create?
+
+### 5 · What proves it right
+
+- n8n's /api/v1/executions on the dev instance shows status success for every workflow counted as working, using fixture inputs.
+- n8n imports each generated workflow JSON without unknown-node or parameter errors in the editor.
+- Obsidian desktop (pinned version) opens every generated .base and .canvas and renders the intended view.
+- Lint scripts report new unresolved wikilinks, YAML frontmatter parse errors, and JSON Canvas 1.0 schema errors against the baseline vault.
+
+### 6 · Failure modes
+
+- Full mode against production. Tell: workflows appear or change in a live n8n. Fix: dev Docker instance bound to localhost only, separate API key.
+- API key leaks. Tell: the key appears in a committed config or transcript. Fix: env var only, rotate the key, scan with gitleaks.
+- Missing MCP_MODE=stdio. Tell: opaque JSON parse errors on connect. Fix: set MCP_MODE=stdio and silence console output.
+- Plausible but non-running workflows. Tell: imports fine, executions fail. Fix: count only executed successes, validate with the MCP before create.
+
+### 7 · Agent direction (unattended runs)
+
+Read both repos and Claude Code's MCP docs first; correct the config path before registering anything. Bring up n8n-dev and the vault copy before any generation so every write has a safe target. Use the MCP's documentation tool at the start of each n8n session because tool names change. Never print, log, or paste N8N_API_KEY; reference it by name only. Spawn subagents for the paired with/without runs so each gets a fresh context, and a separate grader for opening and checking Obsidian outputs. Stop and ask before any non-local n8n URL, any write to the real vault, or any workflow needing real third-party credentials. Do not execute promotion.md. Return in chat versions, safety confirmations, both comparison summaries, claim verdicts, and gaps; files: ground-truth.md, n8n-dev/, eval/n8n.csv, vault-test/ (with CLAUDE.md), lint/, eval/obsidian.csv, promotion.md, gaps.md.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -500,4 +784,26 @@ Both are worth keeping — n8n-mcp for the pre-built SQLite schema database (use
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

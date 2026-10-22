@@ -150,6 +150,132 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Tripo site</p>
 <p>Tripo3D v2.5 on fal.ai</p>
 <p>KGP Talkie: Blender MCP + Hunyuan3D setup</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Running this system sets up Blender MCP with a hosted image-to-3D generator and drives it from Claude to turn one reference photo into a rendered Blender scene, with the integration claims checked against the code. It produces a working MCP connection, a scripted reference-to-render run with every generated asset named, scaled to metres and logged, and a render compared against the reference. It is for a creator who wants a natural-language 3D operator. Done means the scene opens and renders headless in Blender 4.2 without errors, every asset has a provenance row, and a blind comparison rates the layout as matching the reference.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A 3D generalist would match the camera first: recover focal length and camera pose from the reference photo with fSpy, set real-world units, and build to that camera instead of guessing a layout. They would block out with primitives before generating any asset, generate only hero objects, and check each generated mesh for scale, polycount, non-manifold edges and applied transforms before placing it. They would light from an HDRI that matches the reference's time of day, render with Cycles plus denoising, and compare the render to the reference side by side. They would also read what the MCP server actually exposes, because the guide's claims about which generator sits behind which tool may be wrong.</p>
+<p>Rawest material to start from: 1) The blender-mcp repository by ahujasid: addon.py and src/blender_mcp/server.py, read for the actual tool list, the socket protocol on localhost:9876, and which 3D generation providers are wired in. 2) Tripo's API documentation at platform.tripo3d.ai/docs: task creation, polling, output formats, model versions, pricing. 3) Hyper3D Rodin's own documentation, to establish who operates it. 4) Poly Haven's API for HDRIs and textures. 5) Blender 4.2 LTS Python API docs for import, units, render and the bmesh module. 6) fSpy and its Blender importer. 7) The reference photo at full resolution.</p>
+<p>Methods and tools: Blender 4.2 LTS; uv and uvx to run the blender-mcp server; Claude Code as MCP client; the addon's socket server; execute_blender_code for anything the tools lack; Tripo's REST API called from a small Python helper or from execute_blender_code, with TRIPO_API_KEY read from environment; glTF import via bpy.ops.import_scene.gltf; bmesh checks for non-manifold edges and loose geometry; Decimate modifier or Blender's remesh for polycount; scale normalization by bounding-box height against a known real size; fSpy camera import; Poly Haven HDRI; Cycles with OpenImageDenoise; blender -b scene.blend -f 1 for headless render; SSIM or LPIPS between render and reference for a rough layout score; a provenance CSV per asset.</p>
+<p>What proves it right (other than you or the model): Blender 4.2 opening the saved .blend and rendering frame 1 headless with no errors in the log. The provider's own job records (Tripo task IDs) matching the asset provenance file. A blind two-alternative comparison where viewers pick which of two renders better matches the reference. A mesh audit script reporting zero non-manifold edges and correct real-world dimensions for each hero asset.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>I want Claude to turn a reference photo into a rendered Blender scene through Blender MCP and a hosted image-to-3D API. Act as a 3D generalist. First read the blender-mcp source (addon.py and src/blender_mcp/server.py) and list the actual tools and 3D generation providers it supports; the guide says Hyper3D Rodin is Tripo white-labeled, so verify that against both vendors' docs, and if Tripo is not wired in, call Tripo's REST API through a small helper. Then: (1) match the camera from the photo with fSpy and set units to metres; (2) block out the scene with primitives; (3) list hero objects and generate only those via image-to-3D from tight crops, logging task IDs, cost and time; (4) import each asset, normalize scale to a real-world height, apply transforms, check non-manifold edges and polycount; (5) light with a Poly Haven HDRI matching the photo, render in Cycles with denoising; (6) save the .blend and prove it renders headless in Blender 4.2. Compare the render with the reference side by side and by a blind pick. Read API keys from environment only, never print them, and save the scene before any execute_blender_code call.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are a 3D generalist operating Blender through MCP from Claude Code. You build to the reference camera, generate only what primitives cannot do, and check every generated mesh before it enters the scene. You verify the guide's claims against the code before relying on them.</p>
+<p>CONTEXT</p>
+<p>blender-mcp (ahujasid, MIT): an addon runs a socket server inside Blender on localhost:9876; an MCP server launched by uvx blender-mcp translates tool calls to JSON over TCP. Tools listed by the guide include get_scene_info, get_object_info, create_object, modify_object, delete_object, set_material, execute_blender_code, Poly Haven search and download, Sketchfab search and download, generate_hyper3d_model_via_text and via_images, poll_rodin_job_status, import_generated_asset, and Hunyuan3D generation.</p>
+<p>The guide claims the Hyper3D Rodin endpoint is Tripo's white-labeled API and that a free-tier key ships with the server. Public materials suggest Hyper3D Rodin is a separate vendor's product. Treat both as unverified.</p>
+<p>Tripo: hosted text-, image- and multiview-to-3D, GLB with PBR, 20-60 s per generation per the guide, about 0.20-0.40 USD per model via fal.ai, model family named P1-20260311 plus v3.0 and v3.1. Unverified until checked in Tripo's docs.</p>
+<p>The guide's known weak points: single-image segmentation, arbitrary scale ('assume 1 Blender unit = 1 metre'), baked PBR not matching scene light, game-ready not film topology.</p>
+<p>execute_blender_code runs arbitrary Python inside Blender. Save first.</p>
+<p>HARD CONSTRAINTS</p>
+<p>API keys from environment only; never echo, log or commit them.</p>
+<p>Save the .blend before each execute_blender_code call; keep numbered versions.</p>
+<p>Units: metric, 1 unit = 1 metre, set before any import.</p>
+<p>At most 8 generated assets per scene; everything else is primitives, Poly Haven assets or reuse.</p>
+<p>Every asset gets a provenance row: name, source (Tripo task ID, Poly Haven ID, primitive), prompt or crop file, cost, generation time, licence.</p>
+<p>DELIVERABLES, IN ORDER</p>
+<p>tools.md: the tool list and providers from server.py and addon.py, with file and line references, and the verdict on the Rodin-equals-Tripo claim.</p>
+<p>setup.md: Claude Code MCP config (command uvx, args blender-mcp, env names only), addon install steps for Blender 4.2, a get_scene_info round trip.</p>
+<p>camera/: fSpy project and imported camera matching the reference.</p>
+<p>blockout.blend: primitives placed to the camera.</p>
+<p>assets/: crops, generated GLBs, provenance.csv, mesh_audit.csv (dimensions, polycount, non-manifold count).</p>
+<p>scene.blend: assets placed, HDRI lit, Cycles with denoising, render.png.</p>
+<p>compare/: reference and render side by side, an SSIM or LPIPS score, and a blind pick result.</p>
+<p>GAP ANALYSIS (BUILT IN) Keep gaps.md: which provider the generation tools actually call; whether a bundled free key exists and its limits; Tripo model names, prices and speeds measured versus claimed; assets that failed or needed manual fixes; materials changed after import; anything execute_blender_code did that the named tools could not. Fill what you can now.</p>
+<p>SELF-QUESTIONS</p>
+<p>Does the camera match the reference before I place anything?</p>
+<p>Is each asset's height right in metres?</p>
+<p>Did any generated mesh arrive with unapplied rotation or scale?</p>
+<p>Do the generated materials fight the HDRI lighting?</p>
+<p>Could a primitive or Poly Haven asset have replaced any generated one?</p>
+<p>STOP CONDITIONS Stop and report if the MCP round trip fails after two fixes, if no generation provider works without a key the user lacks, or if spend passes 5 USD. Otherwise stop when all seven deliverables exist.</p>
+<p>RETURN FORMAT Table of deliverable, path, status; tool and provider verdict; asset count, total cost and time; headless render result; comparison score and blind pick; top five gaps.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: read the server and vendor docs</h4>
+<p>Goal: Know what the MCP server really exposes and which vendor generates the models.</p>
+<p>Clone github.com/ahujasid/blender-mcp (the guide says it is already at ~/projects/ai-catalogs/repos/blender-mcp/; confirm and pull latest). Read addon.py and src/blender_mcp/server.py.</p>
+<p>List every MCP tool with its parameters, the socket host and port, and what each tool sends to the addon. Cite file and line.</p>
+<p>For the 3D generation tools, find the HTTP endpoints they call and the environment variables they read. Determine whether they call Tripo, Hyper3D Rodin's own vendor, fal.ai, or something else.</p>
+<p>Check whether a default or free-tier key is embedded, and its stated limits. Do not print key values.</p>
+<p>Read Tripo's API docs: task creation for image-to-model, polling, output formats, current model version names and prices. Read the Hyper3D Rodin docs to identify its operator.</p>
+<p>Write tools.md with a verdict on the guide's claims: 'Hyper3D Rodin is Tripo's white-labeled API', 'ships with a free-tier key', 'P1-20260311 model', '0.20-0.40 USD per model via fal.ai'.</p>
+<p>Expect: tools.md with cited tool table, provider verdict and claims table.</p>
+<p>Audit before moving on: Every tool and provider statement cites a file and line or a doc URL. If Tripo is not wired in, plan a helper for step 4 instead of forcing a mismatched tool.</p>
+<h4>Step 2 — Install and round-trip</h4>
+<p>Goal: Get Claude Code talking to Blender reliably.</p>
+<p>Install uv. In Blender 4.2 LTS: Edit &gt; Preferences &gt; Add-ons &gt; Install, choose addon.py, enable it, open the BlenderMCP tab in the N-panel and start the server. Configure Claude Code's MCP settings with command uvx, args blender-mcp, and env entries TRIPO_API_KEY and any other provider key, set from your shell environment, not pasted into the config file if your client supports env passthrough. Restart Claude Code and ask: 'What is in my Blender scene right now?' Confirm get_scene_info returns the default cube, camera and light. Then test each tool once on a throwaway scene: create a cube, move it, set a material, search Poly Haven for an HDRI, and run execute_blender_code that prints bpy.app.version. Record latency for each call. Set scene units to metric with unit scale 1.0 and save as template.blend.</p>
+<p>Expect: setup.md with config (key names only), a tool test table with latency, template.blend.</p>
+<p>Audit before moving on: If any tool call hangs, check the addon is on the main thread and the port matches. Grep the config and logs for key values; any found must be removed and the key rotated.</p>
+<h4>Step 3 — Camera match and blockout</h4>
+<p>Goal: Build to the reference camera with primitives before generating anything.</p>
+<p>Open the reference photo in fSpy. Mark two vanishing directions along obvious edges (table edges, floor lines) and set a known reference distance, such as a door height or table height. Export and import the fSpy project into Blender with the fSpy importer, giving a camera with matching focal length and pose. Set the reference as the camera background image. Ask Claude, through the MCP tools, to list the major objects in the photo with an estimated real height in metres for each. Then block out each object with a primitive of that size, placed so it lines up with the photo through the camera view. Name objects clearly (table_low, cushion_left). Render a quick Eevee preview from the matched camera with 50% opacity overlay of the reference.</p>
+<p>Expect: camera/ fSpy files, blockout.blend, overlay preview PNG, objects.csv with names and heights.</p>
+<p>Audit before moving on: In the overlay, the blockout's main edges should sit within a few percent of the image width of the photo's edges. If not, redo the fSpy calibration before generating assets.</p>
+<h4>Step 4 — Generate hero assets</h4>
+<p>Goal: Generate only objects primitives and libraries cannot cover, with full provenance.</p>
+<p>From objects.csv choose at most 8 hero objects. For each, crop the reference tightly around the object, or provide a clean product photo if you have one, and save the crop in assets/crops/. Call the image-to-3D path verified in step 1: the MCP generation tools if they reach the intended provider, otherwise a small Python helper calling Tripo's REST API with TRIPO_API_KEY from environment (create task, poll, download GLB). Record task ID, model version, start and end time, and cost in provenance.csv. For anything a Poly Haven model covers adequately, use that instead and record its ID and licence. Track total spend and stop at 5 USD. For the first asset, generate twice from the same crop to see run-to-run variation, and once from a text prompt alone, so you know whether image conditioning is worth the cropping effort. Record Tripo's licence terms for generated models in provenance.csv.</p>
+<p>Expect: assets/ with GLBs, crops, provenance.csv covering every asset.</p>
+<p>Audit before moving on: Every GLB has a provenance row with a task ID. Compare measured generation time and cost with the guide's 20-60 s and 0.20-0.40 USD claims and record the difference in gaps.md.</p>
+<h4>Step 5 — Import, normalize and audit meshes</h4>
+<p>Goal: Make every asset scene-ready before placing it.</p>
+<p>Save the .blend with a version number. Then, with execute_blender_code, for each GLB: import with bpy.ops.import_scene.gltf, join parts into one object, apply rotation and scale, set origin to the bottom centre, scale uniformly so its height equals objects.csv's real height, and rename it. Run a bmesh audit per object: vertex and face count, non-manifold edge count, loose vertices, dimensions in metres. Write mesh_audit.csv. Decimate any object above 100k faces to a target you state. Replace the matching blockout primitive with the asset, copying its location and rotation. Check materials: if baked lighting in the base colour clashes with scene light, reduce it by lowering texture contrast or switching to a neutral material for that object, and log the change. Put all generated assets in a 'generated' collection so they can be hidden for comparison.</p>
+<p>Expect: scene_v.blend files, mesh_audit.csv, a material changes log.</p>
+<p>Audit before moving on: All hero assets have applied transforms (scale 1,1,1) and real-world heights within 5%. Any non-manifold count above zero is either fixed or justified in gaps.md.</p>
+<h4>Step 6 — Light, render, compare</h4>
+<p>Goal: Produce the final render and measure how close it is.</p>
+<p>Use the Poly Haven tools to search and download an HDRI matching the reference's light (time of day, indoor or outdoor, warm or cool) and set it as the world. Add one area light only if the reference has an obvious key light the HDRI lacks. Set Cycles, 512 samples, OpenImageDenoise, resolution matching the reference aspect ratio, and render from the fSpy camera. Save render.png and scene.blend. Compare: place reference and render side by side, compute SSIM on downscaled greyscale versions and LPIPS if available. These are rough layout scores, not quality judgments. Make a second render with the blockout only, and run a blind pick with at least 5 people: show the reference plus the two renders unlabeled, ask which matches better.</p>
+<p>Expect: render.png, scene.blend, compare/ with side by side, scores, blind pick results.</p>
+<p>Audit before moving on: If the final render loses the blind pick to the blockout, the generated assets hurt the scene; record which ones and why.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4>
+<p>Goal: Prove the scene is portable and record what remains unverified.</p>
+<p>Close everything and run blender -b scene.blend -f 1 with Blender 4.2 headless. Confirm the log shows no missing textures, no errors and that the frame was written.</p>
+<p>Pack external files (File &gt; External Data &gt; Pack Resources) and repeat on a second machine or clean user profile if you can.</p>
+<p>Reconcile provenance.csv with the provider's own task history.</p>
+<p>Re-run the mesh audit on the final file.</p>
+<p>Write gaps.md: each guide claim from tools.md with verified / unverified / false; measured versus claimed speed and cost; assets that needed manual fixes; tools that failed; anything done only through execute_blender_code. Fix what you can now and list the rest.</p>
+<p>Record total wall-clock time from reference photo to final render and compare it with the guide's '5-15 minutes with Tripo' claim.</p>
+<p>Expect: headless_render.log, a packed scene.blend, validation.md, gaps.md.</p>
+<p>Audit before moving on: A headless render warning about missing files fails the step until packed. Confirm no API key value appears in the .blend's text blocks, scripts or logs.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are auditing a Blender MCP reference-to-render project you did not build. Read tools.md, setup.md, objects.csv, provenance.csv, mesh_audit.csv, compare/, validation.md and the final scene.blend.</p>
+<p>List every claim: tool list, provider identity, free key, model names, speed and cost, asset dimensions, render result, blind pick.</p>
+<p>Mark each verified, unverified or false with evidence: a file and line, a task ID, an audit row, a log line.</p>
+<p>Re-check: units are metric at scale 1.0; every asset has applied transforms and a provenance row; spend stayed under the cap; the .blend renders headless in Blender 4.2 with packed resources; no API key value is stored in the .blend, configs or logs; saves preceded each execute_blender_code call.</p>
+<p>List missing pieces: licences for generated assets, retopology for production use, animation readiness.</p>
+<p>Rank gaps by impact on whether someone else can open and render the scene.</p>
+<p>Fix the top three now.</p>
+<p>Report what you could not fix and why.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Which vendor do the generate_hyper3d tools actually call, according to server.py?</p>
+<p>Is there a bundled key, and am I relying on someone else's quota?</p>
+<p>Did I match the camera with fSpy before placing anything?</p>
+<p>Is every asset's height correct in metres, with transforms applied?</p>
+<p>Which generated assets could have been primitives or Poly Haven models?</p>
+<p>Do baked PBR colours fight my HDRI lighting?</p>
+<p>Did I save before every execute_blender_code call?</p>
+<p>Does the scene render headless with no missing files?</p>
+<p>Does the final render beat the blockout in a blind pick?</p>
+<p>What did the generation actually cost and how long did it take, against the guide's claims?</p>
+<h3>5 · What proves it right</h3>
+<p>Blender 4.2 LTS headless: blender -b scene.blend -f 1 completes with no errors or missing-file warnings after packing resources.</p>
+<p>The generation provider's task history: task IDs, versions and costs matching provenance.csv.</p>
+<p>A bmesh audit script: zero unexplained non-manifold edges and real-world heights within 5% for all hero assets.</p>
+<p>At least 5 blind viewers choosing the final render over the blockout as the better match to the reference.</p>
+<p>The blender-mcp source: tool and provider claims traced to file and line.</p>
+<h3>6 · Failure modes</h3>
+<p>Wrong provider assumption. Tell: generation tools return errors about keys for a different vendor. Fix: read server.py, then use the right key or a Tripo helper.</p>
+<p>Scale chaos. Tell: a cup as tall as the table. Fix: metric units first, normalize each asset by real height, apply transforms.</p>
+<p>Layout drift. Tell: render looks right from nowhere in particular. Fix: fSpy camera match and blockout before generation.</p>
+<p>Lost work from arbitrary code. Tell: a crashed Blender after execute_blender_code. Fix: versioned saves before each call.</p>
+<p>Material clash. Tell: objects look pasted in. Fix: reduce baked lighting, match HDRI, use neutral materials where needed.</p>
+<p>Key leak. Tell: key visible in MCP config or a Blender text block. Fix: environment variables only, rotate any exposed key.</p>
+<p>Over-generation. Tell: spend climbs on assets nobody sees. Fix: cap at 8 hero assets and 5 USD.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Start by reading server.py and addon.py; the provider question decides the rest of the pipeline. Cache downloaded GLBs, HDRIs and crops under assets/ so retries do not regenerate or re-bill. Keep Blender operations in the main loop, since they share one scene; a sub-agent may do the fSpy calibration and the vendor-docs reading in parallel. Save a numbered .blend before every execute_blender_code call. Stop and ask before spending past 5 USD, before adding a paid Sketchfab key, and when a provider requires an account the user has not set up. Never print or store key values. If an MCP call hangs twice, restart the addon server rather than retrying blindly. Return README.md linking tools.md, setup.md, camera/, assets/provenance.csv, mesh_audit.csv, scene.blend, render.png, compare/, validation.md and gaps.md, each with a one-line status.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Blender MCP + Tripo — Reference Image to Rendered Scene, Driven by Claude
 
@@ -312,6 +438,241 @@ Claude is surprisingly good at all of these once the MCP connection is live. The
 - [Tripo site](https://www.tripo3d.ai/)
 - [Tripo3D v2.5 on fal.ai](https://fal.ai/models/tripo3d/tripo/v2.5/image-to-3d/api)
 - [KGP Talkie: Blender MCP + Hunyuan3D setup](https://kgptalkie.com/blender-mcp-hunyuan3d-setup-guide-general-game-characters-with-local-llm-and-ai/)
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Running this system sets up Blender MCP with a hosted image-to-3D generator and drives it from Claude to turn one reference photo into a rendered Blender scene, with the integration claims checked against the code. It produces a working MCP connection, a scripted reference-to-render run with every generated asset named, scaled to metres and logged, and a render compared against the reference. It is for a creator who wants a natural-language 3D operator. Done means the scene opens and renders headless in Blender 4.2 without errors, every asset has a provenance row, and a blind comparison rates the layout as matching the reference.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A 3D generalist would match the camera first: recover focal length and camera pose from the reference photo with fSpy, set real-world units, and build to that camera instead of guessing a layout. They would block out with primitives before generating any asset, generate only hero objects, and check each generated mesh for scale, polycount, non-manifold edges and applied transforms before placing it. They would light from an HDRI that matches the reference's time of day, render with Cycles plus denoising, and compare the render to the reference side by side. They would also read what the MCP server actually exposes, because the guide's claims about which generator sits behind which tool may be wrong.
+- **Rawest material to start from:** 1) The blender-mcp repository by ahujasid: addon.py and src/blender_mcp/server.py, read for the actual tool list, the socket protocol on localhost:9876, and which 3D generation providers are wired in. 2) Tripo's API documentation at platform.tripo3d.ai/docs: task creation, polling, output formats, model versions, pricing. 3) Hyper3D Rodin's own documentation, to establish who operates it. 4) Poly Haven's API for HDRIs and textures. 5) Blender 4.2 LTS Python API docs for import, units, render and the bmesh module. 6) fSpy and its Blender importer. 7) The reference photo at full resolution.
+- **Methods and tools:** Blender 4.2 LTS; uv and uvx to run the blender-mcp server; Claude Code as MCP client; the addon's socket server; execute_blender_code for anything the tools lack; Tripo's REST API called from a small Python helper or from execute_blender_code, with TRIPO_API_KEY read from environment; glTF import via bpy.ops.import_scene.gltf; bmesh checks for non-manifold edges and loose geometry; Decimate modifier or Blender's remesh for polycount; scale normalization by bounding-box height against a known real size; fSpy camera import; Poly Haven HDRI; Cycles with OpenImageDenoise; blender -b scene.blend -f 1 for headless render; SSIM or LPIPS between render and reference for a rough layout score; a provenance CSV per asset.
+- **What proves it right (other than you or the model):** Blender 4.2 opening the saved .blend and rendering frame 1 headless with no errors in the log. The provider's own job records (Tripo task IDs) matching the asset provenance file. A blind two-alternative comparison where viewers pick which of two renders better matches the reference. A mesh audit script reporting zero non-manifold edges and correct real-world dimensions for each hero asset.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+I want Claude to turn a reference photo into a rendered Blender scene through Blender MCP and a hosted image-to-3D API. Act as a 3D generalist. First read the blender-mcp source (addon.py and src/blender_mcp/server.py) and list the actual tools and 3D generation providers it supports; the guide says Hyper3D Rodin is Tripo white-labeled, so verify that against both vendors' docs, and if Tripo is not wired in, call Tripo's REST API through a small helper. Then: (1) match the camera from the photo with fSpy and set units to metres; (2) block out the scene with primitives; (3) list hero objects and generate only those via image-to-3D from tight crops, logging task IDs, cost and time; (4) import each asset, normalize scale to a real-world height, apply transforms, check non-manifold edges and polycount; (5) light with a Poly Haven HDRI matching the photo, render in Cycles with denoising; (6) save the .blend and prove it renders headless in Blender 4.2. Compare the render with the reference side by side and by a blind pick. Read API keys from environment only, never print them, and save the scene before any execute_blender_code call.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are a 3D generalist operating Blender through MCP from Claude Code. You build to the reference camera, generate only what primitives cannot do, and check every generated mesh before it enters the scene. You verify the guide's claims against the code before relying on them.
+
+CONTEXT
+- blender-mcp (ahujasid, MIT): an addon runs a socket server inside Blender on localhost:9876; an MCP server launched by uvx blender-mcp translates tool calls to JSON over TCP. Tools listed by the guide include get_scene_info, get_object_info, create_object, modify_object, delete_object, set_material, execute_blender_code, Poly Haven search and download, Sketchfab search and download, generate_hyper3d_model_via_text and via_images, poll_rodin_job_status, import_generated_asset, and Hunyuan3D generation.
+- The guide claims the Hyper3D Rodin endpoint is Tripo's white-labeled API and that a free-tier key ships with the server. Public materials suggest Hyper3D Rodin is a separate vendor's product. Treat both as unverified.
+- Tripo: hosted text-, image- and multiview-to-3D, GLB with PBR, 20-60 s per generation per the guide, about 0.20-0.40 USD per model via fal.ai, model family named P1-20260311 plus v3.0 and v3.1. Unverified until checked in Tripo's docs.
+- The guide's known weak points: single-image segmentation, arbitrary scale ('assume 1 Blender unit = 1 metre'), baked PBR not matching scene light, game-ready not film topology.
+- execute_blender_code runs arbitrary Python inside Blender. Save first.
+
+HARD CONSTRAINTS
+- API keys from environment only; never echo, log or commit them.
+- Save the .blend before each execute_blender_code call; keep numbered versions.
+- Units: metric, 1 unit = 1 metre, set before any import.
+- At most 8 generated assets per scene; everything else is primitives, Poly Haven assets or reuse.
+- Every asset gets a provenance row: name, source (Tripo task ID, Poly Haven ID, primitive), prompt or crop file, cost, generation time, licence.
+
+DELIVERABLES, IN ORDER
+1. tools.md: the tool list and providers from server.py and addon.py, with file and line references, and the verdict on the Rodin-equals-Tripo claim.
+2. setup.md: Claude Code MCP config (command uvx, args blender-mcp, env names only), addon install steps for Blender 4.2, a get_scene_info round trip.
+3. camera/: fSpy project and imported camera matching the reference.
+4. blockout.blend: primitives placed to the camera.
+5. assets/: crops, generated GLBs, provenance.csv, mesh_audit.csv (dimensions, polycount, non-manifold count).
+6. scene.blend: assets placed, HDRI lit, Cycles with denoising, render.png.
+7. compare/: reference and render side by side, an SSIM or LPIPS score, and a blind pick result.
+
+GAP ANALYSIS (BUILT IN)
+Keep gaps.md: which provider the generation tools actually call; whether a bundled free key exists and its limits; Tripo model names, prices and speeds measured versus claimed; assets that failed or needed manual fixes; materials changed after import; anything execute_blender_code did that the named tools could not. Fill what you can now.
+
+SELF-QUESTIONS
+- Does the camera match the reference before I place anything?
+- Is each asset's height right in metres?
+- Did any generated mesh arrive with unapplied rotation or scale?
+- Do the generated materials fight the HDRI lighting?
+- Could a primitive or Poly Haven asset have replaced any generated one?
+
+STOP CONDITIONS
+Stop and report if the MCP round trip fails after two fixes, if no generation provider works without a key the user lacks, or if spend passes 5 USD. Otherwise stop when all seven deliverables exist.
+
+RETURN FORMAT
+Table of deliverable, path, status; tool and provider verdict; asset count, total cost and time; headless render result; comparison score and blind pick; top five gaps.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: read the server and vendor docs
+
+*Goal:* Know what the MCP server really exposes and which vendor generates the models.
+
+```text
+Clone github.com/ahujasid/blender-mcp (the guide says it is already at ~/projects/ai-catalogs/repos/blender-mcp/; confirm and pull latest). Read addon.py and src/blender_mcp/server.py.
+1. List every MCP tool with its parameters, the socket host and port, and what each tool sends to the addon. Cite file and line.
+2. For the 3D generation tools, find the HTTP endpoints they call and the environment variables they read. Determine whether they call Tripo, Hyper3D Rodin's own vendor, fal.ai, or something else.
+3. Check whether a default or free-tier key is embedded, and its stated limits. Do not print key values.
+4. Read Tripo's API docs: task creation for image-to-model, polling, output formats, current model version names and prices. Read the Hyper3D Rodin docs to identify its operator.
+5. Write tools.md with a verdict on the guide's claims: 'Hyper3D Rodin is Tripo's white-labeled API', 'ships with a free-tier key', 'P1-20260311 model', '0.20-0.40 USD per model via fal.ai'.
+```
+
+**Expect:** tools.md with cited tool table, provider verdict and claims table.
+
+**Audit before moving on:** Every tool and provider statement cites a file and line or a doc URL. If Tripo is not wired in, plan a helper for step 4 instead of forcing a mismatched tool.
+
+#### Step 2 — Install and round-trip
+
+*Goal:* Get Claude Code talking to Blender reliably.
+
+```text
+Install uv. In Blender 4.2 LTS: Edit > Preferences > Add-ons > Install, choose addon.py, enable it, open the BlenderMCP tab in the N-panel and start the server. Configure Claude Code's MCP settings with command uvx, args blender-mcp, and env entries TRIPO_API_KEY and any other provider key, set from your shell environment, not pasted into the config file if your client supports env passthrough.
+Restart Claude Code and ask: 'What is in my Blender scene right now?' Confirm get_scene_info returns the default cube, camera and light.
+Then test each tool once on a throwaway scene: create a cube, move it, set a material, search Poly Haven for an HDRI, and run execute_blender_code that prints bpy.app.version. Record latency for each call.
+Set scene units to metric with unit scale 1.0 and save as template.blend.
+```
+
+**Expect:** setup.md with config (key names only), a tool test table with latency, template.blend.
+
+**Audit before moving on:** If any tool call hangs, check the addon is on the main thread and the port matches. Grep the config and logs for key values; any found must be removed and the key rotated.
+
+#### Step 3 — Camera match and blockout
+
+*Goal:* Build to the reference camera with primitives before generating anything.
+
+```text
+Open the reference photo in fSpy. Mark two vanishing directions along obvious edges (table edges, floor lines) and set a known reference distance, such as a door height or table height. Export and import the fSpy project into Blender with the fSpy importer, giving a camera with matching focal length and pose. Set the reference as the camera background image.
+Ask Claude, through the MCP tools, to list the major objects in the photo with an estimated real height in metres for each. Then block out each object with a primitive of that size, placed so it lines up with the photo through the camera view. Name objects clearly (table_low, cushion_left).
+Render a quick Eevee preview from the matched camera with 50% opacity overlay of the reference.
+```
+
+**Expect:** camera/ fSpy files, blockout.blend, overlay preview PNG, objects.csv with names and heights.
+
+**Audit before moving on:** In the overlay, the blockout's main edges should sit within a few percent of the image width of the photo's edges. If not, redo the fSpy calibration before generating assets.
+
+#### Step 4 — Generate hero assets
+
+*Goal:* Generate only objects primitives and libraries cannot cover, with full provenance.
+
+```text
+From objects.csv choose at most 8 hero objects. For each, crop the reference tightly around the object, or provide a clean product photo if you have one, and save the crop in assets/crops/.
+Call the image-to-3D path verified in step 1: the MCP generation tools if they reach the intended provider, otherwise a small Python helper calling Tripo's REST API with TRIPO_API_KEY from environment (create task, poll, download GLB). Record task ID, model version, start and end time, and cost in provenance.csv.
+For anything a Poly Haven model covers adequately, use that instead and record its ID and licence.
+Track total spend and stop at 5 USD.
+For the first asset, generate twice from the same crop to see run-to-run variation, and once from a text prompt alone, so you know whether image conditioning is worth the cropping effort. Record Tripo's licence terms for generated models in provenance.csv.
+```
+
+**Expect:** assets/ with GLBs, crops, provenance.csv covering every asset.
+
+**Audit before moving on:** Every GLB has a provenance row with a task ID. Compare measured generation time and cost with the guide's 20-60 s and 0.20-0.40 USD claims and record the difference in gaps.md.
+
+#### Step 5 — Import, normalize and audit meshes
+
+*Goal:* Make every asset scene-ready before placing it.
+
+```text
+Save the .blend with a version number. Then, with execute_blender_code, for each GLB: import with bpy.ops.import_scene.gltf, join parts into one object, apply rotation and scale, set origin to the bottom centre, scale uniformly so its height equals objects.csv's real height, and rename it.
+Run a bmesh audit per object: vertex and face count, non-manifold edge count, loose vertices, dimensions in metres. Write mesh_audit.csv. Decimate any object above 100k faces to a target you state.
+Replace the matching blockout primitive with the asset, copying its location and rotation. Check materials: if baked lighting in the base colour clashes with scene light, reduce it by lowering texture contrast or switching to a neutral material for that object, and log the change. Put all generated assets in a 'generated' collection so they can be hidden for comparison.
+```
+
+**Expect:** scene_v*.blend files, mesh_audit.csv, a material changes log.
+
+**Audit before moving on:** All hero assets have applied transforms (scale 1,1,1) and real-world heights within 5%. Any non-manifold count above zero is either fixed or justified in gaps.md.
+
+#### Step 6 — Light, render, compare
+
+*Goal:* Produce the final render and measure how close it is.
+
+```text
+Use the Poly Haven tools to search and download an HDRI matching the reference's light (time of day, indoor or outdoor, warm or cool) and set it as the world. Add one area light only if the reference has an obvious key light the HDRI lacks.
+Set Cycles, 512 samples, OpenImageDenoise, resolution matching the reference aspect ratio, and render from the fSpy camera. Save render.png and scene.blend.
+Compare: place reference and render side by side, compute SSIM on downscaled greyscale versions and LPIPS if available. These are rough layout scores, not quality judgments.
+Make a second render with the blockout only, and run a blind pick with at least 5 people: show the reference plus the two renders unlabeled, ask which matches better.
+```
+
+**Expect:** render.png, scene.blend, compare/ with side by side, scores, blind pick results.
+
+**Audit before moving on:** If the final render loses the blind pick to the blockout, the generated assets hurt the scene; record which ones and why.
+
+#### Step 7 — Validate against oracles and write the gap report
+
+*Goal:* Prove the scene is portable and record what remains unverified.
+
+```text
+1. Close everything and run blender -b scene.blend -f 1 with Blender 4.2 headless. Confirm the log shows no missing textures, no errors and that the frame was written.
+2. Pack external files (File > External Data > Pack Resources) and repeat on a second machine or clean user profile if you can.
+3. Reconcile provenance.csv with the provider's own task history.
+4. Re-run the mesh audit on the final file.
+5. Write gaps.md: each guide claim from tools.md with verified / unverified / false; measured versus claimed speed and cost; assets that needed manual fixes; tools that failed; anything done only through execute_blender_code. Fix what you can now and list the rest.
+6. Record total wall-clock time from reference photo to final render and compare it with the guide's '5-15 minutes with Tripo' claim.
+```
+
+**Expect:** headless_render.log, a packed scene.blend, validation.md, gaps.md.
+
+**Audit before moving on:** A headless render warning about missing files fails the step until packed. Confirm no API key value appears in the .blend's text blocks, scripts or logs.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are auditing a Blender MCP reference-to-render project you did not build. Read tools.md, setup.md, objects.csv, provenance.csv, mesh_audit.csv, compare/, validation.md and the final scene.blend.
+1. List every claim: tool list, provider identity, free key, model names, speed and cost, asset dimensions, render result, blind pick.
+2. Mark each verified, unverified or false with evidence: a file and line, a task ID, an audit row, a log line.
+3. Re-check: units are metric at scale 1.0; every asset has applied transforms and a provenance row; spend stayed under the cap; the .blend renders headless in Blender 4.2 with packed resources; no API key value is stored in the .blend, configs or logs; saves preceded each execute_blender_code call.
+4. List missing pieces: licences for generated assets, retopology for production use, animation readiness.
+5. Rank gaps by impact on whether someone else can open and render the scene.
+6. Fix the top three now.
+7. Report what you could not fix and why.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Which vendor do the generate_hyper3d tools actually call, according to server.py?
+- Is there a bundled key, and am I relying on someone else's quota?
+- Did I match the camera with fSpy before placing anything?
+- Is every asset's height correct in metres, with transforms applied?
+- Which generated assets could have been primitives or Poly Haven models?
+- Do baked PBR colours fight my HDRI lighting?
+- Did I save before every execute_blender_code call?
+- Does the scene render headless with no missing files?
+- Does the final render beat the blockout in a blind pick?
+- What did the generation actually cost and how long did it take, against the guide's claims?
+
+### 5 · What proves it right
+
+- Blender 4.2 LTS headless: blender -b scene.blend -f 1 completes with no errors or missing-file warnings after packing resources.
+- The generation provider's task history: task IDs, versions and costs matching provenance.csv.
+- A bmesh audit script: zero unexplained non-manifold edges and real-world heights within 5% for all hero assets.
+- At least 5 blind viewers choosing the final render over the blockout as the better match to the reference.
+- The blender-mcp source: tool and provider claims traced to file and line.
+
+### 6 · Failure modes
+
+- Wrong provider assumption. Tell: generation tools return errors about keys for a different vendor. Fix: read server.py, then use the right key or a Tripo helper.
+- Scale chaos. Tell: a cup as tall as the table. Fix: metric units first, normalize each asset by real height, apply transforms.
+- Layout drift. Tell: render looks right from nowhere in particular. Fix: fSpy camera match and blockout before generation.
+- Lost work from arbitrary code. Tell: a crashed Blender after execute_blender_code. Fix: versioned saves before each call.
+- Material clash. Tell: objects look pasted in. Fix: reduce baked lighting, match HDRI, use neutral materials where needed.
+- Key leak. Tell: key visible in MCP config or a Blender text block. Fix: environment variables only, rotate any exposed key.
+- Over-generation. Tell: spend climbs on assets nobody sees. Fix: cap at 8 hero assets and 5 USD.
+
+### 7 · Agent direction (unattended runs)
+
+Start by reading server.py and addon.py; the provider question decides the rest of the pipeline. Cache downloaded GLBs, HDRIs and crops under assets/ so retries do not regenerate or re-bill. Keep Blender operations in the main loop, since they share one scene; a sub-agent may do the fSpy calibration and the vendor-docs reading in parallel. Save a numbered .blend before every execute_blender_code call. Stop and ask before spending past 5 USD, before adding a paid Sketchfab key, and when a provider requires an account the user has not set up. Never print or store key values. If an MCP call hangs twice, restart the addon server rather than retrying blindly. Return README.md linking tools.md, setup.md, camera/, assets/provenance.csv, mesh_audit.csv, scene.blend, render.png, compare/, validation.md and gaps.md, each with a one-line status.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -319,4 +680,26 @@ Claude is surprisingly good at all of these once the MCP connection is live. The
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

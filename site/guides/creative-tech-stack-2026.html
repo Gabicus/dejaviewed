@@ -1,202 +1,805 @@
-<html lang="en">
-<meta charset="utf-8">
-<title>The One-Person Studio: Creative Tech Stack That Replaces a Team — DejaViewed Guide</title>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The One-Person Studio: Creative Tech Stack That Replaces a Team · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
 <style>
-  .guide { max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
-  .guide h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-  .guide h2 { color: #7dd3fc; margin-top: 2rem; font-size: 1.3rem; border-bottom: 1px solid rgba(125,211,252,0.2); padding-bottom: 0.5rem; }
-  .guide p, .guide li { line-height: 1.7; color: #cbd5e1; }
-  .confidence-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
-  .confidence-badge.high { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-  .confidence-badge.medium { background: rgba(250,204,21,0.15); color: #fbbf24; border: 1px solid rgba(250,204,21,0.3); }
-  .meta { color: #64748b; font-size: 0.85rem; margin-bottom: 1.5rem; }
-  .entries-section { margin-top: 2rem; }
-</style>
-<script src="../shared.js" defer></script>
-<script>document.addEventListener("DOMContentLoaded",()=>window.DV&&DV.mountHeader(document.body,"guides"))</script>
-
-<article class="guide" data-pagefind-body data-pagefind-filter="kind:Guide">
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
-  <h1>The One-Person Studio: Creative Tech Stack That Replaces a Team</h1>
-<div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-creative-tech-stack-2026.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — The One-Person Studio: Creative Tech Stack That Replaces a T →</a></div>
-  <div class="meta">workflow_multiplier · 23 connected entries · Hard difficulty</div>
-  
-  <h2>Thesis</h2>
-  <p>In 2026, a single creator with Claude Code, Cursor, Blender, and a handful of AI tools can produce work that required a 5-10 person team two years ago: interactive 3D websites, motion-captured animations, AI-assisted VFX, generative music videos. These entries collectively map the full stack.</p>
-  
-  <h2>Why It Matters</h2>
-  <p>This isn't about replacing artists — it's about removing the production bottleneck. A concept artist can now ship a full interactive experience without needing a dev team. A musician can produce a 3D music video without a VFX house. The stack is converging and these entries map every layer of it.</p>
-  
-  <h2>The Evidence</h2>
-  <div class="entries-section">
-    <div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DX3FPMgDgZy.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DX3FPMgDgZy/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I thin</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@encycloped_ai · S-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DW6tpWWMtZV.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DW6tpWWMtZV/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">MediaPipe — What if Spiders Wove with Strings?🕷️</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@pepepepebrick · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DXFaQvyExqx.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DXFaQvyExqx/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Cursor — Most websites just show text.</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@code.akshat.in · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DXOWz4yjN--.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DXOWz4yjN--/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Claude — Also, happy 100 posts to me! Woohoo!!!</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@ojrgb · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DW7lN7sj2ow.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DW7lN7sj2ow/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Claude — Here's how to build it in 10 minutes:</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@theaisurfer · S-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DY8TYwpCd8P.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DY8TYwpCd8P/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">React — made a little 3D racer that runs right in the browser. anti-grav...</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@rndyrbrts · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYAI_fCuvrY.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYAI_fCuvrY/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Blender — • 500+ body, hand & face landmarks per frame</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@marc.kaz · S-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYaNXZJx_L3.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYaNXZJx_L3/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">MediaPipe — Download free at</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@zerospacelabs · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYeHzvgCURl.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYeHzvgCURl/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Built a system that turns taste into data and data back into — Started with a mo</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@rndyrbrts · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYiiwmzpRM7.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYiiwmzpRM7/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Gemini — if you want to listen leave a comment and i can send a link! ♡</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@as.ws__ · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYoJ0GZi5p0.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYoJ0GZi5p0/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Let me know if you want this skill — This is a 90-second walkthrough of how to t</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@rndyrbrts · S-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYpRWC1OO0u.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYpRWC1OO0u/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">MediaPipe — Ongoing R&D at the intersection of art and technology. not a finishe</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@touchdesigner · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYysyLiii8i.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYysyLiii8i/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Join us at tiat on Thursday, April 30th — Tracing a path from his pioneering int</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@Edited · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZMvBJ8C0R1.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZMvBJ8C0R1/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Wild times we are living in — Hehe... 😂 i love this. I legit thought of this the</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@lostandlucky · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZVXehQRe3T.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZVXehQRe3T/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Claude — Rendered via 3D Gaussian splatting.</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@kaustav.py · S-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DR6kWKTDJ1T.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DR6kWKTDJ1T/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">The art market just stopped gatekeeping, and most artists ha — For decades you m</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@creativeflairhq · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DXirC3ujavl.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DXirC3ujavl/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Join us at tiat on Thursday, April 30th — Tracing a path from his pioneering int</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@Edited · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DYsSz2rvWGI.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DYsSz2rvWGI/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">A gorgeous strange attractor known as Thomas' cyclically sym — Rendered via 3D G</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@kaustav.py · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZMoG2mMM1t.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZMoG2mMM1t/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Hugging Face — ️ FREECAD — github.com/FreeCAD/FreeCAD</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@jg.engineers · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZZxvq7IPeE.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZZxvq7IPeE/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">The art market just stopped gatekeeping, and most artists ha — For decades you m</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@creativeflairhq · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZfH3T3okGC.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZfH3T3okGC/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">Website with hand-tracking interaction, step by step tutoria — visuals created i</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@marina_uiux · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZsEdvNoFdm.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZsEdvNoFdm/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">There is a free app putting artists work in front of people  — Instagram shows y</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@creativeflairhq · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-<div class="entry-card" style="display:flex;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px;">
-  <img src="../thumb/DZxdjAtgJsN.jpg" alt="" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
-  <div style="flex:1;min-width:0;">
-    <a href="https://www.instagram.com/p/DZxdjAtgJsN/" target="_blank" rel="noopener" style="color:#7dd3fc;text-decoration:none;font-weight:500;">All The Perspective Grids 1 to 6 Points — Perspective drawing creates depth in y</a>
-    <div style="font-size:0.8em;color:#94a3b8;margin-top:2px;">@adamgenesisartuniverse · A-tier · Component of the one-person creative studio stack</div>
-  </div>
-</div>
-  </div>
-  
-  <h2>Action Sketch</h2>
-  <ol><li>Concept: Claude Code for rapid prototyping + ideation</li><li>D: Blender + motion capture via MediaPipe (500+ landmarks/frame)</li><li>Video: AI generation via Veo/Kling/Pika for b-roll and effects</li><li>Interactive: React/Three.js for browser-based 3D experiences</li><li>Music: AI-assisted composition + Audacity for post-production</li><li>Ship: Cursor for polishing the final interactive site</li><li>Distribution: Direct-to-audience, no gatekeepers needed</li></ol>
-  
-  <h2>Prerequisites</h2>
-  <ul><li>Intermediate coding ability (or willingness to use Claude Code)</li><li>Blender basics</li><li>One AI video tool (Veo, Kling, or Pika)</li><li>Web fundamentals (HTML/CSS/JS)</li></ul>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-creative-tech-stack-2026.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — The One-Person Studio: Creative Tech Stack That Replaces a Team →</a></div>
+  <div id="guide-body"></div>
 </article>
-</html>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>The One-Person Studio: Creative Tech Stack That Replaces a Team</h1>
+<p>Insight class: Workflow Multiplier · Difficulty: Hard · Quality: 5/5 Connected entries: 23 · Tools: Blender, Buffer, Claude, Claude Code, Claude in Chrome, Cursor, ElevenLabs, Gemini, Gmail, Hugging Face, Kling, MediaPipe, Meta Ads, Pika, React, RevenueCat, Runway, Sora, TouchDesigner, Unity, Unreal Engine, Veo</p>
+<h2>Thesis</h2>
+<p>In 2026, a single creator with Claude Code, Cursor, Blender, and a handful of AI tools can produce work that required a 5-10 person team two years ago: interactive 3D websites, motion-captured animations, AI-assisted VFX, generative music videos. These entries collectively map the full stack.</p>
+<h2>Why it matters</h2>
+<p>This isn't about replacing artists — it's about removing the production bottleneck. A concept artist can now ship a full interactive experience without needing a dev team. A musician can produce a 3D music video without a VFX house. The stack is converging and these entries map every layer of it.</p>
+<h2>The evidence — connected entries</h2>
+<h3>Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I think he just ripped a massive line backs...</h3>
+<p>Creator: @encycloped_ai · Tier: S</p>
+<p>Component of the one-person creative studio stack</p>
+<p>Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary. From predicting the end of high-cost VFX to ... — @encycloped_ai.</p>
+<p>View original post</p>
+<h3>MediaPipe — What if Spiders Wove with Strings?🕷️</h3>
+<p>Creator: @pepepepebrick · Tier: A Tools: MediaPipe, TouchDesigner</p>
+<p>Component of the one-person creative studio stack</p>
+<p>🧱 2026/04/09 — @pepepepebrick; uses MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>Cursor — Most websites just show text.</h3>
+<p>Creator: @code.akshat.in · Tier: A Tools: Cursor, React</p>
+<p>Component of the one-person creative studio stack</p>
+<p>“This isn’t text… this is physics.” — @code.akshat.in; uses Cursor, React.</p>
+<p>View original post</p>
+<h3>Claude — Also, happy 100 posts to me! Woohoo!!!</h3>
+<p>Creator: @ojrgb · Tier: A Tools: Claude, MediaPipe, TouchDesigner</p>
+<p>Component of the one-person creative studio stack</p>
+<p>“Claude can do this in 10 minutes!” Is a caption I see a LOT rn and I definitely have mixed feelings about it. On one... — @ojrgb; uses Claude, MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>Claude — Here's how to build it in 10 minutes:</h3>
+<p>Creator: @theaisurfer · Tier: A Tools: Claude, Cursor, Veo</p>
+<p>Component of the one-person creative studio stack</p>
+<p>This is the exact scroll effect Apple uses on their product pages! — @theaisurfer; uses Claude, Cursor, Veo; demonstrates code generation.</p>
+<p>View original post</p>
+<h3>React — made a little 3D racer that runs right in the browser. anti-grav...</h3>
+<p>Creator: @rndyrbrts · Tier: A Tools: React</p>
+<p>Component of the one-person creative studio stack</p>
+<p>cool way to build complex 3D creative stuff on the web with AI agent workflows. you build yourself a library first, t... — @rndyrbrts; uses React; demonstrates AI agents, code generation.</p>
+<p>View original post</p>
+<h3>Blender — • 500+ body, hand &amp; face landmarks per frame</h3>
+<p>Creator: @marc.kaz · Tier: S Tools: Blender, Unity, Unreal Engine</p>
+<p>Component of the one-person creative studio stack</p>
+<p>FreeMoCap turns ordinary webcams into professional markerless 3D motion capture. — @marc.kaz; uses Blender, Unity, Unreal Engine; demonstrates motion capture.</p>
+<p>View original post</p>
+<h3>MediaPipe — Download free at</h3>
+<p>Creator: @zerospacelabs · Tier: A Tools: MediaPipe, TouchDesigner</p>
+<p>Component of the one-person creative studio stack</p>
+<p>Torin &amp; Lyell demo Classifier &amp; PCA visualization TOXs live at DATLAB XIII 12/2025. TouchDesigner plugins for trainin... — @zerospacelabs; uses MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>Built a system that turns taste into data and data back into — Started with a moodboard of references I’d been collec...</h3>
+<p>Creator: @rndyrbrts · Tier: B</p>
+<p>Component of the one-person creative studio stack</p>
+<p>Built a system that turns taste into data and data back into art. — @rndyrbrts.</p>
+<p>View original post</p>
+<h3>Gemini Omni — Google's unified multimodal model family for video</h3>
+<p>Creator: @gigaqian · Tier: B Tools: Gemini, Kling, Pika, Runway, Sora, TouchDesigner, Veo</p>
+<p>Component of the one-person creative studio stack</p>
+<p>At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. It's a single model that converses across text, image, video and audio, unlike diffusion-only video tools such as Veo, Sora, Runway or Kling. Early testers report that two 10-second generations used about 86% of a Pro plan's daily quota. There's also an aside about Kling's 'Omni' naming.</p>
+<p>View original post</p>
+<h3>Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...</h3>
+<p>Creator: @rndyrbrts · Tier: A</p>
+<p>Component of the one-person creative studio stack</p>
+<p>Let me know if you want this skill.. — @rndyrbrts; demonstrates AI agents, prompt engineering.</p>
+<p>View original post</p>
+<h3>MediaPipe — Ongoing R&amp;D at the intersection of art and technology. not a finished...</h3>
+<p>Creator: @touchdesigner · Tier: B Tools: MediaPipe, TouchDesigner</p>
+<p>Component of the one-person creative studio stack</p>
+<p>repost @gerrylistudio How does presence reshape what we remember? — @touchdesigner; uses MediaPipe, TouchDesigner.</p>
+<p>View original post</p>
+<h3>Claude Code room-color probe — turning iPhone footage into a 3D color map</h3>
+<p>Creator: @rndyrbrts · Tier: B Tools: Claude Code</p>
+<p>Component of the one-person creative studio stack</p>
+<p>Built entirely with Claude Code: a probe sweeps iPhone clips of a room, locks onto objects and samples dominant color, luminance and position for 42 captures, then redraws them as a living color map and 3D data. Part of a workflow for turning taste and mood boards into reusable design-system data.</p>
+<p>View original post</p>
+<h3>Mood board to audio-reactive code art — parametric design system for agents</h3>
+<p>Creator: @rndyrbrts · Tier: A</p>
+<p>Component of the one-person creative studio stack</p>
+<p>This follow-up adds audio reactivity to the mood-board-to-code-art workflow. A well-defined design system lets AI agents generate generative visuals with parametric controls, including how audio drives the visuals. You end up with macros you can art-direct for live visuals.</p>
+<p>View original post</p>
+<h3>Jarvis daily brief — Claude with RevenueCat, Buffer, Meta Ads and Gmail MCPs</h3>
+<p>Creator: @chandlerintelligence · Tier: S Tools: Buffer, Claude, Claude Code, Claude in Chrome, ElevenLabs, Gmail, Meta Ads, RevenueCat</p>
+<p>Component of the one-person creative studio stack</p>
+<p>A walkthrough of a personal 'Jarvis' built on Claude. Voice mode plus ElevenLabs gives it the voice, and Claude in Chrome handles the browser. MCP servers for RevenueCat, Buffer, Meta Ads and Gmail cover app revenue, posting, ads and email. Custom subagents get skills, FAQ markdown handles support, and the whole daily brief runs as a scheduled routine.</p>
+<p>View original post</p>
+<h3>Curlicue fractals — turtle-walk spirals from irrational angle steps</h3>
+<p>Creator: @fascinating.fractals · Tier: B</p>
+<p>Component of the one-person creative studio stack</p>
+<p>A looping animation of curlicue fractals, the spiralling curves you get by stepping forward and turning by an angle that grows quadratically. Irrational constants produce nested whorls. Purely visual, with no narration, but it's a good prompt for a creative-coding sketch.</p>
+<p>View original post</p>
+<h3>Join us at tiat on Thursday, April 30th — Tracing a path from his pioneering interactive media works to new...</h3>
+<p>Creator: @tiat.place · Tier: A</p>
+<p>Component of the one-person creative studio stack</p>
+<p>Join us at tiat on Thursday, April 30th! ⭐️ We’re honored to have Scott Snibbe @ssnibbe share an artist’s talk explor... — @Edited.</p>
+<p>View original post</p>
+<h3>A gorgeous strange attractor known as Thomas' cyclically sym — Rendered via 3D Gaussian splatting.</h3>
+<p>Creator: @kaustav.py · Tier: A</p>
+<p>Component of the one-person creative studio stack</p>
+<p>A gorgeous strange attractor known as Thomas' cyclically symmetric attractor — @kaustav.py.</p>
+<p>View original post</p>
+<h3>Hugging Face — ️ FREECAD — github.com/FreeCAD/FreeCAD</h3>
+<p>Creator: @jg.engineers · Tier: A Tools: Hugging Face</p>
+<p>Component of the one-person creative studio stack</p>
+<p>🔧 4 GitHub repos to explore instead of scrolling ↓↓ — @jg.engineers; uses Hugging Face.</p>
+<p>View original post</p>
+<h3>The art market just stopped gatekeeping, and most artists ha — For decades you made the work and waited to be picked....</h3>
+<p>Creator: @creativeflairhq · Tier: A</p>
+<p>Component of the one-person creative studio stack</p>
+<p>The art market just stopped gatekeeping, and most artists have not noticed. — @creativeflairhq.</p>
+<p>View original post</p>
+<h3>Website with hand-tracking interaction, step by step tutoria — visuals created in part 1 using gpt2 model for images ...</h3>
+<p>Creator: @marina_uiux · Tier: A</p>
+<p>Component of the one-person creative studio stack</p>
+<p>Website with hand-tracking interaction, step by step tutorial [part 2] ✨ — @marina_uiux.</p>
+<p>View original post</p>
+<h3>There is a free app putting artists work in front of people — Instagram shows your work to people who already follow...</h3>
+<p>Creator: @creativeflairhq · Tier: A</p>
+<p>Component of the one-person creative studio stack</p>
+<p>There is a free app putting artists work in front of people searching for art to buy, and most painters ignore it. It... — @creativeflairhq.</p>
+<p>View original post</p>
+<h3>All The Perspective Grids 1 to 6 Points — Perspective drawing creates depth in your art!</h3>
+<p>Creator: @adamgenesisartuniverse · Tier: A</p>
+<p>Component of the one-person creative studio stack</p>
+<p>All The Perspective Grids 1 to 6 Points! 👁🙏🔥 — @adamgenesisartuniverse.</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Concept: Claude Code for rapid prototyping + ideation</p>
+<p>3D: Blender + motion capture via MediaPipe (500+ landmarks/frame)</p>
+<p>Video: AI generation via Veo/Kling/Pika for b-roll and effects</p>
+<p>Interactive: React/Three.js for browser-based 3D experiences</p>
+<p>Music: AI-assisted composition + Audacity for post-production</p>
+<p>Ship: Cursor for polishing the final interactive site</p>
+<p>Distribution: Direct-to-audience, no gatekeepers needed</p>
+<h2>Prerequisites</h2>
+<p>Intermediate coding ability (or willingness to use Claude Code)</p>
+<p>Blender basics</p>
+<p>One AI video tool (Veo, Kling, or Pika)</p>
+<p>Web fundamentals (HTML/CSS/JS)</p>
+<h2>Key tools and resources</h2>
+<p>Blender</p>
+<p>Buffer</p>
+<p>Claude</p>
+<p>Claude Code</p>
+<p>Claude in Chrome</p>
+<p>Cursor</p>
+<p>ElevenLabs</p>
+<p>Gemini</p>
+<p>Gmail</p>
+<p>Hugging Face</p>
+<p>Kling</p>
+<p>MediaPipe</p>
+<p>Meta Ads</p>
+<p>Pika</p>
+<p>React</p>
+<p>RevenueCat</p>
+<p>Runway</p>
+<p>Sora</p>
+<p>TouchDesigner</p>
+<p>Unity</p>
+<p>Unreal Engine</p>
+<p>Veo</p>
+<h2>Creators to follow</h2>
+<p>@adamgenesisartuniverse</p>
+<p>@chandlerintelligence</p>
+<p>@code.akshat.in</p>
+<p>@creativeflairhq</p>
+<p>@encycloped_ai</p>
+<p>@fascinating.fractals</p>
+<p>@gigaqian</p>
+<p>@jg.engineers</p>
+<p>@kaustav.py</p>
+<p>@marc.kaz</p>
+<p>@marina_uiux</p>
+<p>@ojrgb</p>
+<p>@pepepepebrick</p>
+<p>@rndyrbrts</p>
+<p>@theaisurfer</p>
+<p>@tiat.place</p>
+<p>@touchdesigner</p>
+<p>@zerospacelabs</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Ship one complete creative artifact end to end as a one-person studio: an interactive 3D web experience (or a generative/motion piece) built through the full stack - Claude Code/Cursor for the build, a reusable reference library or design system for the agent, MediaPipe/FreeMoCap or AI video where relevant, Three.js/React for delivery. Done means it is live on a public URL, loads and runs on a mid-range phone, was built with an agent driving from a committed design system, and a second person can open and interact with it.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A one-person studio that actually ships does not 'ask Claude to make a cool 3D site'. Like rndyrbrts, they build the library and the design system FIRST, then build the thing: a committed reference archive (rndyrbrts' R3ARXIV of 560+ React-Three-Fiber/Three.js resources turned into an agent skill) and a written design system that extracts the meta from a moodboard (palette behaviour, layout pressure, motion, density, texture, interface logic, emotional tone) so the agent generates on-brand output repeatably and the parameters become art-direction controls. They expose parameters as macros, make it audio- or input-reactive deliberately, and test on real devices. ojrgb's caution applies: respect the depth of the craft, don't ship a caricature.</p>
+<p>Rawest material to start from: rndyrbrts' workflow (moodboard -&gt; extract tags/signal/structure/palette -&gt; liminal atlas manifest, one row per artifact -&gt; LLM steered by a written philosophy generates live HTML/canvas); the React-Three-Fiber and Three.js docs and a self-assembled reference archive like R3ARXIV turned into a skill; FreeMoCap (github.com/freemocap/freemocap, 500+ landmarks/frame, exports to Blender/Unity/Unreal) for motion; MediaPipe for input interaction; a real moodboard you assemble (screenshots, links, winners, rejects, and one sentence per reference on why it matters).</p>
+<p>Methods and tools: Claude Code or Cursor as the build agent; a committed design-system markdown (the agent's contract: goal, context=the archive, constraints, proof) plus a reference-archive skill; React + React-Three-Fiber/Three.js for the interactive web layer; a parametric control layer exposing art-direction macros (including audio-to-visual mappings); MediaPipe or FreeMoCap where the piece is body-reactive; Vercel or similar for the public deploy; Lighthouse and real-device testing for the mobile bar.</p>
+<p>What proves it right (other than you or the model): A public URL that loads and is interactive on a mid-range phone (Lighthouse performance score and a real-device check, not just desktop). A second person opens it and completes the intended interaction. The design system proves itself by regenerating a consistent variant on command (change one macro, output stays on-brand). For a motion piece, the mocap/exported scene opens and renders in the target tool without errors.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Act as a one-person creative studio that ships, not a demo-maker. I want one complete interactive 3D web piece, live on a public URL, that loads and runs on a mid-range phone. Work in rndyrbrts' order: build the foundation first, then the thing. Step one, from the moodboard I give you (or help me assemble one), extract a written design system: palette behaviour, layout pressure, motion, density, texture, interface logic, emotional tone, and the worldview underneath - not copied images. Turn it into a committed markdown the agent treats as a contract (goal, context, constraints, proof) plus a reference archive of Three.js/React-Three-Fiber resources exposed as a skill. Step two, build the piece in React-Three-Fiber with the agent pulling from that archive, exposing art-direction parameters as macros (including any audio or input reactivity). Step three, deploy to a public URL and test on a real mid-range phone: report Lighthouse performance, load time, and whether interaction works on touch. Prove the design system works by regenerating one on-brand variant from a single macro change. Return the live URL, the committed design system and archive skill, the device test numbers, the variant proof, and a list of what you could not verify.</p>
+<h3>2 · One-shot prompt</h3>
+<p>You are a one-person creative studio. Your job is to ship one complete, interactive artifact end to end - live, on a phone, on-brand - not a desktop-only demo. Stance: build the foundation before the thing, and respect the craft (ojrgb's warning against shipping a caricature). No marketing language.</p>
+<p>Context and method: follow rndyrbrts' proven order. First build the agent's foundation - a reference archive of React-Three-Fiber/Three.js resources (like R3ARXIV, 560+ repos/tools) turned into a skill the agent queries, and a written design system extracted from a moodboard. The design system is not copied images; it is the extracted meta: palette behaviour, layout pressure, motion, density, texture, symbols, interface logic, emotional tone, and the worldview underneath. Give the agent a contract: goal (what to build), context (the archive), constraints, and proof (screenshots and paths). Only then build the piece, exposing art-direction parameters as macros including audio/input reactivity. Use MediaPipe or FreeMoCap only if the piece is body-reactive.</p>
+<p>Hard constraints: final artifact is live on a public URL; it loads and is interactive on a mid-range phone (measure Lighthouse + real device, not desktop only); the build agent drives from the committed design system and archive skill, not ad-hoc prompts; name real libraries, real files, real deploy target. Do not call it done until a second person has opened the URL on their own device.</p>
+<p>Ordered deliverables: (1) an assembled moodboard manifest - one row per reference with source, local file, type, and one sentence on why it belongs. (2) a committed design-system markdown (the extracted meta above, as the agent's contract). (3) a reference-archive skill the agent queries for RTF/Three.js vocabulary. (4) the interactive piece in React + React-Three-Fiber with art-direction macros exposed. (5) a public deploy (URL). (6) a mobile test: Lighthouse performance score, load time, touch-interaction result on a real phone. (7) a variant proof: change one macro, show the output stays on-brand.</p>
+<p>Built-in gap analysis: before finishing, list what is unverified - does it run on a real phone or only the emulator; does the design system actually constrain the agent or is output random; is the archive skill queried or ignored; is the deploy public and reachable. Fill what you can.</p>
+<p>Self-questions to answer in writing: Is my design system extracted meta, or just pasted reference images? Does changing one macro keep the output on-brand, proving the system works? Did the agent actually pull from the archive, or hallucinate the API? Does it load in under a few seconds on a mid-range phone on cellular? Is touch interaction handled, or only mouse? Did I respect the craft or ship a shallow caricature? Is the URL reachable from another network?</p>
+<p>Stop conditions: stop and ask only if I have given neither a moodboard nor permission to assemble one. Otherwise go end to end.</p>
+<p>Return format: a markdown report with the live URL, a file tree, the mobile test numbers, the variant proof, and an 'Unverified and missing' section. Commit the design system, archive skill, and source; print the commit hash and the deploy URL.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Assemble the moodboard manifest</h4>
+<p>Goal: Gather the rawest reference material as a structured manifest.</p>
+<p>Establish ground truth: the moodboard. If I supplied references, import them; otherwise help me assemble 15-40 (screenshots, links, exports, winners AND rejects). Build a manifest following rndyrbrts' method: one row per artifact with title, source, local file path, type, dimensions, preview note, and one sentence on why it belongs. Do not interpret yet - just capture the raw set and why each piece matters. This manifest is the primary material the design system is extracted from. Store it as a committed file (moodboard/manifest.json or .md).</p>
+<p>Expect: A committed manifest of 15-40 references, each with source, local path, type, and a why-it-belongs sentence.</p>
+<p>Audit before moving on: Confirm every row points to a real local file that exists and has a non-empty 'why'. Fail if any reference is a dead link, missing file, or has no reason. On fail, drop or replace it.</p>
+<h4>Step 2 — Extract the design system</h4>
+<p>Goal: Turn the moodboard into a written design system the agent can obey.</p>
+<p>Extract the design system from the manifest, as rndyrbrts does - the meta, not the images. Write a committed design-system markdown covering: palette behaviour (not just hex, how colour is used), layout pressure, motion character, density, texture, symbols/glyphs, interface logic, emotional tone, and the worldview/philosophy underneath the collection. For each dimension, cite the manifest rows that evidence it. Then write the agent contract at the top: GOAL (what we will build), CONTEXT (the archive skill from step 3), CONSTRAINTS (what must always/never happen), PROOF (screenshots and paths that count as done). This document is the contract every build step must satisfy.</p>
+<p>Expect: A committed design-system markdown with all meta dimensions, each citing manifest evidence, plus a GOAL/CONTEXT/CONSTRAINTS/PROOF contract header.</p>
+<p>Audit before moving on: Check each design dimension cites at least one manifest row; check the contract names concrete constraints, not vibes. Fail if the system is a list of adjectives with no evidence or no enforceable constraint. On fail, tie each dimension back to the moodboard.</p>
+<h4>Step 3 — Build the reference-archive skill</h4>
+<p>Goal: Give the agent the RTF/Three.js vocabulary so it one-shots, not hallucinates.</p>
+<p>Build the reference archive as a skill, following rndyrbrts' R3ARXIV pattern. Assemble a structured list of React-Three-Fiber and Three.js resources relevant to this piece: real repos, real tools, real techniques, each with a one-line description and a link or code reference. Turn it into a skill file (skills/rtf-archive/SKILL.md) the build agent queries before writing 3D code, so it has correct API vocabulary instead of guessing. Keep it specific to what this piece needs (e.g. instancing, postprocessing, GPGPU particles, drei helpers) rather than a generic dump. The agent must consult this before each 3D implementation step.</p>
+<p>Expect: A committed archive skill of relevant RTF/Three.js resources with descriptions and references, scoped to this piece.</p>
+<p>Audit before moving on: Pick three APIs the piece will use and confirm the archive has a correct reference for each. Fail if the archive is generic filler or missing the APIs this piece needs. On fail, add the specific references.</p>
+<h4>Step 4 — Build the interactive piece</h4>
+<p>Goal: Build the artifact with the agent driving from the design system + archive.</p>
+<p>Build the interactive piece in React + React-Three-Fiber, with the agent pulling vocabulary from the step-3 archive skill and obeying the step-2 design system contract. Expose art-direction parameters as named macros (a controls object or leva panel): the things the design system says matter - colour behaviour, density, motion speed, texture intensity, and any audio/input reactivity. If the piece is body-reactive, wire MediaPipe (hands/pose) or a FreeMoCap-exported motion source. Handle both pointer AND touch input. Do not add features the design system did not call for. Commit the source with a clear run command.</p>
+<p>Expect: A running local interactive piece in RTF whose art-direction macros map to the design-system dimensions, with touch input handled.</p>
+<p>Audit before moving on: Verify the output visibly reflects the design system (palette behaviour, density, motion) and that the agent used real archive APIs (no invented Three.js calls - grep for them). Fail on off-brand output, invented APIs, or mouse-only interaction. On fail, re-steer with the design system and archive.</p>
+<h4>Step 5 — Deploy + mobile performance</h4>
+<p>Goal: Get it live and prove it runs on a mid-range phone.</p>
+<p>Deploy and measure on real conditions. (1) Deploy to a public URL (Vercel or similar). (2) Run Lighthouse (mobile preset) and record Performance score, First Contentful Paint, Time to Interactive, and total bundle/asset size. (3) Open the URL on an actual mid-range phone (or a throttled real-device test) on cellular-like conditions and confirm it loads in a few seconds and interaction works on touch. (4) If it fails the mobile bar, optimise: reduce draw calls (instancing), compress textures, lazy-load, cap device pixel ratio, lower particle counts on small screens; re-measure. Produce a table: metric, value, pass/fail against a stated target.</p>
+<p>Expect: A public URL plus a Lighthouse mobile table (Performance, FCP, TTI, size) and a real-phone load/interaction result against stated targets.</p>
+<p>Audit before moving on: Confirm the URL is reachable from a different network and the numbers are from the mobile preset / real device, not desktop. Fail if Performance is poor or it does not interact on touch. On fail, apply the named optimisations and re-measure, not re-estimate.</p>
+<h4>Step 6 — Variant proof + second person + gap report</h4>
+<p>Goal: Prove the design system constrains output, test with a real user, report gaps.</p>
+<p>Final validation. (1) Variant proof: change ONE macro (e.g. density or palette-behaviour parameter) and show the output changes while staying on-brand per the design system - this is the evidence the system works, not randomness. Capture before/after. (2) Second person: have someone open the public URL on their own device and complete the intended interaction; record where they got confused or it failed. (3) Enumerate every claim, mark verified/unverified/false, list missing pieces ranked by impact, fix the top two. Commit everything; print the commit hash and the live URL.</p>
+<p>Expect: A before/after variant proof, a second-person interaction report, a claim ledger, and a committed, deployed project with hash + URL.</p>
+<p>Audit before moving on: Confirm the variant actually changed only one macro and stayed on-brand. Confirm the second person used their own device. Fail if the only test was the author on the build machine. On fail, report that limitation honestly.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>Run after the piece is live. Enumerate every claim as a numbered list: the design-system dimensions, the archive skill's API references, the interactive behaviour, the Lighthouse/mobile numbers, the variant proof, and reachability. Mark each VERIFIED (with evidence: a URL, a Lighthouse report, a before/after capture, a second-person note), UNVERIFIED, or FALSE. Specifically re-check: is the design system extracted meta or pasted images; did the agent use real Three.js APIs from the archive or invent them; are the mobile numbers from the mobile preset and a real device, not desktop; does the URL load from another network; does changing one macro keep the output on-brand; does touch interaction work. List missing pieces: untested devices, off-brand drift, invented APIs, desktop-only testing. Rank by impact on whether this ships as a real piece. Fix the top three and re-verify. Report what you could not fix and why. Do not mark 'runs on mobile' verified from a desktop Lighthouse run.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Is my design system the extracted meta, or did I just paste reference images?</p>
+<p>Does changing one art-direction macro keep the output on-brand, proving the system constrains the agent?</p>
+<p>Did the agent pull real Three.js/RTF APIs from the archive, or hallucinate calls?</p>
+<p>Does it load in a few seconds on a mid-range phone on cellular, not just desktop?</p>
+<p>Is touch input handled, or is the interaction mouse-only?</p>
+<p>Is my Lighthouse number from the mobile preset, or desktop?</p>
+<p>Is the public URL reachable from a different network?</p>
+<p>Did a second person complete the interaction on their own device?</p>
+<p>Did I build the foundation (archive + design system) before the thing, or improvise?</p>
+<p>Did I respect the craft, or ship a shallow caricature (ojrgb's warning)?</p>
+<p>Are heavy assets (textures, models) compressed and lazy-loaded?</p>
+<p>Did I cap device pixel ratio and particle counts on small screens?</p>
+<h3>5 · What proves it right</h3>
+<p>The public URL loads and is interactive on a real mid-range phone on cellular-like conditions, with a Lighthouse mobile Performance score meeting a stated target.</p>
+<p>A second person opens the URL on their own device and completes the intended interaction without author help.</p>
+<p>Changing one art-direction macro produces an on-brand variant per the committed design system, proving the system constrains output.</p>
+<p>The build agent's 3D code uses real APIs sourced from the committed archive skill, verifiable by grep against the archive (no invented Three.js calls).</p>
+<p>For a body-reactive or motion piece, the MediaPipe input or FreeMoCap-exported scene runs/opens in the target tool without errors.</p>
+<h3>6 · Failure modes</h3>
+<p>Foundation skipped: agent improvised instead of building archive + design system first. Tell: off-brand, inconsistent output. Fix: build the archive skill and design-system contract, then rebuild.</p>
+<p>Pasted-image design system: a folder of screenshots, no extracted meta. Tell: the agent cannot regenerate on-brand variants. Fix: extract palette behaviour, motion, density, tone as written rules.</p>
+<p>Hallucinated Three.js APIs: agent invents calls not in the archive. Tell: runtime errors or deprecated APIs. Fix: force the agent to query the archive skill before each 3D step.</p>
+<p>Desktop-only 'mobile' claim: Lighthouse run on desktop preset. Tell: great score, terrible on a phone. Fix: mobile preset + real-device test on cellular.</p>
+<p>Mouse-only interaction: touch events unhandled. Tell: nothing happens when a phone user taps/drags. Fix: pointer events + touch handling, test on a touchscreen.</p>
+<p>Heavy bundle: uncompressed textures/models, no lazy load. Tell: multi-second loads, jank on phones. Fix: compress, instance, lazy-load, cap DPR and counts.</p>
+<p>Caricature over craft: a shallow effect that reads as a template. Tell: it looks like everyone else's demo. Fix: push the design-system specificity and art-direction macros.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Reach first for the moodboard manifest and the archive skill; rndyrbrts' order is foundation-before-thing, and skipping it is the main failure mode. Cache the design-system contract and the archive; every build step must consult both, and grep the generated 3D code against the archive to catch invented APIs. Spawn a sub-agent for the deploy + Lighthouse run so measurement stays isolated. Run the mobile test on a real device or a throttled real-device harness, never claim mobile from a desktop Lighthouse. Stop and ask the user only if there is neither a moodboard nor permission to assemble one. Return a markdown report (live URL, file tree, mobile table, variant before/after, second-person notes, 'Unverified and missing') plus committed files: the manifest, design-system markdown, archive skill, and source. Print the commit hash and the deploy URL. If it only works on desktop or only for the author, report that as the outcome rather than overclaiming.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
+<script id="md" type="text/markdown"># The One-Person Studio: Creative Tech Stack That Replaces a Team
+
+**Insight class:** Workflow Multiplier · **Difficulty:** Hard · **Quality:** 5/5
+**Connected entries:** 23 · **Tools:** Blender, Buffer, Claude, Claude Code, Claude in Chrome, Cursor, ElevenLabs, Gemini, Gmail, Hugging Face, Kling, MediaPipe, Meta Ads, Pika, React, RevenueCat, Runway, Sora, TouchDesigner, Unity, Unreal Engine, Veo
+
+---
+
+## Thesis
+
+In 2026, a single creator with Claude Code, Cursor, Blender, and a handful of AI tools can produce work that required a 5-10 person team two years ago: interactive 3D websites, motion-captured animations, AI-assisted VFX, generative music videos. These entries collectively map the full stack.
+
+---
+
+## Why it matters
+
+This isn't about replacing artists — it's about removing the production bottleneck. A concept artist can now ship a full interactive experience without needing a dev team. A musician can produce a 3D music video without a VFX house. The stack is converging and these entries map every layer of it.
+
+---
+
+## The evidence — connected entries
+
+### Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I think he just ripped a massive line backs...
+**Creator:** [@encycloped_ai](https://instagram.com/encycloped_ai) · **Tier:** S
+
+> Component of the one-person creative studio stack
+
+Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary. From predicting the end of high-cost VFX to ... — @encycloped_ai.
+
+[View original post](https://www.instagram.com/p/DX3FPMgDgZy/)
+### MediaPipe — What if Spiders Wove with Strings?🕷️
+**Creator:** [@pepepepebrick](https://instagram.com/pepepepebrick) · **Tier:** A
+**Tools:** MediaPipe, TouchDesigner
+
+> Component of the one-person creative studio stack
+
+🧱 2026/04/09 — @pepepepebrick; uses MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DW6tpWWMtZV/)
+### Cursor — Most websites just show text.
+**Creator:** [@code.akshat.in](https://instagram.com/code.akshat.in) · **Tier:** A
+**Tools:** Cursor, React
+
+> Component of the one-person creative studio stack
+
+“This isn’t text… this is physics.” — @code.akshat.in; uses Cursor, React.
+
+[View original post](https://www.instagram.com/p/DXFaQvyExqx/)
+### Claude — Also, happy 100 posts to me! Woohoo!!!
+**Creator:** [@ojrgb](https://instagram.com/ojrgb) · **Tier:** A
+**Tools:** Claude, MediaPipe, TouchDesigner
+
+> Component of the one-person creative studio stack
+
+“Claude can do this in 10 minutes!” Is a caption I see a LOT rn and I definitely have mixed feelings about it. On one... — @ojrgb; uses Claude, MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DXOWz4yjN--/)
+### Claude — Here's how to build it in 10 minutes:
+**Creator:** [@theaisurfer](https://instagram.com/theaisurfer) · **Tier:** A
+**Tools:** Claude, Cursor, Veo
+
+> Component of the one-person creative studio stack
+
+This is the exact scroll effect Apple uses on their product pages! — @theaisurfer; uses Claude, Cursor, Veo; demonstrates code generation.
+
+[View original post](https://www.instagram.com/p/DW7lN7sj2ow/)
+### React — made a little 3D racer that runs right in the browser. anti-grav...
+**Creator:** [@rndyrbrts](https://instagram.com/rndyrbrts) · **Tier:** A
+**Tools:** React
+
+> Component of the one-person creative studio stack
+
+cool way to build complex 3D creative stuff on the web with AI agent workflows. you build yourself a library first, t... — @rndyrbrts; uses React; demonstrates AI agents, code generation.
+
+[View original post](https://www.instagram.com/p/DY8TYwpCd8P/)
+### Blender — • 500+ body, hand & face landmarks per frame
+**Creator:** [@marc.kaz](https://instagram.com/marc.kaz) · **Tier:** S
+**Tools:** Blender, Unity, Unreal Engine
+
+> Component of the one-person creative studio stack
+
+FreeMoCap turns ordinary webcams into professional markerless 3D motion capture. — @marc.kaz; uses Blender, Unity, Unreal Engine; demonstrates motion capture.
+
+[View original post](https://www.instagram.com/p/DYAI_fCuvrY/)
+### MediaPipe — Download free at
+**Creator:** [@zerospacelabs](https://instagram.com/zerospacelabs) · **Tier:** A
+**Tools:** MediaPipe, TouchDesigner
+
+> Component of the one-person creative studio stack
+
+Torin & Lyell demo Classifier & PCA visualization TOXs live at DATLAB XIII 12/2025. TouchDesigner plugins for trainin... — @zerospacelabs; uses MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DYaNXZJx_L3/)
+### Built a system that turns taste into data and data back into — Started with a moodboard of references I’d been collec...
+**Creator:** [@rndyrbrts](https://instagram.com/rndyrbrts) · **Tier:** B
+
+> Component of the one-person creative studio stack
+
+Built a system that turns taste into data and data back into art. — @rndyrbrts.
+
+[View original post](https://www.instagram.com/p/DYeHzvgCURl/)
+### Gemini Omni — Google's unified multimodal model family for video
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** B
+**Tools:** Gemini, Kling, Pika, Runway, Sora, TouchDesigner, Veo
+
+> Component of the one-person creative studio stack
+
+At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. It's a single model that converses across text, image, video and audio, unlike diffusion-only video tools such as Veo, Sora, Runway or Kling. Early testers report that two 10-second generations used about 86% of a Pro plan's daily quota. There's also an aside about Kling's 'Omni' naming.
+
+[View original post](https://www.instagram.com/p/DYiiwmzpRM7/)
+### Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...
+**Creator:** [@rndyrbrts](https://instagram.com/rndyrbrts) · **Tier:** A
+
+> Component of the one-person creative studio stack
+
+Let me know if you want this skill.. — @rndyrbrts; demonstrates AI agents, prompt engineering.
+
+[View original post](https://www.instagram.com/p/DYoJ0GZi5p0/)
+### MediaPipe — Ongoing R&D at the intersection of art and technology. not a finished...
+**Creator:** [@touchdesigner](https://instagram.com/touchdesigner) · **Tier:** B
+**Tools:** MediaPipe, TouchDesigner
+
+> Component of the one-person creative studio stack
+
+repost @gerrylistudio How does presence reshape what we remember? — @touchdesigner; uses MediaPipe, TouchDesigner.
+
+[View original post](https://www.instagram.com/p/DYpRWC1OO0u/)
+### Claude Code room-color probe — turning iPhone footage into a 3D color map
+**Creator:** [@rndyrbrts](https://instagram.com/rndyrbrts) · **Tier:** B
+**Tools:** Claude Code
+
+> Component of the one-person creative studio stack
+
+Built entirely with Claude Code: a probe sweeps iPhone clips of a room, locks onto objects and samples dominant color, luminance and position for 42 captures, then redraws them as a living color map and 3D data. Part of a workflow for turning taste and mood boards into reusable design-system data.
+
+[View original post](https://www.instagram.com/p/DYysyLiii8i/)
+### Mood board to audio-reactive code art — parametric design system for agents
+**Creator:** [@rndyrbrts](https://instagram.com/rndyrbrts) · **Tier:** A
+
+> Component of the one-person creative studio stack
+
+This follow-up adds audio reactivity to the mood-board-to-code-art workflow. A well-defined design system lets AI agents generate generative visuals with parametric controls, including how audio drives the visuals. You end up with macros you can art-direct for live visuals.
+
+[View original post](https://www.instagram.com/p/DZMvBJ8C0R1/)
+### Jarvis daily brief — Claude with RevenueCat, Buffer, Meta Ads and Gmail MCPs
+**Creator:** [@chandlerintelligence](https://instagram.com/chandlerintelligence) · **Tier:** S
+**Tools:** Buffer, Claude, Claude Code, Claude in Chrome, ElevenLabs, Gmail, Meta Ads, RevenueCat
+
+> Component of the one-person creative studio stack
+
+A walkthrough of a personal 'Jarvis' built on Claude. Voice mode plus ElevenLabs gives it the voice, and Claude in Chrome handles the browser. MCP servers for RevenueCat, Buffer, Meta Ads and Gmail cover app revenue, posting, ads and email. Custom subagents get skills, FAQ markdown handles support, and the whole daily brief runs as a scheduled routine.
+
+[View original post](https://www.instagram.com/p/DZVXehQRe3T/)
+### Curlicue fractals — turtle-walk spirals from irrational angle steps
+**Creator:** [@fascinating.fractals](https://instagram.com/fascinating.fractals) · **Tier:** B
+
+> Component of the one-person creative studio stack
+
+A looping animation of curlicue fractals, the spiralling curves you get by stepping forward and turning by an angle that grows quadratically. Irrational constants produce nested whorls. Purely visual, with no narration, but it's a good prompt for a creative-coding sketch.
+
+[View original post](https://www.instagram.com/p/DR6kWKTDJ1T/)
+### Join us at tiat on Thursday, April 30th — Tracing a path from his pioneering interactive media works to new...
+**Creator:** [@tiat.place](https://instagram.com/tiat.place) · **Tier:** A
+
+> Component of the one-person creative studio stack
+
+Join us at tiat on Thursday, April 30th! ⭐️ We’re honored to have Scott Snibbe @ssnibbe share an artist’s talk explor... — @Edited.
+
+[View original post](https://www.instagram.com/p/DXirC3ujavl/)
+### A gorgeous strange attractor known as Thomas' cyclically sym — Rendered via 3D Gaussian splatting.
+**Creator:** [@kaustav.py](https://instagram.com/kaustav.py) · **Tier:** A
+
+> Component of the one-person creative studio stack
+
+A gorgeous strange attractor known as Thomas' cyclically symmetric attractor — @kaustav.py.
+
+[View original post](https://www.instagram.com/p/DYsSz2rvWGI/)
+### Hugging Face — ️ FREECAD — github.com/FreeCAD/FreeCAD
+**Creator:** [@jg.engineers](https://instagram.com/jg.engineers) · **Tier:** A
+**Tools:** Hugging Face
+
+> Component of the one-person creative studio stack
+
+🔧 4 GitHub repos to explore instead of scrolling ↓↓ — @jg.engineers; uses Hugging Face.
+
+[View original post](https://www.instagram.com/p/DZMoG2mMM1t/)
+### The art market just stopped gatekeeping, and most artists ha — For decades you made the work and waited to be picked....
+**Creator:** [@creativeflairhq](https://instagram.com/creativeflairhq) · **Tier:** A
+
+> Component of the one-person creative studio stack
+
+The art market just stopped gatekeeping, and most artists have not noticed. — @creativeflairhq.
+
+[View original post](https://www.instagram.com/p/DZZxvq7IPeE/)
+### Website with hand-tracking interaction, step by step tutoria — visuals created in part 1 using gpt2 model for images ...
+**Creator:** [@marina_uiux](https://instagram.com/marina_uiux) · **Tier:** A
+
+> Component of the one-person creative studio stack
+
+Website with hand-tracking interaction, step by step tutorial [part 2] ✨ — @marina_uiux.
+
+[View original post](https://www.instagram.com/p/DZfH3T3okGC/)
+### There is a free app putting artists work in front of people  — Instagram shows your work to people who already follow...
+**Creator:** [@creativeflairhq](https://instagram.com/creativeflairhq) · **Tier:** A
+
+> Component of the one-person creative studio stack
+
+There is a free app putting artists work in front of people searching for art to buy, and most painters ignore it. It... — @creativeflairhq.
+
+[View original post](https://www.instagram.com/p/DZsEdvNoFdm/)
+### All The Perspective Grids 1 to 6 Points — Perspective drawing creates depth in your art!
+**Creator:** [@adamgenesisartuniverse](https://instagram.com/adamgenesisartuniverse) · **Tier:** A
+
+> Component of the one-person creative studio stack
+
+All The Perspective Grids 1 to 6 Points! 👁🙏🔥 — @adamgenesisartuniverse.
+
+[View original post](https://www.instagram.com/p/DZxdjAtgJsN/)
+
+---
+
+## Action sketch — how to implement this
+
+1. Concept: Claude Code for rapid prototyping + ideation
+2. 3D: Blender + motion capture via MediaPipe (500+ landmarks/frame)
+3. Video: AI generation via Veo/Kling/Pika for b-roll and effects
+4. Interactive: React/Three.js for browser-based 3D experiences
+5. Music: AI-assisted composition + Audacity for post-production
+6. Ship: Cursor for polishing the final interactive site
+7. Distribution: Direct-to-audience, no gatekeepers needed
+
+---
+
+## Prerequisites
+
+- Intermediate coding ability (or willingness to use Claude Code)
+- Blender basics
+- One AI video tool (Veo, Kling, or Pika)
+- Web fundamentals (HTML/CSS/JS)
+
+---
+
+## Key tools and resources
+
+- **Blender**
+- **Buffer**
+- **Claude**
+- **Claude Code**
+- **Claude in Chrome**
+- **Cursor**
+- **ElevenLabs**
+- **Gemini**
+- **Gmail**
+- **Hugging Face**
+- **Kling**
+- **MediaPipe**
+- **Meta Ads**
+- **Pika**
+- **React**
+- **RevenueCat**
+- **Runway**
+- **Sora**
+- **TouchDesigner**
+- **Unity**
+- **Unreal Engine**
+- **Veo**
+
+## Creators to follow
+
+- [@adamgenesisartuniverse](https://instagram.com/adamgenesisartuniverse)
+- [@chandlerintelligence](https://instagram.com/chandlerintelligence)
+- [@code.akshat.in](https://instagram.com/code.akshat.in)
+- [@creativeflairhq](https://instagram.com/creativeflairhq)
+- [@encycloped_ai](https://instagram.com/encycloped_ai)
+- [@fascinating.fractals](https://instagram.com/fascinating.fractals)
+- [@gigaqian](https://instagram.com/gigaqian)
+- [@jg.engineers](https://instagram.com/jg.engineers)
+- [@kaustav.py](https://instagram.com/kaustav.py)
+- [@marc.kaz](https://instagram.com/marc.kaz)
+- [@marina_uiux](https://instagram.com/marina_uiux)
+- [@ojrgb](https://instagram.com/ojrgb)
+- [@pepepepebrick](https://instagram.com/pepepepebrick)
+- [@rndyrbrts](https://instagram.com/rndyrbrts)
+- [@theaisurfer](https://instagram.com/theaisurfer)
+- [@tiat.place](https://instagram.com/tiat.place)
+- [@touchdesigner](https://instagram.com/touchdesigner)
+- [@zerospacelabs](https://instagram.com/zerospacelabs)
+
+---
+
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Ship one complete creative artifact end to end as a one-person studio: an interactive 3D web experience (or a generative/motion piece) built through the full stack - Claude Code/Cursor for the build, a reusable reference library or design system for the agent, MediaPipe/FreeMoCap or AI video where relevant, Three.js/React for delivery. Done means it is live on a public URL, loads and runs on a mid-range phone, was built with an agent driving from a committed design system, and a second person can open and interact with it.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A one-person studio that actually ships does not 'ask Claude to make a cool 3D site'. Like rndyrbrts, they build the library and the design system FIRST, then build the thing: a committed reference archive (rndyrbrts' R3ARXIV of 560+ React-Three-Fiber/Three.js resources turned into an agent skill) and a written design system that extracts the meta from a moodboard (palette behaviour, layout pressure, motion, density, texture, interface logic, emotional tone) so the agent generates on-brand output repeatably and the parameters become art-direction controls. They expose parameters as macros, make it audio- or input-reactive deliberately, and test on real devices. ojrgb's caution applies: respect the depth of the craft, don't ship a caricature.
+- **Rawest material to start from:** rndyrbrts' workflow (moodboard -> extract tags/signal/structure/palette -> liminal atlas manifest, one row per artifact -> LLM steered by a written philosophy generates live HTML/canvas); the React-Three-Fiber and Three.js docs and a self-assembled reference archive like R3ARXIV turned into a skill; FreeMoCap (github.com/freemocap/freemocap, 500+ landmarks/frame, exports to Blender/Unity/Unreal) for motion; MediaPipe for input interaction; a real moodboard you assemble (screenshots, links, winners, rejects, and one sentence per reference on why it matters).
+- **Methods and tools:** Claude Code or Cursor as the build agent; a committed design-system markdown (the agent's contract: goal, context=the archive, constraints, proof) plus a reference-archive skill; React + React-Three-Fiber/Three.js for the interactive web layer; a parametric control layer exposing art-direction macros (including audio-to-visual mappings); MediaPipe or FreeMoCap where the piece is body-reactive; Vercel or similar for the public deploy; Lighthouse and real-device testing for the mobile bar.
+- **What proves it right (other than you or the model):** A public URL that loads and is interactive on a mid-range phone (Lighthouse performance score and a real-device check, not just desktop). A second person opens it and completes the intended interaction. The design system proves itself by regenerating a consistent variant on command (change one macro, output stays on-brand). For a motion piece, the mocap/exported scene opens and renders in the target tool without errors.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Act as a one-person creative studio that ships, not a demo-maker. I want one complete interactive 3D web piece, live on a public URL, that loads and runs on a mid-range phone. Work in rndyrbrts' order: build the foundation first, then the thing. Step one, from the moodboard I give you (or help me assemble one), extract a written design system: palette behaviour, layout pressure, motion, density, texture, interface logic, emotional tone, and the worldview underneath - not copied images. Turn it into a committed markdown the agent treats as a contract (goal, context, constraints, proof) plus a reference archive of Three.js/React-Three-Fiber resources exposed as a skill. Step two, build the piece in React-Three-Fiber with the agent pulling from that archive, exposing art-direction parameters as macros (including any audio or input reactivity). Step three, deploy to a public URL and test on a real mid-range phone: report Lighthouse performance, load time, and whether interaction works on touch. Prove the design system works by regenerating one on-brand variant from a single macro change. Return the live URL, the committed design system and archive skill, the device test numbers, the variant proof, and a list of what you could not verify.
+```
+
+### 2 · One-shot prompt
+
+```text
+You are a one-person creative studio. Your job is to ship one complete, interactive artifact end to end - live, on a phone, on-brand - not a desktop-only demo. Stance: build the foundation before the thing, and respect the craft (ojrgb's warning against shipping a caricature). No marketing language.
+
+Context and method: follow rndyrbrts' proven order. First build the agent's foundation - a reference archive of React-Three-Fiber/Three.js resources (like R3ARXIV, 560+ repos/tools) turned into a skill the agent queries, and a written design system extracted from a moodboard. The design system is not copied images; it is the extracted meta: palette behaviour, layout pressure, motion, density, texture, symbols, interface logic, emotional tone, and the worldview underneath. Give the agent a contract: goal (what to build), context (the archive), constraints, and proof (screenshots and paths). Only then build the piece, exposing art-direction parameters as macros including audio/input reactivity. Use MediaPipe or FreeMoCap only if the piece is body-reactive.
+
+Hard constraints: final artifact is live on a public URL; it loads and is interactive on a mid-range phone (measure Lighthouse + real device, not desktop only); the build agent drives from the committed design system and archive skill, not ad-hoc prompts; name real libraries, real files, real deploy target. Do not call it done until a second person has opened the URL on their own device.
+
+Ordered deliverables: (1) an assembled moodboard manifest - one row per reference with source, local file, type, and one sentence on why it belongs. (2) a committed design-system markdown (the extracted meta above, as the agent's contract). (3) a reference-archive skill the agent queries for RTF/Three.js vocabulary. (4) the interactive piece in React + React-Three-Fiber with art-direction macros exposed. (5) a public deploy (URL). (6) a mobile test: Lighthouse performance score, load time, touch-interaction result on a real phone. (7) a variant proof: change one macro, show the output stays on-brand.
+
+Built-in gap analysis: before finishing, list what is unverified - does it run on a real phone or only the emulator; does the design system actually constrain the agent or is output random; is the archive skill queried or ignored; is the deploy public and reachable. Fill what you can.
+
+Self-questions to answer in writing: Is my design system extracted meta, or just pasted reference images? Does changing one macro keep the output on-brand, proving the system works? Did the agent actually pull from the archive, or hallucinate the API? Does it load in under a few seconds on a mid-range phone on cellular? Is touch interaction handled, or only mouse? Did I respect the craft or ship a shallow caricature? Is the URL reachable from another network?
+
+Stop conditions: stop and ask only if I have given neither a moodboard nor permission to assemble one. Otherwise go end to end.
+
+Return format: a markdown report with the live URL, a file tree, the mobile test numbers, the variant proof, and an 'Unverified and missing' section. Commit the design system, archive skill, and source; print the commit hash and the deploy URL.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Assemble the moodboard manifest
+
+*Goal:* Gather the rawest reference material as a structured manifest.
+
+```text
+Establish ground truth: the moodboard. If I supplied references, import them; otherwise help me assemble 15-40 (screenshots, links, exports, winners AND rejects). Build a manifest following rndyrbrts' method: one row per artifact with title, source, local file path, type, dimensions, preview note, and one sentence on why it belongs. Do not interpret yet - just capture the raw set and why each piece matters. This manifest is the primary material the design system is extracted from. Store it as a committed file (moodboard/manifest.json or .md).
+```
+
+**Expect:** A committed manifest of 15-40 references, each with source, local path, type, and a why-it-belongs sentence.
+
+**Audit before moving on:** Confirm every row points to a real local file that exists and has a non-empty 'why'. Fail if any reference is a dead link, missing file, or has no reason. On fail, drop or replace it.
+
+#### Step 2 — Extract the design system
+
+*Goal:* Turn the moodboard into a written design system the agent can obey.
+
+```text
+Extract the design system from the manifest, as rndyrbrts does - the meta, not the images. Write a committed design-system markdown covering: palette behaviour (not just hex, how colour is used), layout pressure, motion character, density, texture, symbols/glyphs, interface logic, emotional tone, and the worldview/philosophy underneath the collection. For each dimension, cite the manifest rows that evidence it. Then write the agent contract at the top: GOAL (what we will build), CONTEXT (the archive skill from step 3), CONSTRAINTS (what must always/never happen), PROOF (screenshots and paths that count as done). This document is the contract every build step must satisfy.
+```
+
+**Expect:** A committed design-system markdown with all meta dimensions, each citing manifest evidence, plus a GOAL/CONTEXT/CONSTRAINTS/PROOF contract header.
+
+**Audit before moving on:** Check each design dimension cites at least one manifest row; check the contract names concrete constraints, not vibes. Fail if the system is a list of adjectives with no evidence or no enforceable constraint. On fail, tie each dimension back to the moodboard.
+
+#### Step 3 — Build the reference-archive skill
+
+*Goal:* Give the agent the RTF/Three.js vocabulary so it one-shots, not hallucinates.
+
+```text
+Build the reference archive as a skill, following rndyrbrts' R3ARXIV pattern. Assemble a structured list of React-Three-Fiber and Three.js resources relevant to this piece: real repos, real tools, real techniques, each with a one-line description and a link or code reference. Turn it into a skill file (skills/rtf-archive/SKILL.md) the build agent queries before writing 3D code, so it has correct API vocabulary instead of guessing. Keep it specific to what this piece needs (e.g. instancing, postprocessing, GPGPU particles, drei helpers) rather than a generic dump. The agent must consult this before each 3D implementation step.
+```
+
+**Expect:** A committed archive skill of relevant RTF/Three.js resources with descriptions and references, scoped to this piece.
+
+**Audit before moving on:** Pick three APIs the piece will use and confirm the archive has a correct reference for each. Fail if the archive is generic filler or missing the APIs this piece needs. On fail, add the specific references.
+
+#### Step 4 — Build the interactive piece
+
+*Goal:* Build the artifact with the agent driving from the design system + archive.
+
+```text
+Build the interactive piece in React + React-Three-Fiber, with the agent pulling vocabulary from the step-3 archive skill and obeying the step-2 design system contract. Expose art-direction parameters as named macros (a controls object or leva panel): the things the design system says matter - colour behaviour, density, motion speed, texture intensity, and any audio/input reactivity. If the piece is body-reactive, wire MediaPipe (hands/pose) or a FreeMoCap-exported motion source. Handle both pointer AND touch input. Do not add features the design system did not call for. Commit the source with a clear run command.
+```
+
+**Expect:** A running local interactive piece in RTF whose art-direction macros map to the design-system dimensions, with touch input handled.
+
+**Audit before moving on:** Verify the output visibly reflects the design system (palette behaviour, density, motion) and that the agent used real archive APIs (no invented Three.js calls - grep for them). Fail on off-brand output, invented APIs, or mouse-only interaction. On fail, re-steer with the design system and archive.
+
+#### Step 5 — Deploy + mobile performance
+
+*Goal:* Get it live and prove it runs on a mid-range phone.
+
+```text
+Deploy and measure on real conditions. (1) Deploy to a public URL (Vercel or similar). (2) Run Lighthouse (mobile preset) and record Performance score, First Contentful Paint, Time to Interactive, and total bundle/asset size. (3) Open the URL on an actual mid-range phone (or a throttled real-device test) on cellular-like conditions and confirm it loads in a few seconds and interaction works on touch. (4) If it fails the mobile bar, optimise: reduce draw calls (instancing), compress textures, lazy-load, cap device pixel ratio, lower particle counts on small screens; re-measure. Produce a table: metric, value, pass/fail against a stated target.
+```
+
+**Expect:** A public URL plus a Lighthouse mobile table (Performance, FCP, TTI, size) and a real-phone load/interaction result against stated targets.
+
+**Audit before moving on:** Confirm the URL is reachable from a different network and the numbers are from the mobile preset / real device, not desktop. Fail if Performance is poor or it does not interact on touch. On fail, apply the named optimisations and re-measure, not re-estimate.
+
+#### Step 6 — Variant proof + second person + gap report
+
+*Goal:* Prove the design system constrains output, test with a real user, report gaps.
+
+```text
+Final validation. (1) Variant proof: change ONE macro (e.g. density or palette-behaviour parameter) and show the output changes while staying on-brand per the design system - this is the evidence the system works, not randomness. Capture before/after. (2) Second person: have someone open the public URL on their own device and complete the intended interaction; record where they got confused or it failed. (3) Enumerate every claim, mark verified/unverified/false, list missing pieces ranked by impact, fix the top two. Commit everything; print the commit hash and the live URL.
+```
+
+**Expect:** A before/after variant proof, a second-person interaction report, a claim ledger, and a committed, deployed project with hash + URL.
+
+**Audit before moving on:** Confirm the variant actually changed only one macro and stayed on-brand. Confirm the second person used their own device. Fail if the only test was the author on the build machine. On fail, report that limitation honestly.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+Run after the piece is live. Enumerate every claim as a numbered list: the design-system dimensions, the archive skill's API references, the interactive behaviour, the Lighthouse/mobile numbers, the variant proof, and reachability. Mark each VERIFIED (with evidence: a URL, a Lighthouse report, a before/after capture, a second-person note), UNVERIFIED, or FALSE. Specifically re-check: is the design system extracted meta or pasted images; did the agent use real Three.js APIs from the archive or invent them; are the mobile numbers from the mobile preset and a real device, not desktop; does the URL load from another network; does changing one macro keep the output on-brand; does touch interaction work. List missing pieces: untested devices, off-brand drift, invented APIs, desktop-only testing. Rank by impact on whether this ships as a real piece. Fix the top three and re-verify. Report what you could not fix and why. Do not mark 'runs on mobile' verified from a desktop Lighthouse run.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Is my design system the extracted meta, or did I just paste reference images?
+- Does changing one art-direction macro keep the output on-brand, proving the system constrains the agent?
+- Did the agent pull real Three.js/RTF APIs from the archive, or hallucinate calls?
+- Does it load in a few seconds on a mid-range phone on cellular, not just desktop?
+- Is touch input handled, or is the interaction mouse-only?
+- Is my Lighthouse number from the mobile preset, or desktop?
+- Is the public URL reachable from a different network?
+- Did a second person complete the interaction on their own device?
+- Did I build the foundation (archive + design system) before the thing, or improvise?
+- Did I respect the craft, or ship a shallow caricature (ojrgb's warning)?
+- Are heavy assets (textures, models) compressed and lazy-loaded?
+- Did I cap device pixel ratio and particle counts on small screens?
+
+### 5 · What proves it right
+
+- The public URL loads and is interactive on a real mid-range phone on cellular-like conditions, with a Lighthouse mobile Performance score meeting a stated target.
+- A second person opens the URL on their own device and completes the intended interaction without author help.
+- Changing one art-direction macro produces an on-brand variant per the committed design system, proving the system constrains output.
+- The build agent's 3D code uses real APIs sourced from the committed archive skill, verifiable by grep against the archive (no invented Three.js calls).
+- For a body-reactive or motion piece, the MediaPipe input or FreeMoCap-exported scene runs/opens in the target tool without errors.
+
+### 6 · Failure modes
+
+- Foundation skipped: agent improvised instead of building archive + design system first. Tell: off-brand, inconsistent output. Fix: build the archive skill and design-system contract, then rebuild.
+- Pasted-image design system: a folder of screenshots, no extracted meta. Tell: the agent cannot regenerate on-brand variants. Fix: extract palette behaviour, motion, density, tone as written rules.
+- Hallucinated Three.js APIs: agent invents calls not in the archive. Tell: runtime errors or deprecated APIs. Fix: force the agent to query the archive skill before each 3D step.
+- Desktop-only 'mobile' claim: Lighthouse run on desktop preset. Tell: great score, terrible on a phone. Fix: mobile preset + real-device test on cellular.
+- Mouse-only interaction: touch events unhandled. Tell: nothing happens when a phone user taps/drags. Fix: pointer events + touch handling, test on a touchscreen.
+- Heavy bundle: uncompressed textures/models, no lazy load. Tell: multi-second loads, jank on phones. Fix: compress, instance, lazy-load, cap DPR and counts.
+- Caricature over craft: a shallow effect that reads as a template. Tell: it looks like everyone else's demo. Fix: push the design-system specificity and art-direction macros.
+
+### 7 · Agent direction (unattended runs)
+
+Reach first for the moodboard manifest and the archive skill; rndyrbrts' order is foundation-before-thing, and skipping it is the main failure mode. Cache the design-system contract and the archive; every build step must consult both, and grep the generated 3D code against the archive to catch invented APIs. Spawn a sub-agent for the deploy + Lighthouse run so measurement stays isolated. Run the mobile test on a real device or a throttled real-device harness, never claim mobile from a desktop Lighthouse. Stop and ask the user only if there is neither a moodboard nor permission to assemble one. Return a markdown report (live URL, file tree, mobile table, variant before/after, second-person notes, 'Unverified and missing') plus committed files: the manifest, design-system markdown, archive skill, and source. Print the commit hash and the deploy URL. If it only works on desktop or only for the author, report that as the outcome rather than overclaiming.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script></body></html>

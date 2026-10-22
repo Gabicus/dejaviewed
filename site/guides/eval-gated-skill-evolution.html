@@ -109,10 +109,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Workflow pitch: describe a strategy, an agent codes it and wires the broker API, runs a five-year backtest, and a critic agent dissects losing trades and rewrites entry/exit logic before rerunning. Hard-coded stop-loss and drawdown limits sit outside the agent's reach, and failed strategies go to a local DB the agent learns from. Guide is comment-gated.</p>
 <p>View original post</p>
 <h2>Action sketch — how to implement this</h2>
-<p>Export your last 3 months of Claude history, have a small model tag 40 representative tasks with pass/fail criteria — that is your held-out eval</p>
-<p>Run an ablation sweep: drop each CLAUDE.md rule and skill one at a time, rerun the eval, delete anything whose removal does not hurt the score</p>
-<p>Add the SkillOpt loop on a nightly cron — skills log issues, an optimizer proposes edits, only score-improving edits merge; export passing traces for a Soup fine-tune later</p>
-<p>Falsifier: if eval scores vary more between two identical runs than between best and worst rule sets, your eval is too noisy and the whole ratchet is optimizing noise</p>
+<p>Export your last 3 months of Claude history, have a small model tag 40 representative tasks with pass/fail criteria — that is your held-out eval Run an ablation sweep: drop each CLAUDE.md rule and skill one at a time, rerun the eval, delete anything whose removal does not hurt the score Add the SkillOpt loop on a nightly cron — skills log issues, an optimizer proposes edits, only score-improving edits merge; export passing traces for a Soup fine-tune later Falsifier: if eval scores vary more between two identical runs than between best and worst rule sets, your eval is too noisy and the whole ratchet is optimizing noise</p>
 <h2>Prerequisites</h2>
 <p>A CLAUDE.md and skills folder with some history</p>
 <p>Exported chat logs</p>
@@ -137,9 +134,93 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>@martintrainhard</p>
 <p>@raycfu</p>
 <p>@wassimyounes_</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Build a two-way, eval-gated ratchet for your CLAUDE.md and skills: a held-out eval from your own history, an ablation sweep that deletes rules whose removal does not hurt, and a SkillOpt-style loop that merges only edits beating the benchmark - with a noise check that proves the eval is signal, not variance. Done means rules are both added and removed only on measured gains, winning traces are exported for a possible local fine-tune, and the ratchet is provably optimizing signal rather than noise.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): A practitioner who evolves agents properly does not 'append a lesson after every mistake' - that only ever grows the prompt into a tax. Following Microsoft SkillOpt (marc.kaz), they treat skill instructions as trainable parameters with an eval set and gate every rewrite on beating the benchmark, auto-rejecting edits that do not. Following Boris Cherny's simple mode (foundedceo) and cooper.simson's purge, they SUBTRACT: ablate each rule and delete what does not help, because stale rules make newer models dumber. They add a bilevel outer loop (raycfu) so the optimizer's own search strategy is revised, not just the skill text. They check noise first (the dive's falsifier). They lock risk/safety rules in code the loop cannot edit (raycfu's trading pattern), and they can export winning traces to a cheap local fine-tune (Soup).</p>
+<p>Rawest material to start from: Your exported Claude/ChatGPT chat history (the best personalization dataset, per angus.sewell's chat-history mining); your current CLAUDE.md and skills/ with their edit history; Microsoft SkillOpt (github.com/microsoft/SkillOpt) for the benchmark-gated self-rewrite loop; the SkillOpt/TextGrad baselines it reports beating; raycfu's bilevel-loop and hard-coded-risk-limits patterns; Prime Agent's self-modifying-scaffolding idea (wassimyounes_) with the caveat that a 0.1% margin is noise; Soup (martintrainhard) for small-model fine-tuning on winning traces.</p>
+<p>Methods and tools: A held-out eval: a cheap/local model (Haiku-class) tags ~40 representative tasks from your exported history with objective pass/fail criteria; an ablation harness that drops each CLAUDE.md rule and each skill one at a time and re-runs the eval; a SkillOpt-style optimizer loop (skills log their own failure notes; an optimizer proposes edits; only score-improving edits merge) on a nightly cron; a bilevel outer loop that edits the optimizer's strategy; a noise-floor check (variance of identical runs vs best-worst rule-set gap); safety/risk rules locked outside the editable set; optional Soup export of passing traces.</p>
+<p>What proves it right (other than you or the model): A held-out eval (tasks not used to tune) where the ratcheted rule set beats the starting set, with the gain exceeding the run-to-run variance. The ablation sweep showing specific rules whose removal did not hurt (deleted) and whose removal did hurt (kept). The dive's falsifier answered: if variance between two identical runs exceeds the best-vs-worst rule-set gap, the eval is too noisy and the ratchet is optimizing noise - reported honestly. Optionally, a Soup fine-tune on winning traces matching the eval on a held-out slice.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Act as an agent-optimization engineer. Build me a two-way, eval-gated ratchet for my CLAUDE.md and skills - one that DELETES as readily as it adds, and only on measured gains. Start by having a cheap/local model tag ~40 representative tasks from my exported chat history with objective pass/fail criteria; that is my held-out eval. Check noise first: run the same setup three times and measure variance - if variance rivals the gains I expect, tell me the eval is too noisy before I build anything on it. Then run an ablation sweep: drop each CLAUDE.md rule and each skill one at a time, re-run the eval, and delete anything whose removal does not hurt the score (stale rules for old models drag new ones down - cooper.simson, Cherny's simple mode). Then add a SkillOpt-style loop (github.com/microsoft/SkillOpt): skills log failure notes, an optimizer proposes edits, and only edits that beat the benchmark merge; put it on a nightly cron. Add a bilevel outer loop (raycfu) that revises the optimizer's strategy, not just the text. Lock my safety/risk rules outside the editable set. Export passing traces for a possible Soup fine-tune. Return the eval, the noise check, the ablation deletions and keeps, the gated edits, and a clear verdict on whether the ratchet beats baseline beyond noise.</p>
+<h3>2 · One-shot prompt</h3>
+<p>You are an agent-optimization engineer building a two-way, eval-gated ratchet for a CLAUDE.md and skills folder. Stance: subtract as readily as you add; nothing changes without a measured gain beyond noise; safety rules are never editable by the loop. No marketing language.</p>
+<p>Context and method: appending a lesson after every mistake only grows the prompt into a tax. Microsoft SkillOpt (github.com/microsoft/SkillOpt) treats skill text as trainable parameters, gating every rewrite on beating a benchmark and auto-rejecting edits that do not. Boris Cherny's simple mode (foundedceo) and cooper.simson's purge show stale rules written for older models make newer ones dumber - so you must ablate and delete. raycfu's bilevel loop adds an outer loop that revises the optimizer's search strategy, and his trading pattern locks risk limits in code the loop cannot touch. wassimyounes_'s Prime Agent caveat is load-bearing: a 0.1% margin is noise, not improvement. angus.sewell: exported chat history is the best personalization dataset.</p>
+<p>Hard constraints: build the held-out eval BEFORE any editing; measure the noise floor and answer the dive's falsifier; ablate every rule/skill; every merged edit must beat the benchmark beyond variance; safety/risk rules live outside the editable set. Name real tools (SkillOpt, Soup), real files, real paths. Do not claim a gain inside the noise band.</p>
+<p>Ordered deliverables: (1) the held-out eval - a cheap/local model tags ~40 tasks from exported chat history with objective pass/fail criteria. (2) a noise-floor check: variance of 2-3 identical runs vs the gains you expect; a go/no-go on trusting the eval. (3) an ablation sweep: drop each CLAUDE.md rule and each skill one at a time, re-run, delete what removal does not hurt (never deleting safety/money rules). (4) a SkillOpt-style loop: skills log failure notes, an optimizer proposes edits, only benchmark-beating edits merge; on a nightly cron. (5) a bilevel outer loop revising the optimizer's strategy. (6) safety/risk rules locked outside the editable set. (7) an export of passing traces for a possible Soup fine-tune.</p>
+<p>Built-in gap analysis: before finishing, list what is unverified - are the eval criteria objective; is any reported gain inside the noise band; did the ablation actually delete anything; are safety rules truly outside the editable set; did any merged edit fail to beat baseline. Fill what you can.</p>
+<p>Self-questions to answer in writing: Did I measure noise before trusting the eval (the falsifier)? Did the ratchet DELETE rules, or only add? Is any gain smaller than run-to-run variance? Are safety/risk rules genuinely uneditable by the loop? Did the optimizer merge an edit that did not beat the benchmark? Does the bilevel loop change strategy or just re-run the same instincts? Are the exported traces actually the passing ones?</p>
+<p>Stop conditions: stop and ask only if there is no exported history to build an eval from. Otherwise proceed end to end.</p>
+<p>Return format: a markdown report with the eval description, the noise check and falsifier verdict, the ablation table (rule/skill, score with/without, deleted/kept), the gated-edit log (edit, before/after score, merged/rejected), the locked safety set, and an 'Unverified and missing' section. Commit the eval, the ablation/optimizer harness, and the ratcheted CLAUDE.md/skills; print the hash.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Build the held-out eval from history</h4>
+<p>Goal: Turn exported chat history into an objective eval with a cheap model.</p>
+<p>Establish the oracle. Export the chat history (angus.sewell's point: it is the best personalization dataset). Have a cheap or local model (Haiku-class) tag ~40 representative tasks from it, each with an objective pass/fail criterion a human could apply (not 'good' - e.g. 'produced valid JSON', 'followed the plan-first rule', 'refused unsafe action'). Make this a held-out set never used to tune rules. Build a runner that scores a given CLAUDE.md+skills setup against all ~40 tasks. This eval is what every ablation and every optimizer edit is judged against; a change that does not move it does not merge.</p>
+<p>Expect: ~40 held-out tasks tagged with objective pass/fail criteria, plus a runner that scores a setup against them.</p>
+<p>Audit before moving on: Check 5 criteria are objective enough for two graders to agree, and that the tasks span real usage (not just easy ones). Fail if criteria are subjective or the set is cherry-picked. On fail, re-tag with tighter criteria.</p>
+<h4>Step 2 — Noise floor + falsifier</h4>
+<p>Goal: Prove the eval is signal before building the ratchet on it.</p>
+<p>Answer the dive's falsifier before anything else. Run the SAME setup against the eval 2-3 times and measure the variance between runs - this is the noise floor. Then estimate the gap you expect between the best and worst rule sets. If run-to-run variance is comparable to or larger than that best-vs-worst gap, STOP and report that the eval is too noisy and the whole ratchet would be optimizing noise; enlarge the eval or tighten criteria until variance is clearly below the gains you need to detect. Only proceed past this step if the noise floor is small enough to trust.</p>
+<p>Expect: A measured run-to-run variance, a stated expected best-vs-worst gap, and a go/no-go verdict on the eval's trustworthiness.</p>
+<p>Audit before moving on: Confirm the repeated runs used identical config. Fail if you proceed while variance rivals the expected gains. On fail, enlarge/tighten the eval before building the ratchet.</p>
+<h4>Step 3 — Ablation sweep (the subtraction half)</h4>
+<p>Goal: Delete rules and skills whose removal does not hurt the eval.</p>
+<p>Run the subtraction half of the ratchet (cooper.simson's purge; Cherny's simple mode). Drop each CLAUDE.md rule and each skill ONE AT A TIME, re-run the eval, and record the score without it. Delete anything whose removal does not drop the score beyond the step-2 noise floor - EXCEPT safety/money/security rules, which are never deleted regardless of eval. Produce an ablation table: item, score with, score without, delta, deleted/kept/locked. The goal is the smallest rule set that holds the score; stale rules written for older models are the primary target.</p>
+<p>Expect: An ablation table over every rule and skill, with deletions made for items whose removal did not hurt beyond noise, safety rules marked locked.</p>
+<p>Audit before moving on: Confirm each deletion was decided by a real re-run and the delta is within noise. Confirm no safety/money rule was deleted. Fail if nothing was deleted (no real ablation) or a guardrail was cut. On fail, run the ablations properly and restore any guardrail.</p>
+<h4>Step 4 — SkillOpt-style gated optimizer</h4>
+<p>Goal: Add edits only when they beat the benchmark; reject the rest.</p>
+<p>Build the addition half as a SkillOpt-style loop (github.com/microsoft/SkillOpt): (1) skills log their own failure notes as they run (angus.sewell's issues-table pattern). (2) An optimizer reads the notes and the eval failures and proposes an edit to a rule or skill. (3) The edit is applied to a copy, the eval is re-run, and the edit MERGES only if it beats the current benchmark beyond the noise floor; otherwise it is auto-rejected (SkillOpt's core behaviour). Isolate successful paths from failures. Put the loop on a nightly cron. Log every proposed edit with its before/after score and the merge/reject decision. Never let the optimizer touch the locked safety set.</p>
+<p>Expect: A gated optimizer loop (log notes -&gt; propose -&gt; eval -&gt; merge only if it beats baseline beyond noise) on a nightly cron, with an edit log and the safety set excluded.</p>
+<p>Audit before moving on: Inspect the edit log: confirm every MERGED edit beat baseline beyond noise and every rejected one did not, and that no edit touched the locked set. Fail if a non-improving edit merged or a safety rule was edited. On fail, fix the gate threshold and the exclusion.</p>
+<h4>Step 5 — Bilevel outer loop + lock safety</h4>
+<p>Goal: Revise the optimizer's strategy, and make risk rules uneditable.</p>
+<p>Add the two robustness pieces. (1) Bilevel outer loop (raycfu): wrap the SkillOpt loop with an outer loop that periodically revises the OPTIMIZER'S strategy - what kinds of edits it proposes - not just the skill text, so it does not keep trying the same few instincts (raycfu: single loops collapse onto a few favourite ideas). Measure whether the bilevel version explores more distinct edit types than the single loop. (2) Lock the safety set: move all safety/money/security/risk rules into a file or section the loop reads but cannot modify, enforced in code (raycfu's hard-coded-risk-limits pattern). Confirm the optimizer cannot write to it.</p>
+<p>Expect: A bilevel outer loop shown to diversify edit types, and a code-enforced lock on the safety/risk rule set.</p>
+<p>Audit before moving on: Compare edit-type diversity with and without the outer loop; confirm the optimizer physically cannot modify the locked file. Fail if the outer loop just re-runs the same edits or the safety file is writable by the loop. On fail, fix the strategy-revision step or the lock.</p>
+<h4>Step 6 — Validate, export traces, gap report</h4>
+<p>Goal: Prove the ratchet beats baseline beyond noise; export winners; report honestly.</p>
+<p>Final validation. (1) Run the final ratcheted CLAUDE.md+skills against the held-out eval vs the starting set; report the gain and confirm it exceeds the step-2 noise floor. Apply wassimyounes_'s caveat: a sub-noise margin is NOT an improvement - say so if that is the case. (2) Export the passing traces (the task runs the winning rule set got right) in a format suitable for a Soup (martintrainhard) small-model fine-tune, and note whether a fine-tune is worthwhile. (3) Enumerate claims, mark verified/unverified/false, list missing pieces ranked by impact, fix the top two. Commit the eval, harness, and ratcheted setup; print the hash.</p>
+<p>Expect: A final-vs-baseline eval comparison with a gain exceeding noise (or an honest null result), an exported passing-trace set for Soup, a claim ledger, and a committed setup with hash.</p>
+<p>Audit before moving on: Confirm the final gain exceeds the noise floor; if not, state plainly the ratchet did not beat baseline. Confirm the exported traces are the passing ones, not all runs. Fail if a within-noise margin is reported as a win. On fail, report the null result honestly.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>Run after the ratchet is built. Enumerate every claim as a numbered list: the eval's objectivity and representativeness, the noise floor, each ablation deletion and keep, each merged/rejected optimizer edit, the bilevel loop's added diversity, the safety lock, and the final gain. Mark each VERIFIED (with run numbers), UNVERIFIED, or FALSE. Specifically re-check: were the eval criteria objective and the set truly held out; is the noise floor below the gains claimed (the falsifier); did the ablation actually DELETE rules, or only keep; did every merged edit beat baseline beyond noise and every rejected one fail; is any final gain within the noise band (a 0.1%-style non-result); is the safety/risk set genuinely uneditable by the loop; are the exported traces the passing ones. List missing pieces: subjective criteria, within-noise gains kept, no deletions, a writable safety file. Rank by impact on whether the ratchet is a real, safe improvement. Fix the top three and re-verify. Report what you could not fix and why. Do not report any improvement that is within the noise floor as a win.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Did I measure the noise floor before trusting the eval (the falsifier), or build on sand?</p>
+<p>Did the ratchet actually DELETE rules, or did it only add?</p>
+<p>Is any reported gain smaller than the run-to-run variance?</p>
+<p>Are the eval criteria objective enough for two graders to agree?</p>
+<p>Is the held-out set truly held out, or did I tune rules on it?</p>
+<p>Did the optimizer ever merge an edit that did not beat the benchmark?</p>
+<p>Are safety, money and risk rules genuinely uneditable by the loop, enforced in code?</p>
+<p>Does the bilevel outer loop change the optimizer's strategy, or re-run the same instincts?</p>
+<p>Did I delete any stale rule written for an older model that drags the new one down?</p>
+<p>Are the exported traces the passing ones, or did I export everything?</p>
+<p>If the final margin is within noise, did I call it a null result rather than a win?</p>
+<p>Did the ablation delta for each kept rule actually exceed the noise floor?</p>
+<h3>5 · What proves it right</h3>
+<p>On the held-out eval, the ratcheted rule set beats the starting set by more than the measured run-to-run variance (or the result is honestly reported as null).</p>
+<p>The ablation table shows specific rules deleted because their removal did not hurt the eval, and kept rules each hurt when removed - proving two-way, not monotonic, change.</p>
+<p>Every merged optimizer edit beat the benchmark beyond noise and every rejected edit did not, per the edit log (SkillOpt's gating behaviour).</p>
+<p>The safety/money/risk rule set is provably uneditable by the loop (an attempted write is blocked in code).</p>
+<p>The noise-floor check answers the falsifier: run-to-run variance is below the best-vs-worst rule-set gap, or the eval is declared too noisy to trust.</p>
+<h3>6 · Failure modes</h3>
+<p>Monotonic ratchet: only adds, never deletes. Tell: CLAUDE.md keeps growing, no ablation deletions. Fix: run the ablation sweep and delete what removal does not hurt.</p>
+<p>Optimizing noise: eval variance rivals the gains. Tell: results flip between identical runs. Fix: measure the noise floor first; enlarge/tighten the eval (the falsifier).</p>
+<p>Ungated merges: edits applied without beating the benchmark. Tell: edit log has merges with no positive delta. Fix: enforce SkillOpt's merge-only-if-better gate beyond noise.</p>
+<p>Editable safety rules: the loop rewrites risk limits. Tell: a guardrail changed after a run. Fix: lock safety/money rules in a code-enforced uneditable set.</p>
+<p>Tuning on the held-out set: eval used to drive edits. Tell: great eval, worse real behaviour. Fix: keep a sealed set never used for tuning.</p>
+<p>Collapsed bilevel loop: outer loop re-runs the same instincts. Tell: low edit-type diversity. Fix: make the outer loop revise the optimizer's strategy, measure diversity.</p>
+<p>Sub-noise 'win': a 0.1%-style margin claimed as improvement (Prime Agent caveat). Tell: gain within variance. Fix: require the gain to exceed the noise floor; else report null.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Reach first for the exported chat history and build the held-out eval, then measure the noise floor - the dive's falsifier gates everything, so do not build the ratchet until the eval is proven to carry signal. Cache the eval, the noise floor and the baseline score; ablations and optimizer edits all re-run against them. Run the subtraction half (ablation) and the addition half (SkillOpt-style gated optimizer) as separate, logged passes; spawn a sub-agent for the nightly optimizer loop so proposed edits are evaluated in isolation before merging. Never let any loop edit the safety/money/risk set - enforce that in code, not instruction. Apply the Prime Agent caveat: a sub-noise margin is not an improvement. Stop and ask the user only if there is no exported history to build an eval from. Return a markdown report (eval description, noise/falsifier verdict, ablation table, gated-edit log, locked safety set, 'Unverified and missing') plus the committed eval, harness and ratcheted CLAUDE.md/skills; print the commit hash, and export passing traces for a possible Soup fine-tune. If the ratchet does not beat baseline beyond noise, report that null result honestly.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 <h2>Related deep dives</h2>
 <p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
-<p>Generated 2026-10-21 · curated by @6ab3 for DejaViewed</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Skills That Earn Their Lines — benchmark-gated self-editing plus subtraction
 
@@ -265,10 +346,10 @@ Workflow pitch: describe a strategy, an agent codes it and wires the broker API,
 
 ## Action sketch — how to implement this
 
-- Export your last 3 months of Claude history, have a small model tag 40 representative tasks with pass/fail criteria — that is your held-out eval
-- Run an ablation sweep: drop each CLAUDE.md rule and skill one at a time, rerun the eval, delete anything whose removal does not hurt the score
-- Add the SkillOpt loop on a nightly cron — skills log issues, an optimizer proposes edits, only score-improving edits merge; export passing traces for a Soup fine-tune later
-- Falsifier: if eval scores vary more between two identical runs than between best and worst rule sets, your eval is too noisy and the whole ratchet is optimizing noise
+Export your last 3 months of Claude history, have a small model tag 40 representative tasks with pass/fail criteria — that is your held-out eval
+Run an ablation sweep: drop each CLAUDE.md rule and skill one at a time, rerun the eval, delete anything whose removal does not hurt the score
+Add the SkillOpt loop on a nightly cron — skills log issues, an optimizer proposes edits, only score-improving edits merge; export passing traces for a Soup fine-tune later
+Falsifier: if eval scores vary more between two identical runs than between best and worst rule sets, your eval is too noisy and the whole ratchet is optimizing noise
 
 ---
 
@@ -306,13 +387,179 @@ Workflow pitch: describe a strategy, an agent codes it and wires the broker API,
 
 ---
 
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Build a two-way, eval-gated ratchet for your CLAUDE.md and skills: a held-out eval from your own history, an ablation sweep that deletes rules whose removal does not hurt, and a SkillOpt-style loop that merges only edits beating the benchmark - with a noise check that proves the eval is signal, not variance. Done means rules are both added and removed only on measured gains, winning traces are exported for a possible local fine-tune, and the ratchet is provably optimizing signal rather than noise.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A practitioner who evolves agents properly does not 'append a lesson after every mistake' - that only ever grows the prompt into a tax. Following Microsoft SkillOpt (marc.kaz), they treat skill instructions as trainable parameters with an eval set and gate every rewrite on beating the benchmark, auto-rejecting edits that do not. Following Boris Cherny's simple mode (foundedceo) and cooper.simson's purge, they SUBTRACT: ablate each rule and delete what does not help, because stale rules make newer models dumber. They add a bilevel outer loop (raycfu) so the optimizer's own search strategy is revised, not just the skill text. They check noise first (the dive's falsifier). They lock risk/safety rules in code the loop cannot edit (raycfu's trading pattern), and they can export winning traces to a cheap local fine-tune (Soup).
+- **Rawest material to start from:** Your exported Claude/ChatGPT chat history (the best personalization dataset, per angus.sewell's chat-history mining); your current CLAUDE.md and skills/ with their edit history; Microsoft SkillOpt (github.com/microsoft/SkillOpt) for the benchmark-gated self-rewrite loop; the SkillOpt/TextGrad baselines it reports beating; raycfu's bilevel-loop and hard-coded-risk-limits patterns; Prime Agent's self-modifying-scaffolding idea (wassimyounes_) with the caveat that a 0.1% margin is noise; Soup (martintrainhard) for small-model fine-tuning on winning traces.
+- **Methods and tools:** A held-out eval: a cheap/local model (Haiku-class) tags ~40 representative tasks from your exported history with objective pass/fail criteria; an ablation harness that drops each CLAUDE.md rule and each skill one at a time and re-runs the eval; a SkillOpt-style optimizer loop (skills log their own failure notes; an optimizer proposes edits; only score-improving edits merge) on a nightly cron; a bilevel outer loop that edits the optimizer's strategy; a noise-floor check (variance of identical runs vs best-worst rule-set gap); safety/risk rules locked outside the editable set; optional Soup export of passing traces.
+- **What proves it right (other than you or the model):** A held-out eval (tasks not used to tune) where the ratcheted rule set beats the starting set, with the gain exceeding the run-to-run variance. The ablation sweep showing specific rules whose removal did not hurt (deleted) and whose removal did hurt (kept). The dive's falsifier answered: if variance between two identical runs exceeds the best-vs-worst rule-set gap, the eval is too noisy and the ratchet is optimizing noise - reported honestly. Optionally, a Soup fine-tune on winning traces matching the eval on a held-out slice.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Act as an agent-optimization engineer. Build me a two-way, eval-gated ratchet for my CLAUDE.md and skills - one that DELETES as readily as it adds, and only on measured gains. Start by having a cheap/local model tag ~40 representative tasks from my exported chat history with objective pass/fail criteria; that is my held-out eval. Check noise first: run the same setup three times and measure variance - if variance rivals the gains I expect, tell me the eval is too noisy before I build anything on it. Then run an ablation sweep: drop each CLAUDE.md rule and each skill one at a time, re-run the eval, and delete anything whose removal does not hurt the score (stale rules for old models drag new ones down - cooper.simson, Cherny's simple mode). Then add a SkillOpt-style loop (github.com/microsoft/SkillOpt): skills log failure notes, an optimizer proposes edits, and only edits that beat the benchmark merge; put it on a nightly cron. Add a bilevel outer loop (raycfu) that revises the optimizer's strategy, not just the text. Lock my safety/risk rules outside the editable set. Export passing traces for a possible Soup fine-tune. Return the eval, the noise check, the ablation deletions and keeps, the gated edits, and a clear verdict on whether the ratchet beats baseline beyond noise.
+```
+
+### 2 · One-shot prompt
+
+```text
+You are an agent-optimization engineer building a two-way, eval-gated ratchet for a CLAUDE.md and skills folder. Stance: subtract as readily as you add; nothing changes without a measured gain beyond noise; safety rules are never editable by the loop. No marketing language.
+
+Context and method: appending a lesson after every mistake only grows the prompt into a tax. Microsoft SkillOpt (github.com/microsoft/SkillOpt) treats skill text as trainable parameters, gating every rewrite on beating a benchmark and auto-rejecting edits that do not. Boris Cherny's simple mode (foundedceo) and cooper.simson's purge show stale rules written for older models make newer ones dumber - so you must ablate and delete. raycfu's bilevel loop adds an outer loop that revises the optimizer's search strategy, and his trading pattern locks risk limits in code the loop cannot touch. wassimyounes_'s Prime Agent caveat is load-bearing: a 0.1% margin is noise, not improvement. angus.sewell: exported chat history is the best personalization dataset.
+
+Hard constraints: build the held-out eval BEFORE any editing; measure the noise floor and answer the dive's falsifier; ablate every rule/skill; every merged edit must beat the benchmark beyond variance; safety/risk rules live outside the editable set. Name real tools (SkillOpt, Soup), real files, real paths. Do not claim a gain inside the noise band.
+
+Ordered deliverables: (1) the held-out eval - a cheap/local model tags ~40 tasks from exported chat history with objective pass/fail criteria. (2) a noise-floor check: variance of 2-3 identical runs vs the gains you expect; a go/no-go on trusting the eval. (3) an ablation sweep: drop each CLAUDE.md rule and each skill one at a time, re-run, delete what removal does not hurt (never deleting safety/money rules). (4) a SkillOpt-style loop: skills log failure notes, an optimizer proposes edits, only benchmark-beating edits merge; on a nightly cron. (5) a bilevel outer loop revising the optimizer's strategy. (6) safety/risk rules locked outside the editable set. (7) an export of passing traces for a possible Soup fine-tune.
+
+Built-in gap analysis: before finishing, list what is unverified - are the eval criteria objective; is any reported gain inside the noise band; did the ablation actually delete anything; are safety rules truly outside the editable set; did any merged edit fail to beat baseline. Fill what you can.
+
+Self-questions to answer in writing: Did I measure noise before trusting the eval (the falsifier)? Did the ratchet DELETE rules, or only add? Is any gain smaller than run-to-run variance? Are safety/risk rules genuinely uneditable by the loop? Did the optimizer merge an edit that did not beat the benchmark? Does the bilevel loop change strategy or just re-run the same instincts? Are the exported traces actually the passing ones?
+
+Stop conditions: stop and ask only if there is no exported history to build an eval from. Otherwise proceed end to end.
+
+Return format: a markdown report with the eval description, the noise check and falsifier verdict, the ablation table (rule/skill, score with/without, deleted/kept), the gated-edit log (edit, before/after score, merged/rejected), the locked safety set, and an 'Unverified and missing' section. Commit the eval, the ablation/optimizer harness, and the ratcheted CLAUDE.md/skills; print the hash.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Build the held-out eval from history
+
+*Goal:* Turn exported chat history into an objective eval with a cheap model.
+
+```text
+Establish the oracle. Export the chat history (angus.sewell's point: it is the best personalization dataset). Have a cheap or local model (Haiku-class) tag ~40 representative tasks from it, each with an objective pass/fail criterion a human could apply (not 'good' - e.g. 'produced valid JSON', 'followed the plan-first rule', 'refused unsafe action'). Make this a held-out set never used to tune rules. Build a runner that scores a given CLAUDE.md+skills setup against all ~40 tasks. This eval is what every ablation and every optimizer edit is judged against; a change that does not move it does not merge.
+```
+
+**Expect:** ~40 held-out tasks tagged with objective pass/fail criteria, plus a runner that scores a setup against them.
+
+**Audit before moving on:** Check 5 criteria are objective enough for two graders to agree, and that the tasks span real usage (not just easy ones). Fail if criteria are subjective or the set is cherry-picked. On fail, re-tag with tighter criteria.
+
+#### Step 2 — Noise floor + falsifier
+
+*Goal:* Prove the eval is signal before building the ratchet on it.
+
+```text
+Answer the dive's falsifier before anything else. Run the SAME setup against the eval 2-3 times and measure the variance between runs - this is the noise floor. Then estimate the gap you expect between the best and worst rule sets. If run-to-run variance is comparable to or larger than that best-vs-worst gap, STOP and report that the eval is too noisy and the whole ratchet would be optimizing noise; enlarge the eval or tighten criteria until variance is clearly below the gains you need to detect. Only proceed past this step if the noise floor is small enough to trust.
+```
+
+**Expect:** A measured run-to-run variance, a stated expected best-vs-worst gap, and a go/no-go verdict on the eval's trustworthiness.
+
+**Audit before moving on:** Confirm the repeated runs used identical config. Fail if you proceed while variance rivals the expected gains. On fail, enlarge/tighten the eval before building the ratchet.
+
+#### Step 3 — Ablation sweep (the subtraction half)
+
+*Goal:* Delete rules and skills whose removal does not hurt the eval.
+
+```text
+Run the subtraction half of the ratchet (cooper.simson's purge; Cherny's simple mode). Drop each CLAUDE.md rule and each skill ONE AT A TIME, re-run the eval, and record the score without it. Delete anything whose removal does not drop the score beyond the step-2 noise floor - EXCEPT safety/money/security rules, which are never deleted regardless of eval. Produce an ablation table: item, score with, score without, delta, deleted/kept/locked. The goal is the smallest rule set that holds the score; stale rules written for older models are the primary target.
+```
+
+**Expect:** An ablation table over every rule and skill, with deletions made for items whose removal did not hurt beyond noise, safety rules marked locked.
+
+**Audit before moving on:** Confirm each deletion was decided by a real re-run and the delta is within noise. Confirm no safety/money rule was deleted. Fail if nothing was deleted (no real ablation) or a guardrail was cut. On fail, run the ablations properly and restore any guardrail.
+
+#### Step 4 — SkillOpt-style gated optimizer
+
+*Goal:* Add edits only when they beat the benchmark; reject the rest.
+
+```text
+Build the addition half as a SkillOpt-style loop (github.com/microsoft/SkillOpt): (1) skills log their own failure notes as they run (angus.sewell's issues-table pattern). (2) An optimizer reads the notes and the eval failures and proposes an edit to a rule or skill. (3) The edit is applied to a copy, the eval is re-run, and the edit MERGES only if it beats the current benchmark beyond the noise floor; otherwise it is auto-rejected (SkillOpt's core behaviour). Isolate successful paths from failures. Put the loop on a nightly cron. Log every proposed edit with its before/after score and the merge/reject decision. Never let the optimizer touch the locked safety set.
+```
+
+**Expect:** A gated optimizer loop (log notes -> propose -> eval -> merge only if it beats baseline beyond noise) on a nightly cron, with an edit log and the safety set excluded.
+
+**Audit before moving on:** Inspect the edit log: confirm every MERGED edit beat baseline beyond noise and every rejected one did not, and that no edit touched the locked set. Fail if a non-improving edit merged or a safety rule was edited. On fail, fix the gate threshold and the exclusion.
+
+#### Step 5 — Bilevel outer loop + lock safety
+
+*Goal:* Revise the optimizer's strategy, and make risk rules uneditable.
+
+```text
+Add the two robustness pieces. (1) Bilevel outer loop (raycfu): wrap the SkillOpt loop with an outer loop that periodically revises the OPTIMIZER'S strategy - what kinds of edits it proposes - not just the skill text, so it does not keep trying the same few instincts (raycfu: single loops collapse onto a few favourite ideas). Measure whether the bilevel version explores more distinct edit types than the single loop. (2) Lock the safety set: move all safety/money/security/risk rules into a file or section the loop reads but cannot modify, enforced in code (raycfu's hard-coded-risk-limits pattern). Confirm the optimizer cannot write to it.
+```
+
+**Expect:** A bilevel outer loop shown to diversify edit types, and a code-enforced lock on the safety/risk rule set.
+
+**Audit before moving on:** Compare edit-type diversity with and without the outer loop; confirm the optimizer physically cannot modify the locked file. Fail if the outer loop just re-runs the same edits or the safety file is writable by the loop. On fail, fix the strategy-revision step or the lock.
+
+#### Step 6 — Validate, export traces, gap report
+
+*Goal:* Prove the ratchet beats baseline beyond noise; export winners; report honestly.
+
+```text
+Final validation. (1) Run the final ratcheted CLAUDE.md+skills against the held-out eval vs the starting set; report the gain and confirm it exceeds the step-2 noise floor. Apply wassimyounes_'s caveat: a sub-noise margin is NOT an improvement - say so if that is the case. (2) Export the passing traces (the task runs the winning rule set got right) in a format suitable for a Soup (martintrainhard) small-model fine-tune, and note whether a fine-tune is worthwhile. (3) Enumerate claims, mark verified/unverified/false, list missing pieces ranked by impact, fix the top two. Commit the eval, harness, and ratcheted setup; print the hash.
+```
+
+**Expect:** A final-vs-baseline eval comparison with a gain exceeding noise (or an honest null result), an exported passing-trace set for Soup, a claim ledger, and a committed setup with hash.
+
+**Audit before moving on:** Confirm the final gain exceeds the noise floor; if not, state plainly the ratchet did not beat baseline. Confirm the exported traces are the passing ones, not all runs. Fail if a within-noise margin is reported as a win. On fail, report the null result honestly.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+Run after the ratchet is built. Enumerate every claim as a numbered list: the eval's objectivity and representativeness, the noise floor, each ablation deletion and keep, each merged/rejected optimizer edit, the bilevel loop's added diversity, the safety lock, and the final gain. Mark each VERIFIED (with run numbers), UNVERIFIED, or FALSE. Specifically re-check: were the eval criteria objective and the set truly held out; is the noise floor below the gains claimed (the falsifier); did the ablation actually DELETE rules, or only keep; did every merged edit beat baseline beyond noise and every rejected one fail; is any final gain within the noise band (a 0.1%-style non-result); is the safety/risk set genuinely uneditable by the loop; are the exported traces the passing ones. List missing pieces: subjective criteria, within-noise gains kept, no deletions, a writable safety file. Rank by impact on whether the ratchet is a real, safe improvement. Fix the top three and re-verify. Report what you could not fix and why. Do not report any improvement that is within the noise floor as a win.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Did I measure the noise floor before trusting the eval (the falsifier), or build on sand?
+- Did the ratchet actually DELETE rules, or did it only add?
+- Is any reported gain smaller than the run-to-run variance?
+- Are the eval criteria objective enough for two graders to agree?
+- Is the held-out set truly held out, or did I tune rules on it?
+- Did the optimizer ever merge an edit that did not beat the benchmark?
+- Are safety, money and risk rules genuinely uneditable by the loop, enforced in code?
+- Does the bilevel outer loop change the optimizer's strategy, or re-run the same instincts?
+- Did I delete any stale rule written for an older model that drags the new one down?
+- Are the exported traces the passing ones, or did I export everything?
+- If the final margin is within noise, did I call it a null result rather than a win?
+- Did the ablation delta for each kept rule actually exceed the noise floor?
+
+### 5 · What proves it right
+
+- On the held-out eval, the ratcheted rule set beats the starting set by more than the measured run-to-run variance (or the result is honestly reported as null).
+- The ablation table shows specific rules deleted because their removal did not hurt the eval, and kept rules each hurt when removed - proving two-way, not monotonic, change.
+- Every merged optimizer edit beat the benchmark beyond noise and every rejected edit did not, per the edit log (SkillOpt's gating behaviour).
+- The safety/money/risk rule set is provably uneditable by the loop (an attempted write is blocked in code).
+- The noise-floor check answers the falsifier: run-to-run variance is below the best-vs-worst rule-set gap, or the eval is declared too noisy to trust.
+
+### 6 · Failure modes
+
+- Monotonic ratchet: only adds, never deletes. Tell: CLAUDE.md keeps growing, no ablation deletions. Fix: run the ablation sweep and delete what removal does not hurt.
+- Optimizing noise: eval variance rivals the gains. Tell: results flip between identical runs. Fix: measure the noise floor first; enlarge/tighten the eval (the falsifier).
+- Ungated merges: edits applied without beating the benchmark. Tell: edit log has merges with no positive delta. Fix: enforce SkillOpt's merge-only-if-better gate beyond noise.
+- Editable safety rules: the loop rewrites risk limits. Tell: a guardrail changed after a run. Fix: lock safety/money rules in a code-enforced uneditable set.
+- Tuning on the held-out set: eval used to drive edits. Tell: great eval, worse real behaviour. Fix: keep a sealed set never used for tuning.
+- Collapsed bilevel loop: outer loop re-runs the same instincts. Tell: low edit-type diversity. Fix: make the outer loop revise the optimizer's strategy, measure diversity.
+- Sub-noise 'win': a 0.1%-style margin claimed as improvement (Prime Agent caveat). Tell: gain within variance. Fix: require the gain to exceed the noise floor; else report null.
+
+### 7 · Agent direction (unattended runs)
+
+Reach first for the exported chat history and build the held-out eval, then measure the noise floor - the dive's falsifier gates everything, so do not build the ratchet until the eval is proven to carry signal. Cache the eval, the noise floor and the baseline score; ablations and optimizer edits all re-run against them. Run the subtraction half (ablation) and the addition half (SkillOpt-style gated optimizer) as separate, logged passes; spawn a sub-agent for the nightly optimizer loop so proposed edits are evaluated in isolation before merging. Never let any loop edit the safety/money/risk set - enforce that in code, not instruction. Apply the Prime Agent caveat: a sub-noise margin is not an improvement. Stop and ask the user only if there is no exported history to build an eval from. Return a markdown report (eval description, noise/falsifier verdict, ablation table, gated-edit log, locked safety set, 'Unverified and missing') plus the committed eval, harness and ratcheted CLAUDE.md/skills; print the commit hash, and export passing traces for a possible Soup fine-tune. If the ratchet does not beat baseline beyond noise, report that null result honestly.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
 ## Related deep dives
 
 Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
 
 ---
 
-*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -320,4 +567,26 @@ Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across t
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
 </script></body></html>

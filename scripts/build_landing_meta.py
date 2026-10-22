@@ -35,10 +35,16 @@ def slugs(folder: Path, strip_prefix: str = "") -> list[str]:
     return out
 
 
+def _prompt_count() -> int:
+    p = SITE.parent / "data" / "prompt_systems.json"
+    return len(json.loads(p.read_text())) if p.exists() else 0
+
+
 def main() -> None:
     meta = {
         "guideSlugs": slugs(SITE / "guides"),
         "deeperSlugs": slugs(SITE / "deeper", "deeper-insight-"),
+        "promptCount": _prompt_count(),
         "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
     body = json.dumps(meta, ensure_ascii=False, separators=(",", ":"))

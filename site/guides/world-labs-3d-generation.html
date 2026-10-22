@@ -131,6 +131,139 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Fast Company: World Labs unveils its world-generating AI model</p>
 <p>PYMNTS: Spatial Intelligence Becomes the New AI Focus</p>
 <p>AIbase: Marble 3D World Model Beta</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Run a structured evaluation of World Labs' Marble (Fei-Fei Li's Large World Model product, closed-source, browser-based) for one concrete job: game-level and previs blockout. Running this produces a prompt set across text, image, and 3D-layout inputs, exported Gaussian splats and GLB collider meshes, a working import into Blender, three.js, and a game engine with walkable collision, measured persistence and export quality, and a comparison against an open alternative. Done means each guide claim is verified or refuted with files and numbers, and a written verdict on where Marble fits in the pipeline.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): Treat Marble as a vendor under evaluation, not a toy: write a brief with acceptance criteria before generating anything, keep a fixed prompt set so runs are comparable, and measure outputs with tools that do not care about the demo reel. Check the license terms for commercial use of outputs and what World Labs retains, because a closed cloud service owns the failure modes. Test the persistence claim (the scene does not change when the camera returns) numerically, inspect the collider mesh's triangle count and watertightness, and walk a character controller through it in an engine. Plan the exit: every useful asset must exist as a standard file outside World Labs.</p>
+<p>Rawest material to start from: - World Labs' own Marble announcement, docs, and help pages: input modes, export formats, credit pricing, terms of service and output license, any API that exists now (the guide says none at launch).</p>
+<p>The exported files themselves: splat .ply or .spz, collider GLB, rendered video.</p>
+<p>Kerbl et al., 3D Gaussian Splatting for Real-Time Radiance Field Rendering (2023), for what splat attributes mean.</p>
+<p>The SPZ format spec (nianticlabs/spz) and World Labs' open-source Spark three.js splat renderer (sparkjsdev/spark), verifying both repos.</p>
+<p>The Khronos glTF Validator and gltf-transform for mesh inspection.</p>
+<p>Comparators: Hunyuan3D-2 and Tripo for single objects; Genie 3 as a non-exporting contrast.</p>
+<p>Methods and tools: A fixed prompt set (10 text, 5 image, 3 layout) stored in prompts.jsonl; gltf-validator and gltf-transform inspect for triangle counts, bounds, and errors; trimesh in Python for watertightness and scale; Blender 4.x headless (blender -b -P script.py) to import GLB and render fixed camera poses; a splat import add-on or conversion for Blender, and Spark or a three.js splat viewer for real-time playback with fps measurement; Godot 4 or Unity with the GLB as a static collider and a capsule character controller; SSIM via scikit-image between renders of the same pose before and after re-entry; a timing log per generation.</p>
+<p>What proves it right (other than you or the model): Khronos glTF Validator reports zero errors on every exported GLB. Blender headless imports and renders each export without errors. A capsule character walks a predefined path through the collider in Godot or Unity without falling through or snagging, logged. SSIM of 0.98 or higher between renders of the same pose before and after navigating away, in Marble's viewer capture and in the exported splat. A blind preference test by two people comparing Marble output to the open alternative for the same brief.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Evaluate World Labs' Marble for game-level and previs blockout, and give me files and numbers rather than impressions.</p>
+<p>From World Labs' docs and terms, record: input modes, export formats (Gaussian splats as .ply or .spz, GLB mesh, video), credit pricing, whether an API now exists, and the license for commercial use of outputs.</p>
+<p>Write a brief with acceptance criteria: walkable collider, real-time splat playback at 60 fps on my GPU, assets usable in Blender and a game engine, under 3 minutes per generation.</p>
+<p>Generate from a fixed prompt set: 10 text, 5 image, 3 blocky 3D layouts. Log time and credits per run.</p>
+<p>Export splats and GLB for each. Validate GLBs with the Khronos glTF Validator, inspect triangle counts with gltf-transform, check watertightness with trimesh.</p>
+<p>Import into Blender headless and render fixed poses; play splats in a three.js viewer and measure fps; drop the collider into Godot with a capsule controller and walk a path.</p>
+<p>Test persistence: same camera pose before and after moving away, SSIM 0.98 or better.</p>
+<p>Compare against an open alternative on the same brief with two blind reviewers.</p>
+<p>Return a claims table, the measurements, the pipeline scripts, and a verdict on where Marble fits.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE: You are a technical artist and pipeline TD evaluating a closed commercial 3D generator for a small studio. You judge it by the files it exports and how they behave in real tools, not by its demo reel.</p>
+<p>CONTEXT:</p>
+<p>Product: Marble by World Labs (founders Fei-Fei Li, Justin Johnson, Ben Mildenhall, Christoph Lassner). Launched November 2025 as a browser app with waitlist access; closed weights; credit-based pricing.</p>
+<p>Claims to test from the guide: generates persistent explorable environments from text, images, video, or blocky 3D layouts in about 1-3 minutes; represents appearance as 3D Gaussian splats plus a low-poly collider mesh; the scene stays identical when the camera returns, unlike frame-predicting video models (Sora, Veo, Genie 3); exports Gaussian splats (.ply or proprietary), GLB mesh, and rendered video; export quality is good enough for previs, not final pixel; no public API at launch.</p>
+<p>Comparators: Hunyuan3D-2 and Tripo (single objects), Genie 3 (interactive but no export). Tools: Blender 4.x, three.js with a splat renderer such as Spark (sparkjsdev/spark) or similar, Godot 4 or Unity, Khronos glTF Validator, gltf-transform, trimesh, scikit-image SSIM.</p>
+<p>Use case: game-level blockout and film previs.</p>
+<p>HARD CONSTRAINTS:</p>
+<p>Fixed prompt set, versioned in prompts.jsonl; no cherry-picking: every generation is logged and scored, including failures.</p>
+<p>Do not upload private or client images; use your own photos or public-domain references.</p>
+<p>Record credits spent per generation and stop at the budget Victor sets.</p>
+<p>Read the terms of service and output license before using any output in a shared project.</p>
+<p>All pipeline steps scripted and headless where possible so results reproduce.</p>
+<p>DELIVERABLES, in order:</p>
+<p>product_facts.md: inputs, exports, formats, pricing, API status, output license, each with a World Labs URL and date checked.</p>
+<p>brief.md with acceptance criteria: GLB validates with zero errors; collider walkable; splat playback at 60 fps or better on this GPU at 1080p; generation under 3 minutes; usable after Blender import.</p>
+<p>runs.csv: per prompt, input mode, generation time, credits, export file sizes, splat count, collider triangle count.</p>
+<p>Validation outputs: gltf-validator reports, gltf-transform inspect output, trimesh watertight and scale checks.</p>
+<p>pipeline/: Blender headless import and fixed-pose render script; three.js splat viewer page with an fps counter; Godot project with the collider and a capsule controller walking a scripted path.</p>
+<p>persistence.md: SSIM between renders of the same pose before and after navigating away, in Marble's viewer capture and in the exported splat.</p>
+<p>compare.md: the same 3 briefs done with an open alternative, judged blind by two reviewers.</p>
+<p>GAP ANALYSIS (built in): keep gaps.md. Record anything you could not test (no waitlist access, an export format missing, no layout editor on your plan) and how it limits the verdict. Fill what you can from documentation and community exports; label those as secondhand.</p>
+<p>SELF-QUESTIONS before finishing:</p>
+<p>Does the collider mesh align with the splats, or is it offset or scaled?</p>
+<p>What is the real-world scale of exports, and does a 1.8 m capsule fit through doors?</p>
+<p>Do layout-conditioned runs respect my blocked geometry, measured, not eyeballed?</p>
+<p>Is persistence true in the export, or only in the hosted viewer?</p>
+<p>What is the splat count and file size, and does it play at 60 fps here?</p>
+<p>Who owns outputs and can I ship them commercially?</p>
+<p>What happens to my pipeline if World Labs changes pricing or closes access?</p>
+<p>Where does Marble beat the open alternative, and where does it lose?</p>
+<p>STOP CONDITIONS: stop and report if there is no access to Marble (deliver the evaluation harness ready to run plus secondhand findings), if the credit budget is reached, or if the terms forbid the intended use.</p>
+<p>RETURN FORMAT: markdown report: Verdict (where Marble fits, one paragraph), Product facts, Runs table, Validation, Pipeline results, Persistence, Comparison, Gaps ranked, file paths.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: product, formats, terms</h4>
+<p>Goal: Know exactly what Marble offers and permits today.</p>
+<p>From World Labs' site, Marble docs or help center, blog posts, and terms of service, record in product_facts.md: access model (waitlist, plans), input modes (text, image, multi-image, video, 3D layout editor), generation time claims, edit tools, export formats with extensions (splat .ply, .spz, other; GLB collider or full mesh; video), splat attribute layout, credit pricing per generation and per export, whether a public API or SDK exists now (the guide says none at launch), and the output license for commercial use and what World Labs retains.</p>
+<p>Also verify supporting tools: does sparkjsdev/spark exist and render the exported splat format; does nianticlabs/spz document .spz; which Blender add-ons import 3D Gaussian splat .ply. Each row: fact, value, URL, date checked. Mark anything from third-party posts as secondhand.</p>
+<p>Expect: product_facts.md with 15+ sourced rows and a tool-compatibility table.</p>
+<p>Audit before moving on: Rows without a World Labs or repo URL are unverified. If the license forbids commercial use or requires attribution, flag it at the top. If no access is available, mark generation steps blocked and continue building the harness.</p>
+<h4>Step 2 — Brief and fixed prompt set</h4>
+<p>Goal: Define acceptance criteria and comparable inputs before generating.</p>
+<p>Write brief.md with acceptance criteria for game blockout and previs: GLB passes Khronos glTF Validator with zero errors; collider walkable by a 0.4 m radius, 1.8 m capsule along a scripted path; splat playback at 60 fps or better at 1080p on this machine's GPU; generation under 3 minutes; scale within 10% of real-world for known objects (a door 2.0-2.1 m); Blender import without manual fixes.</p>
+<p>Write prompts.jsonl with 18 entries: 10 text prompts spanning interiors (diner at 3am, tea room), exteriors (cyberpunk alley with wet pavement and fog), and game spaces (three-room dungeon with a corridor); 5 image prompts from your own photos or public-domain images with sources recorded; 3 layout prompts where you block out geometry with known dimensions (a 6 x 4 m room with a 1 m doorway centered on one wall). Each entry: id, mode, input, intended use, measurable expectation.</p>
+<p>Expect: brief.md with 6+ numeric criteria; prompts.jsonl with 18 entries including dimensions for layout prompts.</p>
+<p>Audit before moving on: Every criterion must be measurable by a tool named in methods. Layout prompts must include dimensions so step 4 can measure adherence. Remove any image you do not have the right to upload.</p>
+<h4>Step 3 — Generate and export</h4>
+<p>Goal: Run every prompt once, log everything, export standard files.</p>
+<p>Run all 18 prompts in Marble in prompts.jsonl order. For each: start and end timestamps, credits used, any errors, and a screenshot of the hosted viewer at a fixed starting view. Export splats in every offered format, the GLB mesh or collider, and a short rendered flythrough. Save under exports/ / with original filenames preserved.</p>
+<p>Record in runs.csv: id, mode, generation seconds, credits, splat file size, splat count (parse the .ply header element vertex count, or the .spz header), GLB size, triangle count (from gltf-transform inspect), and notes. Do not regenerate failures to get a better result; a second attempt is a new row labeled retry. Stop when the credit budget is reached and record which prompts were not run.</p>
+<p>Expect: exports/ with 18 folders (or fewer with budget notes), runs.csv complete, viewer screenshots.</p>
+<p>Audit before moving on: Check that every runs.csv row has a matching export folder and parsed counts; a missing count means the format was not parsed, so fix the parser. Compute median generation time and compare with the 1-3 minute claim.</p>
+<h4>Step 4 — Validate and integrate into Blender, three.js, and a game engine</h4>
+<p>Goal: Prove the exports work in real pipelines.</p>
+<p>For each GLB: run the Khronos glTF Validator and save the report; run gltf-transform inspect; load with trimesh to check watertightness, bounds, and units. For layout prompts, measure the room and doorway dimensions on the collider and compare with the blocked-out values.</p>
+<p>Blender: write pipeline/blender_import.py that imports the GLB (and splats via a chosen add-on), places a camera at 3 fixed poses, and renders with blender -b -P; log errors.</p>
+<p>three.js: build pipeline/viewer.html that loads the splat with Spark or another splat renderer and the GLB, and shows an fps counter; record fps at 1080p for each scene.</p>
+<p>Game engine: in Godot 4 (or Unity), import the GLB as a static collider, add a 0.4 m radius, 1.8 m capsule CharacterBody3D, and script it along waypoints through the space; log falls through the floor, stuck frames, and doorway passes. Write integration.md with a table per scene.</p>
+<p>Expect: validator reports, inspect outputs, dimension checks, Blender renders, fps table, Godot run logs, integration.md.</p>
+<p>Audit before moving on: Fail a scene if the validator reports any error, Blender import errors, fps under 60, or the capsule falls through or gets stuck. Check collider-splat alignment by overlaying the GLB wireframe on a splat render; an offset over 5 cm is a defect to record.</p>
+<h4>Step 5 — Persistence test and open-alternative comparison</h4>
+<p>Goal: Test the central persistence claim and benchmark against an alternative.</p>
+<p>Persistence: for 5 scenes, capture the hosted viewer at a fixed pose, navigate away for at least 20 seconds through other parts of the scene, return to the exact pose (use any coordinate display or a saved view), and capture again. Repeat for the exported splat in viewer.html with a scripted camera. Compute SSIM with scikit-image on aligned grayscale captures. Also reload the scene in a new session and compare. Write persistence.md.</p>
+<p>Comparison: pick 3 briefs. Produce the same scenes with an open alternative: an image-to-3D object generator such as Hunyuan3D-2 for hero props assembled in Blender, or an open scene generator if you can run one. Render matched views. Two reviewers who did not make them choose blindly per brief on usefulness for blockout. Record time spent per approach.</p>
+<p>Expect: persistence.md with SSIM per scene and condition; compare.md with matched renders, blind choices, and time per approach.</p>
+<p>Audit before moving on: If SSIM is below 0.98 in the hosted viewer, check camera pose alignment before concluding non-persistence. Reviewers must not know which tool made which render; record how blinding was done.</p>
+<h4>Step 6 — Validate against oracles, gap report, verdict</h4>
+<p>Goal: Close with evidence and a clear verdict on fit.</p>
+<p>Run the oracles and record pass or fail with evidence: (1) Khronos glTF Validator zero errors across exported GLBs; (2) Blender headless import and render succeeds for every scene; (3) Godot capsule walks every scripted path without falls or stuck frames; (4) persistence SSIM 0.98 or higher in hosted viewer and export; (5) splat playback at 60 fps at 1080p; (6) blind reviewers' preferences recorded for 3 briefs.</p>
+<p>Write gap_report.md: every guide claim (1-3 minute generation, splats plus collider mesh, persistence versus video models, export formats, previs-grade quality, no public API, waitlist access) and every brief criterion, marked verified / unverified / false with evidence, ranked by impact on adopting Marble in the pipeline. Fix the top three where possible (better import script, scale correction, alignment fix). Then write verdict.md: where Marble fits (environment blockout, previs, VR scouting), where it does not, cost per usable scene from runs.csv, license constraints, and the exit plan if access changes.</p>
+<p>Expect: oracles.md with six rows, gap_report.md ranked, verdict.md with cost per usable scene and exit plan.</p>
+<p>Audit before moving on: Any oracle without a log, render, or report file is unverified. The verdict must cite numbers from runs.csv and integration.md, not impressions.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are reviewing a Marble evaluation you did not run. Read product_facts.md, brief.md, prompts.jsonl, runs.csv, validator reports, integration.md, persistence.md, compare.md, oracles.md, gap_report.md, and verdict.md.</p>
+<p>Enumerate every claim: generation times, formats, splat and triangle counts, validator results, fps, walkability, scale, persistence SSIM, reviewer preferences, license facts, cost per usable scene. Mark each verified, unverified, or false. Re-run the glTF Validator on three GLBs and the Blender import on one scene yourself.</p>
+<p>List missing pieces: prompts skipped, retries hidden, persistence tested only in the hosted viewer, no scale check, comparator not blind, license unread.</p>
+<p>Rank by impact on the adopt or not decision: licensing and exportability first, then collider usability, then quality.</p>
+<p>Fix the top three now and show evidence.</p>
+<p>Report what you could not fix and why, with the next action.</p>
+<p>Return a claim table (claim, status, evidence, fix) and the ranked gap list.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Does the exported collider line up with the splats in position and scale?</p>
+<p>Is the export scale in meters, and does a 1.8 m capsule pass through doorways?</p>
+<p>Did layout-conditioned runs keep my blocked dimensions within 10%?</p>
+<p>Does persistence hold in the exported splat, or only inside World Labs' viewer?</p>
+<p>How many splats per scene, and does that play at 60 fps on this GPU?</p>
+<p>What does one usable scene cost in credits once failures are counted?</p>
+<p>What do the terms say about commercial use and ownership of outputs?</p>
+<p>Does an API exist now, contrary to the launch-era guide?</p>
+<p>Which input mode gave the most usable blockouts, and why?</p>
+<p>What is my exit plan if access or pricing changes?</p>
+<p>Did I log every failure, or only the good runs?</p>
+<h3>5 · What proves it right</h3>
+<p>Khronos glTF Validator reports zero errors on every exported GLB.</p>
+<p>Blender 4.x headless (blender -b -P pipeline/blender_import.py) imports and renders each scene without errors.</p>
+<p>Godot 4 capsule controller (0.4 m radius, 1.8 m) completes every scripted waypoint path with no falls and no stuck frames, logged.</p>
+<p>SSIM 0.98 or higher between renders of the same pose before and after navigating away, in both the hosted viewer and the exported splat.</p>
+<p>Two blind reviewers choose between Marble and an open alternative on three matched briefs, choices recorded.</p>
+<h3>6 · Failure modes</h3>
+<p>Cherry-picked results. Tell: runs.csv has fewer rows than prompts with no budget note. Fix: log every run including failures and retries.</p>
+<p>Collider misaligned or wrong scale. Tell: capsule floats, clips, or cannot fit doors. Fix: measure known objects, apply a scale and offset transform in the import script.</p>
+<p>Splats too heavy for real time. Tell: viewer under 60 fps. Fix: prune or decimate splats, compress to .spz, or use video export for previs only.</p>
+<p>Persistence measured with misaligned cameras. Tell: low SSIM with visibly identical content. Fix: use saved views or scripted cameras and align before scoring.</p>
+<p>License blocks the intended use. Tell: terms restrict commercial use or claim output rights. Fix: confirm before production use; restrict to internal previs.</p>
+<p>Vendor lock-in. Tell: workflow depends on hosted editing with no export of edits. Fix: export standard files after every session and keep the open-alternative path working.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with product_facts.md: access, exports, and license decide whether the rest is worth running. Build the harness (validator calls, Blender script, viewer page, Godot project) before spending credits, so every export is checked the moment it lands. Cache all exports under exports/ and never regenerate to replace a weak result. A sub-agent can build the Godot walk-test project and another the three.js splat viewer in parallel while generations run. Generation through the browser needs Victor's account: stop and ask for access and a credit budget before step 3, and ask before uploading any image. Write outputs to docs/marble_eval/: product_facts.md, brief.md, prompts.jsonl, runs.csv, integration.md, persistence.md, compare.md, oracles.md, gap_report.md, verdict.md, with scripts in pipeline/. Return the verdict paragraph, the oracle table, and the gap list.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># World Labs — Marble and the Era of Generative 3D Worlds
 
@@ -269,6 +402,234 @@ For our purposes: Marble is worth watching closely and testing on the web when y
 - [Fast Company: World Labs unveils its world-generating AI model](https://www.fastcompany.com/91437004/fei-fei-li-world-labs-spatial-ai-mapping-3d)
 - [PYMNTS: Spatial Intelligence Becomes the New AI Focus](https://www.pymnts.com/artificial-intelligence-2/2025/world-labs-launches-marble-as-spatial-intelligence-becomes-the-new-ai-battleground/)
 - [AIbase: Marble 3D World Model Beta](https://news.aibase.com/news/22786)
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Run a structured evaluation of World Labs' Marble (Fei-Fei Li's Large World Model product, closed-source, browser-based) for one concrete job: game-level and previs blockout. Running this produces a prompt set across text, image, and 3D-layout inputs, exported Gaussian splats and GLB collider meshes, a working import into Blender, three.js, and a game engine with walkable collision, measured persistence and export quality, and a comparison against an open alternative. Done means each guide claim is verified or refuted with files and numbers, and a written verdict on where Marble fits in the pipeline.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** Treat Marble as a vendor under evaluation, not a toy: write a brief with acceptance criteria before generating anything, keep a fixed prompt set so runs are comparable, and measure outputs with tools that do not care about the demo reel. Check the license terms for commercial use of outputs and what World Labs retains, because a closed cloud service owns the failure modes. Test the persistence claim (the scene does not change when the camera returns) numerically, inspect the collider mesh's triangle count and watertightness, and walk a character controller through it in an engine. Plan the exit: every useful asset must exist as a standard file outside World Labs.
+- **Rawest material to start from:** - World Labs' own Marble announcement, docs, and help pages: input modes, export formats, credit pricing, terms of service and output license, any API that exists now (the guide says none at launch).
+- The exported files themselves: splat .ply or .spz, collider GLB, rendered video.
+- Kerbl et al., 3D Gaussian Splatting for Real-Time Radiance Field Rendering (2023), for what splat attributes mean.
+- The SPZ format spec (nianticlabs/spz) and World Labs' open-source Spark three.js splat renderer (sparkjsdev/spark), verifying both repos.
+- The Khronos glTF Validator and gltf-transform for mesh inspection.
+- Comparators: Hunyuan3D-2 and Tripo for single objects; Genie 3 as a non-exporting contrast.
+- **Methods and tools:** A fixed prompt set (10 text, 5 image, 3 layout) stored in prompts.jsonl; gltf-validator and gltf-transform inspect for triangle counts, bounds, and errors; trimesh in Python for watertightness and scale; Blender 4.x headless (blender -b -P script.py) to import GLB and render fixed camera poses; a splat import add-on or conversion for Blender, and Spark or a three.js splat viewer for real-time playback with fps measurement; Godot 4 or Unity with the GLB as a static collider and a capsule character controller; SSIM via scikit-image between renders of the same pose before and after re-entry; a timing log per generation.
+- **What proves it right (other than you or the model):** Khronos glTF Validator reports zero errors on every exported GLB. Blender headless imports and renders each export without errors. A capsule character walks a predefined path through the collider in Godot or Unity without falling through or snagging, logged. SSIM of 0.98 or higher between renders of the same pose before and after navigating away, in Marble's viewer capture and in the exported splat. A blind preference test by two people comparing Marble output to the open alternative for the same brief.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Evaluate World Labs' Marble for game-level and previs blockout, and give me files and numbers rather than impressions.
+
+1. From World Labs' docs and terms, record: input modes, export formats (Gaussian splats as .ply or .spz, GLB mesh, video), credit pricing, whether an API now exists, and the license for commercial use of outputs.
+2. Write a brief with acceptance criteria: walkable collider, real-time splat playback at 60 fps on my GPU, assets usable in Blender and a game engine, under 3 minutes per generation.
+3. Generate from a fixed prompt set: 10 text, 5 image, 3 blocky 3D layouts. Log time and credits per run.
+4. Export splats and GLB for each. Validate GLBs with the Khronos glTF Validator, inspect triangle counts with gltf-transform, check watertightness with trimesh.
+5. Import into Blender headless and render fixed poses; play splats in a three.js viewer and measure fps; drop the collider into Godot with a capsule controller and walk a path.
+6. Test persistence: same camera pose before and after moving away, SSIM 0.98 or better.
+7. Compare against an open alternative on the same brief with two blind reviewers.
+
+Return a claims table, the measurements, the pipeline scripts, and a verdict on where Marble fits.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE: You are a technical artist and pipeline TD evaluating a closed commercial 3D generator for a small studio. You judge it by the files it exports and how they behave in real tools, not by its demo reel.
+
+CONTEXT:
+- Product: Marble by World Labs (founders Fei-Fei Li, Justin Johnson, Ben Mildenhall, Christoph Lassner). Launched November 2025 as a browser app with waitlist access; closed weights; credit-based pricing.
+- Claims to test from the guide: generates persistent explorable environments from text, images, video, or blocky 3D layouts in about 1-3 minutes; represents appearance as 3D Gaussian splats plus a low-poly collider mesh; the scene stays identical when the camera returns, unlike frame-predicting video models (Sora, Veo, Genie 3); exports Gaussian splats (.ply or proprietary), GLB mesh, and rendered video; export quality is good enough for previs, not final pixel; no public API at launch.
+- Comparators: Hunyuan3D-2 and Tripo (single objects), Genie 3 (interactive but no export). Tools: Blender 4.x, three.js with a splat renderer such as Spark (sparkjsdev/spark) or similar, Godot 4 or Unity, Khronos glTF Validator, gltf-transform, trimesh, scikit-image SSIM.
+- Use case: game-level blockout and film previs.
+
+HARD CONSTRAINTS:
+- Fixed prompt set, versioned in prompts.jsonl; no cherry-picking: every generation is logged and scored, including failures.
+- Do not upload private or client images; use your own photos or public-domain references.
+- Record credits spent per generation and stop at the budget Victor sets.
+- Read the terms of service and output license before using any output in a shared project.
+- All pipeline steps scripted and headless where possible so results reproduce.
+
+DELIVERABLES, in order:
+1. product_facts.md: inputs, exports, formats, pricing, API status, output license, each with a World Labs URL and date checked.
+2. brief.md with acceptance criteria: GLB validates with zero errors; collider walkable; splat playback at 60 fps or better on this GPU at 1080p; generation under 3 minutes; usable after Blender import.
+3. runs.csv: per prompt, input mode, generation time, credits, export file sizes, splat count, collider triangle count.
+4. Validation outputs: gltf-validator reports, gltf-transform inspect output, trimesh watertight and scale checks.
+5. pipeline/: Blender headless import and fixed-pose render script; three.js splat viewer page with an fps counter; Godot project with the collider and a capsule controller walking a scripted path.
+6. persistence.md: SSIM between renders of the same pose before and after navigating away, in Marble's viewer capture and in the exported splat.
+7. compare.md: the same 3 briefs done with an open alternative, judged blind by two reviewers.
+
+GAP ANALYSIS (built in): keep gaps.md. Record anything you could not test (no waitlist access, an export format missing, no layout editor on your plan) and how it limits the verdict. Fill what you can from documentation and community exports; label those as secondhand.
+
+SELF-QUESTIONS before finishing:
+- Does the collider mesh align with the splats, or is it offset or scaled?
+- What is the real-world scale of exports, and does a 1.8 m capsule fit through doors?
+- Do layout-conditioned runs respect my blocked geometry, measured, not eyeballed?
+- Is persistence true in the export, or only in the hosted viewer?
+- What is the splat count and file size, and does it play at 60 fps here?
+- Who owns outputs and can I ship them commercially?
+- What happens to my pipeline if World Labs changes pricing or closes access?
+- Where does Marble beat the open alternative, and where does it lose?
+
+STOP CONDITIONS: stop and report if there is no access to Marble (deliver the evaluation harness ready to run plus secondhand findings), if the credit budget is reached, or if the terms forbid the intended use.
+
+RETURN FORMAT: markdown report: Verdict (where Marble fits, one paragraph), Product facts, Runs table, Validation, Pipeline results, Persistence, Comparison, Gaps ranked, file paths.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: product, formats, terms
+
+*Goal:* Know exactly what Marble offers and permits today.
+
+```text
+From World Labs' site, Marble docs or help center, blog posts, and terms of service, record in product_facts.md: access model (waitlist, plans), input modes (text, image, multi-image, video, 3D layout editor), generation time claims, edit tools, export formats with extensions (splat .ply, .spz, other; GLB collider or full mesh; video), splat attribute layout, credit pricing per generation and per export, whether a public API or SDK exists now (the guide says none at launch), and the output license for commercial use and what World Labs retains.
+
+Also verify supporting tools: does sparkjsdev/spark exist and render the exported splat format; does nianticlabs/spz document .spz; which Blender add-ons import 3D Gaussian splat .ply. Each row: fact, value, URL, date checked. Mark anything from third-party posts as secondhand.
+```
+
+**Expect:** product_facts.md with 15+ sourced rows and a tool-compatibility table.
+
+**Audit before moving on:** Rows without a World Labs or repo URL are unverified. If the license forbids commercial use or requires attribution, flag it at the top. If no access is available, mark generation steps blocked and continue building the harness.
+
+#### Step 2 — Brief and fixed prompt set
+
+*Goal:* Define acceptance criteria and comparable inputs before generating.
+
+```text
+Write brief.md with acceptance criteria for game blockout and previs: GLB passes Khronos glTF Validator with zero errors; collider walkable by a 0.4 m radius, 1.8 m capsule along a scripted path; splat playback at 60 fps or better at 1080p on this machine's GPU; generation under 3 minutes; scale within 10% of real-world for known objects (a door 2.0-2.1 m); Blender import without manual fixes.
+
+Write prompts.jsonl with 18 entries: 10 text prompts spanning interiors (diner at 3am, tea room), exteriors (cyberpunk alley with wet pavement and fog), and game spaces (three-room dungeon with a corridor); 5 image prompts from your own photos or public-domain images with sources recorded; 3 layout prompts where you block out geometry with known dimensions (a 6 x 4 m room with a 1 m doorway centered on one wall). Each entry: id, mode, input, intended use, measurable expectation.
+```
+
+**Expect:** brief.md with 6+ numeric criteria; prompts.jsonl with 18 entries including dimensions for layout prompts.
+
+**Audit before moving on:** Every criterion must be measurable by a tool named in methods. Layout prompts must include dimensions so step 4 can measure adherence. Remove any image you do not have the right to upload.
+
+#### Step 3 — Generate and export
+
+*Goal:* Run every prompt once, log everything, export standard files.
+
+```text
+Run all 18 prompts in Marble in prompts.jsonl order. For each: start and end timestamps, credits used, any errors, and a screenshot of the hosted viewer at a fixed starting view. Export splats in every offered format, the GLB mesh or collider, and a short rendered flythrough. Save under exports/<id>/ with original filenames preserved.
+
+Record in runs.csv: id, mode, generation seconds, credits, splat file size, splat count (parse the .ply header element vertex count, or the .spz header), GLB size, triangle count (from gltf-transform inspect), and notes. Do not regenerate failures to get a better result; a second attempt is a new row labeled retry. Stop when the credit budget is reached and record which prompts were not run.
+```
+
+**Expect:** exports/ with 18 folders (or fewer with budget notes), runs.csv complete, viewer screenshots.
+
+**Audit before moving on:** Check that every runs.csv row has a matching export folder and parsed counts; a missing count means the format was not parsed, so fix the parser. Compute median generation time and compare with the 1-3 minute claim.
+
+#### Step 4 — Validate and integrate into Blender, three.js, and a game engine
+
+*Goal:* Prove the exports work in real pipelines.
+
+```text
+For each GLB: run the Khronos glTF Validator and save the report; run gltf-transform inspect; load with trimesh to check watertightness, bounds, and units. For layout prompts, measure the room and doorway dimensions on the collider and compare with the blocked-out values.
+
+Blender: write pipeline/blender_import.py that imports the GLB (and splats via a chosen add-on), places a camera at 3 fixed poses, and renders with blender -b -P; log errors.
+
+three.js: build pipeline/viewer.html that loads the splat with Spark or another splat renderer and the GLB, and shows an fps counter; record fps at 1080p for each scene.
+
+Game engine: in Godot 4 (or Unity), import the GLB as a static collider, add a 0.4 m radius, 1.8 m capsule CharacterBody3D, and script it along waypoints through the space; log falls through the floor, stuck frames, and doorway passes. Write integration.md with a table per scene.
+```
+
+**Expect:** validator reports, inspect outputs, dimension checks, Blender renders, fps table, Godot run logs, integration.md.
+
+**Audit before moving on:** Fail a scene if the validator reports any error, Blender import errors, fps under 60, or the capsule falls through or gets stuck. Check collider-splat alignment by overlaying the GLB wireframe on a splat render; an offset over 5 cm is a defect to record.
+
+#### Step 5 — Persistence test and open-alternative comparison
+
+*Goal:* Test the central persistence claim and benchmark against an alternative.
+
+```text
+Persistence: for 5 scenes, capture the hosted viewer at a fixed pose, navigate away for at least 20 seconds through other parts of the scene, return to the exact pose (use any coordinate display or a saved view), and capture again. Repeat for the exported splat in viewer.html with a scripted camera. Compute SSIM with scikit-image on aligned grayscale captures. Also reload the scene in a new session and compare. Write persistence.md.
+
+Comparison: pick 3 briefs. Produce the same scenes with an open alternative: an image-to-3D object generator such as Hunyuan3D-2 for hero props assembled in Blender, or an open scene generator if you can run one. Render matched views. Two reviewers who did not make them choose blindly per brief on usefulness for blockout. Record time spent per approach.
+```
+
+**Expect:** persistence.md with SSIM per scene and condition; compare.md with matched renders, blind choices, and time per approach.
+
+**Audit before moving on:** If SSIM is below 0.98 in the hosted viewer, check camera pose alignment before concluding non-persistence. Reviewers must not know which tool made which render; record how blinding was done.
+
+#### Step 6 — Validate against oracles, gap report, verdict
+
+*Goal:* Close with evidence and a clear verdict on fit.
+
+```text
+Run the oracles and record pass or fail with evidence: (1) Khronos glTF Validator zero errors across exported GLBs; (2) Blender headless import and render succeeds for every scene; (3) Godot capsule walks every scripted path without falls or stuck frames; (4) persistence SSIM 0.98 or higher in hosted viewer and export; (5) splat playback at 60 fps at 1080p; (6) blind reviewers' preferences recorded for 3 briefs.
+
+Write gap_report.md: every guide claim (1-3 minute generation, splats plus collider mesh, persistence versus video models, export formats, previs-grade quality, no public API, waitlist access) and every brief criterion, marked verified / unverified / false with evidence, ranked by impact on adopting Marble in the pipeline. Fix the top three where possible (better import script, scale correction, alignment fix). Then write verdict.md: where Marble fits (environment blockout, previs, VR scouting), where it does not, cost per usable scene from runs.csv, license constraints, and the exit plan if access changes.
+```
+
+**Expect:** oracles.md with six rows, gap_report.md ranked, verdict.md with cost per usable scene and exit plan.
+
+**Audit before moving on:** Any oracle without a log, render, or report file is unverified. The verdict must cite numbers from runs.csv and integration.md, not impressions.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are reviewing a Marble evaluation you did not run. Read product_facts.md, brief.md, prompts.jsonl, runs.csv, validator reports, integration.md, persistence.md, compare.md, oracles.md, gap_report.md, and verdict.md.
+
+1. Enumerate every claim: generation times, formats, splat and triangle counts, validator results, fps, walkability, scale, persistence SSIM, reviewer preferences, license facts, cost per usable scene. Mark each verified, unverified, or false. Re-run the glTF Validator on three GLBs and the Blender import on one scene yourself.
+2. List missing pieces: prompts skipped, retries hidden, persistence tested only in the hosted viewer, no scale check, comparator not blind, license unread.
+3. Rank by impact on the adopt or not decision: licensing and exportability first, then collider usability, then quality.
+4. Fix the top three now and show evidence.
+5. Report what you could not fix and why, with the next action.
+Return a claim table (claim, status, evidence, fix) and the ranked gap list.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Does the exported collider line up with the splats in position and scale?
+- Is the export scale in meters, and does a 1.8 m capsule pass through doorways?
+- Did layout-conditioned runs keep my blocked dimensions within 10%?
+- Does persistence hold in the exported splat, or only inside World Labs' viewer?
+- How many splats per scene, and does that play at 60 fps on this GPU?
+- What does one usable scene cost in credits once failures are counted?
+- What do the terms say about commercial use and ownership of outputs?
+- Does an API exist now, contrary to the launch-era guide?
+- Which input mode gave the most usable blockouts, and why?
+- What is my exit plan if access or pricing changes?
+- Did I log every failure, or only the good runs?
+
+### 5 · What proves it right
+
+- Khronos glTF Validator reports zero errors on every exported GLB.
+- Blender 4.x headless (blender -b -P pipeline/blender_import.py) imports and renders each scene without errors.
+- Godot 4 capsule controller (0.4 m radius, 1.8 m) completes every scripted waypoint path with no falls and no stuck frames, logged.
+- SSIM 0.98 or higher between renders of the same pose before and after navigating away, in both the hosted viewer and the exported splat.
+- Two blind reviewers choose between Marble and an open alternative on three matched briefs, choices recorded.
+
+### 6 · Failure modes
+
+- Cherry-picked results. Tell: runs.csv has fewer rows than prompts with no budget note. Fix: log every run including failures and retries.
+- Collider misaligned or wrong scale. Tell: capsule floats, clips, or cannot fit doors. Fix: measure known objects, apply a scale and offset transform in the import script.
+- Splats too heavy for real time. Tell: viewer under 60 fps. Fix: prune or decimate splats, compress to .spz, or use video export for previs only.
+- Persistence measured with misaligned cameras. Tell: low SSIM with visibly identical content. Fix: use saved views or scripted cameras and align before scoring.
+- License blocks the intended use. Tell: terms restrict commercial use or claim output rights. Fix: confirm before production use; restrict to internal previs.
+- Vendor lock-in. Tell: workflow depends on hosted editing with no export of edits. Fix: export standard files after every session and keep the open-alternative path working.
+
+### 7 · Agent direction (unattended runs)
+
+Start with product_facts.md: access, exports, and license decide whether the rest is worth running. Build the harness (validator calls, Blender script, viewer page, Godot project) before spending credits, so every export is checked the moment it lands. Cache all exports under exports/ and never regenerate to replace a weak result. A sub-agent can build the Godot walk-test project and another the three.js splat viewer in parallel while generations run. Generation through the browser needs Victor's account: stop and ask for access and a credit budget before step 3, and ask before uploading any image. Write outputs to docs/marble_eval/: product_facts.md, brief.md, prompts.jsonl, runs.csv, integration.md, persistence.md, compare.md, oracles.md, gap_report.md, verdict.md, with scripts in pipeline/. Return the verdict paragraph, the oracle table, and the gap list.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+<!-- prompt-system:end -->
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -276,4 +637,26 @@ For our purposes: Marble is worth watching closely and testing on the web when y
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
-</script></body></html>
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --></body></html>

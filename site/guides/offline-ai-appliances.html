@@ -99,10 +99,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>A maker designed the Y-Pan, a 3D-printed panoramic film camera reproducing the Hasselblad XPan's wide 35mm format. Everything except the lens is printed, parts cost about $100, it builds in about a week, and the CAD files and bill of materials are on the creator's site.</p>
 <p>View original post</p>
 <h2>Action sketch — how to implement this</h2>
-<p>Build Gemma Translator from its repo exactly as published to learn the deployment script and thermal limits of a Pi 5.</p>
-<p>Fork it into a 'paperwork reader': Pi 5 (or a Jetson Orin Nano) + camera + Baidu Unlimited OCR + a small summarizer + Pocket TTS that reads letters aloud and flags bills; print the case.</p>
-<p>Give it to one non-technical person for two weeks; log what they actually use.</p>
-<p>Falsifier: if latency on the Pi is over ~10s per page or the person reverts to a phone app within a week, the appliance form factor isn't earning its keep at today's edge compute.</p>
+<p>Build Gemma Translator from its repo exactly as published to learn the deployment script and thermal limits of a Pi 5. Fork it into a 'paperwork reader': Pi 5 (or a Jetson Orin Nano) + camera + Baidu Unlimited OCR + a small summarizer + Pocket TTS that reads letters aloud and flags bills; print the case. Give it to one non-technical person for two weeks; log what they actually use. Falsifier: if latency on the Pi is over ~10s per page or the person reverts to a phone app within a week, the appliance form factor isn't earning its keep at today's edge compute.</p>
 <h2>Prerequisites</h2>
 <p>Raspberry Pi 5 or Jetson-class board</p>
 <p>3D printer</p>
@@ -135,9 +132,110 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>@martintrainhard</p>
 <p>@mewtru</p>
 <p>@plumsojuyang</p>
+<h2>Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p>Mission. Produces a working single-purpose offline AI appliance in two stages: first an exact rebuild of Google's Gemma Translator on a Raspberry Pi 5 to learn its deployment script, model stack and thermal limits, then a fork into a 'paperwork reader' that photographs a letter, runs local OCR, summarizes it, flags bills and deadlines, and reads it aloud with Pocket TTS, in a printed case. Done means measured per-page latency and accuracy on 20 real letters, a packet capture proving zero network egress, and a two-week trial log from one non-technical person, judged against the falsifier: more than about 10 s per page or reverting to a phone app within a week.</p>
+<h3>1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<p>What a top professional would do (that you didn't ask for): An embedded product engineer would set a latency and accuracy budget per stage (capture, OCR, summarize, TTS) and measure each on the target board under sustained thermal load, not one cold run. They would prove offline by test, not by design intent: firewall egress, capture packets, and run the full flow with radios disabled. They would build a labeled test set of real letters, measure character error rate and bill-flag precision and recall, and design for the failure that matters most to an elderly user, a missed due date, by making the box say what it is unsure about. They would also run a short usability protocol with the actual person, observing first use without helping.</p>
+<p>Rawest material to start from: The Gemma Translator repository with its deployment script, parts list (battery, touchscreen, speaker, micro keyboard) and STL files; model cards and weights for Moonshine (speech recognition, Useful Sensors), Gemma (Google), Kyutai Pocket TTS (100M parameters, voice cloning), and Baidu Unlimited OCR (3B, MIT license); llama.cpp and its GGUF quantization docs; Raspberry Pi 5 thermal and power documentation (vcgencmd, 5V 5A supply); Jetson Orin Nano docs if used; Sharp Memory Display datasheet for a low-power status screen; and 20 real letters from the intended user's mail, with consent, as the test set.</p>
+<p>Methods and tools: Raspberry Pi OS 64-bit, Python, llama.cpp or the repo's runtime, GGUF quantization at Q4_K_M and Q8_0 for comparison, Unsloth or Soup only if a small summarizer needs fine-tuning on letter types. Measurement: time.perf_counter per stage, p50 and p95 over 20 pages, vcgencmd measure_temp and get_throttled during a 30-minute soak, a USB power meter for watts. Accuracy: jiwer character error rate against hand-transcribed letters; precision and recall for bill and deadline flags against hand labels. Offline proof: nftables output drop rule, tcpdump on all interfaces during the full flow, ss -tupn for open sockets. Case: CadQuery or the repo's STL modified for camera mount and speaker. Trial: on-device local log of button presses and pages read.</p>
+<p>What proves it right (other than you or the model): A tcpdump capture showing zero outbound packets during 20 pages processed. Hand-transcribed ground truth for 20 letters scored by jiwer. Bill and deadline labels made by a second person before the box sees the letters. The trial user's own usage log and a short interview after two weeks. The upstream Gemma Translator reaching its published roughly 7 tokens per second on your build, as the baseline that your setup is sound.</p>
+<p>Rewritten prompt — ask for exactly that:</p>
+<p>Act as an embedded AI product engineer. Stage 1: clone the Gemma Translator repo and build it exactly as published on a Raspberry Pi 5 with active cooling and a 5V 5A supply. Measure tokens per second against the published roughly 7, per-stage latency for Moonshine, Gemma and TTS, and temperature and throttling over a 30-minute soak; document every deviation from the repo. Stage 2: fork it into a paperwork reader: camera capture, Baidu Unlimited OCR (or a smaller fallback if it will not fit or run fast enough), a quantized Gemma summarizer with a fixed output template (sender, what it is, amount, due date, action needed, confidence), and Kyutai Pocket TTS reading the summary aloud. Build a 20-letter test set with consent, hand-transcribed and hand-labeled for bills and deadlines by a second person. Report p50 and p95 seconds per page, character error rate, and bill-flag precision and recall. Prove offline: nftables drop on output, tcpdump during all 20 pages, zero packets. Design a printed case with camera mount and a big button. Then a two-week trial with one non-technical person: local usage log, no remote telemetry, interview at the end. Apply the falsifier: over about 10 s per page or reverting to a phone app within a week means the form factor is not earning its keep.</p>
+<h3>2 · One-shot prompt</h3>
+<p>ROLE AND STANCE You are an embedded AI product engineer building a one-job offline appliance for a non-technical person. Source claims to test: Gemma Translator runs speech recognition (Moonshine), translation (Gemma) and TTS on a Raspberry Pi 5 with no network at about 7 tokens per second, 'enough to hold a conversation', and is a weekend build from its BOM and STLs; Baidu Unlimited OCR (3B, MIT) reads 100-page PDFs in one pass with tables and reading order intact; Kyutai Pocket TTS clones voices locally at 6x real time; Qwen 3.8 27B fits a 24GB card; Soup fine-tunes on a 4GB GPU. Vendor benchmarks are claims until measured on your board.</p>
+<p>CONTEXT</p>
+<p>Base: Gemma Translator repo, deployment script, BOM, STL case.</p>
+<p>Parts bin: Unlimited OCR, Pocket TTS, Moonshine, quantized Gemma via llama.cpp; Jetson Orin Nano as a fallback board; Sharp Memory Display for a low-power status screen.</p>
+<p>Target user: an elderly relative or similar; the box reads letters aloud and flags bills and deadlines.</p>
+<p>HARD CONSTRAINTS</p>
+<p>No network at runtime. Prove it with a firewall drop rule and a packet capture.</p>
+<p>No remote telemetry. Usage logs stay on the device and are shown to the user.</p>
+<p>Test letters are used with the owner's consent; images and text are deleted after the study unless the owner says otherwise.</p>
+<p>The box never pays, emails or acts; it reads, summarizes and flags, and says 'I am not sure' when OCR confidence or the summary is weak.</p>
+<p>Every performance number is measured on the target board under a 30-minute soak, not a cold single run.</p>
+<p>DELIVERABLES IN ORDER</p>
+<p>stage1.md: Gemma Translator built as published, tokens per second, per-stage latency, temperature and throttle flags, deviations.</p>
+<p>testset/: 20 letters, hand transcription, hand labels for bill, amount, due date, action, made by a second person.</p>
+<p>pipeline/: capture, OCR, summarize, TTS, with per-stage timing and a confidence rule.</p>
+<p>bench.md: p50 and p95 seconds per page, character error rate, bill-flag precision and recall, watts, peak temperature; Unlimited OCR versus a smaller fallback OCR if needed.</p>
+<p>offline_proof/: nftables rules, tcpdump pcap, ss output, all from a full 20-letter run.</p>
+<p>case/: modified STL or CadQuery source with camera mount, button, speaker grille, BOM with prices.</p>
+<p>trial.md: two-week usage log summary and end interview.</p>
+<p>verdict.md: falsifier result and GAPS.</p>
+<p>BUILT-IN GAP ANALYSIS Write GAPS: models that did not fit in memory or ran too slowly and what replaced them; letter types missing from the test set (handwritten, multi-page, low light); thermal throttling events; claims not testable on this hardware (27B models, 100-page PDFs). Fill gaps you can, such as adding handwritten samples or rerunning with a heatsink change.</p>
+<p>SELF-QUESTIONS</p>
+<p>Which stage dominates latency, and does quantization or a smaller OCR model fix it without wrecking accuracy?</p>
+<p>Does Unlimited OCR even run on a Pi 5's 8GB or 16GB RAM, or does this force a Jetson?</p>
+<p>What happens when the letter is crooked, folded, or in dim light?</p>
+<p>Does the summary ever invent an amount or date not in the OCR text?</p>
+<p>Is the voice clear to someone with hearing loss at the speaker's volume?</p>
+<p>STOP CONDITIONS Stop and report if stage 1 cannot reach within 30% of the published 7 tokens per second, if p95 per page exceeds 30 s with every model option, or if the trial user declines.</p>
+<p>RETURN FORMAT Verdict line, bench table, offline proof summary, file list, GAPS, self-question answers.</p>
+<h3>3 · Step-by-step prompts</h3>
+<h4>Step 1 — Ground truth: rebuild Gemma Translator as published</h4>
+<p>Goal: Learn the exact deployment path and limits of a Pi 5 running a three-model offline stack.</p>
+<p>Clone the Gemma Translator repository and follow its README and deployment script exactly on a Raspberry Pi 5 with the official active cooler and a 5V 5A supply. Record OS image, Python version, model files and their quantization, and every command. Do not change anything until the published build works. Then measure: tokens per second for Gemma during translation (compare to the published roughly 7), Moonshine latency per utterance, TTS real-time factor, and end-to-end latency from end of speech to start of playback, each over 20 utterances with p50 and p95. Run a 30-minute continuous soak and log vcgencmd measure_temp and get_throttled every 10 s, plus watts from a USB meter. Write stage1.md with results and every deviation from the repo's instructions, including missing steps you had to work out.</p>
+<p>Expect: stage1.md with a command log, latency table, thermal and power plot, and a deviations list.</p>
+<p>Audit before moving on: Fail if tokens per second is more than 30% below published without an explanation, or if get_throttled shows throttling you did not report. Fix cooling or power and rerun before step 2.</p>
+<h4>Step 2 — Build the labeled letter test set</h4>
+<p>Goal: Create the ground truth the appliance will be judged on.</p>
+<p>With the owner's consent, collect 20 real letters representative of the target user's mail: utility bills, bank statements, medical appointment letters, government notices, marketing, and at least two handwritten or low-quality items. Photograph each with the same camera and stand planned for the device, and also under dim light and at a 15-degree tilt for a robustness subset. Have a second person, not the builder, hand-transcribe each letter and label: is it a bill (yes or no), amount due, due date, sender, and action needed. Store under testset/ with images, transcription text and labels.csv. Redact account numbers in any copy that leaves the device, and write a deletion date. Include at least one two-page letter so the pipeline's multi-page handling is tested.</p>
+<p>Expect: testset/ with 20 letters, robustness variants, transcriptions and labels.csv, plus a consent and deletion note.</p>
+<p>Audit before moving on: Fail if labels were made by the same person who builds the pipeline, or if bills are under 5 of 20, which makes recall meaningless. Add letters until both pass.</p>
+<h4>Step 3 — Build the paperwork-reader pipeline</h4>
+<p>Goal: Fork the translator into capture, OCR, summarize, speak, with honest confidence.</p>
+<p>Fork the repo. Replace the speech input path with a camera capture on button press, with automatic crop and deskew in OpenCV. Run Baidu Unlimited OCR locally; if it does not fit RAM or exceeds 20 s per page on the Pi, benchmark a smaller OCR fallback and record both. Feed OCR text to quantized Gemma via llama.cpp with a fixed template: sender, what it is, amount, due date, action needed, confidence. Add a rule: if OCR mean confidence is low or any amount or date in the summary does not appear verbatim in the OCR text, the box says 'I am not sure about this letter, please ask someone to check it.' Speak the summary with Kyutai Pocket TTS at a slow rate. Time every stage with perf_counter and log locally.</p>
+<p>Expect: pipeline/ code, config with model paths and quantization, and a per-stage timing log.</p>
+<p>Audit before moving on: Feed three letters and check that every amount and date spoken appears in the OCR text. Fail on any invented value; tighten the verbatim-check rule and rerun.</p>
+<h4>Step 4 — Benchmark accuracy, latency and offline proof</h4>
+<p>Goal: Measure the appliance against the labeled set with radios off.</p>
+<p>Add an nftables rule dropping all output except loopback, disable Wi-Fi and Bluetooth, and start tcpdump on all interfaces. Run all 20 letters plus robustness variants through the pipeline during a 30-minute soak. Compute: seconds per page p50 and p95 by stage; character error rate with jiwer against the transcriptions; bill-flag precision and recall, amount exact-match rate, and due-date exact-match rate against labels.csv; rate of 'not sure' responses and whether they landed on genuinely hard letters; peak temperature and throttle events; average watts. Stop tcpdump and confirm zero non-loopback packets; save the pcap and ss -tupn output in offline_proof/. Write bench.md comparing Unlimited OCR with the fallback if both ran. Break results out by letter type so weak categories are visible.</p>
+<p>Expect: bench.md with tables per metric and offline_proof/ with pcap, firewall rules and socket list.</p>
+<p>Audit before moving on: Fail if any non-loopback packet appears; find the process and remove it. Fail if a wrong amount was spoken without the 'not sure' warning; that is the highest-severity error.</p>
+<h4>Step 5 — Case, BOM and two-week trial</h4>
+<p>Goal: Package it as a box a non-technical person can use, then watch real use.</p>
+<p>Modify the Gemma Translator STL or write a CadQuery case: camera on an arm over a letter tray, one large button, speaker grille facing the user, vents over the Pi's cooler, optional Sharp Memory Display for a status line. Write a BOM with part numbers and prices. Give the box to one non-technical person for two weeks with a one-page printed guide in large type. On the device, log locally: button presses, pages read, 'not sure' events, and replays. No remote telemetry. Observe the first use without helping and note where they hesitate. At the end, interview them: what they used it for, what annoyed them, whether they went back to a phone app or asking family, and when. Record the build time.</p>
+<p>Expect: case/ files, BOM, trial.md with usage counts per day, first-use observations and interview notes.</p>
+<p>Audit before moving on: Fail if the log shows the device was unused for more than 7 consecutive days without a recorded reason. Confirm consent and the deletion date for letter images captured during the trial.</p>
+<h4>Step 6 — Validate against oracles and write the gap report</h4>
+<p>Goal: Apply the falsifier and record what remains unproven.</p>
+<p>Write verdict.md. State p95 seconds per page against the roughly 10 s falsifier threshold, bill-flag recall and precision, amount accuracy, the offline proof result, and the trial outcome: did the person keep using it or revert to a phone app within a week? Give one verdict line: does the appliance form factor earn its keep at today's edge compute? Then GAPS: each source claim (7 tokens per second on Pi 5; weekend build from BOM; Unlimited OCR reads 100 pages in one pass; Pocket TTS 6x real time; 27B on one 24GB card; Soup on 4GB) marked verified, unverified or false on this hardware with the measurement that decides it; letter types not covered; failures during the trial. Recommend the single change most likely to fix the worst gap, such as a Jetson Orin Nano, a smaller OCR, or a better camera stand.</p>
+<p>Expect: verdict.md with metrics, a verdict line and GAPS.</p>
+<p>Audit before moving on: Recompute p95 and recall from the raw timing log and labels with a fresh script. Fail if any claim is marked verified without a number from this build.</p>
+<h3>4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<p>You are an independent reviewer of an offline paperwork-reader appliance. Open stage1.md, testset/, pipeline/, bench.md, offline_proof/, case/, trial.md and verdict.md. List every claim in bench.md and verdict.md. Mark each verified (cite the log line, pcap, or computation), unverified (say what measurement would prove it), or false. Check: tokens per second and latency were measured under a 30-minute soak with throttle state recorded; labels were made by someone other than the builder; every spoken amount or date appears in OCR text, or triggered a 'not sure' warning; the pcap shows zero non-loopback packets during the full run; no remote telemetry exists in code; consent and deletion are documented for real letters; the trial outcome comes from the device log and interview, not the builder's impression. List missing pieces: untested letter types, models that never ran, robustness variants skipped. Rank problems by harm to the user first (a missed bill is worse than a slow page), then by whether they flip the falsifier verdict. Fix the top three now and report before and after. End with what needs new hardware, more letters, or a longer trial.</p>
+<p>Questions the agent must ask itself before it says done:</p>
+<p>Which stage dominates per-page latency on the Pi 5, and what is the cheapest fix?</p>
+<p>Does Unlimited OCR fit and run in this board's RAM, or did I silently fall back?</p>
+<p>Can the summary state an amount or date that is not in the OCR text, and did I test for it?</p>
+<p>Is 'not sure' firing on the hard letters, or randomly?</p>
+<p>Did any library phone home at import time (model hub checks, telemetry) and get caught by tcpdump?</p>
+<p>Does the device throttle after 20 minutes in its printed case with the lid on?</p>
+<p>Can the trial user hear and understand the TTS voice at the speaker's volume?</p>
+<p>Are handwritten and multi-page letters represented in the test set?</p>
+<p>What would make the person go back to a phone app, and did the log or interview show it?</p>
+<h3>5 · What proves it right</h3>
+<p>A tcpdump capture across the full 20-letter run with zero non-loopback packets.</p>
+<p>jiwer character error rate and bill-flag precision and recall against labels made by a second person.</p>
+<p>The upstream Gemma Translator reaching within 30% of its published roughly 7 tokens per second on this build.</p>
+<p>The trial user's on-device usage log and end interview after two weeks.</p>
+<p>A 30-minute soak log of vcgencmd temperature and throttle flags inside the closed case.</p>
+<h3>6 · Failure modes</h3>
+<p>Invented amounts: the summarizer fills in a plausible due date. Tell: spoken values not found in OCR text. Fix: verbatim check that forces 'not sure' when a value is missing from the OCR.</p>
+<p>Hidden network calls: model hubs or analytics libraries reach out at startup. Tell: packets in tcpdump. Fix: set offline environment flags, vendor all weights, firewall output.</p>
+<p>Thermal throttling in the case: fine on the bench, slow in the box. Tell: get_throttled nonzero and p95 creeping up. Fix: vents over the cooler, larger heatsink, lower clocks.</p>
+<p>OCR too big for the board: Unlimited OCR exhausts RAM or swaps. Tell: page times over a minute, swap usage. Fix: smaller OCR or a Jetson Orin Nano.</p>
+<p>Bad capture: crooked or dim photos wreck OCR. Tell: robustness subset CER far above main set. Fix: fixed stand, LED ring, deskew.</p>
+<p>Novelty decay: used daily for three days then abandoned. Tell: usage log flatlines. Fix: interview for the reason before changing tech.</p>
+<h3>7 · Agent direction (unattended runs)</h3>
+<p>Start with the Gemma Translator repo on real hardware; nothing else is trustworthy until the published build runs and matches its numbers. Cache model weights and GGUF files locally and set every library's offline flag before testing. Spawn a sub-agent for the case and BOM in parallel with pipeline work, and review its STL by slicing it and checking the camera arm geometry. Physical tasks (building, photographing letters, the two-week trial, the interview) belong to the user and the trial person: write instructions and wait for their data; never fabricate measurements, labels or trial results. Treat the letter images as private: never upload them to any cloud model, including for debugging. Stop and ask before using real letters, if consent is unclear, or if the hardware cannot meet the stage 1 baseline. Return verdict.md as the entry point with stage1.md, bench.md, testset/ (redacted), pipeline/, offline_proof/, case/ and trial.md.</p>
+<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
 <h2>Related deep dives</h2>
 <p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
-<p>Generated 2026-10-21 · curated by @6ab3 for DejaViewed</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
 </div><!--pagefind:end-->
 <script id="md" type="text/markdown"># Offline AI Appliances — one job, one box, no cloud
 
@@ -244,10 +342,10 @@ A maker designed the Y-Pan, a 3D-printed panoramic film camera reproducing the H
 
 ## Action sketch — how to implement this
 
-- Build Gemma Translator from its repo exactly as published to learn the deployment script and thermal limits of a Pi 5.
-- Fork it into a 'paperwork reader': Pi 5 (or a Jetson Orin Nano) + camera + Baidu Unlimited OCR + a small summarizer + Pocket TTS that reads letters aloud and flags bills; print the case.
-- Give it to one non-technical person for two weeks; log what they actually use.
-- Falsifier: if latency on the Pi is over ~10s per page or the person reverts to a phone app within a week, the appliance form factor isn't earning its keep at today's edge compute.
+Build Gemma Translator from its repo exactly as published to learn the deployment script and thermal limits of a Pi 5.
+Fork it into a 'paperwork reader': Pi 5 (or a Jetson Orin Nano) + camera + Baidu Unlimited OCR + a small summarizer + Pocket TTS that reads letters aloud and flags bills; print the case.
+Give it to one non-technical person for two weeks; log what they actually use.
+Falsifier: if latency on the Pi is over ~10s per page or the person reverts to a phone app within a week, the appliance form factor isn't earning its keep at today's edge compute.
 
 ---
 
@@ -293,13 +391,200 @@ A maker designed the Y-Pan, a 3D-printed panoramic film camera reproducing the H
 
 ---
 
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Produces a working single-purpose offline AI appliance in two stages: first an exact rebuild of Google's Gemma Translator on a Raspberry Pi 5 to learn its deployment script, model stack and thermal limits, then a fork into a 'paperwork reader' that photographs a letter, runs local OCR, summarizes it, flags bills and deadlines, and reads it aloud with Pocket TTS, in a printed case. Done means measured per-page latency and accuracy on 20 real letters, a packet capture proving zero network egress, and a two-week trial log from one non-technical person, judged against the falsifier: more than about 10 s per page or reverting to a phone app within a week.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** An embedded product engineer would set a latency and accuracy budget per stage (capture, OCR, summarize, TTS) and measure each on the target board under sustained thermal load, not one cold run. They would prove offline by test, not by design intent: firewall egress, capture packets, and run the full flow with radios disabled. They would build a labeled test set of real letters, measure character error rate and bill-flag precision and recall, and design for the failure that matters most to an elderly user, a missed due date, by making the box say what it is unsure about. They would also run a short usability protocol with the actual person, observing first use without helping.
+- **Rawest material to start from:** The Gemma Translator repository with its deployment script, parts list (battery, touchscreen, speaker, micro keyboard) and STL files; model cards and weights for Moonshine (speech recognition, Useful Sensors), Gemma (Google), Kyutai Pocket TTS (100M parameters, voice cloning), and Baidu Unlimited OCR (3B, MIT license); llama.cpp and its GGUF quantization docs; Raspberry Pi 5 thermal and power documentation (vcgencmd, 5V 5A supply); Jetson Orin Nano docs if used; Sharp Memory Display datasheet for a low-power status screen; and 20 real letters from the intended user's mail, with consent, as the test set.
+- **Methods and tools:** Raspberry Pi OS 64-bit, Python, llama.cpp or the repo's runtime, GGUF quantization at Q4_K_M and Q8_0 for comparison, Unsloth or Soup only if a small summarizer needs fine-tuning on letter types. Measurement: time.perf_counter per stage, p50 and p95 over 20 pages, vcgencmd measure_temp and get_throttled during a 30-minute soak, a USB power meter for watts. Accuracy: jiwer character error rate against hand-transcribed letters; precision and recall for bill and deadline flags against hand labels. Offline proof: nftables output drop rule, tcpdump on all interfaces during the full flow, ss -tupn for open sockets. Case: CadQuery or the repo's STL modified for camera mount and speaker. Trial: on-device local log of button presses and pages read.
+- **What proves it right (other than you or the model):** A tcpdump capture showing zero outbound packets during 20 pages processed. Hand-transcribed ground truth for 20 letters scored by jiwer. Bill and deadline labels made by a second person before the box sees the letters. The trial user's own usage log and a short interview after two weeks. The upstream Gemma Translator reaching its published roughly 7 tokens per second on your build, as the baseline that your setup is sound.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Act as an embedded AI product engineer. Stage 1: clone the Gemma Translator repo and build it exactly as published on a Raspberry Pi 5 with active cooling and a 5V 5A supply. Measure tokens per second against the published roughly 7, per-stage latency for Moonshine, Gemma and TTS, and temperature and throttling over a 30-minute soak; document every deviation from the repo. Stage 2: fork it into a paperwork reader: camera capture, Baidu Unlimited OCR (or a smaller fallback if it will not fit or run fast enough), a quantized Gemma summarizer with a fixed output template (sender, what it is, amount, due date, action needed, confidence), and Kyutai Pocket TTS reading the summary aloud. Build a 20-letter test set with consent, hand-transcribed and hand-labeled for bills and deadlines by a second person. Report p50 and p95 seconds per page, character error rate, and bill-flag precision and recall. Prove offline: nftables drop on output, tcpdump during all 20 pages, zero packets. Design a printed case with camera mount and a big button. Then a two-week trial with one non-technical person: local usage log, no remote telemetry, interview at the end. Apply the falsifier: over about 10 s per page or reverting to a phone app within a week means the form factor is not earning its keep.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANCE
+You are an embedded AI product engineer building a one-job offline appliance for a non-technical person. Source claims to test: Gemma Translator runs speech recognition (Moonshine), translation (Gemma) and TTS on a Raspberry Pi 5 with no network at about 7 tokens per second, 'enough to hold a conversation', and is a weekend build from its BOM and STLs; Baidu Unlimited OCR (3B, MIT) reads 100-page PDFs in one pass with tables and reading order intact; Kyutai Pocket TTS clones voices locally at 6x real time; Qwen 3.8 27B fits a 24GB card; Soup fine-tunes on a 4GB GPU. Vendor benchmarks are claims until measured on your board.
+
+CONTEXT
+- Base: Gemma Translator repo, deployment script, BOM, STL case.
+- Parts bin: Unlimited OCR, Pocket TTS, Moonshine, quantized Gemma via llama.cpp; Jetson Orin Nano as a fallback board; Sharp Memory Display for a low-power status screen.
+- Target user: an elderly relative or similar; the box reads letters aloud and flags bills and deadlines.
+
+HARD CONSTRAINTS
+1. No network at runtime. Prove it with a firewall drop rule and a packet capture.
+2. No remote telemetry. Usage logs stay on the device and are shown to the user.
+3. Test letters are used with the owner's consent; images and text are deleted after the study unless the owner says otherwise.
+4. The box never pays, emails or acts; it reads, summarizes and flags, and says 'I am not sure' when OCR confidence or the summary is weak.
+5. Every performance number is measured on the target board under a 30-minute soak, not a cold single run.
+
+DELIVERABLES IN ORDER
+1. stage1.md: Gemma Translator built as published, tokens per second, per-stage latency, temperature and throttle flags, deviations.
+2. testset/: 20 letters, hand transcription, hand labels for bill, amount, due date, action, made by a second person.
+3. pipeline/: capture, OCR, summarize, TTS, with per-stage timing and a confidence rule.
+4. bench.md: p50 and p95 seconds per page, character error rate, bill-flag precision and recall, watts, peak temperature; Unlimited OCR versus a smaller fallback OCR if needed.
+5. offline_proof/: nftables rules, tcpdump pcap, ss output, all from a full 20-letter run.
+6. case/: modified STL or CadQuery source with camera mount, button, speaker grille, BOM with prices.
+7. trial.md: two-week usage log summary and end interview.
+8. verdict.md: falsifier result and GAPS.
+
+BUILT-IN GAP ANALYSIS
+Write GAPS: models that did not fit in memory or ran too slowly and what replaced them; letter types missing from the test set (handwritten, multi-page, low light); thermal throttling events; claims not testable on this hardware (27B models, 100-page PDFs). Fill gaps you can, such as adding handwritten samples or rerunning with a heatsink change.
+
+SELF-QUESTIONS
+- Which stage dominates latency, and does quantization or a smaller OCR model fix it without wrecking accuracy?
+- Does Unlimited OCR even run on a Pi 5's 8GB or 16GB RAM, or does this force a Jetson?
+- What happens when the letter is crooked, folded, or in dim light?
+- Does the summary ever invent an amount or date not in the OCR text?
+- Is the voice clear to someone with hearing loss at the speaker's volume?
+
+STOP CONDITIONS
+Stop and report if stage 1 cannot reach within 30% of the published 7 tokens per second, if p95 per page exceeds 30 s with every model option, or if the trial user declines.
+
+RETURN FORMAT
+Verdict line, bench table, offline proof summary, file list, GAPS, self-question answers.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Ground truth: rebuild Gemma Translator as published
+
+*Goal:* Learn the exact deployment path and limits of a Pi 5 running a three-model offline stack.
+
+```text
+Clone the Gemma Translator repository and follow its README and deployment script exactly on a Raspberry Pi 5 with the official active cooler and a 5V 5A supply. Record OS image, Python version, model files and their quantization, and every command. Do not change anything until the published build works. Then measure: tokens per second for Gemma during translation (compare to the published roughly 7), Moonshine latency per utterance, TTS real-time factor, and end-to-end latency from end of speech to start of playback, each over 20 utterances with p50 and p95. Run a 30-minute continuous soak and log vcgencmd measure_temp and get_throttled every 10 s, plus watts from a USB meter. Write stage1.md with results and every deviation from the repo's instructions, including missing steps you had to work out.
+```
+
+**Expect:** stage1.md with a command log, latency table, thermal and power plot, and a deviations list.
+
+**Audit before moving on:** Fail if tokens per second is more than 30% below published without an explanation, or if get_throttled shows throttling you did not report. Fix cooling or power and rerun before step 2.
+
+#### Step 2 — Build the labeled letter test set
+
+*Goal:* Create the ground truth the appliance will be judged on.
+
+```text
+With the owner's consent, collect 20 real letters representative of the target user's mail: utility bills, bank statements, medical appointment letters, government notices, marketing, and at least two handwritten or low-quality items. Photograph each with the same camera and stand planned for the device, and also under dim light and at a 15-degree tilt for a robustness subset. Have a second person, not the builder, hand-transcribe each letter and label: is it a bill (yes or no), amount due, due date, sender, and action needed. Store under testset/ with images, transcription text and labels.csv. Redact account numbers in any copy that leaves the device, and write a deletion date. Include at least one two-page letter so the pipeline's multi-page handling is tested.
+```
+
+**Expect:** testset/ with 20 letters, robustness variants, transcriptions and labels.csv, plus a consent and deletion note.
+
+**Audit before moving on:** Fail if labels were made by the same person who builds the pipeline, or if bills are under 5 of 20, which makes recall meaningless. Add letters until both pass.
+
+#### Step 3 — Build the paperwork-reader pipeline
+
+*Goal:* Fork the translator into capture, OCR, summarize, speak, with honest confidence.
+
+```text
+Fork the repo. Replace the speech input path with a camera capture on button press, with automatic crop and deskew in OpenCV. Run Baidu Unlimited OCR locally; if it does not fit RAM or exceeds 20 s per page on the Pi, benchmark a smaller OCR fallback and record both. Feed OCR text to quantized Gemma via llama.cpp with a fixed template: sender, what it is, amount, due date, action needed, confidence. Add a rule: if OCR mean confidence is low or any amount or date in the summary does not appear verbatim in the OCR text, the box says 'I am not sure about this letter, please ask someone to check it.' Speak the summary with Kyutai Pocket TTS at a slow rate. Time every stage with perf_counter and log locally.
+```
+
+**Expect:** pipeline/ code, config with model paths and quantization, and a per-stage timing log.
+
+**Audit before moving on:** Feed three letters and check that every amount and date spoken appears in the OCR text. Fail on any invented value; tighten the verbatim-check rule and rerun.
+
+#### Step 4 — Benchmark accuracy, latency and offline proof
+
+*Goal:* Measure the appliance against the labeled set with radios off.
+
+```text
+Add an nftables rule dropping all output except loopback, disable Wi-Fi and Bluetooth, and start tcpdump on all interfaces. Run all 20 letters plus robustness variants through the pipeline during a 30-minute soak. Compute: seconds per page p50 and p95 by stage; character error rate with jiwer against the transcriptions; bill-flag precision and recall, amount exact-match rate, and due-date exact-match rate against labels.csv; rate of 'not sure' responses and whether they landed on genuinely hard letters; peak temperature and throttle events; average watts. Stop tcpdump and confirm zero non-loopback packets; save the pcap and ss -tupn output in offline_proof/. Write bench.md comparing Unlimited OCR with the fallback if both ran. Break results out by letter type so weak categories are visible.
+```
+
+**Expect:** bench.md with tables per metric and offline_proof/ with pcap, firewall rules and socket list.
+
+**Audit before moving on:** Fail if any non-loopback packet appears; find the process and remove it. Fail if a wrong amount was spoken without the 'not sure' warning; that is the highest-severity error.
+
+#### Step 5 — Case, BOM and two-week trial
+
+*Goal:* Package it as a box a non-technical person can use, then watch real use.
+
+```text
+Modify the Gemma Translator STL or write a CadQuery case: camera on an arm over a letter tray, one large button, speaker grille facing the user, vents over the Pi's cooler, optional Sharp Memory Display for a status line. Write a BOM with part numbers and prices. Give the box to one non-technical person for two weeks with a one-page printed guide in large type. On the device, log locally: button presses, pages read, 'not sure' events, and replays. No remote telemetry. Observe the first use without helping and note where they hesitate. At the end, interview them: what they used it for, what annoyed them, whether they went back to a phone app or asking family, and when. Record the build time.
+```
+
+**Expect:** case/ files, BOM, trial.md with usage counts per day, first-use observations and interview notes.
+
+**Audit before moving on:** Fail if the log shows the device was unused for more than 7 consecutive days without a recorded reason. Confirm consent and the deletion date for letter images captured during the trial.
+
+#### Step 6 — Validate against oracles and write the gap report
+
+*Goal:* Apply the falsifier and record what remains unproven.
+
+```text
+Write verdict.md. State p95 seconds per page against the roughly 10 s falsifier threshold, bill-flag recall and precision, amount accuracy, the offline proof result, and the trial outcome: did the person keep using it or revert to a phone app within a week? Give one verdict line: does the appliance form factor earn its keep at today's edge compute? Then GAPS: each source claim (7 tokens per second on Pi 5; weekend build from BOM; Unlimited OCR reads 100 pages in one pass; Pocket TTS 6x real time; 27B on one 24GB card; Soup on 4GB) marked verified, unverified or false on this hardware with the measurement that decides it; letter types not covered; failures during the trial. Recommend the single change most likely to fix the worst gap, such as a Jetson Orin Nano, a smaller OCR, or a better camera stand.
+```
+
+**Expect:** verdict.md with metrics, a verdict line and GAPS.
+
+**Audit before moving on:** Recompute p95 and recall from the raw timing log and labels with a fresh script. Fail if any claim is marked verified without a number from this build.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent reviewer of an offline paperwork-reader appliance. Open stage1.md, testset/, pipeline/, bench.md, offline_proof/, case/, trial.md and verdict.md. List every claim in bench.md and verdict.md. Mark each verified (cite the log line, pcap, or computation), unverified (say what measurement would prove it), or false. Check: tokens per second and latency were measured under a 30-minute soak with throttle state recorded; labels were made by someone other than the builder; every spoken amount or date appears in OCR text, or triggered a 'not sure' warning; the pcap shows zero non-loopback packets during the full run; no remote telemetry exists in code; consent and deletion are documented for real letters; the trial outcome comes from the device log and interview, not the builder's impression. List missing pieces: untested letter types, models that never ran, robustness variants skipped. Rank problems by harm to the user first (a missed bill is worse than a slow page), then by whether they flip the falsifier verdict. Fix the top three now and report before and after. End with what needs new hardware, more letters, or a longer trial.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Which stage dominates per-page latency on the Pi 5, and what is the cheapest fix?
+- Does Unlimited OCR fit and run in this board's RAM, or did I silently fall back?
+- Can the summary state an amount or date that is not in the OCR text, and did I test for it?
+- Is 'not sure' firing on the hard letters, or randomly?
+- Did any library phone home at import time (model hub checks, telemetry) and get caught by tcpdump?
+- Does the device throttle after 20 minutes in its printed case with the lid on?
+- Can the trial user hear and understand the TTS voice at the speaker's volume?
+- Are handwritten and multi-page letters represented in the test set?
+- What would make the person go back to a phone app, and did the log or interview show it?
+
+### 5 · What proves it right
+
+- A tcpdump capture across the full 20-letter run with zero non-loopback packets.
+- jiwer character error rate and bill-flag precision and recall against labels made by a second person.
+- The upstream Gemma Translator reaching within 30% of its published roughly 7 tokens per second on this build.
+- The trial user's on-device usage log and end interview after two weeks.
+- A 30-minute soak log of vcgencmd temperature and throttle flags inside the closed case.
+
+### 6 · Failure modes
+
+- Invented amounts: the summarizer fills in a plausible due date. Tell: spoken values not found in OCR text. Fix: verbatim check that forces 'not sure' when a value is missing from the OCR.
+- Hidden network calls: model hubs or analytics libraries reach out at startup. Tell: packets in tcpdump. Fix: set offline environment flags, vendor all weights, firewall output.
+- Thermal throttling in the case: fine on the bench, slow in the box. Tell: get_throttled nonzero and p95 creeping up. Fix: vents over the cooler, larger heatsink, lower clocks.
+- OCR too big for the board: Unlimited OCR exhausts RAM or swaps. Tell: page times over a minute, swap usage. Fix: smaller OCR or a Jetson Orin Nano.
+- Bad capture: crooked or dim photos wreck OCR. Tell: robustness subset CER far above main set. Fix: fixed stand, LED ring, deskew.
+- Novelty decay: used daily for three days then abandoned. Tell: usage log flatlines. Fix: interview for the reason before changing tech.
+
+### 7 · Agent direction (unattended runs)
+
+Start with the Gemma Translator repo on real hardware; nothing else is trustworthy until the published build runs and matches its numbers. Cache model weights and GGUF files locally and set every library's offline flag before testing. Spawn a sub-agent for the case and BOM in parallel with pipeline work, and review its STL by slicing it and checking the camera arm geometry. Physical tasks (building, photographing letters, the two-week trial, the interview) belong to the user and the trial person: write instructions and wait for their data; never fabricate measurements, labels or trial results. Treat the letter images as private: never upload them to any cloud model, including for debugging. Stop and ask before using real letters, if consent is unclear, or if the hardware cannot meet the stage 1 baseline. Return verdict.md as the entry point with stage1.md, bench.md, testset/ (redacted), pipeline/, offline_proof/, case/ and trial.md.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+
+
 ## Related deep dives
 
 Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
 
 ---
 
-*Generated 2026-10-21 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
 </script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
@@ -307,4 +592,26 @@ Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across t
 const raw=document.getElementById('md').textContent;
 const html=DOMPurify.sanitize(marked.parse(raw));
 document.getElementById('guide-body').innerHTML=html;
+</script><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
+document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
+p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
+</script><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
 </script></body></html>

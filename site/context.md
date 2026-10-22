@@ -444,277 +444,277 @@ These are the most actionable, well-documented items. Surface first when relevan
 
 When the user mentions or needs one of these tools, surface the relevant entries:
 
-- **claude** (191x, best: S-tier) — domains: audio, security, web
-- **claude code** (104x, best: S-tier) — domains: audio, security, UI/UX
-- **anthropic** (49x, best: S-tier) — domains: security, UI/UX, productivity
-- **chatgpt** (44x, best: S-tier) — domains: security, UI/UX, productivity
-- **python** (27x, best: S-tier) — domains: information-theory, security, UI/UX
-- **openai** (22x, best: S-tier) — domains: security, UI/UX, productivity
-- **codex** (17x, best: S-tier) — domains: reference, design, news
-- **gemini** (17x, best: S-tier) — domains: audio, security, VFX
-- **blender** (14x, best: S-tier) — domains: animation, reference, fashion
-- **obsidian** (14x, best: S-tier) — domains: design, 3D, video production
-- **touchdesigner** (13x, best: A-tier) — domains: animation, prompt engineering, music
-- **cursor** (12x, best: S-tier) — domains: animation, audio, design
-- **higgsfield** (11x, best: S-tier) — domains: animation, prompt engineering, reference
-- **react** (11x, best: S-tier) — domains: animation, quant, reference
-- **playwright** (10x, best: S-tier) — domains: reference, audio, design
-- **deepseek** (9x, best: A-tier) — domains: architecture, audio, design
-- **runway** (9x, best: A-tier) — domains: animation, fashion, reference
-- **figma** (8x, best: S-tier) — domains: animation, reference, design
-- **llama** (8x, best: A-tier) — domains: security, video production, agents
-- **n8n** (8x, best: S-tier) — domains: crypto, design, software development
-- **hugging face** (7x, best: S-tier) — domains: quant, crypto, architecture
-- **kimi** (7x, best: A-tier) — domains: reference, architecture, audio
-- **unreal engine** (7x, best: S-tier) — domains: animation, prompt engineering, reference
-- **mediapipe** (6x, best: A-tier) — domains: music, audio, 3D
-- **notebooklm** (6x, best: S-tier) — domains: RAG, audio, video production
-- **polymarket** (6x, best: B-tier) — domains: reference, architecture, news
-- **banjo** (5x, best: S-tier) — domains: education, hardware, music
-- **qwen** (5x, best: A-tier) — domains: marketing, art, video production
-- **three.js** (5x, best: S-tier) — domains: reference, design, 3D
-- **veo** (5x, best: S-tier) — domains: animation, architecture, audio
-- **docker** (4x, best: S-tier) — domains: audio, security, 3D
-- **google** (4x, best: S-tier) — domains: prompt engineering, agents, software development
-- **impeccable** (4x, best: A-tier) — domains: reference, design, video production
+- **claude** (191x, best: S-tier) — domains: video production, open source, data science
+- **claude code** (104x, best: S-tier) — domains: video production, open source, data science
+- **anthropic** (49x, best: S-tier) — domains: video production, open source, UI/UX
+- **chatgpt** (44x, best: S-tier) — domains: video production, open source, UI/UX
+- **python** (27x, best: S-tier) — domains: video production, open source, data science
+- **openai** (22x, best: S-tier) — domains: video production, open source, UI/UX
+- **codex** (17x, best: S-tier) — domains: LLM, design, video production
+- **gemini** (17x, best: S-tier) — domains: video production, open source, architecture
+- **blender** (14x, best: S-tier) — domains: LLM, music, video production
+- **obsidian** (14x, best: S-tier) — domains: education, LLM, design
+- **touchdesigner** (13x, best: A-tier) — domains: music, LLM, video production
+- **cursor** (12x, best: S-tier) — domains: LLM, design, video production
+- **higgsfield** (11x, best: S-tier) — domains: design, video production, open source
+- **react** (11x, best: S-tier) — domains: LLM, design, finance/trading
+- **playwright** (10x, best: S-tier) — domains: LLM, design, video production
+- **deepseek** (9x, best: A-tier) — domains: LLM, design, video production
+- **runway** (9x, best: A-tier) — domains: LLM, design, video production
+- **figma** (8x, best: S-tier) — domains: design, 3D, agents
+- **llama** (8x, best: A-tier) — domains: LLM, finance/trading, video production
+- **n8n** (8x, best: S-tier) — domains: finance/trading, design, video production
+- **hugging face** (7x, best: S-tier) — domains: education, LLM, design
+- **kimi** (7x, best: A-tier) — domains: LLM, design, video production
+- **unreal engine** (7x, best: S-tier) — domains: LLM, music, video production
+- **mediapipe** (6x, best: A-tier) — domains: music, 3D, art
+- **notebooklm** (6x, best: S-tier) — domains: education, video production, open source
+- **polymarket** (6x, best: B-tier) — domains: finance/trading, automation, data science
+- **banjo** (5x, best: S-tier) — domains: music, hardware, education
+- **qwen** (5x, best: A-tier) — domains: LLM, video production, open source
+- **three.js** (5x, best: S-tier) — domains: design, video production, open source
+- **veo** (5x, best: S-tier) — domains: LLM, video production, e-commerce
+- **docker** (4x, best: S-tier) — domains: LLM, video production, open source
+- **google** (4x, best: S-tier) — domains: LLM, agents, software development
+- **impeccable** (4x, best: A-tier) — domains: design, video production, open source
 - **manus** (4x, best: B-tier) — domains: design, UI/UX, software development
-- **midjourney** (4x, best: A-tier) — domains: animation, design, marketing
-- **notion** (4x, best: A-tier) — domains: video production, agents, education
+- **midjourney** (4x, best: A-tier) — domains: LLM, design, video production
+- **notion** (4x, best: A-tier) — domains: video production, open source, automation
 - **posthog** (4x, best: B-tier) — domains: data science, marketing, agents
-- **sora** (4x, best: A-tier) — domains: animation, architecture, audio
-- **stitch** (4x, best: A-tier) — domains: reference, design, 3D
-- **tradingview** (4x, best: C-tier) — domains: quant, crypto, architecture
-- **after effects** (3x, best: A-tier) — domains: animation, prompt engineering, crypto
-- **kling** (3x, best: A-tier) — domains: animation, prompt engineering, architecture
-- **mcp** (3x, best: S-tier) — domains: reference, audio, design
-- **ollama** (3x, best: A-tier) — domains: design, news, video production
-- **openrouter** (3x, best: A-tier) — domains: news, security, archives
-- **raspberry pi** (3x, best: A-tier) — domains: security, 3D, video production
-- **sherlock** (3x, best: B-tier) — domains: crypto, security, video production
-- **vercel** (3x, best: S-tier) — domains: animation, design, agents
-- **youtube** (3x, best: A-tier) — domains: reference, video production, marketing
-- **21st.dev** (2x, best: A-tier) — domains: design, marketing, branding
-- **cal.com** (2x, best: B-tier) — domains: crypto, design, marketing
+- **sora** (4x, best: A-tier) — domains: LLM, video production, e-commerce
+- **stitch** (4x, best: A-tier) — domains: design, video production, open source
+- **tradingview** (4x, best: C-tier) — domains: finance/trading, video production, quant
+- **after effects** (3x, best: A-tier) — domains: music, video production, 3D
+- **kling** (3x, best: A-tier) — domains: LLM, video production, e-commerce
+- **mcp** (3x, best: S-tier) — domains: LLM, design, open source
+- **ollama** (3x, best: A-tier) — domains: LLM, design, video production
+- **openrouter** (3x, best: A-tier) — domains: LLM, hardware, video production
+- **raspberry pi** (3x, best: A-tier) — domains: hardware, video production, 3D
+- **sherlock** (3x, best: B-tier) — domains: video production, open source, crypto
+- **vercel** (3x, best: S-tier) — domains: design, open source, agents
+- **youtube** (3x, best: A-tier) — domains: LLM, video production, open source
+- **21st.dev** (2x, best: A-tier) — domains: design, open source, marketing
+- **cal.com** (2x, best: B-tier) — domains: finance/trading, design, video production
 - **canva** (2x, best: B-tier) — domains: finance/trading, video production
-- **cli-anything** (2x, best: S-tier) — domains: agents, software development, open source
-- **elevenlabs** (2x, best: S-tier) — domains: reference, 3D, marketing
-- **flux** (2x, best: A-tier) — domains: reference, architecture, design
-- **github** (2x, best: A-tier) — domains: music, news, security
-- **google colab** (2x, best: A-tier) — domains: video production, agents, software development
-- **gpt-4** (2x, best: A-tier) — domains: architecture, audio, video production
-- **gpt-5** (2x, best: S-tier) — domains: security, video production, art
-- **grok** (2x, best: B-tier) — domains: design, news, video production
-- **grokbot** (2x, best: B-tier) — domains: marketing, video production, agents
-- **gsd** (2x, best: S-tier) — domains: agents, software development, open source
-- **hunyuan3d** (2x, best: S-tier) — domains: design, 3D, art
-- **imagen** (2x, best: S-tier) — domains: agents, software development, LLM
-- **jupyterlab** (2x, best: S-tier) — domains: animation, fashion, 3D
-- **kalshi** (2x, best: C-tier) — domains: news, finance/trading, agents
-- **katana** (2x, best: A-tier) — domains: security, open source, OSINT
+- **cli-anything** (2x, best: S-tier) — domains: open source, agents, software development
+- **elevenlabs** (2x, best: S-tier) — domains: video production, 3D, marketing
+- **flux** (2x, best: A-tier) — domains: LLM, design, agents
+- **github** (2x, best: A-tier) — domains: music, open source, art
+- **google colab** (2x, best: A-tier) — domains: LLM, video production, open source
+- **gpt-4** (2x, best: A-tier) — domains: LLM, video production, open source
+- **gpt-5** (2x, best: S-tier) — domains: LLM, video production, open source
+- **grok** (2x, best: B-tier) — domains: LLM, design, video production
+- **grokbot** (2x, best: B-tier) — domains: LLM, video production, marketing
+- **gsd** (2x, best: S-tier) — domains: open source, agents, software development
+- **hunyuan3d** (2x, best: S-tier) — domains: LLM, design, 3D
+- **imagen** (2x, best: S-tier) — domains: LLM, art, agents
+- **jupyterlab** (2x, best: S-tier) — domains: video production, open source, data science
+- **kalshi** (2x, best: C-tier) — domains: finance/trading, data science, agents
+- **katana** (2x, best: A-tier) — domains: open source, security, OSINT
 - **khaen** (2x, best: A-tier) — domains: music, audio
-- **kronos** (2x, best: S-tier) — domains: quant, crypto, video production
-- **lightrag** (2x, best: S-tier) — domains: agents, LLM, open source
-- **linkedin** (2x, best: B-tier) — domains: software development, productivity, marketing
-- **lora** (2x, best: B-tier) — domains: video production, news, hardware
-- **meta** (2x, best: S-tier) — domains: crypto, creative coding, finance/trading
-- **odyssey** (2x, best: A-tier) — domains: 3D, video production, art
-- **openclaw** (2x, best: B-tier) — domains: design, news, video production
-- **orange pi** (2x, best: A-tier) — domains: security, video production, OSINT
+- **kronos** (2x, best: S-tier) — domains: finance/trading, LLM, video production
+- **lightrag** (2x, best: S-tier) — domains: LLM, open source, agents
+- **linkedin** (2x, best: B-tier) — domains: prompt engineering, marketing, productivity
+- **lora** (2x, best: B-tier) — domains: hardware, video production, architecture
+- **meta** (2x, best: S-tier) — domains: LLM, finance/trading, open source
+- **odyssey** (2x, best: A-tier) — domains: video production, 3D, art
+- **openclaw** (2x, best: B-tier) — domains: LLM, design, video production
+- **orange pi** (2x, best: A-tier) — domains: LLM, hardware, video production
 - **photoshop** (2x, best: A-tier) — domains: video production, art
-- **premiere pro** (2x, best: A-tier) — domains: education, video production, UI/UX
+- **premiere pro** (2x, best: A-tier) — domains: UI/UX, video production, education
 - **runway gen-3** (2x, best: A-tier) — domains: prompt engineering, video production, architecture
-- **shadergradient** (2x, best: S-tier) — domains: reference, design, 3D
-- **slack** (2x, best: S-tier) — domains: 3D, video production, agents
-- **stable diffusion** (2x, best: A-tier) — domains: design, art, finance/trading
-- **typescript** (2x, best: B-tier) — domains: news, security, archives
-- **unity** (2x, best: S-tier) — domains: reference, 3D, agents
-- **vs code** (2x, best: S-tier) — domains: reference, architecture, design
-- **whisper** (2x, best: A-tier) — domains: design, video production, software development
-- **zapier** (2x, best: A-tier) — domains: design, video production, agents
-- **3dai studio** (1x, best: A-tier) — domains: animation, 3D, video production
-- **aceternity ui** (1x, best: A-tier) — domains: design, software development, reference
-- **agent reach** (1x, best: A-tier) — domains: agents, open source
-- **agentcraft** (1x, best: A-tier) — domains: agents, software development, open source
-- **airtable** (1x, best: A-tier) — domains: agents, video production, open source
-- **anthropic economic index** (1x, best: A-tier) — domains: productivity, LLM, prompt engineering
-- **antidoom** (1x, best: A-tier) — domains: video production, LLM, open source
-- **antigravity** (1x, best: A-tier) — domains: agents, software development, LLM
-- **arcads** (1x, best: A-tier) — domains: agents, video production, open source
-- **arize** (1x, best: A-tier) — domains: software development, security, architecture
-- **artemis** (1x, best: A-tier) — domains: agents, software development, LLM
-- **asi-evolve** (1x, best: A-tier) — domains: agents, news, LLM
-- **autoclip** (1x, best: A-tier) — domains: e-commerce, video production, marketing
-- **autoresearch** (1x, best: S-tier) — domains: agents, software development, open source
-- **awesome systematic trading** (1x, best: A-tier) — domains: finance/trading, quant, crypto
-- **awesome-design-md** (1x, best: A-tier) — domains: design, marketing, branding
-- **bigquery** (1x, best: S-tier) — domains: agents, productivity, software development
+- **shadergradient** (2x, best: S-tier) — domains: design, open source, 3D
+- **slack** (2x, best: S-tier) — domains: LLM, video production, open source
+- **stable diffusion** (2x, best: A-tier) — domains: finance/trading, LLM, design
+- **typescript** (2x, best: B-tier) — domains: hardware, video production, creative coding
+- **unity** (2x, best: S-tier) — domains: LLM, open source, 3D
+- **vs code** (2x, best: S-tier) — domains: design, video production, open source
+- **whisper** (2x, best: A-tier) — domains: design, video production, open source
+- **zapier** (2x, best: A-tier) — domains: LLM, design, video production
+- **3dai studio** (1x, best: A-tier) — domains: 3D, video production, animation
+- **aceternity ui** (1x, best: A-tier) — domains: reference, UI/UX, design
+- **agent reach** (1x, best: A-tier) — domains: open source, agents
+- **agentcraft** (1x, best: A-tier) — domains: open source, agents, software development
+- **airtable** (1x, best: A-tier) — domains: marketing, video production, open source
+- **anthropic economic index** (1x, best: A-tier) — domains: LLM, productivity, prompt engineering
+- **antidoom** (1x, best: A-tier) — domains: reference, LLM, video production
+- **antigravity** (1x, best: A-tier) — domains: LLM, open source, agents
+- **arcads** (1x, best: A-tier) — domains: marketing, video production, open source
+- **arize** (1x, best: A-tier) — domains: data science, architecture, security
+- **artemis** (1x, best: A-tier) — domains: LLM, open source, agents
+- **asi-evolve** (1x, best: A-tier) — domains: LLM, news, agents
+- **autoclip** (1x, best: A-tier) — domains: video production, e-commerce, open source
+- **autoresearch** (1x, best: S-tier) — domains: open source, agents, software development
+- **awesome systematic trading** (1x, best: A-tier) — domains: quant, finance/trading, open source
+- **awesome-design-md** (1x, best: A-tier) — domains: design, open source, marketing
+- **bigquery** (1x, best: S-tier) — domains: LLM, productivity, agents
 - **blackbox.ai** (1x, best: A-tier) — domains: software development
-- **bot crossing** (1x, best: A-tier) — domains: video production, agents, creative coding
-- **buffer** (1x, best: S-tier) — domains: reference, 3D, marketing
-- **cape** (1x, best: A-tier) — domains: security, open source, hardware
-- **chrome** (1x, best: A-tier) — domains: agents, software development, video production
-- **claude api** (1x, best: A-tier) — domains: agents, LLM
-- **claude desktop** (1x, best: A-tier) — domains: agents, video production, open source
-- **claude in chrome** (1x, best: S-tier) — domains: reference, 3D, marketing
-- **claude-peers** (1x, best: S-tier) — domains: agents, software development, open source
+- **bot crossing** (1x, best: A-tier) — domains: video production, open source, creative coding
+- **buffer** (1x, best: S-tier) — domains: 3D, marketing, agents
+- **cape** (1x, best: A-tier) — domains: hardware, open source, security
+- **chrome** (1x, best: A-tier) — domains: video production, automation, agents
+- **claude api** (1x, best: A-tier) — domains: LLM, agents
+- **claude desktop** (1x, best: A-tier) — domains: marketing, video production, open source
+- **claude in chrome** (1x, best: S-tier) — domains: 3D, marketing, agents
+- **claude-peers** (1x, best: S-tier) — domains: open source, agents, software development
 - **claudex** (1x, best: A-tier) — domains: agents, software development
-- **clickup** (1x, best: A-tier) — domains: 3D, video production, agents
-- **cochlea** (1x, best: A-tier) — domains: security, video production, OSINT
-- **comfyui** (1x, best: A-tier) — domains: creative coding, prompt engineering, video production
-- **context7** (1x, best: A-tier) — domains: agents, software development, LLM
-- **cron** (1x, best: A-tier) — domains: agents, software development, LLM
-- **czlonkowski/n8n-mcp** (1x, best: S-tier) — domains: design, agents, UI/UX
+- **clickup** (1x, best: A-tier) — domains: video production, open source, 3D
+- **cochlea** (1x, best: A-tier) — domains: hardware, video production, UI/UX
+- **comfyui** (1x, best: A-tier) — domains: prompt engineering, video production, art
+- **context7** (1x, best: A-tier) — domains: LLM, software development, agents
+- **cron** (1x, best: A-tier) — domains: LLM, video production, agents
+- **czlonkowski/n8n-mcp** (1x, best: S-tier) — domains: design, open source, automation
 - **dall-e** (1x, best: A-tier) — domains: video production, architecture, audio
-- **deeppiv** (1x, best: A-tier) — domains: education, hardware, 3D
-- **deepseek harness** (1x, best: A-tier) — domains: agents, LLM, open source
-- **deepwiki** (1x, best: S-tier) — domains: agents, software development, open source
-- **duckstation** (1x, best: A-tier) — domains: open source, 3D, art
-- **easy gif** (1x, best: A-tier) — domains: animation, design, video production
-- **elder-plinius/l1b3rt4s** (1x, best: S-tier) — domains: security, video production, art
-- **excalidraw** (1x, best: S-tier) — domains: agents, software development, open source
-- **ffmpeg** (1x, best: A-tier) — domains: animation, music, 3D
-- **figma mcp** (1x, best: A-tier) — domains: agents, design, reference
-- **firecrawl** (1x, best: S-tier) — domains: agents, software development, open source
-- **fish audio** (1x, best: A-tier) — domains: agents, prompt engineering, video production
+- **deeppiv** (1x, best: A-tier) — domains: hardware, 3D, video production
+- **deepseek harness** (1x, best: A-tier) — domains: LLM, video production, open source
+- **deepwiki** (1x, best: S-tier) — domains: architecture, open source, agents
+- **duckstation** (1x, best: A-tier) — domains: 3D, art, open source
+- **easy gif** (1x, best: A-tier) — domains: design, video production, UI/UX
+- **elder-plinius/l1b3rt4s** (1x, best: S-tier) — domains: LLM, video production, open source
+- **excalidraw** (1x, best: S-tier) — domains: open source, agents, software development
+- **ffmpeg** (1x, best: A-tier) — domains: music, video production, 3D
+- **figma mcp** (1x, best: A-tier) — domains: reference, UI/UX, design
+- **firecrawl** (1x, best: S-tier) — domains: open source, agents, software development
+- **fish audio** (1x, best: A-tier) — domains: prompt engineering, video production, agents
 - **galkyd lite** (1x, best: A-tier) — domains: art
 - **gamsol** (1x, best: A-tier) — domains: art
-- **gausseous** (1x, best: S-tier) — domains: audio, 3D, video production
-- **gemini cli** (1x, best: S-tier) — domains: agents, software development, LLM
-- **geospy** (1x, best: A-tier) — domains: image generation, photography, architecture
-- **getdesign.md** (1x, best: A-tier) — domains: design, marketing, branding
-- **ghidra** (1x, best: A-tier) — domains: agents, security, open source
-- **ghostty** (1x, best: S-tier) — domains: agents, productivity, software development
-- **git** (1x, best: S-tier) — domains: agents, productivity, software development
-- **gitdiagram** (1x, best: S-tier) — domains: agents, software development, open source
-- **github actions** (1x, best: A-tier) — domains: agents, security, open source
-- **github cli** (1x, best: S-tier) — domains: agents, software development, open source
-- **gitingest** (1x, best: S-tier) — domains: agents, software development, open source
-- **gitmcp** (1x, best: S-tier) — domains: agents, software development, open source
-- **glittercowboy/get-shit-done** (1x, best: S-tier) — domains: design, agents, UI/UX
-- **gmail** (1x, best: S-tier) — domains: reference, 3D, marketing
-- **god's eye view** (1x, best: A-tier) — domains: agents, open source, 3D
-- **godly** (1x, best: A-tier) — domains: design, software development, reference
-- **google flow** (1x, best: A-tier) — domains: animation, design, video production
+- **gausseous** (1x, best: S-tier) — domains: video production, open source, 3D
+- **gemini cli** (1x, best: S-tier) — domains: LLM, agents, software development
+- **geospy** (1x, best: A-tier) — domains: data science, photography, architecture
+- **getdesign.md** (1x, best: A-tier) — domains: design, open source, marketing
+- **ghidra** (1x, best: A-tier) — domains: security, video production, open source
+- **ghostty** (1x, best: S-tier) — domains: LLM, productivity, agents
+- **git** (1x, best: S-tier) — domains: LLM, productivity, agents
+- **gitdiagram** (1x, best: S-tier) — domains: architecture, open source, agents
+- **github actions** (1x, best: A-tier) — domains: prompt engineering, security, open source
+- **github cli** (1x, best: S-tier) — domains: open source, agents, software development
+- **gitingest** (1x, best: S-tier) — domains: architecture, open source, agents
+- **gitmcp** (1x, best: S-tier) — domains: architecture, open source, agents
+- **glittercowboy/get-shit-done** (1x, best: S-tier) — domains: design, open source, automation
+- **gmail** (1x, best: S-tier) — domains: 3D, marketing, agents
+- **god's eye view** (1x, best: A-tier) — domains: 3D, open source, agents
+- **godly** (1x, best: A-tier) — domains: reference, UI/UX, design
+- **google flow** (1x, best: A-tier) — domains: design, video production, UI/UX
 - **google search console** (1x, best: A-tier) — domains: web
-- **google workspace cli** (1x, best: S-tier) — domains: agents, software development, open source
-- **grapheneos** (1x, best: A-tier) — domains: security, open source, hardware
-- **graphify** (1x, best: A-tier) — domains: agents, software development, open source
-- **grok imagine** (1x, best: A-tier) — domains: reference, news, video production
-- **gstack** (1x, best: A-tier) — domains: agents, software development, open source
-- **hccl** (1x, best: A-tier) — domains: news, video production, hardware
-- **hermes agent** (1x, best: A-tier) — domains: agents, productivity, video production
-- **hermes skills hub** (1x, best: A-tier) — domains: reference, news, video production
-- **hesreallyhim/awesome-claude-code** (1x, best: S-tier) — domains: design, agents, UI/UX
-- **homebrew** (1x, best: A-tier) — domains: agents, LLM, open source
-- **huawei ascend** (1x, best: A-tier) — domains: news, video production, hardware
-- **humanizer** (1x, best: A-tier) — domains: video production, open source, marketing
+- **google workspace cli** (1x, best: S-tier) — domains: open source, agents, software development
+- **grapheneos** (1x, best: A-tier) — domains: hardware, open source, security
+- **graphify** (1x, best: A-tier) — domains: open source, agents, software development
+- **grok imagine** (1x, best: A-tier) — domains: LLM, video production, open source
+- **gstack** (1x, best: A-tier) — domains: open source, agents, software development
+- **hccl** (1x, best: A-tier) — domains: LLM, hardware, video production
+- **hermes agent** (1x, best: A-tier) — domains: prompt engineering, video production, productivity
+- **hermes skills hub** (1x, best: A-tier) — domains: LLM, video production, open source
+- **hesreallyhim/awesome-claude-code** (1x, best: S-tier) — domains: design, open source, automation
+- **homebrew** (1x, best: A-tier) — domains: LLM, video production, open source
+- **huawei ascend** (1x, best: A-tier) — domains: LLM, hardware, video production
+- **humanizer** (1x, best: A-tier) — domains: prompt engineering, marketing, video production
 - **hunyuan3d-2** (1x, best: S-tier) — domains: design, 3D, art
-- **ideogram** (1x, best: A-tier) — domains: marketing, art, video production
-- **ios shortcuts** (1x, best: A-tier) — domains: agents, mobile
+- **ideogram** (1x, best: A-tier) — domains: LLM, video production, open source
+- **ios shortcuts** (1x, best: A-tier) — domains: mobile, agents
 - **jev** (1x, best: A-tier) — domains: LLM, marketing
-- **joblib** (1x, best: A-tier) — domains: quant, backtesting, data science
-- **kafka** (1x, best: A-tier) — domains: software development, security, architecture
-- **kali linux** (1x, best: A-tier) — domains: security, open source
-- **kepano/obsidian-skills** (1x, best: S-tier) — domains: design, agents, UI/UX
+- **joblib** (1x, best: A-tier) — domains: finance/trading, data science, quant
+- **kafka** (1x, best: A-tier) — domains: data science, architecture, security
+- **kali linux** (1x, best: A-tier) — domains: open source, security
+- **kepano/obsidian-skills** (1x, best: S-tier) — domains: design, open source, automation
 - **keshifun gold powder** (1x, best: S-tier) — domains: design, art
-- **kimi-k3-in-c** (1x, best: A-tier) — domains: reference, news, video production
-- **liquid-glass-js** (1x, best: S-tier) — domains: design, creative coding, UI/UX
-- **liquid-logo** (1x, best: S-tier) — domains: design, creative coding, UI/UX
-- **liquidtrade** (1x, best: A-tier) — domains: agents, crypto, finance/trading
-- **llama.cpp** (1x, best: A-tier) — domains: agents, LLM, open source
-- **ln** (1x, best: S-tier) — domains: animation, 3D, art
-- **loom** (1x, best: A-tier) — domains: agents, productivity, video production
-- **luma** (1x, best: A-tier) — domains: VFX, crypto, 3D
-- **macnativegames** (1x, best: A-tier) — domains: software development, open source
-- **magnific** (1x, best: A-tier) — domains: animation, 3D, video production
-- **magnific ai** (1x, best: A-tier) — domains: animation, 3D, video production
-- **mandelbulber** (1x, best: S-tier) — domains: 3D, video production, creative coding
-- **mapquest** (1x, best: A-tier) — domains: agents, LLM
-- **markdownify** (1x, best: A-tier) — domains: agents, software development, LLM
-- **meta ads** (1x, best: S-tier) — domains: reference, 3D, marketing
-- **meta ads mcp** (1x, best: A-tier) — domains: agents, video production, open source
-- **meta ai** (1x, best: S-tier) — domains: security, video production, OSINT
+- **kimi-k3-in-c** (1x, best: A-tier) — domains: LLM, video production, open source
+- **liquid-glass-js** (1x, best: S-tier) — domains: design, open source, creative coding
+- **liquid-logo** (1x, best: S-tier) — domains: design, open source, creative coding
+- **liquidtrade** (1x, best: A-tier) — domains: finance/trading, agents, crypto
+- **llama.cpp** (1x, best: A-tier) — domains: LLM, video production, open source
+- **ln** (1x, best: S-tier) — domains: open source, 3D, art
+- **loom** (1x, best: A-tier) — domains: prompt engineering, video production, productivity
+- **luma** (1x, best: A-tier) — domains: 3D, video production, VFX
+- **macnativegames** (1x, best: A-tier) — domains: open source, software development
+- **magnific** (1x, best: A-tier) — domains: 3D, video production, animation
+- **magnific ai** (1x, best: A-tier) — domains: 3D, video production, animation
+- **mandelbulber** (1x, best: S-tier) — domains: video production, open source, 3D
+- **mapquest** (1x, best: A-tier) — domains: LLM, agents
+- **markdownify** (1x, best: A-tier) — domains: LLM, software development, agents
+- **meta ads** (1x, best: S-tier) — domains: 3D, marketing, agents
+- **meta ads mcp** (1x, best: A-tier) — domains: marketing, video production, open source
+- **meta ai** (1x, best: S-tier) — domains: video production, security, OSINT
 - **microduck** (1x, best: A-tier) — domains: robotics, open source
-- **minecraft** (1x, best: A-tier) — domains: agents, software development, open source
-- **mistral** (1x, best: A-tier) — domains: software development, security, video production
-- **mobbin** (1x, best: A-tier) — domains: design, software development, reference
-- **moneyprinterturbo** (1x, best: A-tier) — domains: open source, video production
+- **minecraft** (1x, best: A-tier) — domains: open source, agents, software development
+- **mistral** (1x, best: A-tier) — domains: software development, video production, security
+- **mobbin** (1x, best: A-tier) — domains: reference, UI/UX, design
+- **moneyprinterturbo** (1x, best: A-tier) — domains: video production, open source
 - **moonshine** (1x, best: S-tier) — domains: LLM, hardware, open source
-- **move ai** (1x, best: A-tier) — domains: animation, 3D, video production
-- **mullvad vpn** (1x, best: A-tier) — domains: security, open source, hardware
-- **mumu ai novel** (1x, best: A-tier) — domains: e-commerce, video production, marketing
-- **muse code** (1x, best: A-tier) — domains: reference, news, video production
-- **mush8** (1x, best: A-tier) — domains: software development, open source
-- **nasa eonet** (1x, best: A-tier) — domains: software development, data science
-- **nccl** (1x, best: A-tier) — domains: news, video production, hardware
+- **move ai** (1x, best: A-tier) — domains: 3D, video production, animation
+- **mullvad vpn** (1x, best: A-tier) — domains: hardware, open source, security
+- **mumu ai novel** (1x, best: A-tier) — domains: video production, e-commerce, open source
+- **muse code** (1x, best: A-tier) — domains: LLM, video production, open source
+- **mush8** (1x, best: A-tier) — domains: open source, software development
+- **nasa eonet** (1x, best: A-tier) — domains: data science, software development
+- **nccl** (1x, best: A-tier) — domains: LLM, hardware, video production
 - **nemotron** (1x, best: A-tier) — domains: LLM, open source
-- **nextlevelbuilder/ui-ux-pro-max-skill** (1x, best: S-tier) — domains: design, agents, UI/UX
-- **numba** (1x, best: A-tier) — domains: quant, backtesting, data science
-- **numpy** (1x, best: A-tier) — domains: quant, backtesting, data science
-- **nvidia chatrtx** (1x, best: A-tier) — domains: RAG, LLM, video production
-- **o*net** (1x, best: A-tier) — domains: productivity, LLM, prompt engineering
-- **obra/superpowers** (1x, best: S-tier) — domains: design, agents, UI/UX
-- **oc** (1x, best: A-tier) — domains: agents, open source, UI/UX
-- **odysseus** (1x, best: A-tier) — domains: agents, LLM, open source
-- **odyssey explorer** (1x, best: A-tier) — domains: gaming, video production, 3D
-- **onyx** (1x, best: A-tier) — domains: RAG, agents, LLM
-- **onyx-dot-app/onyx** (1x, best: A-tier) — domains: RAG, agents, LLM
-- **openhands** (1x, best: A-tier) — domains: e-commerce, video production, marketing
-- **openscreen** (1x, best: A-tier) — domains: creative coding, open source, video production
-- **openspace** (1x, best: S-tier) — domains: agents, software development, open source
-- **openviking** (1x, best: A-tier) — domains: agents, software development, LLM
+- **nextlevelbuilder/ui-ux-pro-max-skill** (1x, best: S-tier) — domains: design, open source, automation
+- **numba** (1x, best: A-tier) — domains: finance/trading, data science, quant
+- **numpy** (1x, best: A-tier) — domains: finance/trading, data science, quant
+- **nvidia chatrtx** (1x, best: A-tier) — domains: LLM, video production, RAG
+- **o*net** (1x, best: A-tier) — domains: LLM, productivity, prompt engineering
+- **obra/superpowers** (1x, best: S-tier) — domains: design, open source, automation
+- **oc** (1x, best: A-tier) — domains: UI/UX, open source, agents
+- **odysseus** (1x, best: A-tier) — domains: LLM, video production, open source
+- **odyssey explorer** (1x, best: A-tier) — domains: video production, 3D, gaming
+- **onyx** (1x, best: A-tier) — domains: LLM, RAG, open source
+- **onyx-dot-app/onyx** (1x, best: A-tier) — domains: LLM, RAG, open source
+- **openhands** (1x, best: A-tier) — domains: video production, e-commerce, open source
+- **openscreen** (1x, best: A-tier) — domains: video production, open source, creative coding
+- **openspace** (1x, best: S-tier) — domains: open source, agents, software development
+- **openviking** (1x, best: A-tier) — domains: LLM, open source, agents
 - **orbiter** (1x, best: A-tier) — domains: design, hardware, 3D
-- **pandas** (1x, best: A-tier) — domains: quant, backtesting, data science
-- **personalive** (1x, best: A-tier) — domains: e-commerce, video production, marketing
-- **pi sdk** (1x, best: A-tier) — domains: agents, software development, open source
-- **pizza bot** (1x, best: A-tier) — domains: agents, software development, LLM
-- **pocket tts** (1x, best: A-tier) — domains: reference, news, video production
-- **ppf-contact-solver** (1x, best: S-tier) — domains: animation, fashion, 3D
+- **pandas** (1x, best: A-tier) — domains: finance/trading, data science, quant
+- **personalive** (1x, best: A-tier) — domains: video production, e-commerce, open source
+- **pi sdk** (1x, best: A-tier) — domains: open source, agents, software development
+- **pizza bot** (1x, best: A-tier) — domains: LLM, open source, agents
+- **pocket tts** (1x, best: A-tier) — domains: LLM, video production, open source
+- **ppf-contact-solver** (1x, best: S-tier) — domains: open source, 3D, fashion
 - **pretext** (1x, best: A-tier) — domains: 
-- **prime agent** (1x, best: A-tier) — domains: agents, software development, LLM
-- **procreate** (1x, best: A-tier) — domains: animation, 3D, video production
+- **prime agent** (1x, best: A-tier) — domains: LLM, open source, agents
+- **procreate** (1x, best: A-tier) — domains: 3D, video production, animation
 - **puppeteer** (1x, best: A-tier) — domains: data science, automation
-- **quake iii arena** (1x, best: A-tier) — domains: education, software development, 3D
-- **quiverquant** (1x, best: A-tier) — domains: agents, crypto, finance/trading
-- **rag** (1x, best: A-tier) — domains: RAG, agents, LLM
-- **rag-anything** (1x, best: A-tier) — domains: agents, LLM, open source
+- **quake iii arena** (1x, best: A-tier) — domains: 3D, software development, education
+- **quiverquant** (1x, best: A-tier) — domains: finance/trading, agents, crypto
+- **rag** (1x, best: A-tier) — domains: LLM, RAG, open source
+- **rag-anything** (1x, best: A-tier) — domains: LLM, open source, agents
 - **raspberry pi 5** (1x, best: S-tier) — domains: LLM, hardware, open source
-- **rea** (1x, best: A-tier) — domains: agents, security, open source
-- **react three fiber** (1x, best: S-tier) — domains: reference, design, 3D
-- **react-three-fiber** (1x, best: S-tier) — domains: design, creative coding, UI/UX
-- **redink** (1x, best: A-tier) — domains: e-commerce, video production, marketing
-- **refero** (1x, best: A-tier) — domains: design, software development, reference
-- **remotion** (1x, best: A-tier) — domains: e-commerce, video production, marketing
-- **revenuecat** (1x, best: S-tier) — domains: reference, 3D, marketing
-- **reverse engineer anything** (1x, best: A-tier) — domains: agents, software development, open source
-- **siddharthvaddem/openscreen** (1x, best: A-tier) — domains: creative coding, open source, video production
-- **skillopt** (1x, best: S-tier) — domains: agents, open source, prompt engineering
-- **skyrecomp** (1x, best: A-tier) — domains: software development, open source
+- **rea** (1x, best: A-tier) — domains: security, video production, open source
+- **react three fiber** (1x, best: S-tier) — domains: design, open source, 3D
+- **react-three-fiber** (1x, best: S-tier) — domains: design, open source, creative coding
+- **redink** (1x, best: A-tier) — domains: video production, e-commerce, open source
+- **refero** (1x, best: A-tier) — domains: reference, UI/UX, design
+- **remotion** (1x, best: A-tier) — domains: video production, e-commerce, open source
+- **revenuecat** (1x, best: S-tier) — domains: 3D, marketing, agents
+- **reverse engineer anything** (1x, best: A-tier) — domains: open source, agents, software development
+- **siddharthvaddem/openscreen** (1x, best: A-tier) — domains: video production, open source, creative coding
+- **skillopt** (1x, best: S-tier) — domains: prompt engineering, open source, agents
+- **skyrecomp** (1x, best: A-tier) — domains: open source, software development
 - **soup** (1x, best: A-tier) — domains: LLM, open source
-- **sparkjs** (1x, best: S-tier) — domains: audio, 3D, video production
-- **stopslop** (1x, best: A-tier) — domains: open source, marketing, prompt engineering
-- **supabase** (1x, best: S-tier) — domains: agents, software development, open source
-- **tails** (1x, best: A-tier) — domains: security, open source, hardware
-- **task master ai** (1x, best: A-tier) — domains: agents, software development, LLM
-- **tavily** (1x, best: A-tier) — domains: agents, software development, LLM
+- **sparkjs** (1x, best: S-tier) — domains: video production, open source, 3D
+- **stopslop** (1x, best: A-tier) — domains: prompt engineering, marketing, open source
+- **supabase** (1x, best: S-tier) — domains: open source, agents, software development
+- **tails** (1x, best: A-tier) — domains: hardware, open source, security
+- **task master ai** (1x, best: A-tier) — domains: LLM, software development, agents
+- **tavily** (1x, best: A-tier) — domains: LLM, software development, agents
 - **tencent** (1x, best: S-tier) — domains: design, 3D, art
-- **thedotmack/claude-mem** (1x, best: S-tier) — domains: design, agents, UI/UX
-- **tmux** (1x, best: S-tier) — domains: agents, productivity, software development
-- **tripo** (1x, best: S-tier) — domains: reference, 3D, agents
-- **twilio** (1x, best: A-tier) — domains: agents, prompt engineering, video production
-- **ubuntu** (1x, best: A-tier) — domains: agents, security, open source
-- **unlimited ocr** (1x, best: A-tier) — domains: design, LLM, open source
-- **unsloth** (1x, best: A-tier) — domains: video production, agents, software development
-- **unsloth studio** (1x, best: A-tier) — domains: agents, software development, LLM
+- **thedotmack/claude-mem** (1x, best: S-tier) — domains: design, open source, automation
+- **tmux** (1x, best: S-tier) — domains: LLM, productivity, agents
+- **tripo** (1x, best: S-tier) — domains: LLM, 3D, agents
+- **twilio** (1x, best: A-tier) — domains: prompt engineering, video production, agents
+- **ubuntu** (1x, best: A-tier) — domains: security, video production, open source
+- **unlimited ocr** (1x, best: A-tier) — domains: data science, LLM, design
+- **unsloth** (1x, best: A-tier) — domains: LLM, video production, open source
+- **unsloth studio** (1x, best: A-tier) — domains: LLM, open source, agents
 - **urushi lacquer** (1x, best: S-tier) — domains: design, art
-- **vectorbt** (1x, best: A-tier) — domains: quant, backtesting, data science
-- **vpype** (1x, best: S-tier) — domains: animation, 3D, art
+- **vectorbt** (1x, best: A-tier) — domains: finance/trading, data science, quant
+- **vpype** (1x, best: S-tier) — domains: open source, 3D, art
 - **vscode** (1x, best: A-tier) — domains: software development
-- **waterproof sticky notes** (1x, best: A-tier) — domains: reference, design, 3D
-- **webgpu** (1x, best: A-tier) — domains: design, marketing, branding
-- **websim.ai** (1x, best: A-tier) — domains: no-code, web, music
-- **world labs** (1x, best: S-tier) — domains: creative coding, 3D, image generation
-- **xinputreader** (1x, best: S-tier) — domains: animation, 3D, art
+- **waterproof sticky notes** (1x, best: A-tier) — domains: hardware, design, 3D
+- **webgpu** (1x, best: A-tier) — domains: design, open source, marketing
+- **websim.ai** (1x, best: A-tier) — domains: music, web, prompt engineering
+- **world labs** (1x, best: S-tier) — domains: 3D, image generation, creative coding
+- **xinputreader** (1x, best: S-tier) — domains: 3D, animation, art
 
 ## Technique Directory
 

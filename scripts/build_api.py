@@ -132,7 +132,8 @@ def main():
                '  <url><loc>https://dejaviewed.dev/api/creators.json</loc><priority>0.7</priority></url>',
                '  <url><loc>https://dejaviewed.dev/api/tools.json</loc><priority>0.7</priority></url>',
                '  <url><loc>https://dejaviewed.dev/api/collections.json</loc><priority>0.7</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/api/deep_dives.json</loc><priority>0.8</priority></url>']
+               '  <url><loc>https://dejaviewed.dev/api/deep_dives.json</loc><priority>0.8</priority></url>',
+               '  <url><loc>https://dejaviewed.dev/api/prompts.json</loc><priority>0.8</priority></url>']
     from xml.sax.saxutils import escape as _esc
     # every real top-level page, guide and deeper-dive page that exists on disk
     for page in sorted(SITE.glob("*.html")):
