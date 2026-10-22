@@ -1,10 +1,28 @@
 # DejaViewed · primer
 
-Updated: 2026-10-22 (pm)
+Updated: 2026-10-22 (evening)
+
+## PARKED, FRONT OF MIND — pay-to-crawl / data-as-the-asset (own session)
+
+Victor's thesis (2026-10-22): "the knowledge isn't what's valuable anymore, it's the data behind it" — the
+aggregated, transcribed, enriched corpus is what people own now. Keep iterating; decide viability with data.
+- **Shape that doesn't kill visibility:** HTML, llms.txt, sitemap, sample API stay free (that's how LLMs and
+  Google find us). Paid = bulk machine data: full `api/prompts.json`, `llms-full.txt`, full catalog +
+  transcripts, packaged as a **versioned dataset release** (one tarball/parquet per release) behind a 402.
+- **Rails, ranked:** x402 (Coinbase open standard, USDC on Base, agents already speak it, ~$0 fees, 50¢ works)
+  → Cloudflare Pay Per Crawl (apply; fiat, zero code, covers big crawlers that won't pay custom 402s) →
+  L402/Lightning only if BTC specifically wanted.
+- **Build when ready:** Cloudflare Worker on `/api/v1/*` and `/dataset/*`: free sample tier, 402 with price
+  for full; receiving address = PUBLIC address only, ever, in repo/config. Measure demand with analytics
+  first (which crawlers hit /api/ and llms-full.txt → that's the buyer list).
+- **Open questions:** price (50¢–$1 per pull vs per release), USDC-on-Base vs BTC, licence text for the
+  dataset (creators' captions/transcripts are theirs — sell only our enrichment fields + links, see the
+  selling-to-agents prompt pack), whether to list on a data marketplace too.
+- Honest expectation: pocket change for months at current traffic; worth it as experiment + story.
 
 ## Current status
 
-846 entries · 18 collections · 324K crosslinks · 219 deep dives (45 curated) · 63 guide pages · 45 deeper pages · **63 prompt systems** (one per curated dive + hand-written guide) · site search · 0 broken links. Site live at dejaviewed.dev (Cloudflare Pages, auto-deploy from main). Quality gate passes. Everything from the Oct 21 pull is captioned, Whisper-transcribed (medium, GPU), thumbed, LLM-enriched and indexed (api/, sitemap 957 URLs, llms.txt, context.md all live-computed).
+846 entries · 18 collections · 324K crosslinks · 219 deep dives (45 curated) · 63 guide pages · 45 deeper pages · 63 prompt systems · **SEO layer on all 961 public pages** (canonical, descriptions, OG images, JSON-LD, FAQ) · start-here page · RSS · IndexNow · analytics instruments (awaiting creds) · 63 IG content kits · site search · 0 broken links. Site live at dejaviewed.dev (Cloudflare Pages, auto-deploy from main). Quality gate passes. Everything from the Oct 21 pull is captioned, Whisper-transcribed (medium, GPU), thumbed, LLM-enriched and indexed (api/, sitemap 957 URLs, llms.txt, context.md all live-computed).
 
 ### Oct 21 pull (what changed)
 - **New pipeline path (Phase 0 v3):** Instagram collection-feed API via agent-browser attached to real Chrome over CDP. Scroll-scrape was lossy (quant showed 12 of 31). 340 items pulled, 265 unique new entries ingested with caption/creator/date/media already filled (`ig_collection_api.py` → `ig_download_media.py` → `ingest_api.py`).
@@ -23,6 +41,12 @@ Updated: 2026-10-22 (pm)
 - **Built:** Pagefind site search, link checker (0 internal breakages), pHash dedupe (0 confirmed dupes), rate.html + apply_ratings.py, reconcile_ig_export.py, carousel slide-video transcription, 7 parked dives promoted (45 curated).
 - All of the above pushed and live.
 
+### Oct 22 (evening) — discoverability + content loop
+- **SEO (Phase 14):** `build_seo.py` post-processes every public page (961): canonical clean URL, 150-160 char description, OG/Twitter, JSON-LD (WebSite+SearchAction, Dataset, CollectionPage, Article, FAQPage from prompt-system self-questions, Breadcrumb). 112 share images (`site/og/`). `start-here.html` positioning page (live counts). `feed.xml`. Sitemap lastmod/changefreq, 974 clean URLs. robots.txt allows AI crawlers. 25 target queries → titles (`data/seo/queries.json`, 5 retitled).
+- **Analytics:** `analytics_report.py` (Cloudflare GraphQL + Search Console, deltas, AI-crawler table), `indexnow.py` (key served at site root), `analytics_check.sh`, click-paths in `data/analytics/SETUP.md`. Runs clean with no creds; prints exact missing steps.
+- **Content kits:** `content_kit.py` → `content/<slug>/` carousel PNGs (1080×1350), caption.md, reel_script.md, optional reel.mp4; `content/INDEX.md` with posted/unposted + next 7. Skill: `dejaviewed-content`.
+- Parked: pay-to-crawl (top of this file).
+
 ### Oct 22 (pm) — prompt systems
 - **Phase 5d built:** every curated dive (45) and hand-written guide (18) now carries a full prompting system: deeper-not-bigger block (pro would / rawest material / methods+tools / external proof / rewritten prompt), one-shot prompt (500-1000 w), 5-9 step prompts each with expect+audit, gap-audit prompt, self-questions, validation oracles, failure modes, agent direction. Written by 10 Opus agents to `data/prompt_systems/SPEC.md`; validator in `scripts/prompt_systems.py`.
 - **Rendered:** bottom of every guide page (marked + copy buttons, anchor `#prompt-system`), every deeper page, `site/prompts.html` index, `site/api/prompts.json`, Prompts nav item, landing tile, llms.txt + sitemap entries.
@@ -30,6 +54,21 @@ Updated: 2026-10-22 (pm)
 - Security-adjacent packs (jailbreak repo, leaked system prompt, injection-CI, headless, OSINT) are defensive-only; money packs carry paper arms + caps + "no real money" gate.
 
 ## Next up
+
+**Victor (dashboards, ~30 min) — unblocks all measurement:**
+1. Cloudflare → Web Analytics → add dejaviewed.dev (automatic injection for Pages).
+2. API token (Account Analytics:Read, Zone Analytics:Read, Zone:Read) → `~/.config/cloudflare/dejaviewed.env` as `CLOUDFLARE_API_TOKEN=...`, `chmod 600`. Never in chat.
+3. Search Console domain property (DNS TXT at Cloudflare) + service-account JSON → `~/.config/google/dejaviewed-gsc.json`; add SA email as Full user. Bing: import from GSC.
+   Full click-paths: `data/analytics/SETUP.md`. Then Fable runs `scripts/analytics_report.py` → baseline.
+4. Post the first content kit (content/INDEX.md "Next 7"); mark in `content/status.json`.
+
+**Fable next session:**
+5. `python3 scripts/indexnow.py` (now that the key is live). Submit sitemap in GSC/Bing once verified.
+6. Register llms.txt on llmstxt.site / directory.llmstxt.cloud; GitHub README → site; 1gabe.com cross-link.
+7. 55 entry pages have stub summaries ("title — @creator") → re-enrich those ids (build_seo prints them).
+8. Baseline report → pick 5 SEO experiments, measure weekly.
+
+**Older queue:**
 
 1. ~~Landing redesign~~ DONE Oct 21. ~~Parked dives, carousel videos, re-tier, search, dedupe, link check~~ DONE Oct 22.
 2. ai2/ai5/stock2 still ~20% S (small collections, July tiers) — re-tier with `data/llm_retier/SPEC.md` if it bothers you.

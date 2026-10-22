@@ -1,0 +1,119 @@
+{
+ "slug": "primer-md-pattern",
+ "title": "primer.md — The Living Handoff Document Pattern",
+ "guide_url": "https://dejaviewed.dev/guides/primer-md-pattern",
+ "kind": "guide",
+ "creators": [
+  "keshavsuki"
+ ],
+ "source_hash": "8ba3d9130b773988",
+ "slides": [
+  {
+   "type": "hook",
+   "kicker": "Build this",
+   "heading": "primer.md — The Living Handoff Document Pattern",
+   "text": "hooks fire on the right events without recursion, primer.md stays under 150 lines with all six sections…",
+   "label": "Done means",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 1 of 8. Build this. primer.md — The Living Handoff Document Pattern. Done means: hooks fire on the right events without recursion, primer.md stays under 150 lines with all six sections…"
+  },
+  {
+   "type": "point",
+   "kicker": "The idea",
+   "heading": "What it is",
+   "paras": [
+    [
+     "",
+     "The core mechanic: at the end of every Claude Code session, Claude rewrites primer.md with a snapshot of where the project currently stands and what the next session should do first."
+    ]
+   ],
+   "credit": "From @keshavsuki",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 2 of 8. The idea. What it is. The core mechanic: at the end of every Claude Code session, Claude rewrites primer.md with a snapshot of where the project currently stands and what the next session should do first. From @keshavsuki."
+  },
+  {
+   "type": "point",
+   "kicker": "Deeper, not bigger",
+   "heading": "What a pro would do that you didn't ask for",
+   "paras": [
+    [
+     "",
+     "Verify hook semantics against the current Claude Code docs before copying the guide's config: the guide wires the rewrite to the Stop hook, but Stop fires whenever the main agent finishes a response…"
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 3 of 8. Deeper, not bigger. What a pro would do that you didn't ask for. Verify hook semantics against the current Claude Code docs before copying the guide's config: the guide wires the rewrite to the Stop hook, but Stop fires whenever the main agent finishes a response…"
+  },
+  {
+   "type": "list",
+   "kicker": "Rawest material",
+   "heading": "Start from the source",
+   "items": [
+    "Claude Code hooks reference and hooks guide on docs.claude.com",
+    "claude --help for the installed version",
+    "Real transcripts under ~/.claude/projects/<project>/*.jsonl to see what a rewrite agent can read"
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 4 of 8. Rawest material. Start from the source. Claude Code hooks reference and hooks guide on docs.claude.com. claude --help for the installed version. Real transcripts under ~/.claude/projects/<project>/*.jsonl to see what a rewrite agent can read."
+  },
+  {
+   "type": "steps",
+   "kicker": "The system",
+   "heading": "3 steps that matter most",
+   "steps": [
+    [
+     "Ground truth: hook semantics for this version",
+     "Replace the guide's hook assumptions with documented and observed behavior."
+    ],
+    [
+     "SessionStart injection and commit",
+     "Make the next session see the primer without relying on instruction-following."
+    ],
+    [
+     "Validate against oracles, gap report",
+     "Prove the setup works and list what remains."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 5 of 8. The system. 3 steps that matter most. 1. Ground truth: hook semantics for this version: Replace the guide's hook assumptions with documented and observed behavior. 2. SessionStart injection and commit: Make the next session see the primer without relying on instruction-following. 3. Validate against oracles, gap report: Prove the setup works and list what remains."
+  },
+  {
+   "type": "list",
+   "kicker": "Proof",
+   "heading": "How you know it worked",
+   "items": [
+    "claude --debug logs across exit, /compact, and multi-turn sessions: exactly one rewrite per exit and per compaction, zero per turn, zero recursive.",
+    "lint_primer.py passes on 10 consecutive automatic rewrites, and its 8-fixture test suite returns 8/8 expected results."
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 6 of 8. Proof. How you know it worked. claude --debug logs across exit, /compact, and multi-turn sessions: exactly one rewrite per exit and per compaction, zero per turn, zero recursive. lint_primer.py passes on 10 consecutive automatic rewrites, and its 8-fixture test suite returns 8/8 expected results."
+  },
+  {
+   "type": "point",
+   "kicker": "Biggest failure mode",
+   "heading": "Rewrite on every turn",
+   "paras": [
+    [
+     "Tell",
+     "debug log shows the hook after each response; token use balloons."
+    ],
+    [
+     "Fix",
+     "move to SessionEnd and PreCompact."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 7 of 8. Biggest failure mode. Rewrite on every turn. Tell: debug log shows the hook after each response; token use balloons. Fix: move to SessionEnd and PreCompact."
+  },
+  {
+   "type": "cta",
+   "kicker": "Get the full system",
+   "heading": "Build it yourself",
+   "text": "Full prompt system + one-shot prompt at",
+   "url": "dejaviewed.dev/guides/primer-md-pattern",
+   "bio": "Link in bio. Save this for your build.",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 8 of 8. Get the full system. Build it yourself. Full prompt system + one-shot prompt at dejaviewed.dev/guides/primer-md-pattern. Link in bio. Save this for your build."
+  }
+ ]
+}

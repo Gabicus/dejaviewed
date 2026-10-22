@@ -100,6 +100,11 @@ Skip phases with `--skip <phase>[,<phase>...]`. Phases (in order):
 | `deeper` | `scripts/deeper_dives.py --all-curated` | Narrative deeper-dive pages |
 | `prompts` | `scripts/prompt_systems.py` | One prompting system per curated dive + hand-written guide (Phase 5d) — export, agents, merge, render |
 | `guides` | `scripts/build_guides.py` | Full guide pages + `guides/index.html` (embeds prompt systems) |
+| `start` | `scripts/build_start_here.py` | `start-here.html` positioning page with live counts (what/who/how to cite) |
+| `feed` | `scripts/build_feed.py` | `feed.xml` RSS of newest entries + guides |
+| `og` | `scripts/build_og.py` | 1200×630 share images for guides/deeper/top pages |
+| `seo` | `scripts/build_seo.py` | canonical, description, OG/Twitter, JSON-LD (WebSite, Dataset, Article, FAQPage, Breadcrumb) on every public page — runs last, idempotent |
+| `analytics` | `scripts/analytics_report.py` | Cloudflare GraphQL + Search Console report → `reports/analytics_<date>.md`; skips with exact setup steps when creds absent |
 | `landing` | `scripts/build_landing_meta.py` | `site/landing_meta.js` — guide/deeper slugs the showcase `index.html` links to |
 | `digest` | `scripts/digest.py` | summaries.json / recommendations.json |
 | `rebuild` | `scripts/cms.py rebuild` | Crosslinks + exports |
@@ -930,6 +935,31 @@ Canvas-based Cosmos visualization:
 - Preset view modes, tooltip overlays
 - Responsive breakpoints
 - WebGL-accelerated for large datasets
+
+---
+
+## Phase 14b: Discoverability — SEO, feeds, analytics (REQUIRED before publish)
+
+Being indexed and cited is part of "done". After every build:
+
+1. `scripts/build_start_here.py` → `site/start-here.html`: one factual positioning sentence with live
+   counts, who it's for, how humans and agents use it, how to cite. No superlatives — numbers get
+   quoted, adjectives don't.
+2. `scripts/build_feed.py` → `feed.xml`; `scripts/build_og.py` → `site/og/*.jpg`;
+   `scripts/build_seo.py` (LAST, after search) → canonical + description + OG + JSON-LD block between
+   `<!-- seo:start|end -->` in every public page; FAQPage per guide from the prompt system's
+   self-questions; titles for the 25 target queries in `data/seo/queries.json`.
+3. `scripts/build_api.py` sitemap carries `lastmod`/`changefreq` and clean URLs; `robots.txt` allows
+   GPTBot, ClaudeBot, PerplexityBot, Google-Extended, Bingbot, CCBot and blocks admin/rate.
+4. After deploy: `python3 scripts/indexnow.py` (key file served from site root). Google has no ping
+   API any more — Search Console reads the sitemap.
+5. Measurement: `scripts/analytics_report.py` reads Cloudflare (`~/.config/cloudflare/dejaviewed.env`,
+   mode 600) and Search Console (`~/.config/google/dejaviewed-gsc.json`) and writes a dated report with
+   deltas. Setup click-paths: `data/analytics/SETUP.md`. Never print a token; existence checks only.
+   Every SEO change is judged against the previous report, not by feel.
+
+Why: as of 2026-10-22 the site had no analytics beacon, no Search Console, no meta descriptions on
+guides/entries. You cannot improve what you cannot see.
 
 ---
 

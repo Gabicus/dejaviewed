@@ -1,0 +1,120 @@
+{
+ "slug": "claude-code-parallel-worktrees",
+ "title": "Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow",
+ "guide_url": "https://dejaviewed.dev/guides/claude-code-parallel-worktrees",
+ "kind": "guide",
+ "creators": [
+  "evolving.ai",
+  "mindwired.ai"
+ ],
+ "source_hash": "9912166f49754127",
+ "slides": [
+  {
+   "type": "hook",
+   "kicker": "Build this",
+   "heading": "Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow",
+   "text": "at least three independent tasks ran concurrently in isolated worktrees, merged through normal PRs without cross-session conflicts…",
+   "label": "Done means",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 1 of 8. Build this. Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow. Done means: at least three independent tasks ran concurrently in isolated worktrees, merged through normal PRs without cross-session conflicts…"
+  },
+  {
+   "type": "point",
+   "kicker": "The idea",
+   "heading": "What it is",
+   "paras": [
+    [
+     "",
+     "Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree."
+    ]
+   ],
+   "credit": "From @evolving.ai · @mindwired.ai",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 2 of 8. The idea. What it is. Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree. From @evolving.ai · @mindwired.ai."
+  },
+  {
+   "type": "point",
+   "kicker": "Deeper, not bigger",
+   "heading": "What a pro would do that you didn't ask for",
+   "paras": [
+    [
+     "",
+     "An engineering lead would not start by opening fifteen tabs; they would first measure their own baseline (PRs merged per day, minutes of review per PR, idle minutes waiting on the model)…"
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 3 of 8. Deeper, not bigger. What a pro would do that you didn't ask for. An engineering lead would not start by opening fifteen tabs; they would first measure their own baseline (PRs merged per day, minutes of review per PR, idle minutes waiting on the model)…"
+  },
+  {
+   "type": "list",
+   "kicker": "Rawest material",
+   "heading": "Start from the source",
+   "items": [
+    "Boris Cherny's original posts (x.com/bcherny/status/2017742743125299476 and x.com/bcherny/status/2025007394967957720)",
+    "the official agent teams page at code.claude.com/docs/en/agent-teams and the CLI reference for --worktree…",
+    "the git-worktree man page (git help worktree), especially sections on locking, pruning, and --detach"
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 4 of 8. Rawest material. Start from the source. Boris Cherny's original posts (x.com/bcherny/status/2017742743125299476 and x.com/bcherny/status/2025007394967957720). the official agent teams page at code.claude.com/docs/en/agent-teams and the CLI reference for --worktree… the git-worktree man page (git help worktree), especially sections on locking, pruning, and --detach."
+  },
+  {
+   "type": "steps",
+   "kicker": "The system",
+   "heading": "3 steps that matter most",
+   "steps": [
+    [
+     "Ground truth: baseline and collision inventory",
+     "Measure current throughput and find every resource two worktrees would fight over."
+    ],
+    [
+     "Decompose the backlog into disjoint tasks",
+     "Pick three real tasks that cannot collide and prove it."
+    ],
+    [
+     "Validate against oracles and write the gap report",
+     "Compare to baseline with GitHub's own data and state what the trial…"
+    ]
+   ],
+   "fit_factor": 0.72,
+   "alt": "DejaViewed carousel, slide 5 of 8. The system. 3 steps that matter most. 1. Ground truth: baseline and collision inventory: Measure current throughput and find every resource two worktrees would fight over. 2. Decompose the backlog into disjoint tasks: Pick three real tasks that cannot collide and prove it. 3. Validate against oracles and write the gap report: Compare to baseline with GitHub's own data and state what the trial…"
+  },
+  {
+   "type": "list",
+   "kicker": "Proof",
+   "heading": "How you know it worked",
+   "items": [
+    "GitHub data: gh pr list --state merged --author @me for baseline and trial windows gives merged PRs per day and median cycle time computed…",
+    "Two dev servers from different worktrees both return HTTP 200 when curled at the same moment on their assigned ports."
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 6 of 8. Proof. How you know it worked. GitHub data: gh pr list --state merged --author @me for baseline and trial windows gives merged PRs per day and median cycle time computed… Two dev servers from different worktrees both return HTTP 200 when curled at the same moment on their assigned ports."
+  },
+  {
+   "type": "point",
+   "kicker": "Biggest failure mode",
+   "heading": "Port collisions",
+   "paras": [
+    [
+     "Tell",
+     "second dev server fails with EADDRINUSE or silently serves the other worktree."
+    ],
+    [
+     "Fix",
+     "hash-derived ports checked with ss -ltn, and remove hard-coded ports from source."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 7 of 8. Biggest failure mode. Port collisions. Tell: second dev server fails with EADDRINUSE or silently serves the other worktree. Fix: hash-derived ports checked with ss -ltn, and remove hard-coded ports from source."
+  },
+  {
+   "type": "cta",
+   "kicker": "Get the full system",
+   "heading": "Build it yourself",
+   "text": "Full prompt system + one-shot prompt at",
+   "url": "dejaviewed.dev/guides/claude-code-parallel-worktrees",
+   "bio": "Link in bio. Save this for your build.",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 8 of 8. Get the full system. Build it yourself. Full prompt system + one-shot prompt at dejaviewed.dev/guides/claude-code-parallel-worktrees. Link in bio. Save this for your build."
+  }
+ ]
+}

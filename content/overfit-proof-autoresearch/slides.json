@@ -1,0 +1,132 @@
+{
+ "slug": "overfit-proof-autoresearch",
+ "title": "Strategy Autoresearch — the judge is the product, not the agent",
+ "guide_url": "https://dejaviewed.dev/guides/overfit-proof-autoresearch",
+ "kind": "dive",
+ "creators": [
+  "marc.kaz",
+  "quant.dhawan",
+  "raycfu",
+  "nateherkai",
+  "charliemungerhub",
+  "avi_mukesh"
+ ],
+ "source_hash": "4a49aa84eadf1275",
+ "slides": [
+  {
+   "type": "hook",
+   "kicker": "Build this",
+   "heading": "Strategy Autoresearch — the judge is the product, not the agent",
+   "text": "the judge rejects every strategy on pure-noise synthetic prices, survivors pass a second-model look-ahead audit…",
+   "label": "Done means",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 1 of 9. Build this. Strategy Autoresearch — the judge is the product, not the agent. Done means: the judge rejects every strategy on pure-noise synthetic prices, survivors pass a second-model look-ahead audit…"
+  },
+  {
+   "type": "point",
+   "kicker": "The idea",
+   "heading": "What it is",
+   "paras": [
+    [
+     "",
+     "Self-rewriting loops (Karpathy-style autoresearch, bilevel coach loops, Microsoft SkillOpt) keep any edit that beats a benchmark."
+    ]
+   ],
+   "credit": "From @marc.kaz · @quant.dhawan · @raycfu",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 2 of 9. The idea. What it is. Self-rewriting loops (Karpathy-style autoresearch, bilevel coach loops, Microsoft SkillOpt) keep any edit that beats a benchmark. From @marc.kaz · @quant.dhawan · @raycfu."
+  },
+  {
+   "type": "quote",
+   "kicker": "The claim being tested",
+   "text": "Benchmark-gated self-rewrite engine — the loop shape, with auto-reject of edits that don't win",
+   "who": "@marc.kaz",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 3 of 9. The claim being tested. Benchmark-gated self-rewrite engine — the loop shape, with auto-reject of edits that don't win. via @marc.kaz."
+  },
+  {
+   "type": "point",
+   "kicker": "Deeper, not bigger",
+   "heading": "What a pro would do that you didn't ask for",
+   "paras": [
+    [
+     "",
+     "A quant researcher would build and validate the judge before letting any agent search, using planted-signal and pure-noise datasets to measure its false-positive and false-negative rates."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 4 of 9. Deeper, not bigger. What a pro would do that you didn't ask for. A quant researcher would build and validate the judge before letting any agent search, using planted-signal and pure-noise datasets to measure its false-positive and false-negative rates."
+  },
+  {
+   "type": "list",
+   "kicker": "Rawest material",
+   "heading": "Start from the source",
+   "items": [
+    "Bailey, Borwein, Lopez de Prado and Zhu, 'The Probability of Backtest Overfitting'",
+    "Bailey and Lopez de Prado, 'The Deflated Sharpe Ratio'",
+    "github.com/microsoft/SkillOpt source: how it isolates successful paths and auto-rejects edits that do not beat…"
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 5 of 9. Rawest material. Start from the source. Bailey, Borwein, Lopez de Prado and Zhu, 'The Probability of Backtest Overfitting'. Bailey and Lopez de Prado, 'The Deflated Sharpe Ratio'. github.com/microsoft/SkillOpt source: how it isolates successful paths and auto-rejects edits that do not beat…"
+  },
+  {
+   "type": "steps",
+   "kicker": "The system",
+   "heading": "3 steps that matter most",
+   "steps": [
+    [
+     "Ground truth: data, costs, source methods",
+     "Assemble raw data, real fee schedules and the original papers before writing any loop."
+    ],
+    [
+     "The autoresearch loop with bilevel coach",
+     "Let Claude search strategy space under the validated judge."
+    ],
+    [
+     "Validate against oracles and write the gap report",
+     "Decide honestly whether anything has an edge."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 6 of 9. The system. 3 steps that matter most. 1. Ground truth: data, costs, source methods: Assemble raw data, real fee schedules and the original papers before writing any loop. 2. The autoresearch loop with bilevel coach: Let Claude search strategy space under the validated judge. 3. Validate against oracles and write the gap report: Decide honestly whether anything has an edge."
+  },
+  {
+   "type": "list",
+   "kicker": "Proof",
+   "heading": "How you know it worked",
+   "items": [
+    "Pure-noise falsifier: 200 GBM and 200 shuffled-return datasets run through the full search; the judge passes at most 5% (target under 1%)…",
+    "Planted-signal detection: datasets with a known after-cost Sharpe of 1.5; the judge detects it in a reported share of runs."
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 7 of 9. Proof. How you know it worked. Pure-noise falsifier: 200 GBM and 200 shuffled-return datasets run through the full search; the judge passes at most 5% (target under 1%)… Planted-signal detection: datasets with a known after-cost Sharpe of 1.5; the judge detects it in a reported share of runs."
+  },
+  {
+   "type": "point",
+   "kicker": "Biggest failure mode",
+   "heading": "Judge gamed by search volume",
+   "paras": [
+    [
+     "Tell",
+     "survivors appear only after hundreds of trials and DSR used a small N."
+    ],
+    [
+     "Fix",
+     "N from the full trials table, rerun the noise falsifier."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 8 of 9. Biggest failure mode. Judge gamed by search volume. Tell: survivors appear only after hundreds of trials and DSR used a small N. Fix: N from the full trials table, rerun the noise falsifier."
+  },
+  {
+   "type": "cta",
+   "kicker": "Get the full system",
+   "heading": "Build it yourself",
+   "text": "Full prompt system + one-shot prompt at",
+   "url": "dejaviewed.dev/guides/overfit-proof-autoresearch",
+   "bio": "Link in bio. Save this for your build.",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 9 of 9. Get the full system. Build it yourself. Full prompt system + one-shot prompt at dejaviewed.dev/guides/overfit-proof-autoresearch. Link in bio. Save this for your build."
+  }
+ ]
+}

@@ -1,0 +1,119 @@
+{
+ "slug": "claude-code-hooks-system",
+ "title": "Claude Code Hooks System — Deep Dive",
+ "guide_url": "https://dejaviewed.dev/guides/claude-code-hooks-system",
+ "kind": "guide",
+ "creators": [
+  "jens.heitmann"
+ ],
+ "source_hash": "a114d4fa09137128",
+ "slides": [
+  {
+   "type": "hook",
+   "kicker": "Build this",
+   "heading": "Claude Code Hooks System — Deep Dive",
+   "text": "each hook is proven to fire (or block) in a live headless Claude Code session, not just in theory.",
+   "label": "Done means",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 1 of 8. Build this. Claude Code Hooks System — Deep Dive. Done means: each hook is proven to fire (or block) in a live headless Claude Code session, not just in theory."
+  },
+  {
+   "type": "point",
+   "kicker": "The idea",
+   "heading": "What it is",
+   "paras": [
+    [
+     "",
+     "Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when a session starts…"
+    ]
+   ],
+   "credit": "From @jens.heitmann",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 2 of 8. The idea. What it is. Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when a session starts… From @jens.heitmann."
+  },
+  {
+   "type": "point",
+   "kicker": "Deeper, not bigger",
+   "heading": "What a pro would do that you didn't ask for",
+   "paras": [
+    [
+     "",
+     "A platform engineer would treat hooks as production code that runs with your full user permissions on every tool call, so they would version the scripts in git, unit-test each one against recorded event payloads…"
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 3 of 8. Deeper, not bigger. What a pro would do that you didn't ask for. A platform engineer would treat hooks as production code that runs with your full user permissions on every tool call, so they would version the scripts in git, unit-test each one against recorded event payloads…"
+  },
+  {
+   "type": "list",
+   "kicker": "Rawest material",
+   "heading": "Start from the source",
+   "items": [
+    "the official hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide…",
+    "the Agent SDK hooks page at platform.claude.com/docs/en/agent-sdk/hooks;",
+    "disler/claude-code-hooks-mastery on GitHub, which logs the real stdin payload of every event to JSON…"
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 4 of 8. Rawest material. Start from the source. the official hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide… the Agent SDK hooks page at platform.claude.com/docs/en/agent-sdk/hooks;. disler/claude-code-hooks-mastery on GitHub, which logs the real stdin payload of every event to JSON…"
+  },
+  {
+   "type": "steps",
+   "kicker": "The system",
+   "heading": "3 steps that matter most",
+   "steps": [
+    [
+     "Establish ground truth for the installed version",
+     "Pin the exact hook contract of the Claude Code version…"
+    ],
+    [
+     "Build the Stop gate and PreCompact backup",
+     "Refuse premature 'done' while tests fail…"
+    ],
+    [
+     "Validate against the oracles and write the gap report",
+     "Run every external check and publish what is proven…"
+    ]
+   ],
+   "fit_factor": 0.6,
+   "alt": "DejaViewed carousel, slide 5 of 8. The system. 3 steps that matter most. 1. Establish ground truth for the installed version: Pin the exact hook contract of the Claude Code version… 2. Build the Stop gate and PreCompact backup: Refuse premature 'done' while tests fail… 3. Validate against the oracles and write the gap report: Run every external check and publish what is proven…"
+  },
+  {
+   "type": "list",
+   "kicker": "Proof",
+   "heading": "How you know it worked",
+   "items": [
+    "bats or pytest suite: every hook passes allow, block, and malformed-stdin fixtures captured from the installed Claude Code version.",
+    "Headless claude -p --output-format stream-json transcripts showing the hook's block reason for a destructive command, with /tmp/hooktest-canary still present afterward."
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 6 of 8. Proof. How you know it worked. bats or pytest suite: every hook passes allow, block, and malformed-stdin fixtures captured from the installed Claude Code version. Headless claude -p --output-format stream-json transcripts showing the hook's block reason for a destructive command, with /tmp/hooktest-canary still present afterward."
+  },
+  {
+   "type": "point",
+   "kicker": "Biggest failure mode",
+   "heading": "Stop hook loops forever",
+   "paras": [
+    [
+     "Tell",
+     "the session keeps restarting after every response and burns tokens."
+    ],
+    [
+     "Fix",
+     "exit 0 when stop_hook_active is true and cap retries."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 7 of 8. Biggest failure mode. Stop hook loops forever. Tell: the session keeps restarting after every response and burns tokens. Fix: exit 0 when stop_hook_active is true and cap retries."
+  },
+  {
+   "type": "cta",
+   "kicker": "Get the full system",
+   "heading": "Build it yourself",
+   "text": "Full prompt system + one-shot prompt at",
+   "url": "dejaviewed.dev/guides/claude-code-hooks-system",
+   "bio": "Link in bio. Save this for your build.",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 8 of 8. Get the full system. Build it yourself. Full prompt system + one-shot prompt at dejaviewed.dev/guides/claude-code-hooks-system. Link in bio. Save this for your build."
+  }
+ ]
+}

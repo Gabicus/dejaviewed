@@ -121,44 +121,56 @@ def main():
         except (json.JSONDecodeError, KeyError) as e:
             print(f"  Warning: deep_dives.json parse failed: {e}")
 
+    # Sitemap — clean URLs (Cloudflare Pages serves /x.html at /x; must match each page's
+    # <link rel=canonical> from build_seo.py), <lastmod> = last git commit touching the file
+    # (falls back to file mtime for uncommitted files; generators rewrite pages every rebuild,
+    # so raw mtime would stamp everything "today"), plus <changefreq>.
+    from xml.sax.saxutils import escape as _esc
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from build_seo import canonical_url, file_dates
+
+    def _url(rel: str, pri: str, freq: str) -> str:
+        p = SITE / rel
+        lm = f"<lastmod>{file_dates(p)[1].isoformat()}</lastmod>" if p.exists() else ""
+        return (f"  <url><loc>{_esc(canonical_url(rel))}</loc>{lm}"
+                f"<changefreq>{freq}</changefreq><priority>{pri}</priority></url>")
+
     sitemap = ['<?xml version="1.0" encoding="UTF-8"?>',
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-               '  <url><loc>https://dejaviewed.dev/</loc><priority>1.0</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/graph.html</loc><priority>0.8</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/graph-cosmos.html</loc><priority>0.8</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/board.html</loc><priority>0.7</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/admin.html</loc><priority>0.3</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/api/catalog.json</loc><priority>0.9</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/api/creators.json</loc><priority>0.7</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/api/tools.json</loc><priority>0.7</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/api/collections.json</loc><priority>0.7</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/api/deep_dives.json</loc><priority>0.8</priority></url>',
-               '  <url><loc>https://dejaviewed.dev/api/prompts.json</loc><priority>0.8</priority></url>']
-    from xml.sax.saxutils import escape as _esc
+               _url("index.html", "1.0", "weekly")]
+    for rel, pri in (("graph.html", "0.8"), ("graph-cosmos.html", "0.8"), ("board.html", "0.7")):
+        sitemap.append(_url(rel, pri, "weekly"))
+    # admin.html is NOT listed: robots.txt disallows it (a listed-but-blocked URL is a crawl error)
+    for name, pri in (("catalog.json", "0.9"), ("creators.json", "0.7"), ("tools.json", "0.7"),
+                      ("collections.json", "0.7"), ("deep_dives.json", "0.8"), ("prompts.json", "0.8")):
+        sitemap.append(_url(f"api/{name}", pri, "weekly"))
     # every real top-level page, guide and deeper-dive page that exists on disk
     for page in sorted(SITE.glob("*.html")):
         if page.name in ("index.html", "graph.html", "graph-cosmos.html", "board.html", "admin.html", "rate.html"):
             continue
-        sitemap.append(f'  <url><loc>https://dejaviewed.dev/{_esc(page.name)}</loc><priority>0.7</priority></url>')
-    for sub, pri in (("guides", "0.9"), ("deeper", "0.8"), ("about", "0.5"), ("links", "0.4")):
+        pri = "0.9" if page.name == "start-here.html" else "0.7"
+        sitemap.append(_url(page.name, pri, "weekly"))
+    for sub, pri, freq in (("guides", "0.9", "weekly"), ("deeper", "0.8", "weekly"),
+                           ("about", "0.5", "monthly"), ("links", "0.4", "monthly")):
         d = SITE / sub
         if not d.is_dir():
             continue
         if (d / "index.html").exists():
-            sitemap.append(f'  <url><loc>https://dejaviewed.dev/{sub}/</loc><priority>{pri}</priority></url>')
+            sitemap.append(_url(f"{sub}/index.html", pri, freq))
         for page in sorted(d.glob("*.html")):
-            if page.name == "index.html":
+            # skip the index (listed above) and framework error pages (about/_not-found, 404)
+            if page.name == "index.html" or page.name.startswith("_") or page.stem == "404":
                 continue
-            sitemap.append(f'  <url><loc>https://dejaviewed.dev/{sub}/{_esc(page.name)}</loc><priority>{pri}</priority></url>')
-    sitemap.append('  <url><loc>https://dejaviewed.dev/llms.txt</loc><priority>0.6</priority></url>')
-    sitemap.append('  <url><loc>https://dejaviewed.dev/llms-full.txt</loc><priority>0.6</priority></url>')
+            sitemap.append(_url(f"{sub}/{page.name}", pri, freq))
+    sitemap.append(_url("llms.txt", "0.6", "weekly"))
+    sitemap.append(_url("llms-full.txt", "0.6", "weekly"))
+    sitemap.append(_url("feed.xml", "0.5", "daily"))
     for e in entries:
         eid = e.get("id", "")
         if eid:
-            from xml.sax.saxutils import escape
             # entry pages are written under render_entries.safe_slug(id) — ids with '/' or '.'
             # (e.g. "MoonshotAI/Kimi-K2.5") live at e/MoonshotAI_Kimi-K2_5.html
-            sitemap.append(f'  <url><loc>https://dejaviewed.dev/e/{escape(_safe_slug(eid))}.html</loc><priority>0.5</priority></url>')
+            sitemap.append(_url(f"e/{_safe_slug(eid)}.html", "0.5", "monthly"))
     sitemap.append('</urlset>')
     (SITE / "sitemap.xml").write_text("\n".join(sitemap), encoding="utf-8")
 
@@ -209,7 +221,7 @@ def main():
     dd_count = len(dd_data.get("deep_dives", [])) if dd_path.exists() else 0
     print(f"API: {len(entries)} entries, {len(creators_out)} creators, "
           f"{sum(len(v) for v in tools_out.values())} tool/tech/domain entries, {dd_count} deep dives")
-    print(f"Sitemap: {len(entries) + 10} URLs")
+    print(f"Sitemap: {len(sitemap) - 3} URLs")
     print(f"llms-full.txt: {len(lines)} lines")
 
     # Render per-entry detail pages

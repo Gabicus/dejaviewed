@@ -1,0 +1,119 @@
+{
+ "slug": "claude-code-leaked-system-prompt",
+ "title": "Claude Code Leaked System Prompt — Deep Dive",
+ "guide_url": "https://dejaviewed.dev/guides/claude-code-leaked-system-prompt",
+ "kind": "guide",
+ "creators": [
+  "gojutechtalk"
+ ],
+ "source_hash": "c742b6617cb24bf4",
+ "slides": [
+  {
+   "type": "hook",
+   "kicker": "Build this",
+   "heading": "Claude Code Leaked System Prompt — Deep Dive",
+   "text": "every kept clause has an ablation result against a control, the prompt passes an assume-it-leaks review, and injection and leak canaries are contained.",
+   "label": "Done means",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 1 of 8. Build this. Claude Code Leaked System Prompt — Deep Dive. Done means: every kept clause has an ablation result against a control, the prompt passes an assume-it-leaks review, and injection and leak canaries are contained."
+  },
+  {
+   "type": "point",
+   "kicker": "The idea",
+   "heading": "What it is",
+   "paras": [
+    [
+     "",
+     "Claude Code's system prompt is the hidden set of instructions Anthropic ships inside every claude CLI session — the rules that shape how the agent formats answers, picks tools, refuses work…"
+    ]
+   ],
+   "credit": "From @gojutechtalk",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 2 of 8. The idea. What it is. Claude Code's system prompt is the hidden set of instructions Anthropic ships inside every claude CLI session — the rules that shape how the agent formats answers, picks tools, refuses work… From @gojutechtalk."
+  },
+  {
+   "type": "point",
+   "kicker": "Deeper, not bigger",
+   "heading": "What a pro would do that you didn't ask for",
+   "paras": [
+    [
+     "",
+     "Treat the leak as a specimen to measure, not a template. Assume your own prompt will leak, as Claude Code's did three times (2025-02-24, March 2026, and v2.1.88 on 2026-03-31), so no secret or authorization logic lives in prose."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 3 of 8. Deeper, not bigger. What a pro would do that you didn't ask for. Treat the leak as a specimen to measure, not a template. Assume your own prompt will leak, as Claude Code's did three times (2025-02-24, March 2026, and v2.1.88 on 2026-03-31), so no secret or authorization logic lives in prose."
+  },
+  {
+   "type": "list",
+   "kicker": "Rawest material",
+   "heading": "Start from the source",
+   "items": [
+    "Piebald-AI/claude-code-system-prompts pinned at a SHA, with per-version files…",
+    "Anthropic's official Claude Code docs on permissions, hooks, CLAUDE.md memory and subagents",
+    "Breunig's dbreunig.com analysis for assembly order"
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 4 of 8. Rawest material. Start from the source. Piebald-AI/claude-code-system-prompts pinned at a SHA, with per-version files… Anthropic's official Claude Code docs on permissions, hooks, CLAUDE.md memory and subagents. Breunig's dbreunig.com analysis for assembly order."
+  },
+  {
+   "type": "steps",
+   "kicker": "The system",
+   "heading": "3 steps that matter most",
+   "steps": [
+    [
+     "Pin the raw prompt sources",
+     "Turn every quoted Claude Code directive into a row pinned to a repo, path, commit and version."
+    ],
+    [
+     "Rewrite my prompt, assume it leaks",
+     "Produce prompt_v1 with sensitive logic in code and a canary planted."
+    ],
+    [
+     "Validate against oracles, write gap report",
+     "Check the result against external oracles and publish the gap report."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 5 of 8. The system. 3 steps that matter most. 1. Pin the raw prompt sources: Turn every quoted Claude Code directive into a row pinned to a repo, path, commit and version. 2. Rewrite my prompt, assume it leaks: Produce prompt_v1 with sensitive logic in code and a canary planted. 3. Validate against oracles, write gap report: Check the result against external oracles and publish the gap report."
+  },
+  {
+   "type": "list",
+   "kicker": "Proof",
+   "heading": "How you know it worked",
+   "items": [
+    "A second engineer or fresh session reruns the committed evals/ on prompt_v2 and reproduces per-class pass rates within 5 points.",
+    "A canary grep over 200+ extraction-style outputs and the staging logs returns zero hits."
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 6 of 8. Proof. How you know it worked. A second engineer or fresh session reruns the committed evals/ on prompt_v2 and reproduces per-class pass rates within 5 points. A canary grep over 200+ extraction-style outputs and the staging logs returns zero hits."
+  },
+  {
+   "type": "point",
+   "kicker": "Biggest failure mode",
+   "heading": "Cargo-culting",
+   "paras": [
+    [
+     "Tell",
+     "prompt_v2 carries Claude Code wording for tools you lack."
+    ],
+    [
+     "Fix",
+     "keep only the principles that passed ablation on your model."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 7 of 8. Biggest failure mode. Cargo-culting. Tell: prompt_v2 carries Claude Code wording for tools you lack. Fix: keep only the principles that passed ablation on your model."
+  },
+  {
+   "type": "cta",
+   "kicker": "Get the full system",
+   "heading": "Build it yourself",
+   "text": "Full prompt system + one-shot prompt at",
+   "url": "dejaviewed.dev/guides/claude-code-leaked-system-prompt",
+   "bio": "Link in bio. Save this for your build.",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 8 of 8. Get the full system. Build it yourself. Full prompt system + one-shot prompt at dejaviewed.dev/guides/claude-code-leaked-system-prompt. Link in bio. Save this for your build."
+  }
+ ]
+}

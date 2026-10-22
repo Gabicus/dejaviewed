@@ -64,6 +64,7 @@
   DV.nav = function nav(active){
     const items = [
       { id:'catalog',  href:BASE+'catalog.html',      label:'Catalog' },
+      { id:'start',    href:BASE+'start-here.html',   label:'Start here' },
       { id:'guides',   href:BASE+'guides/',           label:'Guides'  },
       { id:'prompts',  href:BASE+'prompts.html',      label:'Prompts' },
       { id:'search',   href:BASE+'search.html',       label:'Search'  },

@@ -31,6 +31,12 @@
 #   render      scripts/render_template.py     collection page HTML
 #   js          scripts/catalog_js.py          window.__CATALOG wrappers for file:// previews
 #   search      scripts/build_search.sh        search_prep.py + Pagefind 1.3.0 -> site/pagefind/ (committed)
+#   start       scripts/build_start_here.py    site/start-here.html (positioning page, live counts) — before api (sitemap)
+#   feed        scripts/build_feed.py          site/feed.xml (RSS: newest entries + guides/deeper)
+#   og          scripts/build_og.py            site/og/*.jpg share images (guides, deeper, top pages)
+#   seo         scripts/build_seo.py           canonical/description/OG/JSON-LD block on every public page (idempotent, last)
+#   analytics   scripts/analytics_report.py    Cloudflare + Search Console report (needs ~/.config creds; skips cleanly)
+#   indexnow    scripts/indexnow.py            submit sitemap URLs to IndexNow (after deploy; needs key served)
 #
 # Phases that need a human/agent in the loop (llm, curate, prompts) stop with instructions instead of running.
 set -euo pipefail
@@ -118,11 +124,17 @@ run_py guides  scripts/build_guides.py --force
 run_py landing scripts/build_landing_meta.py
 run_py digest  scripts/digest.py
 run_py rebuild scripts/cms.py rebuild
+run_py start   scripts/build_start_here.py
 run_py api     scripts/build_api.py
 run_py context build_context.py
 run_py render  scripts/render_template.py
 run_py js      scripts/catalog_js.py
 if should_skip search; then echo "[skip] search"; else echo "[run ] search — scripts/build_search.sh"; bash scripts/build_search.sh; fi
+run_py feed    scripts/build_feed.py
+run_py og      scripts/build_og.py
+run_py seo     scripts/build_seo.py
 run_py gate    scripts/quality_gate.py
+run_py analytics scripts/analytics_report.py
+echo "[note] after deploy: python3 scripts/indexnow.py   (submits sitemap URLs; needs the key file live)"
 
 echo "=== done === $(date -Is)"

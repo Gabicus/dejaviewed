@@ -1,0 +1,130 @@
+{
+ "slug": "natural-language-3d",
+ "title": "Natural Language → 3D Scenes: The Pipeline That Didn't Exist 6 Months Ago",
+ "guide_url": "https://dejaviewed.dev/guides/natural-language-3d",
+ "kind": "dive",
+ "creators": [
+  "bilawal.ai",
+  "nick_saraev",
+  "jens.heitmann",
+  "neles0n"
+ ],
+ "source_hash": "e2d7980faa9445e8",
+ "slides": [
+  {
+   "type": "hook",
+   "kicker": "Build this",
+   "heading": "The Pipeline That Didn't Exist 6 Months Ago",
+   "text": "three different briefs each produce a scene that opens and renders headless in Blender 4.x without errors, every generated mesh passes a geometry check…",
+   "label": "Done means",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 1 of 9. Build this. The Pipeline That Didn't Exist 6 Months Ago. Done means: three different briefs each produce a scene that opens and renders headless in Blender 4.x without errors, every generated mesh passes a geometry check…"
+  },
+  {
+   "type": "point",
+   "kicker": "The idea",
+   "heading": "What it is",
+   "paras": [
+    [
+     "",
+     "MCP + Blender + Tripo + Claude Code together create a natural language 3D scene builder — describe what you want, get a full 3D scene. This was impossible before MCP existed."
+    ]
+   ],
+   "credit": "From @bilawal.ai · @nick_saraev · @jens.heitmann",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 2 of 9. The idea. What it is. MCP + Blender + Tripo + Claude Code together create a natural language 3D scene builder — describe what you want, get a full 3D scene. This was impossible before MCP existed. From @bilawal.ai · @nick_saraev · @jens.heitmann."
+  },
+  {
+   "type": "quote",
+   "kicker": "The claim being tested",
+   "text": "Blender MCP + Tripo: the 2D→3D bridge via natural language",
+   "who": "@bilawal.ai",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 3 of 9. The claim being tested. Blender MCP + Tripo: the 2D→3D bridge via natural language. via @bilawal.ai."
+  },
+  {
+   "type": "point",
+   "kicker": "Deeper, not bigger",
+   "heading": "What a pro would do that you didn't ask for",
+   "paras": [
+    [
+     "",
+     "A technical artist would first lock the pipeline contract: meters, up-axis, naming, polygon budget per asset, Principled BSDF materials."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 4 of 9. Deeper, not bigger. What a pro would do that you didn't ask for. A technical artist would first lock the pipeline contract: meters, up-axis, naming, polygon budget per asset, Principled BSDF materials."
+  },
+  {
+   "type": "list",
+   "kicker": "Rawest material",
+   "heading": "Start from the source",
+   "items": [
+    "The Blender MCP source (github.com/ahujasid/blender-mcp)",
+    "Blender Python API docs (docs.blender.org/api/current) for bpy.ops.import_scene.gltf, bpy.data, and headless flags",
+    "Tripo API docs (platform.tripo3d.ai) for text_to_model, image_to_model, task polling, rigging and export formats"
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 5 of 9. Rawest material. Start from the source. The Blender MCP source (github.com/ahujasid/blender-mcp). Blender Python API docs (docs.blender.org/api/current) for bpy.ops.import_scene.gltf, bpy.data, and headless flags. Tripo API docs (platform.tripo3d.ai) for text_to_model, image_to_model, task polling, rigging and export formats."
+  },
+  {
+   "type": "steps",
+   "kicker": "The system",
+   "heading": "3 steps that matter most",
+   "steps": [
+    [
+     "Ground truth: read the sources and lock the contract",
+     "Know exactly what Blender MCP…"
+    ],
+    [
+     "Scene assembly from text and from a 2D reference",
+     "Build the three scenes through MCP from the scene graph…"
+    ],
+    [
+     "Validate against oracles and write the gap report",
+     "Independent proof plus an honest list of what is still missing."
+    ]
+   ],
+   "fit_factor": 0.72,
+   "alt": "DejaViewed carousel, slide 6 of 9. The system. 3 steps that matter most. 1. Ground truth: read the sources and lock the contract: Know exactly what Blender MCP… 2. Scene assembly from text and from a 2D reference: Build the three scenes through MCP from the scene graph… 3. Validate against oracles and write the gap report: Independent proof plus an honest list of what is still missing."
+  },
+  {
+   "type": "list",
+   "kicker": "Proof",
+   "heading": "How you know it worked",
+   "items": [
+    "Blender 4.2 LTS: blender --factory-startup -b scenes/<id>/scene.blend -f 1 exits 0 and writes a render for all three scenes.",
+    "KhronosGroup glTF-Validator: zero errors on every .glb in assets/, warnings listed."
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 7 of 9. Proof. How you know it worked. Blender 4.2 LTS: blender --factory-startup -b scenes/<id>/scene.blend -f 1 exits 0 and writes a render for all three scenes. KhronosGroup glTF-Validator: zero errors on every .glb in assets/, warnings listed."
+  },
+  {
+   "type": "point",
+   "kicker": "Biggest failure mode",
+   "heading": "Assets arrive at random scale",
+   "paras": [
+    [
+     "Tell",
+     "a 40 m door next to a 2 m tree."
+    ],
+    [
+     "Fix",
+     "rescale every import from a written size table before placement."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 8 of 9. Biggest failure mode. Assets arrive at random scale. Tell: a 40 m door next to a 2 m tree. Fix: rescale every import from a written size table before placement."
+  },
+  {
+   "type": "cta",
+   "kicker": "Get the full system",
+   "heading": "Build it yourself",
+   "text": "Full prompt system + one-shot prompt at",
+   "url": "dejaviewed.dev/guides/natural-language-3d",
+   "bio": "Link in bio. Save this for your build.",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 9 of 9. Get the full system. Build it yourself. Full prompt system + one-shot prompt at dejaviewed.dev/guides/natural-language-3d. Link in bio. Save this for your build."
+  }
+ ]
+}

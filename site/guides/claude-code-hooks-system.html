@@ -1,6 +1,24 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Claude Code Hooks System — Deep Dive · DejaViewed</title>
+<!-- seo:start -->
+<link rel="canonical" href="https://dejaviewed.dev/guides/claude-code-hooks-system">
+<meta name="description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when…">
+<meta property="og:site_name" content="DejaViewed">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Claude Code Hooks System — Deep Dive">
+<meta property="og:description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when…">
+<meta property="og:url" content="https://dejaviewed.dev/guides/claude-code-hooks-system">
+<meta property="og:image" content="https://dejaviewed.dev/og/claude-code-hooks-system.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Claude Code Hooks System — Deep Dive">
+<meta name="twitter:description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when…">
+<meta name="twitter:image" content="https://dejaviewed.dev/og/claude-code-hooks-system.jpg">
+<link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/claude-code-hooks-system#article","headline":"Claude Code Hooks System — Deep Dive","description":"Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when…","url":"https://dejaviewed.dev/guides/claude-code-hooks-system","mainEntityOfPage":"https://dejaviewed.dev/guides/claude-code-hooks-system","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/claude-code-hooks-system.jpg","about":[{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"}]},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/claude-code-hooks-system#faq","mainEntity":[{"@type":"Question","name":"Which version's hook schema did I implement, and did I check it against a captured payload rather than the guide's table?","acceptedAnswer":{"@type":"Answer","text":"Step 1, Establish ground truth for the installed version: Pin the exact hook contract of the Claude Code version you run and capture real payloads. Expect: ground-truth.md (one to two pages) with a version string, an event table, a schema block, and five claim verdicts each quoting the doc line; at least one fixture JSON per event triggered."}},{"@type":"Question","name":"Does the Stop gate honour stophookactive, and what happens if the test suite takes longer than the hook timeout?","acceptedAnswer":{"@type":"Answer","text":"Step 4, Build the Stop gate and PreCompact backup: Refuse premature 'done' while tests fail, and snapshot transcripts before compaction. Expect: Two scripts and a test log showing three Stop outcomes (allow, block with reason, allow due to stophookactive) and one backup file created with the right name."}},{"@type":"Question","name":"Is fail-open on missing jq the right call for the destructive blocker, and did I document it?","acceptedAnswer":{"@type":"Answer","text":"Regex blocker treated as a sandbox. Tell: bash -c or a written script runs the blocked command. Fix: document bypasses, add permissions deny rules and a sandboxed run mode for risky work."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Claude Code Hooks System — Deep Dive"}]}]}</script>
+<!-- seo:end -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>

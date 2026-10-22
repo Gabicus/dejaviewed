@@ -1,0 +1,139 @@
+{
+ "slug": "plotter-loop",
+ "title": "Anything With Geometry — Ink on Paper: the Pen-Plotter Loop",
+ "guide_url": "https://dejaviewed.dev/guides/plotter-loop",
+ "kind": "dive",
+ "creators": [
+  "index.opensource",
+  "elemental.math",
+  "nateherkai",
+  "rosamichael.digital",
+  "rawmechatronics",
+  "kaustav.py",
+  "quant.dhawan",
+  "madsencycles",
+  "egapmada",
+  "peppes_ghost",
+  "creativeflairhq",
+  "avant.arte",
+  "fascinating.fractals"
+ ],
+ "source_hash": "e0491ada236065b4",
+ "slides": [
+  {
+   "type": "hook",
+   "kicker": "Build this",
+   "heading": "Anything With Geometry — Ink on Paper: the Pen-Plotter Loop",
+   "text": "every SVG plots on an A3 pen plotter without hand-picking paths, pen-up travel is measured before and after vpype…",
+   "label": "Done means",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 1 of 9. Build this. Anything With Geometry — Ink on Paper: the Pen-Plotter Loop. Done means: every SVG plots on an A3 pen plotter without hand-picking paths, pen-up travel is measured before and after vpype…"
+  },
+  {
+   "type": "point",
+   "kicker": "The idea",
+   "heading": "What it is",
+   "paras": [
+    [
+     "",
+     "Fogleman's ln turns any 3D scene into hidden-line vector paths, and vpype makes those paths plotter-ready."
+    ]
+   ],
+   "credit": "From @index.opensource · @elemental.math · @nateherkai",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 2 of 9. The idea. What it is. Fogleman's ln turns any 3D scene into hidden-line vector paths, and vpype makes those paths plotter-ready. From @index.opensource · @elemental.math · @nateherkai."
+  },
+  {
+   "type": "quote",
+   "kicker": "The claim being tested",
+   "text": "The bridge — ln does hidden-line removal on 3D scenes, vpype sorts paths and cuts pen-up travel",
+   "who": "@index.opensource",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 3 of 9. The claim being tested. The bridge — ln does hidden-line removal on 3D scenes, vpype sorts paths and cuts pen-up travel. via @index.opensource."
+  },
+  {
+   "type": "point",
+   "kicker": "Deeper, not bigger",
+   "heading": "What a pro would do that you didn't ask for",
+   "paras": [
+    [
+     "",
+     "A working plotter artist would treat line density as the real design variable: they would measure millimetres of ink per square centimetre per region, cap it so the paper does not buckle or the pen does not bleed through…"
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 4 of 9. Deeper, not bigger. What a pro would do that you didn't ask for. A working plotter artist would treat line density as the real design variable: they would measure millimetres of ink per square centimetre per region, cap it so the paper does not buckle or the pen does not bleed through…"
+  },
+  {
+   "type": "list",
+   "kicker": "Rawest material",
+   "heading": "Start from the source",
+   "items": [
+    "fogleman/ln source at commit 12e6c6e…",
+    "abey79/vpype source and docs at commit e593ff0, especially linemerge, linesort, reloop, linesimplify…",
+    "The DuckStation fork with the 3D-screenshot feature and one raw OBJ dump…"
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 5 of 9. Rawest material. Start from the source. fogleman/ln source at commit 12e6c6e… abey79/vpype source and docs at commit e593ff0, especially linemerge, linesort, reloop, linesimplify… The DuckStation fork with the 3D-screenshot feature and one raw OBJ dump…"
+  },
+  {
+   "type": "steps",
+   "kicker": "The system",
+   "heading": "3 steps that matter most",
+   "steps": [
+    [
+     "Ground truth: build ln and vpype from source",
+     "Prove the toolchain works and measure the pen-up claim on a known example."
+    ],
+    [
+     "Math sources: attractor, Mandelbulb, BTC embedding",
+     "Emit mathematical geometry as 3D polylines for ln."
+    ],
+    [
+     "Validate against oracles and write the gap report",
+     "Decide whether the loop is a practice or a toy."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 6 of 9. The system. 3 steps that matter most. 1. Ground truth: build ln and vpype from source: Prove the toolchain works and measure the pen-up claim on a known example. 2. Math sources: attractor, Mandelbulb, BTC embedding: Emit mathematical geometry as 3D polylines for ln. 3. Validate against oracles and write the gap report: Decide whether the loop is a practice or a toy."
+  },
+  {
+   "type": "list",
+   "kicker": "Proof",
+   "heading": "How you know it worked",
+   "items": [
+    "The pen plotter (AxiDraw via axicli or a GRBL machine via vpype-gcode) completes each A3 plot without hand-edited SVG, paper tear or bleed-through…",
+    "vpype stat reports pen-up length before and after the pinned pipeline for all 6 files…"
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 7 of 9. Proof. How you know it worked. The pen plotter (AxiDraw via axicli or a GRBL machine via vpype-gcode) completes each A3 plot without hand-edited SVG, paper tear or bleed-through… vpype stat reports pen-up length before and after the pinned pipeline for all 6 files…"
+  },
+  {
+   "type": "point",
+   "kicker": "Biggest failure mode",
+   "heading": "Triangle mush: rips and scans render every triangle edge",
+   "paras": [
+    [
+     "Tell",
+     "path count in the hundreds of thousands, gray blob in preview."
+    ],
+    [
+     "Fix",
+     "FeatureMesh with welding and a dihedral threshold, slice hatching for flat areas."
+    ]
+   ],
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 8 of 9. Biggest failure mode. Triangle mush: rips and scans render every triangle edge. Tell: path count in the hundreds of thousands, gray blob in preview. Fix: FeatureMesh with welding and a dihedral threshold, slice hatching for flat areas."
+  },
+  {
+   "type": "cta",
+   "kicker": "Get the full system",
+   "heading": "Build it yourself",
+   "text": "Full prompt system + one-shot prompt at",
+   "url": "dejaviewed.dev/guides/plotter-loop",
+   "bio": "Link in bio. Save this for your build.",
+   "fit_factor": 1.0,
+   "alt": "DejaViewed carousel, slide 9 of 9. Get the full system. Build it yourself. Full prompt system + one-shot prompt at dejaviewed.dev/guides/plotter-loop. Link in bio. Save this for your build."
+  }
+ ]
+}
