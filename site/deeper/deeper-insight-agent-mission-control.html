@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Mission Control for 80 Agents — Conway's law meets game UI — Deeper Dive — DejaViewed</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira Code',monospace}
+.deeper-wrap{max-width:860px;margin:24px auto 80px;padding:0 20px}
+.deeper-hero{margin-bottom:32px}
+.deeper-hero h1{font-size:28px;font-weight:900;line-height:1.2;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0 0 12px}
+.deeper-hero .type-label{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--accent);margin-bottom:12px}
+.deeper-hero .thesis{font-size:15px;line-height:1.6;color:var(--text-dim);font-style:italic;margin:0 0 16px;padding-left:16px;border-left:3px solid var(--accent)}
+.deeper-hero .tools{font-size:11px;color:var(--text-mute);margin-top:12px}
+.tool-pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);margin:2px}
+.dd-narrative{font-size:14px;line-height:1.7;color:var(--text);margin:24px 0}
+.dd-narrative p{margin:0 0 14px}
+.dd-sec{margin:28px 0}
+.dd-sec h2{font-size:18px;font-weight:800;color:#fff;margin:0 0 10px}
+.dd-sec-body{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.dd-entries{margin:32px 0}
+.dd-entries h2{font-size:16px;font-weight:800;color:#fff;margin:0 0 14px}
+.dd-entry{display:flex;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dd-entry-thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0}
+a.dd-entry-title{font-size:13px;font-weight:700;color:#fff;text-decoration:none}
+a.dd-entry-title:hover{text-decoration:underline;color:var(--accent)}
+.dd-entry-title{font-size:13px;font-weight:700;color:var(--text)}
+.dd-entry-meta{font-size:11px;color:var(--text-mute);margin:3px 0}
+.dd-entry-summary{font-size:12px;color:var(--text-dim);line-height:1.5}
+.dd-entry-guide{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}
+.tier-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.tS{background:rgba(251,191,36,.2);color:#fbbf24}.tA{background:rgba(167,139,250,.2);color:#a78bfa}
+.tB{background:rgba(96,165,250,.2);color:#60a5fa}.tC{background:rgba(106,106,128,.2);color:#6a6a80}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:12px;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.action-sketch{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:16px 18px;margin:24px 0}
+.action-sketch h3{font-size:14px;font-weight:800;color:#fff;margin:0 0 8px}
+.action-sketch p{font-size:13px;line-height:1.6;color:var(--text-dim);margin:0}
+.prereqs{font-size:12px;color:var(--text-mute);line-height:1.5;margin:16px 0;padding:12px;background:rgba(255,255,255,.03);border-radius:8px}
+</style>
+</head><body>
+<main class="deeper-wrap" data-pagefind-body data-pagefind-filter="kind:Deep dive">
+<a href="../" class="back-link">← Back to DejaViewed</a>
+<div class="deeper-hero">
+  <div class="type-label">creative_fusion</div>
+  <h1>Mission Control for 80 Agents — Conway's law meets game UI</h1>
+  <div class="thesis">Once you run more than a handful of agents, the bottleneck is your attention, not tokens. Creative technologists are already prototyping the answer without naming it — Bot Crossing puts 80 agents on a tiny planet where they raise hands for help, AgentCraft runs them as Minecraft workers in isolated worktrees, a TouchDesigner sketch commands agents by gesture, a Quest 3 canvas directs them spatially. Casey Muratori's point that Conway's law now applies to agents says the interface and the agent org chart are the same design problem. Feed a Booking.com-style trace bus into a game-engine front end and you get a control room where structure is visible.</div>
+  <div class="tools"><span class='tool-pill'>AgentCraft</span> · <span class='tool-pill'>Arize</span> · <span class='tool-pill'>BigQuery</span> · <span class='tool-pill'>Bot Crossing</span> · <span class='tool-pill'>ChatGPT</span> · <span class='tool-pill'>Claude</span> · <span class='tool-pill'>Claude Code</span> · <span class='tool-pill'>Founder OS</span> · <span class='tool-pill'>Ghostty</span> · <span class='tool-pill'>Kafka</span> · <span class='tool-pill'>Mac Mini</span> · <span class='tool-pill'>Meta Quest 3</span> · <span class='tool-pill'>Minecraft</span> · <span class='tool-pill'>Slack</span> · <span class='tool-pill'>TouchDesigner</span> · <span class='tool-pill'>Trackio</span> · <span class='tool-pill'>git</span> · <span class='tool-pill'>tmux</span></div>
+</div>
+
+<div class="dd-narrative"></div>
+
+
+
+<div class='action-sketch'><h3>Try It — Action Sketch</h3><p>Emit one JSON event per agent state change (started, blocked, needs-review, done) from your harness hooks onto a local queue — Redis or a file tail is enough to start, Point Bot Crossing (or a 200-line Three.js scene) at that queue so blocked agents visibly raise hands; cluster agents by the repo/module they own to make the Conway structure visible, Run a week with dashboard versus without and log minutes-to-unblock per blocked agent, Falsifier: if minutes-to-unblock does not drop by at least a third versus a plain notification, the game layer is decoration and a notch widget wins</p></div>
+
+<div class='prereqs'><strong>Prerequisites:</strong> A multi-agent setup with hooks, Basic Three.js or TouchDesigner, Willingness to treat this as an art-tech experiment first</div>
+
+<div class="dd-entries">
+<h2>Connected Posts (11)</h2>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DczR-QlSMdK/" target="_blank" rel="noopener"><img src="../thumb/DczR-QlSMdK.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DczR-QlSMdK/" target="_blank" rel="noopener" class="dd-entry-title">Bot Crossing — video-game workspace for managing 80 AI agents</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @jarrenrocks</div>
+    <div class="dd-entry-summary">Open-source game UI where AI agents live on a little planet, walk around, and raise their hands when they need help; click one to see its request. Built by Jarren Rocks, with a GitHub repo, YouTube build review and botcrossing.com site.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DeIfDwPI_ma/" target="_blank" rel="noopener"><img src="../thumb/DeIfDwPI_ma.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DeIfDwPI_ma/" target="_blank" rel="noopener" class="dd-entry-title">AgentCraft — Minecraft mod where Claude agents write real code</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> repo · @itsnicconley</div>
+    <div class="dd-entry-summary">An open-source Minecraft mod built on Claude's agent system: a Foreman tracks tasks, ordering, decisions and inter-agent messages, workers each get an isolated copy of the code, and nothing merges until approved. Agents commit under their own names and can be messaged mid-task, and they walk over to find you when they need input.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DctoIMltaNN/" target="_blank" rel="noopener"><img src="../thumb/DctoIMltaNN.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DctoIMltaNN/" target="_blank" rel="noopener" class="dd-entry-title">Gestural agent interface — TouchDesigner concept for hand-commanded AI</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> design · @the.poet.engineer</div>
+    <div class="dd-entry-summary">Non-functional TouchDesigner prototype imagining agentic UI driven by gestures: two running fingers run the program, spinning fingers spin up a new idea, a pinch delegates heavy lifting.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DcNrwpyiRlh/" target="_blank" rel="noopener"><img src="../thumb/DcNrwpyiRlh.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DcNrwpyiRlh/" target="_blank" rel="noopener" class="dd-entry-title">Mixed-reality infinite canvas — directing Claude Code agents from Quest 3</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> demo · @rndyrbrts</div>
+    <div class="dd-entry-summary">Early demo of an XR infinite canvas on Meta Quest 3 synced with a desktop canvas: drop reference images into a sphere, put your hand in it and speak a request (e.g. components visualizing multi-agent progress), make a fist to send it to Claude Code agents under custom orchestration, and watch results build up in place.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DdY7NUbDys2/" target="_blank" rel="noopener"><img src="../thumb/DdY7NUbDys2.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DdY7NUbDys2/" target="_blank" rel="noopener" class="dd-entry-title">Conway's law — Casey Muratori on the one unbreakable rule, now for agents</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> resource · @ryanlpeterman</div>
+    <div class="dd-entry-summary">Casey Muratori argues Conway's law is software's only real law: once you split work among workers (people or agents) whose communication is slower than their internal compute, design iteration across that boundary is locked in as slower. 'Products look like the org chart' is a consequence, not the law itself.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbSjJT7sLUf/" target="_blank" rel="noopener"><img src="../thumb/DbSjJT7sLUf.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbSjJT7sLUf/" target="_blank" rel="noopener" class="dd-entry-title">Conway's Law — your product ships your org chart</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> inspiration · @shakib_hammad</div>
+    <div class="dd-entry-summary">Melvin Conway's 1967 observation: systems copy the communication structure of the organization that builds them. Modern teams apply the reverse Conway maneuver, designing the target architecture first and then shaping teams to match.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dcl3dEJAjo0/" target="_blank" rel="noopener"><img src="../thumb/Dcl3dEJAjo0.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dcl3dEJAjo0/" target="_blank" rel="noopener" class="dd-entry-title">Booking.com AI observability — Kafka buffer and PII redaction before Arize</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> resource · @therobertta</div>
+    <div class="dd-entry-summary">Walkthrough of Booking.com's GenAI telemetry architecture: apps emit traces to a collector, which normalizes them onto a managed Kafka bus (durable buffer decoupling producers and consumers), through a dedicated PII-redaction service that masks span attributes and text, then out to Arize for real-time monitoring and a warehouse for offline analytics and backfills. A second pipeline ships ML prediction logs to Arize for ranking and fraud models.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/Dd-WP0FtFA6/" target="_blank" rel="noopener"><img src="../thumb/Dd-WP0FtFA6.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/Dd-WP0FtFA6/" target="_blank" rel="noopener" class="dd-entry-title">Founder OS — 17 always-on AI agents running a one-person business</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> demo · @brodyautomates</div>
+    <div class="dd-entry-summary">Tour of a custom Founder OS dashboard: 17 agents on a Mac Mini covering comms, sales, finance, marketing and clients, with a skills tree, task panel, workflow builder, Trackio lead attribution and a 'wizard' conductor agent. The base Founder OS is described as open source with a waitlist.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DbaFoAUMvnK/" target="_blank" rel="noopener"><img src="../thumb/DbaFoAUMvnK.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DbaFoAUMvnK/" target="_blank" rel="noopener" class="dd-entry-title">MacBook notch agent monitor — software answer to OpenAI's agent controller</a>
+    <div class="dd-entry-meta"><span class="tier-badge tB">B</span> demo · @cooper.simson</div>
+    <div class="dd-entry-summary">Instead of OpenAI's $230 hardware controller for babysitting coding agents, the creator had Claude build a MacBook notch app showing which agents are working, need attention or are done, with jump-to-session and permission approvals. Build guide is comment-gated.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DW2J0eUDKHM/" target="_blank" rel="noopener"><img src="../thumb/DW2J0eUDKHM.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DW2J0eUDKHM/" target="_blank" rel="noopener" class="dd-entry-title">Claude Code auto-approve mode — control is reading the plan, not pressing Y</a>
+    <div class="dd-entry-meta"><span class="tier-badge tA">A</span> tool · @shellonback</div>
+    <div class="dd-entry-summary">CLAUDE CODE — @shellonback; uses Claude, Claude Code; demonstrates automation.</div>
+    
+  </div>
+</div>
+<div class="dd-entry">
+  <a href="https://www.instagram.com/p/DVQ5o6YDfsp/" target="_blank" rel="noopener"><img src="../thumb/DVQ5o6YDfsp.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display='none'"></a>
+  <div class="dd-entry-info">
+    <a href="https://www.instagram.com/p/DVQ5o6YDfsp/" target="_blank" rel="noopener" class="dd-entry-title">Claude Code Team Tips — Boris Cherny's 10 habits for parallel, plan-first agent work</a>
+    <div class="dd-entry-meta"><span class="tier-badge tS">S</span> guide · @evolving.ai</div>
+    <div class="dd-entry-summary">Boris Cherny's thread of tips from the Claude Code team: 3-5 git worktrees with parallel sessions, plan mode for every complex task, a CLAUDE.md you update after each correction, skills committed to git, Slack MCP bug fixing, subagents, a BigQuery skill for analytics and learning output styles. It ends with a ready-to-paste CLAUDE.md workflow template (plan, subagents, lessons file, verify before done).</div>
+    <a href="../guides/claude-code-parallel-worktrees.html" class="dd-entry-guide">Read Guide →</a>
+  </div>
+</div>
+
+</div>
+
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:11px;color:var(--text-mute)">
+  Deeper Dive generated 2026-10-22T00:39:52.738376 · Curated by Claude for Gabe (@6ab3) · <a href="https://dejaviewed.dev" style="color:var(--accent)">dejaviewed.dev</a>
+</div>
+</main>
+</body></html>

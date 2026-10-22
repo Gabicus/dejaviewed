@@ -255,6 +255,7 @@ def main(argv=None):
         targets = [
             r for r in rows
             if (args.force or not r.get("transcript"))
+            and "transcript unavailable" not in (r.get("user_notes") or "")
             and ((r.get("media_type") or "").lower() in ("video", "reel", "mp4")
                  or ((r.get("media_type") or "").lower() == "carousel"
                      and any((ROOT / "data" / "media").glob(f"{r.get('post_id','')}_slide*.mp4"))))

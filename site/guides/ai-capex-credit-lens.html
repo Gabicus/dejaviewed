@@ -1,0 +1,277 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The AI Capex Stack — reading it like a credit analyst · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-ai-capex-credit-lens.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — The AI Capex Stack — reading it like a credit analyst →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>The AI Capex Stack — reading it like a credit analyst</h1>
+<p>Insight class: Emergent Capability · Difficulty: Medium · Quality: 3/5 Connected entries: 8 · Tools: Anthropic, Canva, Claude, Codex, DeepSeek, Grokbot, OpenAI, Qwen, Unsloth</p>
+<h2>Thesis</h2>
+<p>An ex-Morgan Stanley structurer explains that CoreWeave-style GPU loans have a thin tail: loan, contract and GPU useful life are nearly the same length, so the bull case rests on hourly rental prices after contracts end. Other saves price that number from the demand side: open weights flipped to about 80% of token volume in 12 weeks, DeepSeek serves near-frontier agents at $0.28 per million tokens, a 27B model runs on one gaming GPU, and a $200 subscription buys about $7,000 of API usage. Token deflation is a direct input to post-contract GPU rental rates, and nobody in the catalog connects them.</p>
+<h2>Why it matters</h2>
+<p>You can track the one variable the neocloud debt depends on with public price pages and a scheduled agent. Physical infrastructure with real order books, like chillers, is a different bet from GPU-hour rental, and this lens separates them.</p>
+<h2>The evidence — connected entries</h2>
+<h3>CoreWeave debt explained — how GPU-backed loans fund the neoclouds</h3>
+<p>Creator: @thewallstreetskinny · Tier: A Tools: Anthropic, OpenAI</p>
+<p>The credit structure — 90-95% advance rates and a thin tail; post-contract GPU rental is the bull case</p>
+<p>An ex-Morgan Stanley CDO structurer explains the neocloud stack (landlords, vertically integrated players like IREN and Crusoe, CoreWeave, Nebius) and why CoreWeave's GPU-backed asset financing spooked markets. Advance rates hit 90-95% against off-taker credit, and loan, contract and GPU useful life are nearly the same length, leaving a thin tail.</p>
+<p>View original post</p>
+<h3>Open vs closed token share — Friedberg on the 12-week flip and Anthropic risk</h3>
+<p>Creator: @techno.optimist.prime · Tier: B Tools: Anthropic</p>
+<p>Open-weight share flip to 80% — demand moving to cheaper tokens</p>
+<p>David Friedberg on All-In says token usage flipped from 80/20 closed-to-open to 80/20 open-to-closed in 12 weeks, calling it Anthropic's biggest risk factor ahead of S-1s. He expects a bifurcated market: open weights for most use, premium models for hard engineering, math and biology work.</p>
+<p>View original post</p>
+<h3>DeepSeek V4 Flash re-post-training — big agentic gains, same model size</h3>
+<p>Creator: @gigaqian · Tier: A Tools: Claude, DeepSeek</p>
+<p>Cheap mixture-of-experts closing on frontier agent benchmarks at $0.28 per million tokens</p>
+<p>DeepSeek re-post-trained V4 Flash (284B MoE, ~13B active) with no size or architecture change, jumping Terminal Bench 2.1 from 61.8 to 82.7, past the V4 Pro preview and near Claude Opus 4.8, at $0.28 per million output tokens. V4's original recipe distilled 10+ specialist teacher models; V4 Pro (rumored 1.6T, 49B active) is next.</p>
+<p>View original post</p>
+<h3>Qwen 3.8 27B — local agentic model that fits on one 24GB GPU</h3>
+<p>Creator: @gigaqian · Tier: A Tools: Anthropic, Qwen, Unsloth</p>
+<p>A 27B agentic model on one 24GB card — inference leaving the data center</p>
+<p>Alibaba's Qwen 3.8 27B quantizes to ~17GB at 4-bit, running on a single RTX 3090/4090, and Qwen's own benchmarks claim 84.3 on OSWorld plus wins on SWE-Bench Pro. Gated DeltaNet layers keep a compact running memory instead of full attention, and it preserves reasoning across tool-call steps, so pair it with an agent harness rather than chatting.</p>
+<p>View original post</p>
+<h3>Subscription token arbitrage — Claude Max vs Grok Ultra API-equivalent usage</h3>
+<p>Creator: @duck.tate · Tier: B Tools: Claude, Codex, Grokbot</p>
+<p>Subscriptions priced at a small fraction of API usage — the retail token price is already subsidized</p>
+<p>Compares plan value: Claude's $200 Max is worth over $7,000/month in API usage, while Grok Ultra at $300 is claimed at over $12,000. The creator plans to switch from Claude as brain plus Codex as hands to Fable as brain plus Grokbot as hands.</p>
+<p>View original post</p>
+<h3>Nvidia closed-loop cooling — why it grows demand for chillers</h3>
+<p>Creator: @natestav · Tier: B</p>
+<p>Cooling hardware with real order books — physical infrastructure as the contrasting bet</p>
+<p>Nvidia's Rubin closed-loop liquid cooling removes evaporative water use but still needs chillers, heat exchangers, dry coolers and liquid cooling units. Modine (MOD), via its Airedale subsidiary, hit $1.1B data center revenue (+73%) and got $165M upfront from a hyperscaler. Read the engineering, not the headline sell-off.</p>
+<p>View original post</p>
+<h3>Fundrise VCX at 25x NAV — cheaper proxies for private AI and space names</h3>
+<p>Creator: @linalikesmoney · Tier: B Tools: Anthropic, Canva, OpenAI</p>
+<p>A fund at 25x NAV — the habit of checking price against underlying value</p>
+<p>Fundrise's newly listed VCX closed-end fund trades around 25x its net asset value (about a 2,000% premium). Cheaper exposures named instead: Kraken Robotics as an Anduril supplier, Amazon for its Anthropic stake, and a Canadian private-asset fund near 1x NAV for OpenAI and SpaceX exposure.</p>
+<p>View original post</p>
+<h3>Public SaaS is getting destroyed. Atlassian -63%. HubSpot -48%. Workday ...</h3>
+<p>Creator: @atlasberry008 · Tier: B Tools: Anthropic</p>
+<p>SaaS sell-off — markets already repricing the software layer</p>
+<p>Public SaaS is getting destroyed. Atlassian -63%. HubSpot -48%. Workday -47%. — @atlasberry008; uses Anthropic.</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Schedule an agent to log daily H100/B200 hourly rental prices from public marketplaces and the cheapest per-million-token price for three model tiers on OpenRouter into one table.</p>
+<p>Pull neocloud debt and contract maturities from public filings and plot rental price against the period when large contracts roll off.</p>
+<p>Write a monthly one-page note: is GPU-hour price falling faster than token volume is rising? Paper only, no positions.</p>
+<p>falsifier: if GPU-hour rental prices hold flat or rise while token prices fall, usage growth (Jevons) is absorbing the deflation and the tail-risk thesis is wrong.</p>
+<h2>Prerequisites</h2>
+<p>Comfort reading public filings</p>
+<p>A scheduled agent and a spreadsheet</p>
+<p>Not financial advice — this is a research tracker</p>
+<h2>Key tools and resources</h2>
+<p>Anthropic</p>
+<p>Canva</p>
+<p>Claude</p>
+<p>Codex</p>
+<p>DeepSeek</p>
+<p>Grokbot</p>
+<p>OpenAI</p>
+<p>Qwen</p>
+<p>Unsloth</p>
+<h2>Creators to follow</h2>
+<p>@atlasberry008</p>
+<p>@duck.tate</p>
+<p>@gigaqian</p>
+<p>@linalikesmoney</p>
+<p>@natestav</p>
+<p>@techno.optimist.prime</p>
+<p>@thewallstreetskinny</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
+<script id="md" type="text/markdown"># The AI Capex Stack — reading it like a credit analyst
+
+**Insight class:** Emergent Capability · **Difficulty:** Medium · **Quality:** 3/5
+**Connected entries:** 8 · **Tools:** Anthropic, Canva, Claude, Codex, DeepSeek, Grokbot, OpenAI, Qwen, Unsloth
+
+---
+
+## Thesis
+
+An ex-Morgan Stanley structurer explains that CoreWeave-style GPU loans have a thin tail: loan, contract and GPU useful life are nearly the same length, so the bull case rests on hourly rental prices after contracts end. Other saves price that number from the demand side: open weights flipped to about 80% of token volume in 12 weeks, DeepSeek serves near-frontier agents at $0.28 per million tokens, a 27B model runs on one gaming GPU, and a $200 subscription buys about $7,000 of API usage. Token deflation is a direct input to post-contract GPU rental rates, and nobody in the catalog connects them.
+
+---
+
+## Why it matters
+
+You can track the one variable the neocloud debt depends on with public price pages and a scheduled agent. Physical infrastructure with real order books, like chillers, is a different bet from GPU-hour rental, and this lens separates them.
+
+---
+
+## The evidence — connected entries
+
+### CoreWeave debt explained — how GPU-backed loans fund the neoclouds
+**Creator:** [@thewallstreetskinny](https://instagram.com/thewallstreetskinny) · **Tier:** A
+**Tools:** Anthropic, OpenAI
+
+> The credit structure — 90-95% advance rates and a thin tail; post-contract GPU rental is the bull case
+
+An ex-Morgan Stanley CDO structurer explains the neocloud stack (landlords, vertically integrated players like IREN and Crusoe, CoreWeave, Nebius) and why CoreWeave's GPU-backed asset financing spooked markets. Advance rates hit 90-95% against off-taker credit, and loan, contract and GPU useful life are nearly the same length, leaving a thin tail.
+
+[View original post](https://www.instagram.com/p/DehLFj6ON6C/)
+### Open vs closed token share — Friedberg on the 12-week flip and Anthropic risk
+**Creator:** [@techno.optimist.prime](https://instagram.com/techno.optimist.prime) · **Tier:** B
+**Tools:** Anthropic
+
+> Open-weight share flip to 80% — demand moving to cheaper tokens
+
+David Friedberg on All-In says token usage flipped from 80/20 closed-to-open to 80/20 open-to-closed in 12 weeks, calling it Anthropic's biggest risk factor ahead of S-1s. He expects a bifurcated market: open weights for most use, premium models for hard engineering, math and biology work.
+
+[View original post](https://www.instagram.com/p/DeIOphnT7Yq/)
+### DeepSeek V4 Flash re-post-training — big agentic gains, same model size
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** A
+**Tools:** Claude, DeepSeek
+
+> Cheap mixture-of-experts closing on frontier agent benchmarks at $0.28 per million tokens
+
+DeepSeek re-post-trained V4 Flash (284B MoE, ~13B active) with no size or architecture change, jumping Terminal Bench 2.1 from 61.8 to 82.7, past the V4 Pro preview and near Claude Opus 4.8, at $0.28 per million output tokens. V4's original recipe distilled 10+ specialist teacher models; V4 Pro (rumored 1.6T, 49B active) is next.
+
+[View original post](https://www.instagram.com/p/DbjmqTYJfMY/)
+### Qwen 3.8 27B — local agentic model that fits on one 24GB GPU
+**Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** A
+**Tools:** Anthropic, Qwen, Unsloth
+
+> A 27B agentic model on one 24GB card — inference leaving the data center
+
+Alibaba's Qwen 3.8 27B quantizes to ~17GB at 4-bit, running on a single RTX 3090/4090, and Qwen's own benchmarks claim 84.3 on OSWorld plus wins on SWE-Bench Pro. Gated DeltaNet layers keep a compact running memory instead of full attention, and it preserves reasoning across tool-call steps, so pair it with an agent harness rather than chatting.
+
+[View original post](https://www.instagram.com/p/DcCdYgnJ10h/)
+### Subscription token arbitrage — Claude Max vs Grok Ultra API-equivalent usage
+**Creator:** [@duck.tate](https://instagram.com/duck.tate) · **Tier:** B
+**Tools:** Claude, Codex, Grokbot
+
+> Subscriptions priced at a small fraction of API usage — the retail token price is already subsidized
+
+Compares plan value: Claude's $200 Max is worth over $7,000/month in API usage, while Grok Ultra at $300 is claimed at over $12,000. The creator plans to switch from Claude as brain plus Codex as hands to Fable as brain plus Grokbot as hands.
+
+[View original post](https://www.instagram.com/p/DdMoE8qhnKE/)
+### Nvidia closed-loop cooling — why it grows demand for chillers
+**Creator:** [@natestav](https://instagram.com/natestav) · **Tier:** B
+
+> Cooling hardware with real order books — physical infrastructure as the contrasting bet
+
+Nvidia's Rubin closed-loop liquid cooling removes evaporative water use but still needs chillers, heat exchangers, dry coolers and liquid cooling units. Modine (MOD), via its Airedale subsidiary, hit $1.1B data center revenue (+73%) and got $165M upfront from a hyperscaler. Read the engineering, not the headline sell-off.
+
+[View original post](https://www.instagram.com/p/DaA6cGsyQp3/)
+### Fundrise VCX at 25x NAV — cheaper proxies for private AI and space names
+**Creator:** [@linalikesmoney](https://instagram.com/linalikesmoney) · **Tier:** B
+**Tools:** Anthropic, Canva, OpenAI
+
+> A fund at 25x NAV — the habit of checking price against underlying value
+
+Fundrise's newly listed VCX closed-end fund trades around 25x its net asset value (about a 2,000% premium). Cheaper exposures named instead: Kraken Robotics as an Anduril supplier, Amazon for its Anthropic stake, and a Canadian private-asset fund near 1x NAV for OpenAI and SpaceX exposure.
+
+[View original post](https://www.instagram.com/p/DWWUXtNDlS1/)
+### Public SaaS is getting destroyed. Atlassian -63%. HubSpot -48%. Workday ...
+**Creator:** [@atlasberry008](https://instagram.com/atlasberry008) · **Tier:** B
+**Tools:** Anthropic
+
+> SaaS sell-off — markets already repricing the software layer
+
+Public SaaS is getting destroyed. Atlassian -63%. HubSpot -48%. Workday -47%. — @atlasberry008; uses Anthropic.
+
+[View original post](https://www.instagram.com/p/DXFzEoeCW6S/)
+
+---
+
+## Action sketch — how to implement this
+
+- Schedule an agent to log daily H100/B200 hourly rental prices from public marketplaces and the cheapest per-million-token price for three model tiers on OpenRouter into one table.
+- Pull neocloud debt and contract maturities from public filings and plot rental price against the period when large contracts roll off.
+- Write a monthly one-page note: is GPU-hour price falling faster than token volume is rising? Paper only, no positions.
+- falsifier: if GPU-hour rental prices hold flat or rise while token prices fall, usage growth (Jevons) is absorbing the deflation and the tail-risk thesis is wrong.
+
+---
+
+## Prerequisites
+
+- Comfort reading public filings
+- A scheduled agent and a spreadsheet
+- Not financial advice — this is a research tracker
+
+---
+
+## Key tools and resources
+
+- **Anthropic**
+- **Canva**
+- **Claude**
+- **Codex**
+- **DeepSeek**
+- **Grokbot**
+- **OpenAI**
+- **Qwen**
+- **Unsloth**
+
+## Creators to follow
+
+- [@atlasberry008](https://instagram.com/atlasberry008)
+- [@duck.tate](https://instagram.com/duck.tate)
+- [@gigaqian](https://instagram.com/gigaqian)
+- [@linalikesmoney](https://instagram.com/linalikesmoney)
+- [@natestav](https://instagram.com/natestav)
+- [@techno.optimist.prime](https://instagram.com/techno.optimist.prime)
+- [@thewallstreetskinny](https://instagram.com/thewallstreetskinny)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

@@ -1,0 +1,255 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mocap as Reward — teaching cheap robots to move like you · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-mocap-as-reward.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Mocap as Reward — teaching cheap robots to move like you →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Mocap as Reward — teaching cheap robots to move like you</h1>
+<p>Insight class: Emergent Capability · Difficulty: Experimental · Quality: 3/5 Connected entries: 7 · Tools: Blender, JupyterLab, Microduck, Unity, Unreal Engine, XInputReader, ppf-contact-solver</p>
+<h2>Thesis</h2>
+<p>The Microduck RL demo shows the classic failure: a loose reward function makes the robot 'stand' in a way nobody intended. The catalog also holds the fix, scattered across collections. FreeMoCap turns a webcam into markerless motion capture, HY-Motion produces motion from text on robot skeletons, and Blender plus a GPU contact solver can rehearse physical contact. Use captured or generated motion as an imitation reward on a cheap open robot. The reward-design trial and error becomes 'show it what you mean'.</p>
+<h2>Why it matters</h2>
+<p>Hobby robotics is gated by reward engineering more than by hardware. A webcam reference clip gives an individual the motion-prior pipeline that only labs used to have, for small expressive robots, animatronics and installations.</p>
+<h2>The evidence — connected entries</h2>
+<h3>Microduck robot — reinforcement learning with PPO and reward shaping</h3>
+<p>Creator: @summerr.exe · Tier: A Tools: Microduck</p>
+<p>The problem: PPO on Microduck reward-hacks a loose objective</p>
+<p>Training Pollen Robotics' open-source Microduck to stand: define a reward function (e.g. points for target body height), simulate 4,096 parallel robots, and let PPO update the policy toward higher-reward actions. The result 'stands' in an unintended way, a clean demo of reward hacking and why reward design is iterative.</p>
+<p>View original post</p>
+<h3>Blender — • 500+ body, hand &amp; face landmarks per frame</h3>
+<p>Creator: @marc.kaz · Tier: S Tools: Blender, Unity, Unreal Engine</p>
+<p>Reference source: webcam markerless mocap, 500+ landmarks</p>
+<p>FreeMoCap turns ordinary webcams into professional markerless 3D motion capture. — @marc.kaz; uses Blender, Unity, Unreal Engine; demonstrates motion capture.</p>
+<p>View original post</p>
+<h3>HY-Motion 1.0 — Tencent's text-to-3D motion generation</h3>
+<p>Creator: @6ab3 · Tier: A</p>
+<p>Reference source: text-to-motion on human and robot skeletons</p>
+<p>by Tencent Hunyuan — featured by @marc.kaz Billion-parameter text-to-3D motion generation. Type "a person walks forward then starts jumping" and get skeleton-based character animation. 200+ action types, 700hrs of pro mocap training. Works on human + robot skeletons. Free on HuggingFace. DiT + Flow Matching 200+ action types Free</p>
+<p>View original post</p>
+<h3>Blender rigid-body spaceship — motors, constraints and drivers for flight</h3>
+<p>Creator: @ianhubertz · Tier: S Tools: Blender, XInputReader</p>
+<p>Rehearsal: Blender rigid bodies, motors and drivers to prototype motion physically</p>
+<p>Ian Hubert shows physics-driven vehicle animation in Blender: active/passive rigid bodies, hinge and spring constraints, motor constraints pushing against the ground as thrusters, gravity off, and custom properties wired via drivers with scripted expressions for throttle and lights. Mentions Erindale's XInputReader addon for gamepad control.</p>
+<p>View original post</p>
+<h3>PPF Contact Solver — ZOZO's open-source GPU cloth and soft-body physics</h3>
+<p>Creator: @marc.kaz · Tier: S Tools: Blender, JupyterLab, ppf-contact-solver</p>
+<p>Rehearsal: GPU contact solver for soft/cloth contact cases</p>
+<p>ZOZO open-sourced ppf-contact-solver, its internal virtual try-on physics engine: penetration-free fabric, rope and soft-body simulation with strain limits, up to 180M contacts, full GPU acceleration, a Blender plugin and a JupyterLab interface.</p>
+<p>View original post</p>
+<h3>Self-stabilizing robots are reaching a fascinating stage whe — The content is presented purely for learning and infor...</h3>
+<p>Creator: @s_sapphire_robotics · Tier: B</p>
+<p>Counterpoint: passive mechanical stability needs little AI — design the body first</p>
+<p>Self-stabilizing robots are reaching a fascinating stage where they can walk and balance with little to no AI, relyin... — @s_sapphire_robotics.</p>
+<p>View original post</p>
+<h3>Animatronic eye sculpture — hexagonal plate with moving eyes and macramé mandala</h3>
+<p>Creator: @miselyum.art · Tier: B</p>
+<p>Target use: animatronic sculpture that should move with intent, not just stand</p>
+<p>A stage-design art piece: a grey hexagonal plate of moving animatronic eyes framed by a macramé mandala, conceived as a bridge between people and a moon deity. Built for an event production; silent showcase.</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Reproduce the Microduck standing run in its sim with 4,096 envs; confirm the reward hack.</p>
+<p>Record a 10-second webcam clip of a 'bob and look around' motion with FreeMoCap (or generate one with HY-Motion), retarget to Microduck's joints, and add a pose-tracking imitation term to the reward.</p>
+<p>Compare policies: reward-only vs reward + imitation, scored by a blind viewer on 'looks intentional' and by joint-tracking error; deploy the winner to hardware if you have it.</p>
+<p>Falsifier: if retargeting human motion to a duck-scale robot body produces infeasible joint targets that the policy can't track better than the plain reward, the motion prior is the wrong shape for small robots.</p>
+<h2>Prerequisites</h2>
+<p>GPU for parallel sim (Isaac/MuJoCo)</p>
+<p>Comfort with RL training configs</p>
+<p>Optional: Microduck hardware build</p>
+<h2>Key tools and resources</h2>
+<p>Blender</p>
+<p>JupyterLab</p>
+<p>Microduck</p>
+<p>Unity</p>
+<p>Unreal Engine</p>
+<p>XInputReader</p>
+<p>ppf-contact-solver</p>
+<h2>Creators to follow</h2>
+<p>@6ab3</p>
+<p>@ianhubertz</p>
+<p>@marc.kaz</p>
+<p>@miselyum.art</p>
+<p>@s_sapphire_robotics</p>
+<p>@summerr.exe</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
+<script id="md" type="text/markdown"># Mocap as Reward — teaching cheap robots to move like you
+
+**Insight class:** Emergent Capability · **Difficulty:** Experimental · **Quality:** 3/5
+**Connected entries:** 7 · **Tools:** Blender, JupyterLab, Microduck, Unity, Unreal Engine, XInputReader, ppf-contact-solver
+
+---
+
+## Thesis
+
+The Microduck RL demo shows the classic failure: a loose reward function makes the robot 'stand' in a way nobody intended. The catalog also holds the fix, scattered across collections. FreeMoCap turns a webcam into markerless motion capture, HY-Motion produces motion from text on robot skeletons, and Blender plus a GPU contact solver can rehearse physical contact. Use captured or generated motion as an imitation reward on a cheap open robot. The reward-design trial and error becomes 'show it what you mean'.
+
+---
+
+## Why it matters
+
+Hobby robotics is gated by reward engineering more than by hardware. A webcam reference clip gives an individual the motion-prior pipeline that only labs used to have, for small expressive robots, animatronics and installations.
+
+---
+
+## The evidence — connected entries
+
+### Microduck robot — reinforcement learning with PPO and reward shaping
+**Creator:** [@summerr.exe](https://instagram.com/summerr.exe) · **Tier:** A
+**Tools:** Microduck
+
+> The problem: PPO on Microduck reward-hacks a loose objective
+
+Training Pollen Robotics' open-source Microduck to stand: define a reward function (e.g. points for target body height), simulate 4,096 parallel robots, and let PPO update the policy toward higher-reward actions. The result 'stands' in an unintended way, a clean demo of reward hacking and why reward design is iterative.
+
+[View original post](https://www.instagram.com/p/DdCBqmzJgbW/)
+### Blender — • 500+ body, hand & face landmarks per frame
+**Creator:** [@marc.kaz](https://instagram.com/marc.kaz) · **Tier:** S
+**Tools:** Blender, Unity, Unreal Engine
+
+> Reference source: webcam markerless mocap, 500+ landmarks
+
+FreeMoCap turns ordinary webcams into professional markerless 3D motion capture. — @marc.kaz; uses Blender, Unity, Unreal Engine; demonstrates motion capture.
+
+[View original post](https://www.instagram.com/p/DYAI_fCuvrY/)
+### HY-Motion 1.0 — Tencent's text-to-3D motion generation
+**Creator:** [@6ab3](https://instagram.com/6ab3) · **Tier:** A
+
+> Reference source: text-to-motion on human and robot skeletons
+
+by Tencent Hunyuan — featured by @marc.kaz | Billion-parameter text-to-3D motion generation. Type "a person walks forward then starts jumping" and get skeleton-based character animation. 200+ action types, 700hrs of pro mocap training. Works on human + robot skeletons. Free on HuggingFace. | DiT + Flow Matching 200+ action types Free
+
+[View original post](https://github.com/Tencent-Hunyuan/HY-Motion-1.0)
+### Blender rigid-body spaceship — motors, constraints and drivers for flight
+**Creator:** [@ianhubertz](https://instagram.com/ianhubertz) · **Tier:** S
+**Tools:** Blender, XInputReader
+
+> Rehearsal: Blender rigid bodies, motors and drivers to prototype motion physically
+
+Ian Hubert shows physics-driven vehicle animation in Blender: active/passive rigid bodies, hinge and spring constraints, motor constraints pushing against the ground as thrusters, gravity off, and custom properties wired via drivers with scripted expressions for throttle and lights. Mentions Erindale's XInputReader addon for gamepad control.
+
+[View original post](https://www.instagram.com/p/DacssZfNGNS/)
+### PPF Contact Solver — ZOZO's open-source GPU cloth and soft-body physics
+**Creator:** [@marc.kaz](https://instagram.com/marc.kaz) · **Tier:** S
+**Tools:** Blender, JupyterLab, ppf-contact-solver
+
+> Rehearsal: GPU contact solver for soft/cloth contact cases
+
+ZOZO open-sourced ppf-contact-solver, its internal virtual try-on physics engine: penetration-free fabric, rope and soft-body simulation with strain limits, up to 180M contacts, full GPU acceleration, a Blender plugin and a JupyterLab interface.
+
+[View original post](https://www.instagram.com/p/DYuY_-7Oqk4/)
+### Self-stabilizing robots are reaching a fascinating stage whe — The content is presented purely for learning and infor...
+**Creator:** [@s_sapphire_robotics](https://instagram.com/s_sapphire_robotics) · **Tier:** B
+
+> Counterpoint: passive mechanical stability needs little AI — design the body first
+
+Self-stabilizing robots are reaching a fascinating stage where they can walk and balance with little to no AI, relyin... — @s_sapphire_robotics.
+
+[View original post](https://www.instagram.com/p/DXvvNRssb64/)
+### Animatronic eye sculpture — hexagonal plate with moving eyes and macramé mandala
+**Creator:** [@miselyum.art](https://instagram.com/miselyum.art) · **Tier:** B
+
+> Target use: animatronic sculpture that should move with intent, not just stand
+
+A stage-design art piece: a grey hexagonal plate of moving animatronic eyes framed by a macramé mandala, conceived as a bridge between people and a moon deity. Built for an event production; silent showcase.
+
+[View original post](https://www.instagram.com/p/C3X9J-wCQps/)
+
+---
+
+## Action sketch — how to implement this
+
+- Reproduce the Microduck standing run in its sim with 4,096 envs; confirm the reward hack.
+- Record a 10-second webcam clip of a 'bob and look around' motion with FreeMoCap (or generate one with HY-Motion), retarget to Microduck's joints, and add a pose-tracking imitation term to the reward.
+- Compare policies: reward-only vs reward + imitation, scored by a blind viewer on 'looks intentional' and by joint-tracking error; deploy the winner to hardware if you have it.
+- Falsifier: if retargeting human motion to a duck-scale robot body produces infeasible joint targets that the policy can't track better than the plain reward, the motion prior is the wrong shape for small robots.
+
+---
+
+## Prerequisites
+
+- GPU for parallel sim (Isaac/MuJoCo)
+- Comfort with RL training configs
+- Optional: Microduck hardware build
+
+---
+
+## Key tools and resources
+
+- **Blender**
+- **JupyterLab**
+- **Microduck**
+- **Unity**
+- **Unreal Engine**
+- **XInputReader**
+- **ppf-contact-solver**
+
+## Creators to follow
+
+- [@6ab3](https://instagram.com/6ab3)
+- [@ianhubertz](https://instagram.com/ianhubertz)
+- [@marc.kaz](https://instagram.com/marc.kaz)
+- [@miselyum.art](https://instagram.com/miselyum.art)
+- [@s_sapphire_robotics](https://instagram.com/s_sapphire_robotics)
+- [@summerr.exe](https://instagram.com/summerr.exe)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
-<title>VectorBT — vectorized backtesting framework explained simply — DejaViewed</title>
+<title>VectorBT Grid Search — mmap data, joblib batching and vectorized backtests — DejaViewed</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,19 +34,22 @@
 <main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
   <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">technique</span></div>
-  <h1>VectorBT — vectorized backtesting framework explained simply</h1>
+  <h1>VectorBT Grid Search — mmap data, joblib batching and vectorized backtests</h1>
   <div class="meta">quant.dhawan · 2026-01-02T13:08:50.000Z · in quant</div>
   <div class="actions">
     <a class="primary" href="https://www.instagram.com/p/DTAjTaBADAx/" target="_blank" rel="noopener">Open post ↗</a>
   </div>
   <section class="tableau">
-    <div class="level"><h3>100k ft — What is this?</h3><div class="body">VectorBT — vectorized backtesting framework explained simply</div><div class="tags"><span class="pill">technique</span><span class="pill">A-tier</span></div></div>
-<div class="level"><h3>50k ft — Why care?</h3><div class="body">Brief explainer of VectorBT, a Python backtesting library that uses vectorized operations for fast strategy testing. Aimed at retail traders transitioning to quantitative methods.</div><div class="tags"><span class="pill">backtesting</span><span class="pill">finance/trading</span><span class="pill">python</span><span class="pill">quant</span></div></div>
-<div class="level"><h3>10k ft — Key takeaways</h3><div class="body">• VectorBT enables fast vectorized strategy backtesting
-• More accessible entry point for retail → quant transition</div></div>
-<div class="level"><h3>5k ft — Tools &amp; techniques</h3><div class="body">Python, VectorBT
+    <div class="level"><h3>100k ft — What is this?</h3><div class="body">VectorBT Grid Search — mmap data, joblib batching and vectorized backtests</div><div class="tags"><span class="pill">technique</span><span class="pill">A-tier</span></div></div>
+<div class="level"><h3>50k ft — Why care?</h3><div class="body">A speed recipe for strategy grid searches with VectorBT: load OHLCV via numpy memmap (mmap_mode=&#x27;r&#x27;, copy=False) to avoid RAM blowups, fan thousands of backtests across cores with joblib Parallel, batch tasks in groups of 1,000, and run Portfolio.from_signals with fees and slippage as Numba-compiled matrix ops. Illustrated with a BTC moving-average crossover return surface.</div><div class="tags"><span class="pill">backtesting</span><span class="pill">data science</span><span class="pill">finance/trading</span><span class="pill">python</span><span class="pill">quant</span></div></div>
+<div class="level"><h3>10k ft — Key takeaways</h3><div class="body">• Always pass fees and slippage into Portfolio.from_signals so grid winners are not fee artifacts.
+• Batch joblib tasks to keep all cores saturated and cut process overhead.
+• More accessible entry point for retail → quant transition
+• Use np.load(..., mmap_mode=&#x27;r&#x27;) and DataFrame(copy=False) to backtest many tickers without RAM spikes.
+• VectorBT enables fast vectorized strategy backtesting</div></div>
+<div class="level"><h3>5k ft — Tools &amp; techniques</h3><div class="body">NumPy, Numba, Python, VectorBT, joblib, pandas
 
-Vectorized Backtesting, algorithmic trading, backtesting</div></div>
+Vectorized Backtesting, algorithmic trading, backtesting, memory mapping, parallel batching, parameter grid search, vectorized backtesting</div></div>
 <div class="level"><h3>1k ft — Deep-dive / try it</h3><div class="body">VectorBT explained for Retail Bros
 
 #finance #quantfinance #trading #quantrading

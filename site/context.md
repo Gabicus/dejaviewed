@@ -1,6 +1,6 @@
 # DejaViewed Knowledge Context
 
-*Auto-generated 2026-10-21 · 846 entries across 18 collections*
+*Auto-generated 2026-10-22 · 846 entries across 18 collections*
 
 This document maps everything saved in the DejaViewed catalog. Use it to surface
 relevant tools, techniques, repos, and guides when the user's task matches a domain below.
@@ -9,9 +9,9 @@ relevant tools, techniques, repos, and guides when the user's task matches a dom
 
 ## Quick Stats
 
-- **846** curated entries from **478** creators
-- **98** S-tier · **251** A-tier · **374** B-tier
-- **293** unique tools · **539** techniques · **74** models
+- **846** curated entries from **485** creators
+- **55** S-tier · **232** A-tier · **384** B-tier
+- **393** unique tools · **719** techniques · **97** models
 - **20** deep-dive guides written
 - Collections: creative (149), ai8 (111), ai7 (99), art-i-like (90), music (69), ai1 (57), ai4 (56), ai5 (44), ai3 (31), quant (30), ai6 (30), ai2 (24), stock2 (14), stock3 (14), creative4 (11), art-inspiration (6), game-theory (6), prompts (5)
 
@@ -19,70 +19,70 @@ relevant tools, techniques, repos, and guides when the user's task matches a dom
 
 When the user works in one of these domains, surface the matching entries:
 
-- **agents** [182 items] (46S/76A) — Gemini CLI — free terminal coding agent, 1K req/day, Gemini 2.5 Pro; Blender MCP + Tripo — 2D reference image to full 3D scene; Boris Cherny's Claude Code workflow — parallel worktrees + plan mode
-- **video production** [181 items] (24S/69A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; llms.txt — get ChatGPT to recommend your local business; OpenScreen — free open-source Screen Studio alternative
-- **art** [162 items] (7S/29A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; Hunyuan3D-2 — Tencent's free image-to-3D model generator; Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I think he just ripped a massive line backs...
-- **open source** [133 items] (28S/55A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; 7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers; Boris Cherny — 10-15 parallel Claude sessions + evolving CLAUDE.md
-- **prompt engineering** [132 items] (20S/51A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; Hunyuan3D-2 — Tencent's free image-to-3D model generator; 5 ChatGPT learning prompts — 80/20, intern mode, skill plan
-- **design** [107 items] (9S/34A) — Hunyuan3D-2 — Tencent's free image-to-3D model generator; 7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers; You can turn Claude Code into a full motion design team on @higgsfield.a...
-- **software development** [93 items] (18S/37A) — Gemini CLI — free terminal coding agent, 1K req/day, Gemini 2.5 Pro; Claude Code 'brevity mandate' — leaked system prompt tradeoff; Bypassing 90% of AI guardrails — @lizthedeveloper
-- **LLM** [83 items] (19S/36A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; Gemini CLI — free terminal coding agent, 1K req/day, Gemini 2.5 Pro; Blender MCP + Tripo — 2D reference image to full 3D scene
-- **finance/trading** [79 items] (16S/28A) — Polymarket weather edge — dorm weather station, $100K+ traded; Polymarket 99c limit-order edge — 75 automated trades/hour; 10 non-cliche quant research projects — Bayesian BL, RL factors, PBO
-- **3D** [77 items] (14S/29A) — Blender MCP + Tripo — 2D reference image to full 3D scene; Hunyuan3D-2 — Tencent's free image-to-3D model generator; World Labs — explorable 3D worlds from a single 2D image
-- **music** [67 items] (1S/13A) — 'Shady Grove' — Doc Watson's clawhammer D-Dorian and a 400-year melody; websim.ai — hallucinated websites as an AI tool demo; Ornstein-Uhlenbeck mean-reversion visualized — theta/mu/sigma
-- **UI/UX** [52 items] (6S/23A) — 7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers; Everyone’s copying the same Obsidian template while I’m building THIS fo...; Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...
-- **marketing** [49 items] (4S/13A) — Claude Code hooks — 3 daily-driver hooks from @jens.heitmann; You can turn Claude Code into a full motion design team on @higgsfield.a...; Claude isn’t just for coding anymore. I’ve been using it to run full marketing...
-- **security** [44 items] (5S/8A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; Claude — thesavedsalesman; OpenAI — you can literally search for them
-- **education** [43 items] (5S/9A) — Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...; Claude — What else do you want to see/learn about? 🧚🏻‍♂️; Claude — Rendered via 3D Gaussian splatting.
-- **quant** [40 items] (10S/17A) — Phase Space Reconstruction — unfolding hidden BTC volatility dynamics; Heston Model — stochastic volatility for realistic options pricing; Hidden Markov Models — detecting market regime shifts automatically
-- **creative coding** [36 items] (9S/12A) — World Labs — explorable 3D worlds from a single 2D image; 10 institutional quant projects — Avellaneda-Stoikov, Hawkes, HMM; OpenScreen — free open-source Screen Studio alternative
-- **data science** [34 items] (3S/19A) — Polymarket weather edge — dorm weather station, $100K+ traded; 10 non-cliche quant research projects — Bayesian BL, RL factors, PBO; 10 institutional quant projects — Avellaneda-Stoikov, Hawkes, HMM
-- **news** [31 items] (5A) — Princeton sponsored-ads study — 18 of 23 AI assistants push the paid option; CoreWeave debt explained — how GPU-backed loans fund the neoclouds; DeepSeek V4 Flash re-post-training — big agentic gains, same model size
-- **architecture** [29 items] (5S/7A) — 5 ChatGPT learning prompts — 80/20, intern mode, skill plan; Claude — I had my hedge fund team stress test Kronos. It failed on many levels.; LoRA — 1️⃣ RAG → hybrid search over internal docs with reranking and...
-- **animation** [27 items] (4S/8A) — Claude — Here's how to build it in 10 minutes:; ln + vpype — 3D scenes to hidden-line vector art for pen plotters; PPF Contact Solver — ZOZO's open-source GPU cloth and soft-body physics
-- **branding** [26 items] (2S/8A) — You can turn Claude Code into a full motion design team on @higgsfield.a...; Claude — Burning tokens for no reason is a skill issue.; Claude Code design uplevel — 3 systems for better UI output
-- **reference** [25 items] (7S/7A) — Blender MCP + Tripo — 2D reference image to full 3D scene; Andrej Karpathy resource — @nateherkai DM-bait; Free Claude resource — @brodyautomates
-- **crypto** [23 items] (3S/7A) — 10 institutional quant projects — Avellaneda-Stoikov, Hawkes, HMM; Phase Space Reconstruction — unfolding hidden BTC volatility dynamics; Kronos — open-source foundation model trained on 12B candlesticks
-- **audio** [20 items] (4S/9A) — OpenScreen — free open-source Screen Studio alternative; Claude isn’t just for coding anymore. I’ve been using it to run full marketing...; DeepSeek — “They want you” to train their models.
-- **OSINT** [19 items] (1S/3A) — Stay-secure privacy checklist — de-dox yourself from AI and data brokers; Horus-Eye — open Palantir Gotham clone, live mil/civ feeds; God's Eye View — open-source 3D geospatial OSINT globe with voice agent
-- **productivity** [17 items] (5A) — Anthropic job index audit — map your tasks to automation vs augmentation; GPT-6 Astra + Codex one-person company — context files and daily checkpoints; Herk Brain AI OS — local knowledge graph wired into a personal dashboard
-- **hardware** [15 items] (1S/6A) — Gemma Translator — offline speech translation on a Raspberry Pi 5; Linux inside a 6MB PDF — RISC-V emulator embedded in a PDF; Cochlea — Wi-Fi side-channel attack on Ring cameras
-- **archives** [14 items] (2S/1A) — Claude — I had my hedge fund team stress test Kronos. It failed on many levels.; Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...; React — made a little 3D racer that runs right in the browser. anti-grav...
-- **photography** [13 items] (6A) — GeoSpy.ai — geolocate any photo from buildings, plants, shadows; Kling Motion Brush — direct up to 5 characters in one AI video; Thousands of pictures for this...
-- **gaming** [10 items] (3A) — Odyssey Explorer — turn any image into an explorable 3D world; Gemini — if you want to listen leave a comment and i can send a link! ♡; Conway's law — Casey Muratori on the one unbreakable rule, now for agents
+- **agents** [192 items] (24S/73A) — Gemini CLI — free terminal coding agent, 1K req/day, Gemini 2.5 Pro; Blender MCP + Tripo — 2D reference image to full 3D scene; Claude Code Team Tips — Boris Cherny's 10 habits for parallel, plan-first agent work
+- **video production** [183 items] (12S/65A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; Breaking: Opus 4.7 has just been released.; Comment “agent” to get my Claude code guides
+- **art** [165 items] (8S/34A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; Hunyuan3D-2 — Tencent's free image-to-3D model generator; Zdzisław Beksiński — the nightmare painter who called his work optimistic
+- **open source** [138 items] (22S/59A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; 7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers; Bypassing 90% of AI guardrails — @lizthedeveloper
+- **prompt engineering** [135 items] (11S/43A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; Hunyuan3D-2 — Tencent's free image-to-3D model generator; 5 ChatGPT learning prompts — 80/20, intern mode, skill plan
+- **design** [118 items] (8S/37A) — Hunyuan3D-2 — Tencent's free image-to-3D model generator; 7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers; You can turn Claude Code into a full motion design team on @higgsfield.a...
+- **software development** [110 items] (13S/42A) — Gemini CLI — free terminal coding agent, 1K req/day, Gemini 2.5 Pro; Claude Code Team Tips — Boris Cherny's 10 habits for parallel, plan-first agent work; Bypassing 90% of AI guardrails — @lizthedeveloper
+- **LLM** [98 items] (14S/41A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; Gemini CLI — free terminal coding agent, 1K req/day, Gemini 2.5 Pro; Blender MCP + Tripo — 2D reference image to full 3D scene
+- **finance/trading** [83 items] (7S/21A) — 10 institutional quant projects — Avellaneda-Stoikov, Hawkes, HMM; Wasserstein Distance — measuring the backtest-to-live reality gap; Hurst Exponent — 3D surface of BTC memory and mean-reversion zones
+- **3D** [79 items] (14S/26A) — Blender MCP + Tripo — 2D reference image to full 3D scene; Hunyuan3D-2 — Tencent's free image-to-3D model generator; World Labs — explorable 3D worlds from a single 2D image
+- **music** [75 items] (2S/12A) — Zdzisław Beksiński — the nightmare painter who called his work optimistic; 'Shady Grove' — Doc Watson's clawhammer D-Dorian and a 400-year melody; websim.ai — hallucinated websites as an AI tool demo
+- **marketing** [59 items] (3S/9A) — You can turn Claude Code into a full motion design team on @higgsfield.a...; Claude isn’t just for coding anymore. I’ve been using it to run full marketing...; Jarvis daily brief — Claude with RevenueCat, Buffer, Meta Ads and Gmail MCPs
+- **UI/UX** [57 items] (6S/25A) — 7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers; Everyone’s copying the same Obsidian template while I’m building THIS fo...; GitHub as a design asset library — shader gradients, liquid glass, R3F
+- **education** [52 items] (3S/14A) — Jarvis daily brief — Claude with RevenueCat, Buffer, Meta Ads and Gmail MCPs; Mandelbulb — ray-marching a 3D fractal from z⁸ + c; 'Shady Grove' — Doc Watson's clawhammer D-Dorian and a 400-year melody
+- **security** [48 items] (2S/9A) — L1B3RT4S — Pliny jailbreak prompts still landing on GPT-5; Stay-secure privacy checklist — de-dox yourself from AI and data brokers; Platonic Representation Hypothesis — embeddings as AI telepathy
+- **creative coding** [47 items] (8S/15A) — World Labs — explorable 3D worlds from a single 2D image; 10 institutional quant projects — Avellaneda-Stoikov, Hawkes, HMM; Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I think he just ripped a massive line backs...
+- **news** [43 items] (8A) — Google and Amazon profits — half came from marking up Anthropic stakes; ASI-Evolve — open-source agent loop that autonomously designs AI architectures; Princeton sponsored-ads study — 18 of 23 AI assistants push the paid option
+- **quant** [42 items] (5S/16A) — Wasserstein Distance — measuring the backtest-to-live reality gap; Hurst Exponent — 3D surface of BTC memory and mean-reversion zones; Kronos — open foundation model that tokenizes candlesticks to forecast markets
+- **data science** [37 items] (1S/10A) — 10 institutional quant projects — Avellaneda-Stoikov, Hawkes, HMM; Platonic Representation Hypothesis — embeddings as AI telepathy; GeoSpy.ai — geolocate any photo from buildings, plants, shadows
+- **architecture** [30 items] (4S/9A) — 5 ChatGPT learning prompts — 80/20, intern mode, skill plan; Zdzisław Beksiński — the nightmare painter who called his work optimistic; GitHub URL swaps — gitdiagram, gitingest, deepwiki and gitmcp for any repo
+- **animation** [28 items] (3S/8A) — ln + vpype — 3D scenes to hidden-line vector art for pen plotters; PPF Contact Solver — ZOZO's open-source GPU cloth and soft-body physics; Blender rigid-body spaceship — motors, constraints and drivers for flight
+- **productivity** [27 items] (2S/8A) — Claude Code Team Tips — Boris Cherny's 10 habits for parallel, plan-first agent work; Jarvis daily brief — Claude with RevenueCat, Buffer, Meta Ads and Gmail MCPs; Karpathy-style LLM knowledge base — Claude Code turns 36 videos into a linked wiki
+- **branding** [27 items] (2S/7A) — You can turn Claude Code into a full motion design team on @higgsfield.a...; Claude — Burning tokens for no reason is a skill issue.; Greg Isenberg — how to design stunning AI apps (not vibe-coded ugly)
+- **reference** [25 items] (4S/13A) — Blender MCP + Tripo — 2D reference image to full 3D scene; Claude isn’t just for coding anymore. I’ve been using it to run full marketing...; Jarvis daily brief — Claude with RevenueCat, Buffer, Meta Ads and Gmail MCPs
+- **crypto** [24 items] (4S/7A) — 10 institutional quant projects — Avellaneda-Stoikov, Hawkes, HMM; Hurst Exponent — 3D surface of BTC memory and mean-reversion zones; Kronos — open foundation model that tokenizes candlesticks to forecast markets
+- **hardware** [24 items] (1S/9A) — Gemma Translator — offline speech translation on a Raspberry Pi 5; Waterproof shower notes — capturing ideas that actually become projects; Pendulum drawing machine — harmonograph kinetic sculpture with a rocking table
+- **audio** [23 items] (2S/9A) — Claude isn’t just for coding anymore. I’ve been using it to run full marketing...; Gausseous — free browser tool for audio-reactive Gaussian splat visuals; Runway Gen-3 Alpha Video-to-Video — precise motion control
+- **OSINT** [20 items] (1S/3A) — Stay-secure privacy checklist — de-dox yourself from AI and data brokers; Cyberdeck privacy stack — GrapheneOS, Tails, Orange Pi and rotating-IMSI carrier; God's Eye View — open-source 3D geospatial OSINT globe with voice agent
+- **archives** [14 items] (3A) — Greg Isenberg — how to design stunning AI apps (not vibe-coded ugly); React — made a little 3D racer that runs right in the browser. anti-grav...; Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...
+- **photography** [13 items] (5A) — GeoSpy.ai — geolocate any photo from buildings, plants, shadows; Kling Motion Brush — direct up to 5 characters in one AI video; Handheld hyperlapse of New York — in-camera transitions, After Effects edit
+- **gaming** [10 items] (2A) — Odyssey Explorer — turn any image into an explorable 3D world; Conway's law — Casey Muratori on the one unbreakable rule, now for agents
 - **image generation** [9 items] (2S/5A) — Hunyuan3D-2 — Tencent's free image-to-3D model generator; World Labs — explorable 3D worlds from a single 2D image; GeoSpy.ai — geolocate any photo from buildings, plants, shadows
-- **automation** [9 items] (2S/6A) — 7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers; Polymarket 99c limit-order edge — 75 automated trades/hour; Scraping SAM.gov — puppeteer + AI for government data
-- **VFX** [8 items] (3S/3A) — Blender MCP + Tripo — 2D reference image to full 3D scene; Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I think he just ripped a massive line backs...; PPF Contact Solver — ZOZO's open-source GPU cloth and soft-body physics
-- **prediction markets** [5 items] (3S/1A) — Polymarket weather edge — dorm weather station, $100K+ traded; Polymarket 99c limit-order edge — 75 automated trades/hour; Free Claude resource — @brodyautomates
-- **risk** [5 items] (2S/1A) — Avalanche Model — self-organized criticality explains market crashes; Random Matrix Theory — cleaning correlation matrices from noise; Minimum Spanning Tree — graph theory reveals S&P 500 hidden structure
-- **web** [4 items] (1S/3A) — llms.txt — get ChatGPT to recommend your local business; websim.ai — hallucinated websites as an AI tool demo; Striking-distance keywords — GSC SEO tactic (positions 6-11)
-- **e-commerce** [4 items] (1S/3A) — Bypassing 90% of AI guardrails — @lizthedeveloper; @thesocialalpha_ AI workflows community + ChatGPT handbook; Gemini — if you want to listen leave a comment and i can send a link! ♡
-- **physics** [4 items] (1S/2A) — Avalanche Model — self-organized criticality explains market crashes; Ising Model — modeling herd behavior and market phase transitions; Omori's Law — earthquake aftershock math applied to market crashes
-- **signal processing** [4 items] (2A) — Singular Spectrum Analysis — non-parametric trend extraction from noisy data; Kalman Filter — adaptive signal extraction for non-stationary markets
-- **RAG** [3 items] (1S/1A) — Onyx — open-source self-hosted agentic RAG platform; NVIDIA ChatRTX local LLM — @nathanespinozayt sponsored demo
-- **backtesting** [3 items] (1S/1A) — Wasserstein Distance — measuring the backtest-to-live reality gap; VectorBT — vectorized backtesting framework explained simply
+- **automation** [9 items] (1S/2A) — 7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers; Scraping SAM.gov — puppeteer + AI for government data; Claude Code + Chrome — browser-driven coding combo
+- **VFX** [8 items] (4S/2A) — Blender MCP + Tripo — 2D reference image to full 3D scene; Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I think he just ripped a massive line backs...; GitHub as a design asset library — shader gradients, liquid glass, R3F
+- **prediction markets** [5 items]
+- **risk** [5 items] (2A) — Minimum Spanning Tree — graph theory reveals S&P 500 hidden structure; Random Matrix Theory — cleaning correlation matrices from noise
+- **web** [4 items] (3A) — websim.ai — hallucinated websites as an AI tool demo; Striking-distance keywords — GSC SEO tactic (positions 6-11); llms.txt — get ChatGPT to recommend your local business
+- **e-commerce** [4 items] (1S/1A) — Bypassing 90% of AI guardrails — @lizthedeveloper; Six monetizable AI GitHub repos — clipping, Remotion, OpenHands and more
+- **physics** [4 items] (1A) — Omori's Law — earthquake aftershock math applied to market crashes
+- **signal processing** [4 items] (1A) — Kalman Filter — adaptive signal extraction for non-stationary markets
+- **RAG** [3 items] (2A) — Onyx — open-source self-hosted agentic RAG platform; NVIDIA ChatRTX local LLM — @nathanespinozayt sponsored demo
+- **backtesting** [3 items] (1S/2A) — Wasserstein Distance — measuring the backtest-to-live reality gap; Monte Carlo — 25,000 shuffled BTC returns to separate edge from luck; VectorBT Grid Search — mmap data, joblib batching and vectorized backtests
+- **robotics** [3 items] (1A) — Microduck robot — reinforcement learning with PPO and reward shaping
 - **no-code** [2 items] (1A) — websim.ai — hallucinated websites as an AI tool demo
 - **fashion** [2 items] (1S/1A) — PPF Contact Solver — ZOZO's open-source GPU cloth and soft-body physics; Text-to-video tip: start from an image — @setupspawn
-- **chaos-theory** [2 items] (1S/1A) — Phase Space Reconstruction — unfolding hidden BTC volatility dynamics; Lyapunov Exponent — measuring chaos in BTC tick-level microstructure
-- **options** [2 items] (2S) — Heston Model — stochastic volatility for realistic options pricing; Volatility Surface — regime shifts from smile to smirk
-- **stochastic-processes** [2 items] (2A) — Cox Process — doubly stochastic Poisson for bursty market events; Ornstein-Uhlenbeck Process — mean reversion for pairs trading
-- **ml** [2 items] (2S) — Hidden Markov Models — detecting market regime shifts automatically; Wasserstein Distance — measuring the backtest-to-live reality gap
-- **volatility** [2 items] (1S/1A) — Volatility Surface — regime shifts from smile to smirk; Omori's Law — earthquake aftershock math applied to market crashes
-- **statistics** [2 items] (1A) — Hurst Exponent — 3D surface of BTC memory and mean-reversion zones
+- **chaos-theory** [2 items] (1A) — Phase Space Reconstruction — unfolding hidden BTC volatility dynamics
+- **options** [2 items] (1A) — Volatility Surface — regime shifts from smile to smirk
+- **stochastic-processes** [2 items] (1A) — Ornstein-Uhlenbeck Process — mean reversion for pairs trading
+- **ml** [2 items] (1S/1A) — Wasserstein Distance — measuring the backtest-to-live reality gap; Hidden Markov Models — detecting market regime shifts automatically
+- **volatility** [2 items] (2A) — Volatility Surface — regime shifts from smile to smirk; Omori's Law — earthquake aftershock math applied to market crashes
+- **statistics** [2 items] (1S) — Hurst Exponent — 3D surface of BTC memory and mean-reversion zones
 - **mobile** [1 items] (1A) — iOS Shortcut -> Claude — text a task, phone runs it automatically
 - **generative-art** [1 items] (1A) — Randy Roberts — generative-art code garden (@rndyrbrts)
-- **derivatives** [1 items] (1S) — Heston Model — stochastic volatility for realistic options pricing
-- **hft** [1 items] (1S) — Avellaneda-Stoikov — optimal spread calculation for market makers
-- **market-making** [1 items] (1S) — Avellaneda-Stoikov — optimal spread calculation for market makers
-- **fixed-income** [1 items] (1A) — 3D Yield Curve Surface — visualizing cross-asset macro regimes
-- **macro** [1 items] (1A) — 3D Yield Curve Surface — visualizing cross-asset macro regimes
+- **derivatives** [1 items]
+- **hft** [1 items]
+- **market-making** [1 items]
+- **fixed-income** [1 items]
+- **macro** [1 items]
 - **information-theory** [1 items] (1A) — Lempel-Ziv Complexity — compression algorithms to detect market predictability
 - **graph-theory** [1 items] (1A) — Minimum Spanning Tree — graph theory reveals S&P 500 hidden structure
 - **market-microstructure** [1 items]
-- **linear-algebra** [1 items] (1S) — Random Matrix Theory — cleaning correlation matrices from noise
-- **python** [1 items] (1A) — VectorBT — vectorized backtesting framework explained simply
+- **linear-algebra** [1 items] (1A) — Random Matrix Theory — cleaning correlation matrices from noise
+- **python** [1 items] (1A) — VectorBT Grid Search — mmap data, joblib batching and vectorized backtests
 - **motion design** [1 items] (1S) — You can turn Claude Code into a full motion design team on @higgsfield.a...
-- **robotics** [1 items] (1A) — Microduck robot — reinforcement learning with PPO and reward shaping
 
 ## S-Tier (Highest Signal)
 
@@ -102,65 +102,32 @@ These are the most actionable, well-documented items. Surface first when relevan
 - **World Labs — explorable 3D worlds from a single 2D image** 📘 [3D, creative coding, image generation]
   - Potential Quest/Vision Pro worldbuilding app
 - **5 ChatGPT learning prompts — 80/20, intern mode, skill plan** [architecture, prompt engineering]
-- **Boris Cherny's Claude Code workflow — parallel worktrees + plan mode** 📘 [LLM, agents]
+- **Claude Code Team Tips — Boris Cherny's 10 habits for parallel, plan-first agent work** 📘 [LLM, agents, productivity]
   - Adopt 3-5 parallel worktrees per feature as default Claude Code workflow
-  - This matches Victor's dispatching-parallel-agents skill
+  - End every correction with 'update your CLAUDE.md so you don't make that mistake again'.
 - **Boris Cherny's personal CLAUDE.md — plan-first, self-improving rules** 📘 [LLM, agents]
 - **primer.md + memory.sh — live-updating CLAUDE.md companion** 📘 [agents]
   - Add primer.md + end-of-session rewrite rule to Victor's Claude Code projects
 - **7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers** 📘 [UI/UX, agents, automation]
   - Install n8n-MCP for Claude-driven n8n workflows
   - Install obsidian-skills for vault-as-second-brain
-- **Boris Cherny — 10-15 parallel Claude sessions + evolving CLAUDE.md** 📘 [agents, open source]
-- **Polymarket weather edge — dorm weather station, $100K+ traded** 📘 [data science, finance/trading, prediction markets]
-  - Real edge on Polymarket = exclusive real-time data source, not better ML
-- **Polymarket 99c limit-order edge — 75 automated trades/hour** 📘 [automation, finance/trading, prediction markets]
-  - Test late-contract 99c limit harvesting as a low-variance income strategy
-- **llms.txt — get ChatGPT to recommend your local business** 📘 [LLM, prompt engineering, video production]
-  - Ship llms.txt on every Victor project to become LLM-discoverable
-- **Onyx — open-source self-hosted agentic RAG platform** 📘 [LLM, RAG, agents]
-  - Clone and evaluate as self-hosted Claude/ChatGPT replacement
-  - 50+ connectors = instant data-source integration
-- **Claude Code 'brevity mandate' — leaked system prompt tradeoff** 📘 [LLM, agents, prompt engineering]
-  - Override brevity mandate in CLAUDE.md for code-quality critical projects
-- **10 non-cliche quant research projects — Bayesian BL, RL factors, PBO** 📘 [agents, data science, finance/trading]
 - **10 institutional quant projects — Avellaneda-Stoikov, Hawkes, HMM** 📘 [creative coding, crypto, data science]
-- **OpenScreen — free open-source Screen Studio alternative** 📘 [audio, creative coding, open source]
-  - Free Screen Studio replacement for Victor's demo recordings
-- **Anthropic Claude Code source-code leak — scale commentary** 📘 [agents]
-- **Claude Code hooks — 3 daily-driver hooks from @jens.heitmann** 📘 [agents, marketing]
 - **Bypassing 90% of AI guardrails — @lizthedeveloper** [LLM, e-commerce, open source]
-- **Claude Code agent guides — @chase.h.ai DM-bait** [agents, open source]
-- **Claude Code agent guides — @chase.h.ai** [agents, open source, software development]
-- **Claude Code agent guides — @chase.h.ai** [agents]
-- **Andrej Karpathy resource — @nateherkai DM-bait** [LLM, reference, video production]
-- **Free Claude resource — @brodyautomates** [agents, finance/trading, prediction markets]
-- **Claude Code agent guides — @chase.h.ai** [agents]
-- **Claude Code agent guides — @chase.h.ai** [agents, open source]
-- **Phase Space Reconstruction — unfolding hidden BTC volatility dynamics** [chaos-theory, crypto, finance/trading]
-  - PSR reveals hidden market dynamics beyond price vs time
-  - Clustered attractors suggest predictability
-- **Heston Model — stochastic volatility for realistic options pricing** [3D, derivatives, finance/trading]
-  - Black-Scholes assumes constant vol — unrealistic
-  - Heston models vol as its own random process
-- **Hidden Markov Models — detecting market regime shifts automatically** [finance/trading, ml, quant]
-  - HMMs detect hidden market states from observable data
-  - Match strategy to regime: trend in bull, mean-revert in range
-- **Avellaneda-Stoikov — optimal spread calculation for market makers** [hft, market-making, quant]
-  - Calculates optimal spread, not price direction
-  - Balances inventory risk vs profit
-- **Volatility Surface — regime shifts from smile to smirk** [finance/trading, options, quant]
-  - Vol surface shape reveals market fear
-  - Smile → smirk transition signals tail risk
+- **Ten Claude Code plugins and CLIs — databases, deploys, scraping, diagrams** [agents, open source, software development]
+  - Pair GitHub CLI + Vercel CLI for push-to-deploy entirely from Claude Code
+  - Run Claude Code inside an Obsidian vault for a markdown-native personal assistant
+- **LightRAG + Claude Code — graph RAG over thousands of docs, exposed as skills** [LLM, agents, open source]
+  - Convert LightRAG's REST endpoints into Claude Code skills for one-line querying
+  - Graph RAG scales retrieval far beyond the context window and can run fully local
+- **Five new Claude Code repos — autoresearch, OpenSpace, CLI-Anything, peers, gws** [agents, open source, software development]
+  - Use claude-peers for generator + evaluator sessions with instant feedback
+  - autoresearch only works on targets with a binary improved/not-improved metric (e.g. speed)
 - **Wasserstein Distance — measuring the backtest-to-live reality gap** [backtesting, finance/trading, ml]
   - High backtest Sharpe doesn't guarantee live performance
   - Wasserstein distance quantifies strategy drift
-- **Avalanche Model — self-organized criticality explains market crashes** [finance/trading, physics, quant]
-  - Crashes aren't caused by news — system was already critical
-  - Self-organized criticality: small triggers → large cascades
-- **Random Matrix Theory — cleaning correlation matrices from noise** [finance/trading, linear-algebra, quant]
-  - Most correlations in raw matrices are noise
-  - RMT filters eigenvalues against theoretical noise bounds
+- **Hurst Exponent — 3D surface of BTC memory and mean-reversion zones** [3D, crypto, finance/trading]
+  - Hurst > 0.5 = trending, < 0.5 = mean-reverting
+  - Market memory varies across timeframes
 - **Comment “agent” for my Claude code guides** [agents, open source]
 - **Breaking: Opus 4.7 has just been released.** [agents, video production]
 - **You can turn Claude Code into a full motion design team on @higgsfield.a...** [3D, branding, design]
@@ -170,44 +137,31 @@ These are the most actionable, well-documented items. Surface first when relevan
 - **Comment 'OPEN' and I'll send it over.** [agents, open source, prompt engineering]
 - **Comment “agent” to get my Claude code guides** [LLM, agents, prompt engineering]
 - **Everyone’s copying the same Obsidian template while I’m building THIS fo...** [3D, UI/UX, agents]
+- **Zdzisław Beksiński — the nightmare painter who called his work optimistic** [architecture, art, music]
+  - Beksiński refused titles and explanations — meaning was left to the viewer
+  - He worked to loud music for long standing sessions; ritual and soundtrack fueled output
+- **Kintsugi sake-bottle repair — urushi lacquer joins, gold powder finish** [art, design]
+  - Keshifun gold powder gives a soft matte finish on the seams
+  - Mugi-urushi (wheat-flour lacquer) is the adhesive; trim squeeze-out by hand
 - **photonics — this isn’t financial advice, just personally what I’m watching. Always do your...** []
+- **Kronos — open foundation model that tokenizes candlesticks to forecast markets** [LLM, crypto, finance/trading]
+  - Candles need a numeric-aware tokenizer, not word tokenization.
+  - Kronos is open and pretrained, so you can fine-tune or backtest it directly.
 - **ChatGPT — Which means you can access Claude Code in a way that is: Conversational,...** [agents, open source, prompt engineering]
 - **Claude — Burning tokens for no reason is a skill issue.** [agents, branding, design]
 - **Better models won’t fix your agent** [LLM, agents, design]
-- **Claude — Author here 👋 Great breakdown! One small addition — it's not just the text...** [agents, open source, software development]
 - **Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...** [LLM, agents, open source]
 - **it did burn through my humble claude pro weekly credits lol** [prompt engineering]
 - **Ben Affleck just proved he’s more than an A-lister—he’s an AI visionary — I think he just ripped a massive line backs...** [VFX, art, creative coding]
 - **Claude isn’t just for coding anymore. I’ve been using it to run full marketing...** [audio, marketing, prompt engineering]
 - **Elon's $1 — Day one is the trap.** [finance/trading]
-- **Claude — I had my hedge fund team stress test Kronos. It failed on many levels.** [LLM, architecture, archives]
-- **Claude — Here's how to build it in 10 minutes:** [animation, prompt engineering, software development]
-- **Claude — thesavedsalesman** [prompt engineering, security]
-- **ChatGPT — Generally feel the same across everything you set. The reasons all...** [agents, design, software development]
-- **Anthropic — Breakdown - many thanks 😁♥️** [finance/trading]
-- **Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...** [agents, education, prompt engineering]
-- **Claude — What else do you want to see/learn about? 🧚🏻‍♂️** [design, education, open source]
-- **ChatGPT — Comment “SCRAPE” for the repo + my exact setup** [video production]
-- **The data is all there for you to 10x your growth** []
 - **Blender — • 500+ body, hand & face landmarks per frame** [3D, open source]
-- **China’s new quantum computer has insane potential — global conspiracy. you know the physics behind it is...** [video production]
-- **Anthropic — for more details:** [agents, open source, software development]
-- **Anthropic — @lostandlucky you’re the reason why Im not worried about the tools I...** [agents, video production]
-- **OpenAI — you can literally search for them** [open source, security, video production]
-- **Claude — Markdowns and folders wrapped in a harness** [LLM, agents, marketing]
-- **Anthropic — I've made it a hobby of trying to radicalize the LLms to socialism....** [agents]
-- **LoRA — 1️⃣ RAG → hybrid search over internal docs with reranking and...** [architecture, video production]
-- **Claude — Original project from @danielsnows** [prompt engineering]
-- **Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...** [LLM, UI/UX, agents]
-- **DeepSeek — “They want you” to train their models.** [audio, security, software development]
-- **Oh and if you want my (theoretical) guide on how to set this** [agents, prompt engineering]
-- **Claude Code guides collection — engagement-bait pointer, no transcript** [agents]
-- **Claude — Rendered via 3D Gaussian splatting.** [3D, UI/UX, agents]
-- **Per the usual if you comment “content” I’ll send you the gui** [agents]
-- **LoRA — 1️⃣ RAG → hybrid search over internal docs with reranking and...** []
-- **Claude — I love the fact we are sleeping walking into the Terminator films....** [software development]
-- **There Is No Democracy Without Journalism — Scott Pelley was asked about President Trump reportedly calling him a...** [agents, prompt engineering]
-- **Wild times we are living in — Hehe... 😂 i love this. I legit thought of this the other day. Im...** [agents]
+- **GitHub as a design asset library — shader gradients, liquid glass, R3F** [UI/UX, VFX, creative coding]
+  - ShaderGradient gives customizable animated gradients in React.
+  - link: http://github.com/dashersw/liquid-glass-js
+- **Jarvis daily brief — Claude with RevenueCat, Buffer, Meta Ads and Gmail MCPs** [3D, UI/UX, agents]
+  - Assign work to specialized subagents with their own skills and connectors.
+  - Keep FAQs in markdown and Claude can handle most support email.
 - **Mandelbulb — ray-marching a 3D fractal from z⁸ + c** [3D, creative coding, education]
   - Distance estimate d = ½·r·log r / dr lets rays jump safely
   - Mandelbulber2 source is a clean reference implementation
@@ -254,7 +208,6 @@ These are the most actionable, well-documented items. Surface first when relevan
 ## A-Tier (High Value)
 
 - **Platonic Representation Hypothesis — embeddings as AI telepathy** [LLM, data science, security]
-- **OpenAI GPT-5 prompting framework — clarity, context, role** [LLM, prompt engineering]
 - **GeoSpy.ai — geolocate any photo from buildings, plants, shadows** [architecture, data science, image generation]
 - **MediaPipe TouchDesigner plugin by @blankensmithing** [3D, creative coding]
 - **Ollama — run open-source LLMs locally to learn how they work** [LLM, UI/UX, open source]
@@ -268,8 +221,6 @@ These are the most actionable, well-documented items. Surface first when relevan
 - **Llama 3.1 — 8B / 70B / 405B open-source release** [LLM, open source]
 - **websim.ai — hallucinated websites as an AI tool demo** [music, no-code, prompt engineering]
 - **Striking-distance keywords — GSC SEO tactic (positions 6-11)** [web]
-- **TensorBoard embedding projector — visualize high-dim vectors** [data science]
-- **Runway Gen-3 — first results from the public release** [prompt engineering, video production]
 - **Kling AI — free international rollout of text-to-video** [video production]
 - **Veo — Google's text/image/video-to-video model (Google I/O)** [prompt engineering, video production]
 - **AI-styled QR codes — generate codes that look like images** [art, image generation, prompt engineering]
@@ -277,36 +228,22 @@ These are the most actionable, well-documented items. Surface first when relevan
 - **Blackbox AI — coding assistant as 'Google search for code'** [software development]
 - **Sketch-to-3D-anim pipeline — Procreate + Magnific + 3DAI + Move AI** [3D, animation, art]
 - **Midjourney architectural sketch-in-context technique** [art, design, image generation]
-- **Anthropic blocks Claude Max subscription tokens in 3rd-party tools** [agents, automation, video production]
-- **DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz** [3D, creative coding, data science]
-- **Claude Code dashboard — have Claude set up its own status UI** [UI/UX, agents, open source]
 - **iOS Shortcut -> Claude — text a task, phone runs it automatically** [agents, mobile]
-- **CLAUDE.md explained — vibe-coding primer** [agents, software development]
+- **Greg Isenberg — how to design stunning AI apps (not vibe-coded ugly)** [agents, archives, branding]
 - **Claude Code design uplevel — 3 systems for better UI output** [3D, UI/UX, agents]
 - **Claude Code + Chrome — browser-driven coding combo** [agents, automation, software development]
-- **Claude Opus 4.6 — McKinsey-style research prompts (TAM/SWOT/CAC)** [LLM, data science, prompt engineering]
 - **Claude Code rate-limit workarounds — Nate Herkai's tips** [UI/UX, agents, prompt engineering]
-- **Turboquant — memory backend for Claude/Open Claw AI stores** [agents, data science, marketing]
-- **Quant alpha discovery primer — Kalman filters, stat arb, XGBoost** [data science, finance/trading]
-- **Ornstein-Uhlenbeck mean-reversion visualized — theta/mu/sigma** [data science, finance/trading, music]
-- **Kimi K2 — keeps up with Claude on web app generation** [LLM, agents, open source]
-- **Claude 'caveman' mode — token-saving terse-output skill** [agents, prompt engineering, video production]
-- **Ant Colony Optimization sim — pheromone feedback + diffusion PDE** [agents, creative coding, data science]
+- **llms.txt — get ChatGPT to recommend your local business** 📘 [LLM, prompt engineering, video production]
+- **Onyx — open-source self-hosted agentic RAG platform** 📘 [LLM, RAG, agents]
 - **NASA EONET — free real-time weather/event data API** [data science, software development]
-- **5 must-install Claude MCP servers — @raycfu list** [LLM, agents, audio]
-- **STE.GG — open-source AI steganography toolkit (hide in anything)** [LLM, agents, audio]
-- **Polymarket insider detection — websocket + data-feed signals** [data science, finance/trading, prediction markets]
-- **5 papers that built modern quant finance — Quant Guild** [animation, finance/trading, video production]
-- **Edge-of-quant papers — relativity, fractals, biology in markets** [finance/trading, software development]
-- **Linux inside a 6MB PDF — RISC-V emulator embedded in a PDF** [data science, hardware, security]
+- **Five Claude MCP servers — search, browser, docs, tasks, file-to-markdown** [LLM, agents, audio]
 - **5 starter quant research papers — Value/Momentum, order book, RL** [finance/trading]
-- **GitReverse — paste any repo URL, get the prompt that built it** [agents, open source, prompt engineering]
+- **10 non-cliche quant research projects — Bayesian BL, RL factors, PBO** 📘 [agents, data science, finance/trading]
 - **Codex + Claude Code — 3 systems to audit CC output with Codex** [LLM, agents, open source]
-- **Λ-Vol framework — regime-driven vol propagation model** [finance/trading]
-- **Claude Dispatch — 7K scraped leads + per-agent command center** [agents, automation]
-- **Horus-Eye — open Palantir Gotham clone, live mil/civ feeds** [OSINT, agents, data science]
+- **OpenScreen — free open-source Screen Studio alternative** 📘 [audio, creative coding, open source]
+- **Claude Code hooks — 3 daily-driver hooks from @jens.heitmann** 📘 [agents, marketing]
+- **Claude Code agent teams — parallel sessions that message each other** [LLM, agents, software development]
 - **Randy Roberts — generative-art code garden (@rndyrbrts)** [art, creative coding, generative-art]
-- **open-multi-agent:scaffold — scaffolds new multi-agent projects** [agents]
 - **SentrySearch — 100% local Qwen3-VL video search engine** [video production]
 - **Pretext — 500x faster canvas text rendering, no DOM needed** []
 - **21st.dev — largest React component marketplace for design engineers** [design]
@@ -317,28 +254,25 @@ These are the most actionable, well-documented items. Surface first when relevan
 - **n8n AI Automation — self-hosted Zapier with AI agent nodes** [agents]
 - **TouchDesigner Creative Coding — 3D scanning, MediaPipe, Gaussian splats** [3D, creative coding, software development]
 - **vvd.world — interactive maps, lore tracking, connection visualizer** [creative coding, design]
-- **Google Gemini bullish take — @koen.agi** [LLM]
-- **@thesocialalpha_ AI workflows community + ChatGPT handbook** [e-commerce, marketing, prompt engineering]
 - **MonkeyAITools directory + Luma Labs/Polycam tags** [3D, VFX, crypto]
 - **Text-to-video tip: start from an image — @setupspawn** [fashion, prompt engineering, video production]
 - **NVIDIA ChatRTX local LLM — @nathanespinozayt sponsored demo** [LLM, RAG, video production]
 - **MonkeyAITools animated content directory** [agents, crypto, prompt engineering]
-- **Vibe-coded website prompts — @angus.sewell** [prompt engineering, web]
-- **Claude Code design skill — @kylewhitrow** [agents, design, open source]
-- **Anthropic fear-mongering marketing meta — @angus.sewell** [marketing, prompt engineering]
-- **Building workflows around legacy software — @zchangd** [agents, automation]
-- **Ising Model — modeling herd behavior and market phase transitions** [3D, agents, finance/trading]
-- **Cox Process — doubly stochastic Poisson for bursty market events** [finance/trading, quant, stochastic-processes]
+- **Three Claude Code repos — CLI-Anything, GSD 2 and Garry Tan's gstack** [agents, open source, software development]
+- **Mentor-Style GitHub Repos — five repos for terminal, patterns, testing and architecture** [education, open source, software development]
+- **RAG-Anything + LightRAG — multimodal graph RAG for images, charts and docs** [LLM, agents, open source]
+- **Karpathy-style LLM knowledge base — Claude Code turns 36 videos into a linked wiki** [LLM, agents, productivity]
+- **Phase Space Reconstruction — unfolding hidden BTC volatility dynamics** [chaos-theory, crypto, finance/trading]
+- **Hidden Markov Models — detecting market regime shifts automatically** [finance/trading, ml, quant]
 - **Ornstein-Uhlenbeck Process — mean reversion for pairs trading** [finance/trading, quant, stochastic-processes]
-- **3D Yield Curve Surface — visualizing cross-asset macro regimes** [3D, finance/trading, fixed-income]
+- **Volatility Surface — regime shifts from smile to smirk** [finance/trading, options, quant]
 - **Omori's Law — earthquake aftershock math applied to market crashes** [physics, quant, video production]
-- **Singular Spectrum Analysis — non-parametric trend extraction from noisy data** [finance/trading, quant, signal processing]
 - **Lempel-Ziv Complexity — compression algorithms to detect market predictability** [information-theory, quant]
+- **Monte Carlo — 25,000 shuffled BTC returns to separate edge from luck** [backtesting, crypto, quant]
 - **Minimum Spanning Tree — graph theory reveals S&P 500 hidden structure** [graph-theory, quant, risk]
-- **Lyapunov Exponent — measuring chaos in BTC tick-level microstructure** [chaos-theory, crypto, quant]
 - **Kalman Filter — adaptive signal extraction for non-stationary markets** [finance/trading, quant, signal processing]
-- **Hurst Exponent — 3D surface of BTC memory and mean-reversion zones** [3D, crypto, finance/trading]
-- **VectorBT — vectorized backtesting framework explained simply** [backtesting, finance/trading, python]
+- **Random Matrix Theory — cleaning correlation matrices from noise** [finance/trading, linear-algebra, quant]
+- **VectorBT Grid Search — mmap data, joblib batching and vectorized backtests** [backtesting, data science, finance/trading]
 - **you don’t need Netflix with this tech drama.** [UI/UX, open source]
 - **Kind of like giving your AI glasses lol** [UI/UX, agents]
 - **You can make Claude Code your Social Media Manager that studies your cha...** [video production]
@@ -354,72 +288,73 @@ These are the most actionable, well-documented items. Surface first when relevan
 - **Claude Code auto-approve mode — control is reading the plan, not pressing Y** [prompt engineering]
 - **Putting LEDS into used motor oil is just magical!** [art]
 - **#fisica #ciencia #curiosidades #shrek #sabiasque** [art]
-- **Thousands of pictures for this...** [art, photography]
+- **Escher's Print Gallery — 3Blue1Brown on the complex-analysis loop at its center** [art, creative coding, education]
+- **Waterproof shower notes — capturing ideas that actually become projects** [3D, art, design]
+- **Handheld hyperlapse of New York — in-camera transitions, After Effects edit** [art, photography, video production]
 - **3 years of Stratacut: Some of my favorite projects and experiments durin...** [art]
+- **Pendulum drawing machine — harmonograph kinetic sculpture with a rocking table** [art, creative coding, hardware]
+- **Oil glazing with Galkyd Lite and Gamsol — thin transparent color layers** [art]
 - **Glass Sandwichs by Dustin Yellin @dustinyellin #contemporaryart #artrevi...** [3D, art]
-- **Airplanes at EWR departures, LGA arrivals. I've been doing a lot more vi...** [art, video production]
 - **Bringing a few different techniques together in this one, and might be o...** [3D, art]
-- **For those of you who've been following awhile you know I've been working...** [art]
+- **Salvador Dalí on hypnagogic images — 1971 Dick Cavett interview** [art, education]
+- **James Stevens Curl on ornament — why art looks bolted onto modernist buildings** [architecture, art, design]
+- **Al Bahar Towers — sun-tracking origami façade that halves cooling load** [architecture, art, design]
+- **Frei Otto — lightweight tensile structures found from soap bubbles** [architecture, art, design]
+- **Victoriano 'Jumpman' — 29-frame hand-painted animated graffiti mural** [animation, art]
 - **From thinking, to doing, to being.** [art]
+- **Decalcomania — surrealist paint-transfer for chance-driven portraits** [art, design]
+- **Google and Amazon profits — half came from marking up Anthropic stakes** [finance/trading, news, prompt engineering]
 - **To get the full prompt, just comment “Manus” ✌️ — This guy beat the market because he was paying attention.** [UI/UX, agents, prompt engineering]
-- **Bro really thought this would work 😭 — luis__de_la_rosa** []
 - **25+ autonomous agents debate every trading day across 4 layers and evolve in real time — • Real-outcome scoring on ev...** [agents, finance/trading, open source]
 - **Claude — Attention is a dot product between a query vector and a key vector. A plain dot...** [prompt engineering]
 - **Claude Projects + custom MCP tools — system prompts for productivity agents** [agents]
 - **With those skills, you could easily charge thousands for any design project** [design]
 - **Anthropic — Se llama find-skills (de vercel-labs). La instalas, le preguntas en lenguaje...** [open source]
-- **Comment “agency” to learn how to build your own agentic OS** [UI/UX, agents]
-- **Claude advisor mode — route Sonnet/Haiku for cheaper performance** [agents]
+- **Claude advisor mode — Opus plans, Sonnet or Haiku executes for less** [LLM, agents]
 - **AI tools worth paying for — Claude, Gemini, Perplexity, Descript, n8n stack** [software development, video production]
 - **Llama — Engineers have been quantizing the cache down for years. 8 bits works. 4 bits...** [LLM, finance/trading, prompt engineering]
-- **awesome-design.md — brand design specs repo for Claude Code frontend work** [agents, branding, design]
+- **awesome-design-md — brand design systems you paste into Claude Code** [UI/UX, agents, branding]
 - **Figma — moroccan_boss_lady** [design]
 - **Claude Code skills, CLIs & plugins roundup — RAG-Anything and more** [agents, design, open source]
+- **Concise outputs beat verbosity — study behind the caveman prompting trend** [LLM, agents, open source]
 - **Spam calls are one of the most annoying problems on the internet era — The problem is that most robocallers hide behi...** [video production]
 - **Powerful website you should know part 561** []
 - **MediaPipe — What if Spiders Wove with Strings?🕷️** [3D, art, audio]
 - **Claude — P.s the views are on trial reel not posted on main yet 🥹** [prompt engineering, video production]
 - **Cursor — Most websites just show text.** [UI/UX, animation]
+- **Claude Code website build — CLAUDE.md, frontend-design skill, screenshot loop** [UI/UX, branding, design]
 - **Claude — Also, happy 100 posts to me! Woohoo!!!** [VFX]
 - **Claude — 1. Prompt for viral content** [prompt engineering]
 - **Claude — The companies that will win with AI will set up their company to be quickly...** [agents, prompt engineering]
 - **Runway — Enhance the portrait while strictly preserving the subject's identity with...** [UI/UX, design, photography]
 - **Bro really thought this would work 😭 — luis__de_la_rosa** []
 - **ChatGPT — The origins of this moment trace back decades earlier to Geoffrey Hinton, the...** [branding]
-- **Qwen — Been roaming around NYC with a smol autonomous agent on a rooted...** [agents, prompt engineering]
-- **Video editing was tougher than the code 😭 — Built GeoTrade : live at www.web-code.tech** [finance/trading, video production]
+- **3Blue1Brown puzzle — can disjoint unit discs always cover 10 points?** [education]
+- **React — → http://github.com/ruucm/shadergradient** [3D, LLM, UI/UX]
+- **Claude — Here's how to build it in 10 minutes:** [animation, prompt engineering, software development]
 - **Docker — Off topic, and with all due respect, are we watching an AI avatar?** [agents, open source, software development]
 - **Claude — Stop selling software. Sell the finished work.** []
-- **Claude — be.stillwithsteph** [prompt engineering]
-- **Claude — Watching this as im setting up some postgres databases is an insane...** [prompt engineering, video production]
-- **Self-stabilizing robots are reaching a fascinating stage whe — The content is presented purely for learning and infor...** [branding, design]
-- **10 GitHub Repos That Feel Too Powerful — Some GitHub repos are so useful that they almost feel illegal to use,...** [design, open source, software development]
-- **Anthropic — I’m Neurodivergent so I can say this, but I thought opus’s 4.7 was...** [marketing]
+- **ASI-Evolve — open-source agent loop that autonomously designs AI architectures** [LLM, agents, news]
+- **Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...** [agents, education, prompt engineering]
 - **React — made a little 3D racer that runs right in the browser. anti-grav...** [3D, agents, archives]
 - **Google probably installed an AI on your computer — micahisnotavailable** []
-- **Claude — the diagnoser. scans your resume like a real applicant tracking...** [marketing]
 - **Princeton sponsored-ads study — 18 of 23 AI assistants push the paid option** [LLM, news]
 - **Qwen — Been roaming around NYC with a smol autonomous agent on a rooted...** [LLM, agents, open source]
-- **Change Capture — a camera that records only what moves between frames** [architecture, art, creative coding]
+- **Surface Tension — optical tweezers and ComfyUI depth layers on living cells** [art, creative coding, prompt engineering]
+- **Cyberdeck privacy stack — GrapheneOS, Tails, Orange Pi and rotating-IMSI carrier** [OSINT, hardware, open source]
 - **MediaPipe — Download free at** [3D, music]
-- **Built a system that turns taste into data and data back into — Started with a moodboard of references I’d been collec...** [LLM, art, branding]
-- **Claude — Otherwise make sure to follow @tenfoldmarc for more videos like this.** []
-- **Claude — They tell it to build the website. That’s the mistake.** [branding, design, prompt engineering]
-- **The US spent years and sacrificed billions to stop Chinese A — Intellectual Property Right is as made up as the conce...** [agents]
-- **Gemini — if you want to listen leave a comment and i can send a link! ♡** [LLM, VFX, animation]
-- **Claude — One guy just killed engineering.** [prompt engineering]
-- **MediaPipe — Ongoing R&D at the intersection of art and technology. not a finished...** [3D, art]
-- **China’s new quantum computer has insane potential — global conspiracy. you know the physics behind it is...** [software development, video production]
-- **Claude Code room-color probe — turning iPhone footage into a 3D color map** [3D, art, creative coding]
-- **Claude — I TESTED IT OUT IN MY RECENT VIDEO - it’s great, but I had to try...** [prompt engineering, video production]
-- **Codex — When I first watched Streetwise I had to check a few times that it...** [UI/UX, design, video production]
-- **We’re building something cool — 5000 M tokens were consumed in less than a minute** [agents, prompt engineering]
-- **Wild times we are living in — Hehe... 😂 i love this. I legit thought of this the other day. Im...** [art, audio, design]
-- **Hello officer — Chat, is this slop** [software development]
-- **Take your beep sound into Audacity and edit in a fade in / f** [software development, video production]
-- **The art market just stopped gatekeeping, and most artists ha — For decades you made the work and waited to be picked....** [art]
+- **Claude — Original project from @danielsnows** [prompt engineering]
+- **Let me know if you want this skill — This is a 90-second walkthrough of how to turn your taste into a...** [LLM, UI/UX, agents]
+- **DeepSeek — “They want you” to train their models.** [audio, security, software development]
+- **Self-improving startup — Loom transcripts to Claude skills to scheduled tasks** [agents, productivity, prompt engineering]
+- **Mood board to audio-reactive code art — parametric design system for agents** [agents, art, audio]
+- **Graphify — turn a repo into a knowledge graph to cut Claude Code tokens** [agents, open source, software development]
+- **Design taste sources for AI builds — Aceternity, Refero, Mobbin, Godly** [UI/UX, design, reference]
+- **If you know what gamma exposure, 0DTE, and dealer hedging ar — You already have an edge most traders don’t.** [3D]
+- **Ornith 1.0 — open-source US coder that learns its own agent scaffolding** [LLM, agents, open source]
+- **LongCat 2.0 — Meituan's 1.6T model trained without NVIDIA chips** [LLM, hardware, news]
+- **Equations as images — color vectors that store parametric art in TouchDesigner** [art, creative coding]
 - **Comment “2026” for my “Instagram Cheat Codes” on how to grow** [branding]
-- **Need a website built — If you want to learn the exact workflow I use to create websites of...** []
 - **Join us at tiat on Thursday, April 30th — Tracing a path from his pioneering interactive media works to new...** [art, creative coding]
 - **Absolutely love this** []
 - **A gorgeous strange attractor known as Thomas' cyclically sym — Rendered via 3D Gaussian splatting.** [3D, education]
@@ -509,223 +444,277 @@ These are the most actionable, well-documented items. Surface first when relevan
 
 When the user mentions or needs one of these tools, surface the relevant entries:
 
-- **claude** (187x, best: S-tier) — domains: web, 3D, software development
-- **claude code** (90x, best: S-tier) — domains: web, 3D, software development
-- **anthropic** (49x, best: S-tier) — domains: 3D, software development, prompt engineering
-- **chatgpt** (41x, best: S-tier) — domains: web, 3D, software development
-- **python** (27x, best: S-tier) — domains: options, volatility, risk
-- **openai** (22x, best: S-tier) — domains: productivity, agents, design
-- **codex** (17x, best: S-tier) — domains: productivity, design, agents
-- **gemini** (17x, best: S-tier) — domains: software development, prompt engineering, animation
-- **blender** (14x, best: S-tier) — domains: agents, UI/UX, open source
-- **obsidian** (14x, best: S-tier) — domains: productivity, agents, UI/UX
-- **cursor** (12x, best: S-tier) — domains: design, agents, audio
-- **touchdesigner** (12x, best: A-tier) — domains: agents, UI/UX, audio
-- **higgsfield** (11x, best: S-tier) — domains: design, UI/UX, open source
-- **react** (11x, best: S-tier) — domains: design, UI/UX, open source
-- **playwright** (10x, best: S-tier) — domains: agents, design, open source
-- **deepseek** (9x, best: S-tier) — domains: agents, design, open source
-- **runway** (9x, best: A-tier) — domains: agents, UI/UX, audio
-- **figma** (8x, best: S-tier) — domains: design, agents, archives
-- **llama** (8x, best: A-tier) — domains: agents, open source, prompt engineering
-- **hugging face** (7x, best: S-tier) — domains: design, UI/UX, open source
-- **kimi** (7x, best: S-tier) — domains: agents, design, open source
-- **n8n** (7x, best: S-tier) — domains: agents, UI/UX, design
-- **unreal engine** (7x, best: S-tier) — domains: agents, open source, audio
-- **mediapipe** (6x, best: A-tier) — domains: audio, music, 3D
-- **polymarket** (6x, best: S-tier) — domains: agents, news, prediction markets
-- **banjo** (5x, best: S-tier) — domains: hardware, education, music
-- **qwen** (5x, best: A-tier) — domains: agents, open source, software development
-- **docker** (4x, best: S-tier) — domains: agents, open source, audio
-- **google** (4x, best: S-tier) — domains: agents, web, software development
-- **impeccable** (4x, best: A-tier) — domains: design, UI/UX, agents
-- **midjourney** (4x, best: A-tier) — domains: design, open source, software development
-- **notion** (4x, best: S-tier) — domains: productivity, agents, open source
-- **sora** (4x, best: A-tier) — domains: audio, gaming, prompt engineering
-- **stitch** (4x, best: A-tier) — domains: agents, UI/UX, design
-- **three.js** (4x, best: S-tier) — domains: design, UI/UX, agents
-- **tradingview** (4x, best: B-tier) — domains: crypto, quant, news
-- **veo** (4x, best: S-tier) — domains: agents, software development, prompt engineering
-- **kling** (3x, best: A-tier) — domains: audio, gaming, image generation
-- **manus** (3x, best: B-tier) — domains: productivity, design, UI/UX
-- **mcp** (3x, best: S-tier) — domains: agents, UI/UX, design
-- **notebooklm** (3x, best: B-tier) — domains: productivity, agents, audio
-- **raspberry pi** (3x, best: A-tier) — domains: UI/UX, hardware, 3D
-- **sherlock** (3x, best: B-tier) — domains: open source, crypto, OSINT
-- **after effects** (2x, best: A-tier) — domains: UI/UX, crypto, 3D
-- **canva** (2x, best: B-tier) — domains: video production, finance/trading
-- **flux** (2x, best: B-tier) — domains: design, agents, archives
-- **google colab** (2x, best: A-tier) — domains: agents, open source, software development
-- **gpt-4** (2x, best: A-tier) — domains: open source, audio, architecture
-- **gpt-5** (2x, best: S-tier) — domains: open source, security, prompt engineering
-- **grokbot** (2x, best: B-tier) — domains: agents, software development, marketing
-- **hunyuan3d** (2x, best: S-tier) — domains: design, 3D, image generation
-- **imagen** (2x, best: S-tier) — domains: agents, art, LLM
-- **kalshi** (2x, best: B-tier) — domains: agents, software development, news
-- **katana** (2x, best: A-tier) — domains: OSINT, open source, security
-- **khaen** (2x, best: A-tier) — domains: audio, music
-- **linkedin** (2x, best: B-tier) — domains: productivity, software development, marketing
-- **lora** (2x, best: S-tier) — domains: video production, architecture
-- **meta** (2x, best: S-tier) — domains: open source, crypto, finance/trading
-- **odyssey** (2x, best: A-tier) — domains: 3D, gaming, image generation
-- **ollama** (2x, best: S-tier) — domains: agents, UI/UX, open source
+- **claude** (191x, best: S-tier) — domains: audio, security, web
+- **claude code** (104x, best: S-tier) — domains: audio, security, UI/UX
+- **anthropic** (49x, best: S-tier) — domains: security, UI/UX, productivity
+- **chatgpt** (44x, best: S-tier) — domains: security, UI/UX, productivity
+- **python** (27x, best: S-tier) — domains: information-theory, security, UI/UX
+- **openai** (22x, best: S-tier) — domains: security, UI/UX, productivity
+- **codex** (17x, best: S-tier) — domains: reference, design, news
+- **gemini** (17x, best: S-tier) — domains: audio, security, VFX
+- **blender** (14x, best: S-tier) — domains: animation, reference, fashion
+- **obsidian** (14x, best: S-tier) — domains: design, 3D, video production
+- **touchdesigner** (13x, best: A-tier) — domains: animation, prompt engineering, music
+- **cursor** (12x, best: S-tier) — domains: animation, audio, design
+- **higgsfield** (11x, best: S-tier) — domains: animation, prompt engineering, reference
+- **react** (11x, best: S-tier) — domains: animation, quant, reference
+- **playwright** (10x, best: S-tier) — domains: reference, audio, design
+- **deepseek** (9x, best: A-tier) — domains: architecture, audio, design
+- **runway** (9x, best: A-tier) — domains: animation, fashion, reference
+- **figma** (8x, best: S-tier) — domains: animation, reference, design
+- **llama** (8x, best: A-tier) — domains: security, video production, agents
+- **n8n** (8x, best: S-tier) — domains: crypto, design, software development
+- **hugging face** (7x, best: S-tier) — domains: quant, crypto, architecture
+- **kimi** (7x, best: A-tier) — domains: reference, architecture, audio
+- **unreal engine** (7x, best: S-tier) — domains: animation, prompt engineering, reference
+- **mediapipe** (6x, best: A-tier) — domains: music, audio, 3D
+- **notebooklm** (6x, best: S-tier) — domains: RAG, audio, video production
+- **polymarket** (6x, best: B-tier) — domains: reference, architecture, news
+- **banjo** (5x, best: S-tier) — domains: education, hardware, music
+- **qwen** (5x, best: A-tier) — domains: marketing, art, video production
+- **three.js** (5x, best: S-tier) — domains: reference, design, 3D
+- **veo** (5x, best: S-tier) — domains: animation, architecture, audio
+- **docker** (4x, best: S-tier) — domains: audio, security, 3D
+- **google** (4x, best: S-tier) — domains: prompt engineering, agents, software development
+- **impeccable** (4x, best: A-tier) — domains: reference, design, video production
+- **manus** (4x, best: B-tier) — domains: design, UI/UX, software development
+- **midjourney** (4x, best: A-tier) — domains: animation, design, marketing
+- **notion** (4x, best: A-tier) — domains: video production, agents, education
+- **posthog** (4x, best: B-tier) — domains: data science, marketing, agents
+- **sora** (4x, best: A-tier) — domains: animation, architecture, audio
+- **stitch** (4x, best: A-tier) — domains: reference, design, 3D
+- **tradingview** (4x, best: C-tier) — domains: quant, crypto, architecture
+- **after effects** (3x, best: A-tier) — domains: animation, prompt engineering, crypto
+- **kling** (3x, best: A-tier) — domains: animation, prompt engineering, architecture
+- **mcp** (3x, best: S-tier) — domains: reference, audio, design
+- **ollama** (3x, best: A-tier) — domains: design, news, video production
+- **openrouter** (3x, best: A-tier) — domains: news, security, archives
+- **raspberry pi** (3x, best: A-tier) — domains: security, 3D, video production
+- **sherlock** (3x, best: B-tier) — domains: crypto, security, video production
+- **vercel** (3x, best: S-tier) — domains: animation, design, agents
+- **youtube** (3x, best: A-tier) — domains: reference, video production, marketing
+- **21st.dev** (2x, best: A-tier) — domains: design, marketing, branding
+- **cal.com** (2x, best: B-tier) — domains: crypto, design, marketing
+- **canva** (2x, best: B-tier) — domains: finance/trading, video production
+- **cli-anything** (2x, best: S-tier) — domains: agents, software development, open source
+- **elevenlabs** (2x, best: S-tier) — domains: reference, 3D, marketing
+- **flux** (2x, best: A-tier) — domains: reference, architecture, design
+- **github** (2x, best: A-tier) — domains: music, news, security
+- **google colab** (2x, best: A-tier) — domains: video production, agents, software development
+- **gpt-4** (2x, best: A-tier) — domains: architecture, audio, video production
+- **gpt-5** (2x, best: S-tier) — domains: security, video production, art
+- **grok** (2x, best: B-tier) — domains: design, news, video production
+- **grokbot** (2x, best: B-tier) — domains: marketing, video production, agents
+- **gsd** (2x, best: S-tier) — domains: agents, software development, open source
+- **hunyuan3d** (2x, best: S-tier) — domains: design, 3D, art
+- **imagen** (2x, best: S-tier) — domains: agents, software development, LLM
+- **jupyterlab** (2x, best: S-tier) — domains: animation, fashion, 3D
+- **kalshi** (2x, best: C-tier) — domains: news, finance/trading, agents
+- **katana** (2x, best: A-tier) — domains: security, open source, OSINT
+- **khaen** (2x, best: A-tier) — domains: music, audio
+- **kronos** (2x, best: S-tier) — domains: quant, crypto, video production
+- **lightrag** (2x, best: S-tier) — domains: agents, LLM, open source
+- **linkedin** (2x, best: B-tier) — domains: software development, productivity, marketing
+- **lora** (2x, best: B-tier) — domains: video production, news, hardware
+- **meta** (2x, best: S-tier) — domains: crypto, creative coding, finance/trading
+- **odyssey** (2x, best: A-tier) — domains: 3D, video production, art
+- **openclaw** (2x, best: B-tier) — domains: design, news, video production
+- **orange pi** (2x, best: A-tier) — domains: security, video production, OSINT
 - **photoshop** (2x, best: A-tier) — domains: video production, art
-- **posthog** (2x, best: C-tier) — domains: agents, UI/UX, marketing
-- **premiere pro** (2x, best: A-tier) — domains: video production, UI/UX, education
-- **runway gen-3** (2x, best: A-tier) — domains: video production, architecture, audio
-- **stable diffusion** (2x, best: A-tier) — domains: design, image generation, prompt engineering
-- **typescript** (2x, best: B-tier) — domains: agents, UI/UX, hardware
-- **unity** (2x, best: S-tier) — domains: agents, open source, 3D
-- **vercel** (2x, best: A-tier) — domains: design, open source, animation
-- **zapier** (2x, best: S-tier) — domains: agents, design, video production
-- **21st.dev** (1x, best: A-tier) — domains: design, UI/UX, open source
-- **3dai studio** (1x, best: A-tier) — domains: video production, art, 3D
+- **premiere pro** (2x, best: A-tier) — domains: education, video production, UI/UX
+- **runway gen-3** (2x, best: A-tier) — domains: prompt engineering, video production, architecture
+- **shadergradient** (2x, best: S-tier) — domains: reference, design, 3D
+- **slack** (2x, best: S-tier) — domains: 3D, video production, agents
+- **stable diffusion** (2x, best: A-tier) — domains: design, art, finance/trading
+- **typescript** (2x, best: B-tier) — domains: news, security, archives
+- **unity** (2x, best: S-tier) — domains: reference, 3D, agents
+- **vs code** (2x, best: S-tier) — domains: reference, architecture, design
+- **whisper** (2x, best: A-tier) — domains: design, video production, software development
+- **zapier** (2x, best: A-tier) — domains: design, video production, agents
+- **3dai studio** (1x, best: A-tier) — domains: animation, 3D, video production
+- **aceternity ui** (1x, best: A-tier) — domains: design, software development, reference
 - **agent reach** (1x, best: A-tier) — domains: agents, open source
-- **agentcraft** (1x, best: A-tier) — domains: agents, open source, software development
-- **airtable** (1x, best: A-tier) — domains: agents, open source, video production
+- **agentcraft** (1x, best: A-tier) — domains: agents, software development, open source
+- **airtable** (1x, best: A-tier) — domains: agents, video production, open source
 - **anthropic economic index** (1x, best: A-tier) — domains: productivity, LLM, prompt engineering
-- **antidoom** (1x, best: A-tier) — domains: video production, open source, reference
-- **antigravity** (1x, best: A-tier) — domains: agents, open source, software development
-- **arcads** (1x, best: A-tier) — domains: agents, open source, video production
-- **arize** (1x, best: A-tier) — domains: architecture, software development, data science
-- **artemis** (1x, best: A-tier) — domains: agents, open source, software development
-- **autoclip** (1x, best: A-tier) — domains: agents, open source, marketing
-- **awesome systematic trading** (1x, best: A-tier) — domains: finance/trading, open source, crypto
-- **awesome-design-md** (1x, best: A-tier) — domains: design, UI/UX, open source
+- **antidoom** (1x, best: A-tier) — domains: video production, LLM, open source
+- **antigravity** (1x, best: A-tier) — domains: agents, software development, LLM
+- **arcads** (1x, best: A-tier) — domains: agents, video production, open source
+- **arize** (1x, best: A-tier) — domains: software development, security, architecture
+- **artemis** (1x, best: A-tier) — domains: agents, software development, LLM
+- **asi-evolve** (1x, best: A-tier) — domains: agents, news, LLM
+- **autoclip** (1x, best: A-tier) — domains: e-commerce, video production, marketing
+- **autoresearch** (1x, best: S-tier) — domains: agents, software development, open source
+- **awesome systematic trading** (1x, best: A-tier) — domains: finance/trading, quant, crypto
+- **awesome-design-md** (1x, best: A-tier) — domains: design, marketing, branding
+- **bigquery** (1x, best: S-tier) — domains: agents, productivity, software development
 - **blackbox.ai** (1x, best: A-tier) — domains: software development
-- **bot crossing** (1x, best: A-tier) — domains: agents, UI/UX, open source
-- **chrome** (1x, best: A-tier) — domains: agents, automation, video production
-- **claude desktop** (1x, best: A-tier) — domains: agents, open source, video production
-- **claude dispatch** (1x, best: A-tier) — domains: agents, automation
-- **claude max** (1x, best: A-tier) — domains: agents, automation, video production
+- **bot crossing** (1x, best: A-tier) — domains: video production, agents, creative coding
+- **buffer** (1x, best: S-tier) — domains: reference, 3D, marketing
+- **cape** (1x, best: A-tier) — domains: security, open source, hardware
+- **chrome** (1x, best: A-tier) — domains: agents, software development, video production
+- **claude api** (1x, best: A-tier) — domains: agents, LLM
+- **claude desktop** (1x, best: A-tier) — domains: agents, video production, open source
+- **claude in chrome** (1x, best: S-tier) — domains: reference, 3D, marketing
+- **claude-peers** (1x, best: S-tier) — domains: agents, software development, open source
 - **claudex** (1x, best: A-tier) — domains: agents, software development
-- **clickup** (1x, best: A-tier) — domains: productivity, agents, UI/UX
-- **cochlea** (1x, best: A-tier) — domains: UI/UX, hardware, OSINT
-- **cron** (1x, best: A-tier) — domains: agents, video production, LLM
-- **czlonkowski/n8n-mcp** (1x, best: S-tier) — domains: agents, UI/UX, design
+- **clickup** (1x, best: A-tier) — domains: 3D, video production, agents
+- **cochlea** (1x, best: A-tier) — domains: security, video production, OSINT
+- **comfyui** (1x, best: A-tier) — domains: creative coding, prompt engineering, video production
+- **context7** (1x, best: A-tier) — domains: agents, software development, LLM
+- **cron** (1x, best: A-tier) — domains: agents, software development, LLM
+- **czlonkowski/n8n-mcp** (1x, best: S-tier) — domains: design, agents, UI/UX
 - **dall-e** (1x, best: A-tier) — domains: video production, architecture, audio
-- **deeppiv** (1x, best: A-tier) — domains: video production, hardware, education
-- **deepseek harness** (1x, best: A-tier) — domains: agents, open source, video production
-- **deepwiki** (1x, best: S-tier) — domains: agents, architecture, open source
-- **duckstation** (1x, best: A-tier) — domains: open source, art, 3D
-- **easy gif** (1x, best: A-tier) — domains: design, UI/UX, software development
-- **elder-plinius/l1b3rt4s** (1x, best: S-tier) — domains: open source, security, prompt engineering
-- **ffmpeg** (1x, best: A-tier) — domains: UI/UX, music, 3D
-- **figma mcp** (1x, best: A-tier) — domains: agents, UI/UX, design
-- **fish audio** (1x, best: A-tier) — domains: agents, audio, video production
-- **gausseous** (1x, best: S-tier) — domains: UI/UX, audio, open source
-- **gemini cli** (1x, best: S-tier) — domains: agents, LLM, software development
-- **geospy** (1x, best: A-tier) — domains: photography, architecture, image generation
-- **getdesign.md** (1x, best: A-tier) — domains: design, UI/UX, open source
-- **ghidra** (1x, best: A-tier) — domains: agents, open source, video production
-- **gitdiagram** (1x, best: S-tier) — domains: agents, architecture, open source
-- **github** (1x, best: A-tier) — domains: productivity, agents, open source
-- **github actions** (1x, best: A-tier) — domains: agents, open source, security
-- **gitingest** (1x, best: S-tier) — domains: agents, architecture, open source
-- **gitmcp** (1x, best: S-tier) — domains: agents, architecture, open source
-- **gitreverse.com** (1x, best: A-tier) — domains: agents, open source, prompt engineering
-- **glittercowboy/get-shit-done** (1x, best: S-tier) — domains: agents, UI/UX, design
-- **god's eye view** (1x, best: A-tier) — domains: OSINT, open source, 3D
-- **google flow** (1x, best: A-tier) — domains: design, UI/UX, software development
+- **deeppiv** (1x, best: A-tier) — domains: education, hardware, 3D
+- **deepseek harness** (1x, best: A-tier) — domains: agents, LLM, open source
+- **deepwiki** (1x, best: S-tier) — domains: agents, software development, open source
+- **duckstation** (1x, best: A-tier) — domains: open source, 3D, art
+- **easy gif** (1x, best: A-tier) — domains: animation, design, video production
+- **elder-plinius/l1b3rt4s** (1x, best: S-tier) — domains: security, video production, art
+- **excalidraw** (1x, best: S-tier) — domains: agents, software development, open source
+- **ffmpeg** (1x, best: A-tier) — domains: animation, music, 3D
+- **figma mcp** (1x, best: A-tier) — domains: agents, design, reference
+- **firecrawl** (1x, best: S-tier) — domains: agents, software development, open source
+- **fish audio** (1x, best: A-tier) — domains: agents, prompt engineering, video production
+- **galkyd lite** (1x, best: A-tier) — domains: art
+- **gamsol** (1x, best: A-tier) — domains: art
+- **gausseous** (1x, best: S-tier) — domains: audio, 3D, video production
+- **gemini cli** (1x, best: S-tier) — domains: agents, software development, LLM
+- **geospy** (1x, best: A-tier) — domains: image generation, photography, architecture
+- **getdesign.md** (1x, best: A-tier) — domains: design, marketing, branding
+- **ghidra** (1x, best: A-tier) — domains: agents, security, open source
+- **ghostty** (1x, best: S-tier) — domains: agents, productivity, software development
+- **git** (1x, best: S-tier) — domains: agents, productivity, software development
+- **gitdiagram** (1x, best: S-tier) — domains: agents, software development, open source
+- **github actions** (1x, best: A-tier) — domains: agents, security, open source
+- **github cli** (1x, best: S-tier) — domains: agents, software development, open source
+- **gitingest** (1x, best: S-tier) — domains: agents, software development, open source
+- **gitmcp** (1x, best: S-tier) — domains: agents, software development, open source
+- **glittercowboy/get-shit-done** (1x, best: S-tier) — domains: design, agents, UI/UX
+- **gmail** (1x, best: S-tier) — domains: reference, 3D, marketing
+- **god's eye view** (1x, best: A-tier) — domains: agents, open source, 3D
+- **godly** (1x, best: A-tier) — domains: design, software development, reference
+- **google flow** (1x, best: A-tier) — domains: animation, design, video production
 - **google search console** (1x, best: A-tier) — domains: web
-- **gpt-4o** (1x, best: A-tier) — domains: agents, automation, video production
-- **grok imagine** (1x, best: A-tier) — domains: agents, open source, software development
-- **hermes skills hub** (1x, best: A-tier) — domains: agents, open source, software development
-- **hesreallyhim/awesome-claude-code** (1x, best: S-tier) — domains: agents, UI/UX, design
-- **homebrew** (1x, best: A-tier) — domains: agents, open source, video production
+- **google workspace cli** (1x, best: S-tier) — domains: agents, software development, open source
+- **grapheneos** (1x, best: A-tier) — domains: security, open source, hardware
+- **graphify** (1x, best: A-tier) — domains: agents, software development, open source
+- **grok imagine** (1x, best: A-tier) — domains: reference, news, video production
+- **gstack** (1x, best: A-tier) — domains: agents, software development, open source
+- **hccl** (1x, best: A-tier) — domains: news, video production, hardware
+- **hermes agent** (1x, best: A-tier) — domains: agents, productivity, video production
+- **hermes skills hub** (1x, best: A-tier) — domains: reference, news, video production
+- **hesreallyhim/awesome-claude-code** (1x, best: S-tier) — domains: design, agents, UI/UX
+- **homebrew** (1x, best: A-tier) — domains: agents, LLM, open source
+- **huawei ascend** (1x, best: A-tier) — domains: news, video production, hardware
 - **humanizer** (1x, best: A-tier) — domains: video production, open source, marketing
-- **hunyuan3d-2** (1x, best: S-tier) — domains: design, 3D, image generation
-- **ideogram** (1x, best: A-tier) — domains: open source, software development, marketing
+- **hunyuan3d-2** (1x, best: S-tier) — domains: design, 3D, art
+- **ideogram** (1x, best: A-tier) — domains: marketing, art, video production
 - **ios shortcuts** (1x, best: A-tier) — domains: agents, mobile
-- **jev** (1x, best: A-tier) — domains: marketing, LLM
-- **jupyterlab** (1x, best: S-tier) — domains: UI/UX, open source, 3D
-- **kafka** (1x, best: A-tier) — domains: architecture, software development, data science
-- **kali linux** (1x, best: A-tier) — domains: open source, security
-- **kepano/obsidian-skills** (1x, best: S-tier) — domains: agents, UI/UX, design
-- **kimi-k3-in-c** (1x, best: A-tier) — domains: agents, open source, software development
-- **kinect** (1x, best: A-tier) — domains: data science, creative coding, 3D
-- **kronos** (1x, best: A-tier) — domains: quant, finance/trading, LLM
-- **liquidtrade** (1x, best: A-tier) — domains: agents, finance/trading, crypto
-- **llama.cpp** (1x, best: A-tier) — domains: agents, open source, video production
-- **ln** (1x, best: S-tier) — domains: open source, 3D, creative coding
-- **luma** (1x, best: A-tier) — domains: VFX, video production, crypto
-- **macnativegames** (1x, best: A-tier) — domains: open source, software development
-- **magnific** (1x, best: A-tier) — domains: video production, art, 3D
-- **magnific ai** (1x, best: A-tier) — domains: video production, art, 3D
-- **mandelbulber** (1x, best: S-tier) — domains: open source, 3D, education
+- **jev** (1x, best: A-tier) — domains: LLM, marketing
+- **joblib** (1x, best: A-tier) — domains: quant, backtesting, data science
+- **kafka** (1x, best: A-tier) — domains: software development, security, architecture
+- **kali linux** (1x, best: A-tier) — domains: security, open source
+- **kepano/obsidian-skills** (1x, best: S-tier) — domains: design, agents, UI/UX
+- **keshifun gold powder** (1x, best: S-tier) — domains: design, art
+- **kimi-k3-in-c** (1x, best: A-tier) — domains: reference, news, video production
+- **liquid-glass-js** (1x, best: S-tier) — domains: design, creative coding, UI/UX
+- **liquid-logo** (1x, best: S-tier) — domains: design, creative coding, UI/UX
+- **liquidtrade** (1x, best: A-tier) — domains: agents, crypto, finance/trading
+- **llama.cpp** (1x, best: A-tier) — domains: agents, LLM, open source
+- **ln** (1x, best: S-tier) — domains: animation, 3D, art
+- **loom** (1x, best: A-tier) — domains: agents, productivity, video production
+- **luma** (1x, best: A-tier) — domains: VFX, crypto, 3D
+- **macnativegames** (1x, best: A-tier) — domains: software development, open source
+- **magnific** (1x, best: A-tier) — domains: animation, 3D, video production
+- **magnific ai** (1x, best: A-tier) — domains: animation, 3D, video production
+- **mandelbulber** (1x, best: S-tier) — domains: 3D, video production, creative coding
 - **mapquest** (1x, best: A-tier) — domains: agents, LLM
-- **meta ads mcp** (1x, best: A-tier) — domains: agents, open source, video production
-- **meta ai** (1x, best: S-tier) — domains: OSINT, video production, security
+- **markdownify** (1x, best: A-tier) — domains: agents, software development, LLM
+- **meta ads** (1x, best: S-tier) — domains: reference, 3D, marketing
+- **meta ads mcp** (1x, best: A-tier) — domains: agents, video production, open source
+- **meta ai** (1x, best: S-tier) — domains: security, video production, OSINT
 - **microduck** (1x, best: A-tier) — domains: robotics, open source
-- **minecraft** (1x, best: A-tier) — domains: agents, open source, software development
-- **mistral** (1x, best: S-tier) — domains: video production, audio, software development
-- **moneyprinterturbo** (1x, best: A-tier) — domains: video production, open source
-- **moonshine** (1x, best: S-tier) — domains: open source, hardware, LLM
-- **move ai** (1x, best: A-tier) — domains: video production, art, 3D
-- **mumu ai novel** (1x, best: A-tier) — domains: agents, open source, marketing
-- **muse code** (1x, best: A-tier) — domains: agents, open source, software development
-- **mush8** (1x, best: A-tier) — domains: open source, software development
-- **nasa eonet** (1x, best: A-tier) — domains: data science, software development
-- **nemotron** (1x, best: A-tier) — domains: open source, LLM
-- **nextlevelbuilder/ui-ux-pro-max-skill** (1x, best: S-tier) — domains: agents, UI/UX, design
-- **nvidia chatrtx** (1x, best: A-tier) — domains: video production, RAG, LLM
+- **minecraft** (1x, best: A-tier) — domains: agents, software development, open source
+- **mistral** (1x, best: A-tier) — domains: software development, security, video production
+- **mobbin** (1x, best: A-tier) — domains: design, software development, reference
+- **moneyprinterturbo** (1x, best: A-tier) — domains: open source, video production
+- **moonshine** (1x, best: S-tier) — domains: LLM, hardware, open source
+- **move ai** (1x, best: A-tier) — domains: animation, 3D, video production
+- **mullvad vpn** (1x, best: A-tier) — domains: security, open source, hardware
+- **mumu ai novel** (1x, best: A-tier) — domains: e-commerce, video production, marketing
+- **muse code** (1x, best: A-tier) — domains: reference, news, video production
+- **mush8** (1x, best: A-tier) — domains: software development, open source
+- **nasa eonet** (1x, best: A-tier) — domains: software development, data science
+- **nccl** (1x, best: A-tier) — domains: news, video production, hardware
+- **nemotron** (1x, best: A-tier) — domains: LLM, open source
+- **nextlevelbuilder/ui-ux-pro-max-skill** (1x, best: S-tier) — domains: design, agents, UI/UX
+- **numba** (1x, best: A-tier) — domains: quant, backtesting, data science
+- **numpy** (1x, best: A-tier) — domains: quant, backtesting, data science
+- **nvidia chatrtx** (1x, best: A-tier) — domains: RAG, LLM, video production
 - **o*net** (1x, best: A-tier) — domains: productivity, LLM, prompt engineering
-- **obra/superpowers** (1x, best: S-tier) — domains: agents, UI/UX, design
-- **oc** (1x, best: A-tier) — domains: agents, UI/UX, open source
-- **odysseus** (1x, best: A-tier) — domains: agents, open source, video production
-- **odyssey explorer** (1x, best: A-tier) — domains: video production, image generation, 3D
-- **onyx** (1x, best: S-tier) — domains: agents, RAG, open source
-- **onyx-dot-app/onyx** (1x, best: S-tier) — domains: agents, RAG, open source
-- **open claw** (1x, best: A-tier) — domains: agents, automation, video production
-- **openhands** (1x, best: A-tier) — domains: agents, open source, marketing
-- **openscreen** (1x, best: S-tier) — domains: video production, creative coding, audio
-- **openviking** (1x, best: A-tier) — domains: agents, open source, software development
-- **orbiter** (1x, best: A-tier) — domains: design, open source, hardware
-- **personalive** (1x, best: A-tier) — domains: agents, open source, marketing
-- **pika** (1x, best: A-tier) — domains: audio, gaming, prompt engineering
-- **pizza bot** (1x, best: A-tier) — domains: agents, open source, software development
-- **pocket tts** (1x, best: A-tier) — domains: agents, open source, software development
-- **ppf-contact-solver** (1x, best: S-tier) — domains: UI/UX, open source, 3D
+- **obra/superpowers** (1x, best: S-tier) — domains: design, agents, UI/UX
+- **oc** (1x, best: A-tier) — domains: agents, open source, UI/UX
+- **odysseus** (1x, best: A-tier) — domains: agents, LLM, open source
+- **odyssey explorer** (1x, best: A-tier) — domains: gaming, video production, 3D
+- **onyx** (1x, best: A-tier) — domains: RAG, agents, LLM
+- **onyx-dot-app/onyx** (1x, best: A-tier) — domains: RAG, agents, LLM
+- **openhands** (1x, best: A-tier) — domains: e-commerce, video production, marketing
+- **openscreen** (1x, best: A-tier) — domains: creative coding, open source, video production
+- **openspace** (1x, best: S-tier) — domains: agents, software development, open source
+- **openviking** (1x, best: A-tier) — domains: agents, software development, LLM
+- **orbiter** (1x, best: A-tier) — domains: design, hardware, 3D
+- **pandas** (1x, best: A-tier) — domains: quant, backtesting, data science
+- **personalive** (1x, best: A-tier) — domains: e-commerce, video production, marketing
+- **pi sdk** (1x, best: A-tier) — domains: agents, software development, open source
+- **pizza bot** (1x, best: A-tier) — domains: agents, software development, LLM
+- **pocket tts** (1x, best: A-tier) — domains: reference, news, video production
+- **ppf-contact-solver** (1x, best: S-tier) — domains: animation, fashion, 3D
 - **pretext** (1x, best: A-tier) — domains: 
-- **prime agent** (1x, best: A-tier) — domains: agents, open source, LLM
-- **procreate** (1x, best: A-tier) — domains: video production, art, 3D
-- **puppeteer** (1x, best: A-tier) — domains: automation, data science
-- **quake iii arena** (1x, best: A-tier) — domains: education, 3D, software development
-- **quiverquant** (1x, best: A-tier) — domains: agents, finance/trading, crypto
-- **rag** (1x, best: S-tier) — domains: agents, RAG, open source
-- **raspberry pi 5** (1x, best: S-tier) — domains: open source, hardware, LLM
-- **rea** (1x, best: A-tier) — domains: agents, open source, video production
-- **react three fiber** (1x, best: S-tier) — domains: design, open source, 3D
-- **redink** (1x, best: A-tier) — domains: agents, open source, marketing
-- **remotion** (1x, best: A-tier) — domains: agents, open source, marketing
-- **reverse engineer anything** (1x, best: A-tier) — domains: agents, open source, software development
-- **shadergradient** (1x, best: S-tier) — domains: design, open source, 3D
-- **siddharthvaddem/openscreen** (1x, best: S-tier) — domains: video production, creative coding, audio
+- **prime agent** (1x, best: A-tier) — domains: agents, software development, LLM
+- **procreate** (1x, best: A-tier) — domains: animation, 3D, video production
+- **puppeteer** (1x, best: A-tier) — domains: data science, automation
+- **quake iii arena** (1x, best: A-tier) — domains: education, software development, 3D
+- **quiverquant** (1x, best: A-tier) — domains: agents, crypto, finance/trading
+- **rag** (1x, best: A-tier) — domains: RAG, agents, LLM
+- **rag-anything** (1x, best: A-tier) — domains: agents, LLM, open source
+- **raspberry pi 5** (1x, best: S-tier) — domains: LLM, hardware, open source
+- **rea** (1x, best: A-tier) — domains: agents, security, open source
+- **react three fiber** (1x, best: S-tier) — domains: reference, design, 3D
+- **react-three-fiber** (1x, best: S-tier) — domains: design, creative coding, UI/UX
+- **redink** (1x, best: A-tier) — domains: e-commerce, video production, marketing
+- **refero** (1x, best: A-tier) — domains: design, software development, reference
+- **remotion** (1x, best: A-tier) — domains: e-commerce, video production, marketing
+- **revenuecat** (1x, best: S-tier) — domains: reference, 3D, marketing
+- **reverse engineer anything** (1x, best: A-tier) — domains: agents, software development, open source
+- **siddharthvaddem/openscreen** (1x, best: A-tier) — domains: creative coding, open source, video production
 - **skillopt** (1x, best: S-tier) — domains: agents, open source, prompt engineering
-- **skyrecomp** (1x, best: A-tier) — domains: open source, software development
-- **slack** (1x, best: A-tier) — domains: productivity, agents, UI/UX
-- **soup** (1x, best: A-tier) — domains: open source, LLM
-- **sparkjs** (1x, best: S-tier) — domains: UI/UX, audio, open source
+- **skyrecomp** (1x, best: A-tier) — domains: software development, open source
+- **soup** (1x, best: A-tier) — domains: LLM, open source
+- **sparkjs** (1x, best: S-tier) — domains: audio, 3D, video production
 - **stopslop** (1x, best: A-tier) — domains: open source, marketing, prompt engineering
-- **tencent** (1x, best: S-tier) — domains: design, 3D, image generation
-- **tensorboard projector** (1x, best: A-tier) — domains: data science
-- **thedotmack/claude-mem** (1x, best: S-tier) — domains: agents, UI/UX, design
-- **tripo** (1x, best: S-tier) — domains: agents, 3D, VFX
-- **turboquant** (1x, best: A-tier) — domains: agents, video production, marketing
-- **twilio** (1x, best: A-tier) — domains: agents, audio, video production
-- **ubuntu** (1x, best: A-tier) — domains: agents, open source, video production
-- **unlimited ocr** (1x, best: A-tier) — domains: data science, open source, design
-- **unsloth** (1x, best: A-tier) — domains: agents, open source, software development
-- **unsloth studio** (1x, best: A-tier) — domains: agents, open source, software development
-- **vectorbt** (1x, best: A-tier) — domains: quant, finance/trading, backtesting
-- **vpype** (1x, best: S-tier) — domains: open source, 3D, creative coding
-- **vs code** (1x, best: S-tier) — domains: agents, architecture, open source
+- **supabase** (1x, best: S-tier) — domains: agents, software development, open source
+- **tails** (1x, best: A-tier) — domains: security, open source, hardware
+- **task master ai** (1x, best: A-tier) — domains: agents, software development, LLM
+- **tavily** (1x, best: A-tier) — domains: agents, software development, LLM
+- **tencent** (1x, best: S-tier) — domains: design, 3D, art
+- **thedotmack/claude-mem** (1x, best: S-tier) — domains: design, agents, UI/UX
+- **tmux** (1x, best: S-tier) — domains: agents, productivity, software development
+- **tripo** (1x, best: S-tier) — domains: reference, 3D, agents
+- **twilio** (1x, best: A-tier) — domains: agents, prompt engineering, video production
+- **ubuntu** (1x, best: A-tier) — domains: agents, security, open source
+- **unlimited ocr** (1x, best: A-tier) — domains: design, LLM, open source
+- **unsloth** (1x, best: A-tier) — domains: video production, agents, software development
+- **unsloth studio** (1x, best: A-tier) — domains: agents, software development, LLM
+- **urushi lacquer** (1x, best: S-tier) — domains: design, art
+- **vectorbt** (1x, best: A-tier) — domains: quant, backtesting, data science
+- **vpype** (1x, best: S-tier) — domains: animation, 3D, art
 - **vscode** (1x, best: A-tier) — domains: software development
-- **webgpu** (1x, best: A-tier) — domains: design, UI/UX, open source
+- **waterproof sticky notes** (1x, best: A-tier) — domains: reference, design, 3D
+- **webgpu** (1x, best: A-tier) — domains: design, marketing, branding
 - **websim.ai** (1x, best: A-tier) — domains: no-code, web, music
-- **whisper** (1x, best: A-tier) — domains: video production, software development
-- **world labs** (1x, best: S-tier) — domains: creative coding, image generation, 3D
-- **xinputreader** (1x, best: S-tier) — domains: art, 3D, animation
+- **world labs** (1x, best: S-tier) — domains: creative coding, 3D, image generation
+- **xinputreader** (1x, best: S-tier) — domains: animation, 3D, art
 
 ## Technique Directory
 
@@ -734,254 +723,306 @@ Techniques referenced across the catalog:
 - **ai agents** (128x, best: S-tier)
 - **code generation** (64x, best: S-tier)
 - **algorithmic trading** (49x, best: S-tier)
-- **workflow automation** (44x, best: S-tier)
+- **workflow automation** (45x, best: S-tier)
 - **api integration** (42x, best: S-tier)
 - **mcp** (37x, best: S-tier)
 - **automation** (30x, best: S-tier)
+- **mcp server** (16x, best: S-tier)
+- **vibe coding** (15x, best: S-tier)
 - **prompt engineering** (13x, best: S-tier)
-- **mcp server** (12x, best: S-tier)
+- **agent skills** (11x, best: A-tier)
 - **hooks/automation** (10x, best: S-tier)
-- **rag** (9x, best: S-tier)
-- **vibe coding** (9x, best: S-tier)
-- **agent skills** (8x, best: A-tier)
+- **rag** (10x, best: S-tier)
+- **mean reversion** (8x, best: A-tier)
 - **video generation** (8x, best: S-tier)
-- **mean reversion** (7x, best: S-tier)
 - **arbitrage** (5x, best: A-tier)
 - **clawhammer** (5x, best: S-tier)
 - **fine-tuning** (5x, best: S-tier)
-- **stochastic modeling** (5x, best: S-tier)
+- **stochastic modeling** (5x, best: B-tier)
 - **backtesting** (4x, best: A-tier)
-- **monte carlo** (4x, best: S-tier)
+- **context engineering** (4x, best: A-tier)
+- **model routing** (4x, best: A-tier)
+- **monte carlo** (4x, best: A-tier)
+- **multi-agent orchestration** (4x, best: A-tier)
 - **agent memory** (3x, best: A-tier)
-- **model routing** (3x, best: A-tier)
-- **multi-agent orchestration** (3x, best: A-tier)
+- **prompt templates** (3x, best: B-tier)
 - **regime detection** (3x, best: S-tier)
+- **role prompting** (3x, best: B-tier)
+- **scheduled agents** (3x, best: A-tier)
+- **statistical arbitrage** (3x, best: B-tier)
+- **subagents** (3x, best: S-tier)
 - **username enumeration** (3x, best: B-tier)
 - **web scraping** (3x, best: A-tier)
 - **3d reconstruction** (2x, best: B-tier)
 - **abliteration** (2x, best: A-tier)
 - **agent orchestration** (2x, best: B-tier)
 - **automated outreach** (2x, best: B-tier)
+- **claude code skills** (2x, best: S-tier)
+- **claude.md rules** (2x, best: S-tier)
+- **cli over mcp** (2x, best: S-tier)
+- **content repurposing** (2x, best: B-tier)
+- **cymatics** (2x, best: C-tier)
 - **decompilation** (2x, best: A-tier)
+- **design-system prompting** (2x, best: A-tier)
 - **distillation** (2x, best: A-tier)
 - **email enumeration** (2x, best: C-tier)
 - **gaussian splatting** (2x, best: S-tier)
+- **graphrag** (2x, best: S-tier)
 - **image-to-video** (2x, best: B-tier)
 - **kalman filter** (2x, best: A-tier)
+- **knowledge graph** (2x, best: A-tier)
 - **learning language through song** (2x, best: B-tier)
+- **local inference** (2x, best: A-tier)
 - **lyric translation** (2x, best: B-tier)
+- **market making** (2x, best: S-tier)
 - **mcp connectors** (2x, best: A-tier)
 - **mcp servers** (2x, best: S-tier)
 - **meta-prompting** (2x, best: A-tier)
 - **motion capture** (2x, best: S-tier)
 - **on-device inference** (2x, best: S-tier)
 - **pairs trading** (2x, best: A-tier)
+- **persona prompting** (2x, best: B-tier)
+- **plan mode** (2x, best: S-tier)
 - **procedural animation** (2x, best: A-tier)
-- **scheduled agents** (2x, best: A-tier)
+- **prompt chaining** (2x, best: C-tier)
+- **recursive language models** (2x, best: A-tier)
+- **scheduled routines** (2x, best: S-tier)
 - **skills** (2x, best: A-tier)
-- **state estimation** (2x, best: S-tier)
+- **state estimation** (2x, best: A-tier)
 - **static recompilation** (2x, best: A-tier)
-- **statistical arbitrage** (2x, best: A-tier)
 - **tool use** (2x, best: A-tier)
+- **unified memory** (2x, best: B-tier)
 - **upscaling** (2x, best: A-tier)
+- **vectorized backtesting** (2x, best: A-tier)
+- **voice cloning** (2x, best: A-tier)
+- **word embeddings** (2x, best: B-tier)
 - **1-bit synthesis** (1x, best: A-tier)
 - **2d-to-3d pipeline** (1x, best: S-tier)
 - **3d digitization** (1x, best: A-tier)
 - **3d gaussian splatting** (1x, best: S-tier)
 - **3d printing** (1x, best: A-tier)
 - **3d scene capture** (1x, best: A-tier)
-- **aco** (1x, best: A-tier)
 - **adaptive filtering** (1x, best: A-tier)
+- **advisor strategy** (1x, best: A-tier)
 - **aftershock modeling** (1x, best: A-tier)
 - **agent attribution** (1x, best: A-tier)
+- **agent harness configuration** (1x, best: A-tier)
 - **agent status visualization** (1x, best: A-tier)
-- **agent-based modeling** (1x, best: A-tier)
+- **agent teams** (1x, best: A-tier)
 - **agent-built cli tools** (1x, best: A-tier)
 - **agent-driven blender modeling** (1x, best: A-tier)
 - **almgren-chriss** (1x, best: S-tier)
+- **api-to-skill wrapping** (1x, best: S-tier)
 - **assembly programming** (1x, best: A-tier)
 - **asset-backed financing** (1x, best: A-tier)
-- **attractor analysis** (1x, best: S-tier)
+- **attractor analysis** (1x, best: A-tier)
+- **audio reactivity** (1x, best: A-tier)
 - **audio-reactive rendering** (1x, best: S-tier)
+- **automated ai research** (1x, best: A-tier)
+- **automated experimentation** (1x, best: S-tier)
 - **automated video generation** (1x, best: A-tier)
 - **automatic memory tuning** (1x, best: A-tier)
 - **automatic prompt optimization** (1x, best: S-tier)
 - **autonomous coding agents** (1x, best: A-tier)
 - **autoregressive decoding** (1x, best: A-tier)
+- **autoregressive forecasting** (1x, best: S-tier)
 - **autoresearch loop** (1x, best: A-tier)
 - **avellaneda-stoikov mm** (1x, best: S-tier)
-- **backtest overfitting detection** (1x, best: S-tier)
+- **backtest overfitting detection** (1x, best: A-tier)
 - **batch writes** (1x, best: A-tier)
-- **bayesian black-litterman** (1x, best: S-tier)
+- **bayesian black-litterman** (1x, best: A-tier)
 - **benchmark-gated edits** (1x, best: S-tier)
 - **bilevel loop** (1x, best: A-tier)
 - **binary spherical quantization** (1x, best: A-tier)
+- **biomimicry** (1x, best: A-tier)
 - **blender python scripting** (1x, best: A-tier)
+- **brevity constraints** (1x, best: A-tier)
 - **caller context memory** (1x, best: A-tier)
-- **cascading failures** (1x, best: S-tier)
+- **caveman prompting** (1x, best: A-tier)
 - **cellular automata** (1x, best: A-tier)
-- **chaos theory** (1x, best: A-tier)
 - **circular sound via blow and draw** (1x, best: A-tier)
 - **clarifying-question prompting** (1x, best: A-tier)
-- **claude code hooks** (1x, best: S-tier)
+- **claude code hooks** (1x, best: A-tier)
 - **claude.md authoring** (1x, best: S-tier)
+- **claude.md project rules** (1x, best: A-tier)
+- **cli tool use** (1x, best: S-tier)
+- **closed-loop experimentation** (1x, best: A-tier)
 - **co-location** (1x, best: A-tier)
 - **collaborative cultural filmmaking** (1x, best: A-tier)
-- **color sampling** (1x, best: A-tier)
+- **collective communication** (1x, best: A-tier)
+- **color as vector** (1x, best: A-tier)
+- **conformal mapping** (1x, best: A-tier)
 - **contact simulation** (1x, best: S-tier)
-- **context engineering** (1x, best: A-tier)
 - **context files** (1x, best: A-tier)
-- **context loading** (1x, best: A-tier)
+- **context rot mitigation** (1x, best: S-tier)
+- **controlled chance** (1x, best: A-tier)
 - **controlnet qr conditioning** (1x, best: A-tier)
 - **correlation networks** (1x, best: A-tier)
+- **coupled pendulums** (1x, best: A-tier)
 - **crate digging** (1x, best: A-tier)
 - **creative coding** (1x, best: A-tier)
 - **credit freeze** (1x, best: S-tier)
-- **critical state analysis** (1x, best: S-tier)
-- **cross-asset correlation** (1x, best: A-tier)
 - **cross-model review** (1x, best: A-tier)
 - **csg** (1x, best: S-tier)
+- **custom subagents** (1x, best: S-tier)
 - **custom system prompts** (1x, best: S-tier)
+- **cyberdeck build** (1x, best: A-tier)
 - **d dorian modal tuning** (1x, best: S-tier)
 - **data broker opt-out** (1x, best: S-tier)
+- **data textures** (1x, best: A-tier)
+- **decalcomania** (1x, best: A-tier)
+- **depth map layering** (1x, best: A-tier)
+- **design patterns** (1x, best: A-tier)
 - **design variations** (1x, best: A-tier)
-- **design-system prompting** (1x, best: A-tier)
+- **diffusion compositing** (1x, best: A-tier)
 - **distance estimation** (1x, best: S-tier)
 - **distribution shift detection** (1x, best: S-tier)
-- **doubly stochastic poisson** (1x, best: A-tier)
 - **driver reconstruction** (1x, best: A-tier)
 - **drivers** (1x, best: S-tier)
 - **drop-thumb** (1x, best: S-tier)
+- **droste effect** (1x, best: A-tier)
+- **dystopian surrealism** (1x, best: S-tier)
 - **earned autonomy** (1x, best: A-tier)
-- **eigenvalue filtering** (1x, best: S-tier)
+- **eigenvalue filtering** (1x, best: A-tier)
 - **embeddings** (1x, best: A-tier)
 - **end-of-session hook** (1x, best: S-tier)
 - **endpoint discovery** (1x, best: A-tier)
-- **event-based forecasting** (1x, best: S-tier)
+- **entity extraction** (1x, best: A-tier)
 - **execution** (1x, best: A-tier)
 - **expert streaming** (1x, best: A-tier)
-- **fama-french factors** (1x, best: A-tier)
 - **family harmony singing** (1x, best: A-tier)
 - **final token preference optimization** (1x, best: A-tier)
 - **float bit reinterpretation** (1x, best: A-tier)
-- **fractal analysis** (1x, best: A-tier)
-- **frame differencing** (1x, best: A-tier)
+- **form finding** (1x, best: A-tier)
+- **fractal analysis** (1x, best: S-tier)
+- **frame-by-frame painting** (1x, best: A-tier)
 - **frames-to-video** (1x, best: A-tier)
 - **gated deltanet** (1x, best: A-tier)
 - **generative art** (1x, best: A-tier)
+- **generator-evaluator loop** (1x, best: S-tier)
 - **gguf quantization** (1x, best: A-tier)
+- **git worktrees** (1x, best: S-tier)
 - **graph theory** (1x, best: A-tier)
+- **handheld hyperlapse** (1x, best: A-tier)
+- **harmonograph** (1x, best: A-tier)
 - **hawkes process** (1x, best: S-tier)
 - **hidden-line removal** (1x, best: S-tier)
+- **hon-kintsugi** (1x, best: S-tier)
 - **hooks** (1x, best: A-tier)
 - **human handoff** (1x, best: A-tier)
-- **hurst exponent** (1x, best: A-tier)
+- **hurst exponent** (1x, best: S-tier)
+- **hypnagogic image capture** (1x, best: A-tier)
+- **idea capture** (1x, best: A-tier)
 - **identity-aware workflows** (1x, best: A-tier)
-- **implied volatility surface** (1x, best: S-tier)
+- **implied volatility surface** (1x, best: A-tier)
+- **imsi rotation** (1x, best: A-tier)
+- **in-camera transitions** (1x, best: A-tier)
 - **information theory** (1x, best: A-tier)
-- **insider detection** (1x, best: A-tier)
 - **instrument building** (1x, best: A-tier)
-- **intensity modeling** (1x, best: A-tier)
 - **interactive 3d web** (1x, best: A-tier)
-- **inventory management** (1x, best: S-tier)
 - **inversion** (1x, best: A-tier)
 - **isolated worktrees** (1x, best: A-tier)
 - **jailbreaking** (1x, best: S-tier)
-- **kalman filters** (1x, best: A-tier)
+- **k-line tokenization** (1x, best: S-tier)
 - **kaufman efficiency ratio** (1x, best: A-tier)
 - **keyframe graph editing** (1x, best: A-tier)
+- **kinetic façade** (1x, best: A-tier)
 - **kl regularization** (1x, best: A-tier)
 - **knowledge graphs** (1x, best: A-tier)
 - **laser sheet imaging** (1x, best: A-tier)
-- **late-resolution arbitrage** (1x, best: S-tier)
 - **latency profiling** (1x, best: A-tier)
+- **learnable orchestration** (1x, best: A-tier)
 - **lempel-ziv complexity** (1x, best: A-tier)
-- **limit order harvesting** (1x, best: S-tier)
-- **limit orders** (1x, best: A-tier)
 - **llm evaluation** (1x, best: A-tier)
 - **llm tracing** (1x, best: A-tier)
 - **llm-as-classifier** (1x, best: A-tier)
-- **llm-seo / geo** (1x, best: S-tier)
-- **llms.txt** (1x, best: S-tier)
-- **local inference** (1x, best: A-tier)
+- **llm-maintained wiki** (1x, best: A-tier)
+- **llm-seo / geo** (1x, best: A-tier)
+- **llms.txt** (1x, best: A-tier)
 - **logistic regression** (1x, best: A-tier)
-- **long-range dependence** (1x, best: A-tier)
-- **lyapunov exponent** (1x, best: A-tier)
-- **macro regime analysis** (1x, best: A-tier)
+- **long-range dependence** (1x, best: S-tier)
 - **manager-worker-reviewer** (1x, best: A-tier)
-- **marcenko-pastur distribution** (1x, best: S-tier)
+- **marcenko-pastur distribution** (1x, best: A-tier)
+- **mark-to-market gains** (1x, best: A-tier)
 - **markerless mocap** (1x, best: A-tier)
-- **market making** (1x, best: S-tier)
-- **market research prompting** (1x, best: A-tier)
 - **markov chains** (1x, best: A-tier)
 - **mechanism design** (1x, best: A-tier)
+- **memory mapping** (1x, best: A-tier)
 - **mental models** (1x, best: A-tier)
 - **mesh extraction** (1x, best: A-tier)
 - **message-bus decoupling** (1x, best: A-tier)
-- **microstructure analysis** (1x, best: A-tier)
 - **minimum spanning tree** (1x, best: A-tier)
 - **mixture of experts** (1x, best: A-tier)
 - **modal fiddle tunes** (1x, best: A-tier)
 - **monitor mode** (1x, best: A-tier)
+- **monte carlo simulation** (1x, best: A-tier)
+- **mood board decomposition** (1x, best: A-tier)
 - **motion brush** (1x, best: A-tier)
 - **motor constraints** (1x, best: S-tier)
+- **mugi-urushi bonding** (1x, best: S-tier)
 - **multi-agent delegation** (1x, best: A-tier)
 - **multi-model code review** (1x, best: A-tier)
+- **multimodal rag** (1x, best: A-tier)
 - **music-driven editing** (1x, best: A-tier)
 - **negative style constraints** (1x, best: A-tier)
 - **network analysis** (1x, best: A-tier)
+- **neural architecture search** (1x, best: A-tier)
 - **newton-raphson iteration** (1x, best: A-tier)
 - **node-based editing** (1x, best: A-tier)
 - **node-based video** (1x, best: A-tier)
-- **non-parametric decomposition** (1x, best: A-tier)
 - **non-stationary signal processing** (1x, best: A-tier)
-- **object tracking** (1x, best: A-tier)
 - **ocr** (1x, best: A-tier)
-- **optimal market making** (1x, best: S-tier)
+- **oil glazing** (1x, best: A-tier)
+- **optical tweezers** (1x, best: A-tier)
 - **optimal transport** (1x, best: S-tier)
 - **optimistic ui** (1x, best: A-tier)
 - **orchestrator-worker pattern** (1x, best: A-tier)
-- **ornstein-uhlenbeck process** (1x, best: A-tier)
-- **osint ingestion** (1x, best: A-tier)
 - **overnight drift** (1x, best: S-tier)
 - **overnight vs intraday return decomposition** (1x, best: A-tier)
 - **paper trading** (1x, best: A-tier)
+- **parallel batching** (1x, best: A-tier)
 - **parallel git worktrees** (1x, best: S-tier)
-- **parallel sessions** (1x, best: S-tier)
 - **parallel simulation** (1x, best: A-tier)
 - **parallel worktrees** (1x, best: A-tier)
+- **parameter grid search** (1x, best: A-tier)
+- **parametric design system** (1x, best: A-tier)
+- **parametric equations** (1x, best: A-tier)
+- **parametric shading** (1x, best: A-tier)
 - **path optimization** (1x, best: S-tier)
 - **pattern detection** (1x, best: A-tier)
+- **permission hooks** (1x, best: S-tier)
+- **permutation testing** (1x, best: A-tier)
 - **personal knowledge base** (1x, best: A-tier)
-- **phase space reconstruction** (1x, best: S-tier)
-- **phase transitions** (1x, best: A-tier)
+- **phase space reconstruction** (1x, best: A-tier)
 - **photogrammetry** (1x, best: A-tier)
+- **physical modeling** (1x, best: A-tier)
 - **pii redaction** (1x, best: A-tier)
 - **plan-then-build** (1x, best: A-tier)
+- **planner-executor split** (1x, best: A-tier)
 - **platonic representation hypothesis** (1x, best: A-tier)
-- **point processes** (1x, best: A-tier)
 - **post-training** (1x, best: A-tier)
 - **power law decay** (1x, best: A-tier)
 - **ppo** (1x, best: A-tier)
 - **preference tuning** (1x, best: A-tier)
 - **primer.md live session state** (1x, best: S-tier)
 - **privacy audit** (1x, best: S-tier)
+- **probabilistic method** (1x, best: A-tier)
 - **programmatic video** (1x, best: A-tier)
 - **project finance** (1x, best: A-tier)
 - **prompt ablation** (1x, best: S-tier)
 - **prompt injection** (1x, best: S-tier)
 - **prompt rewriting** (1x, best: A-tier)
 - **quantization** (1x, best: A-tier)
-- **random matrix theory** (1x, best: S-tier)
+- **random matrix theory** (1x, best: A-tier)
 - **ray casting** (1x, best: S-tier)
 - **ray marching** (1x, best: S-tier)
 - **real-time data fusion** (1x, best: A-tier)
-- **recursive language models** (1x, best: A-tier)
+- **reference-driven prompting** (1x, best: A-tier)
 - **regime gating** (1x, best: A-tier)
 - **reinforcement learning** (1x, best: A-tier)
 - **repo-as-asset** (1x, best: S-tier)
 - **repo-to-context** (1x, best: S-tier)
-- **rescaled range analysis** (1x, best: A-tier)
+- **rescaled range analysis** (1x, best: S-tier)
 - **response compression** (1x, best: A-tier)
 - **return decomposition** (1x, best: S-tier)
 - **reverse engineering** (1x, best: A-tier)
@@ -989,32 +1030,34 @@ Techniques referenced across the catalog:
 - **reward shaping** (1x, best: A-tier)
 - **rigid-body constraints** (1x, best: S-tier)
 - **risk management** (1x, best: A-tier)
-- **role prompting** (1x, best: A-tier)
-- **route prediction** (1x, best: A-tier)
-- **rule-ratchet claude.md** (1x, best: S-tier)
 - **sampling** (1x, best: A-tier)
-- **sandpile dynamics** (1x, best: S-tier)
-- **scheduled routines** (1x, best: A-tier)
+- **screenshot self-review** (1x, best: A-tier)
 - **scripted expressions** (1x, best: S-tier)
 - **scroll-linked image sequence** (1x, best: A-tier)
 - **self-attention** (1x, best: A-tier)
+- **self-generated scaffolding** (1x, best: A-tier)
+- **self-healing skills** (1x, best: A-tier)
+- **self-improving skills** (1x, best: S-tier)
 - **self-modifying scaffolding** (1x, best: A-tier)
+- **sensor disabling** (1x, best: A-tier)
 - **serp scoring** (1x, best: A-tier)
 - **shared shader cache** (1x, best: A-tier)
 - **side-channel attack** (1x, best: A-tier)
-- **singular spectrum analysis** (1x, best: A-tier)
 - **sinkhorn divergence** (1x, best: S-tier)
 - **sketch-to-3d** (1x, best: A-tier)
+- **skill authoring from transcripts** (1x, best: A-tier)
 - **skill files** (1x, best: A-tier)
+- **slash commands** (1x, best: S-tier)
+- **snap-fit tabs** (1x, best: A-tier)
 - **soft-body simulation** (1x, best: S-tier)
+- **software testing** (1x, best: A-tier)
 - **speech-to-speech translation** (1x, best: S-tier)
 - **speed bump** (1x, best: A-tier)
 - **static caching** (1x, best: A-tier)
-- **steganography** (1x, best: A-tier)
-- **stigmergy** (1x, best: A-tier)
-- **stochastic control** (1x, best: S-tier)
+- **statistical significance** (1x, best: A-tier)
+- **stealth model launch** (1x, best: A-tier)
 - **stochastic differential equations** (1x, best: A-tier)
-- **stochastic volatility** (1x, best: S-tier)
+- **stop-motion** (1x, best: A-tier)
 - **striking-distance keywords** (1x, best: A-tier)
 - **style rules** (1x, best: A-tier)
 - **style transfer** (1x, best: A-tier)
@@ -1022,41 +1065,36 @@ Techniques referenced across the catalog:
 - **subagent offloading** (1x, best: S-tier)
 - **subagent orchestration** (1x, best: S-tier)
 - **swipe-file prompting** (1x, best: A-tier)
-- **symmetry breaking** (1x, best: A-tier)
 - **system prompt override** (1x, best: A-tier)
-- **tail risk detection** (1x, best: S-tier)
+- **tail risk detection** (1x, best: A-tier)
 - **task-level automation analysis** (1x, best: A-tier)
-- **taste-to-data design system** (1x, best: A-tier)
 - **tempo and mood reinterpretation** (1x, best: A-tier)
-- **temporal motion filtering** (1x, best: A-tier)
+- **tensile membrane structures** (1x, best: A-tier)
 - **ternary quantization** (1x, best: A-tier)
 - **test-time compute scaling** (1x, best: A-tier)
 - **text-to-speech** (1x, best: A-tier)
 - **threat modeling** (1x, best: A-tier)
-- **time delay embedding** (1x, best: S-tier)
+- **time delay embedding** (1x, best: A-tier)
+- **time series foundation model** (1x, best: S-tier)
 - **time-series foundation model** (1x, best: S-tier)
 - **token-efficient browsing** (1x, best: A-tier)
 - **traffic fingerprinting** (1x, best: A-tier)
-- **trend extraction** (1x, best: A-tier)
 - **url swap tricks** (1x, best: S-tier)
-- **vectorized backtesting** (1x, best: A-tier)
 - **visual self-testing** (1x, best: A-tier)
 - **visual testing** (1x, best: A-tier)
-- **viterbi algorithm** (1x, best: S-tier)
+- **viterbi algorithm** (1x, best: A-tier)
 - **voice agent** (1x, best: A-tier)
-- **voice cloning** (1x, best: A-tier)
+- **voice mode** (1x, best: S-tier)
 - **volatility clustering** (1x, best: A-tier)
-- **volatility smile** (1x, best: S-tier)
-- **volatility smile/smirk** (1x, best: S-tier)
+- **volatility smile/smirk** (1x, best: A-tier)
 - **volumetric reconstruction** (1x, best: A-tier)
 - **wasserstein distance** (1x, best: S-tier)
-- **weather prediction markets** (1x, best: S-tier)
 - **web fetching** (1x, best: A-tier)
 - **web spidering** (1x, best: A-tier)
-- **websocket orderflow monitoring** (1x, best: A-tier)
+- **webgl shaders** (1x, best: S-tier)
 - **whole-genome generation** (1x, best: A-tier)
 - **work partitioning** (1x, best: A-tier)
-- **yield curve modeling** (1x, best: A-tier)
+- **zero-computation experts** (1x, best: A-tier)
 - **zero-shot forecasting** (1x, best: S-tier)
 
 ## How Agents Use This

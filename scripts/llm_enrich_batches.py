@@ -46,8 +46,8 @@ def cmd_export(a):
     if p.exists():
         ocr = json.load(open(p))
     OUT.mkdir(exist_ok=True)
-    for f in OUT.glob("batch_*.json"):
-        f.unlink()
+    for f in list(OUT.glob("batch_*.json")) + list(OUT.glob("out_*.json")):
+        f.unlink()  # stale outputs would be re-merged otherwise
     for n, i in enumerate(range(0, len(rows), a.size), 1):
         batch = []
         for r in rows[i:i + a.size]:

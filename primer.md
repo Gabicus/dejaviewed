@@ -1,10 +1,10 @@
 # DejaViewed · primer
 
-Updated: 2026-10-21
+Updated: 2026-10-22
 
 ## Current status
 
-846 entries · 18 collections · 310K crosslinks · 203 deep dives (38 curated) · 57 guide pages · 38 deeper pages. Site live at dejaviewed.dev (Cloudflare Pages, auto-deploy from main). Quality gate passes. Everything from the Oct 21 pull is captioned, Whisper-transcribed (medium, GPU), thumbed, LLM-enriched and indexed (api/, sitemap 957 URLs, llms.txt, context.md all live-computed).
+846 entries · 18 collections · 324K crosslinks · 219 deep dives (45 curated) · 64 guide pages · 45 deeper pages · site search · 0 broken internal links. Site live at dejaviewed.dev (Cloudflare Pages, auto-deploy from main). Quality gate passes. Everything from the Oct 21 pull is captioned, Whisper-transcribed (medium, GPU), thumbed, LLM-enriched and indexed (api/, sitemap 957 URLs, llms.txt, context.md all live-computed).
 
 ### Oct 21 pull (what changed)
 - **New pipeline path (Phase 0 v3):** Instagram collection-feed API via agent-browser attached to real Chrome over CDP. Scroll-scrape was lossy (quant showed 12 of 31). 340 items pulled, 265 unique new entries ingested with caption/creator/date/media already filled (`ig_collection_api.py` → `ig_download_media.py` → `ingest_api.py`).
@@ -17,25 +17,20 @@ Updated: 2026-10-21
 - **Skill:** Phase 0 v3, Phase 5c, phase table, lessons #45–50. Public copy synced (`skills/dejaviewed/`), overlay updated with collection ids + coverage.
 - Outreach files + dev screenshots moved out of `site/` into `outreach/`.
 
-## PAUSED mid-run (Oct 21 evening) — resume here first
-
-Caption refresh was stopped at a checkpoint (152/549 pre-October entries verified; `data/caption_refresh.json`). To resume, in order:
-1. Start CDP Chrome + attach: `bash <scratchpad>/start_cdp.sh` equivalent — see SKILL.md Phase 0 v3 (Chrome must be closed first; log into Instagram in regular Chrome if the saved page shows "Log In").
-2. `python3 scripts/ig_refresh_captions.py --codes-file <old codes>` (old codes = IG entries not in data/new_items_2026-10-21.json). Resumes from the cache. ~6 s/post.
-3. `python3 scripts/ig_refresh_captions.py --apply` → data/caption_refresh_changed.json lists entries whose caption/creator changed.
-4. Export those ids with `scripts/llm_enrich_batches.py export --ids <file>` → Opus enrichment agents (data/llm_batches/SPEC.md) → merge.
-5. Finish tier re-rate: data/llm_retier/out_01-03.json exist (merge tier-only for entries whose caption did NOT change); batches 04-06 still need an agent (first agent was stopped by a safety classifier mid-write; grade on caption where transcript mismatches).
-6. Also fix in parquet: entry DehlIB2PT4h takeaway link maths.tcd.ie (dead → Wikipedia Broom Bridge), entry repo github.com/open-multi-agent/scaffold (deleted → note).
-7. Regen chain: cms rebuild → deep_dives → deeper_dives --all-curated → build_guides → build_landing_meta → digest → cms rebuild → build_api → build_context → catalog_js → build_search.sh → quality_gate → commit → push → live check.
-Already live after the Oct 21 evening push: site search, link fixes, rate.html + instruments, dedupe/link-check scripts, carousel slide transcripts, lesson 51. NOT yet regenerated on site: the 7 promoted dives (manual_dives.json has 45; site shows 38) — step 7 picks them up.
+### Oct 22 (resume) — what changed
+- **Caption integrity:** 139/551 pre-October entries had the wrong caption (July stale-page scrape). All verified per post (`ig_refresh_captions.py`), corrected, re-enriched. 13 mis-typed posts (10 carousels, 3 videos) now slide-read/transcribed. 19 unverifiable, flagged.
+- **Re-tier:** ai2/ai4/ai7/quant re-rated tier-only (209 entries, 142 changed). S 98 → 55.
+- **Built:** Pagefind site search, link checker (0 internal breakages), pHash dedupe (0 confirmed dupes), rate.html + apply_ratings.py, reconcile_ig_export.py, carousel slide-video transcription, 7 parked dives promoted (45 curated).
+- All of the above pushed and live.
 
 ## Next up
 
-1. ~~Landing redesign~~ DONE Oct 21 (merged 05f9bec): index.html = showcase, catalog.html = full catalog, nav Catalog·Guides·Graphs·Board·About, Admin out of nav. `build_landing_meta.py` runs after guides/deeper regen.
-2. Parked q3 proposals: revisit after Victor reads the 17 new dives.
-3. Carousel slide videos (few) untranscribed — add to transcribe.py targets if wanted.
-4. Old collections ai2/ai4/ai7/quant S-rate 20–29% (July manual regrade) — gate warns; decide whether to re-tier with the LLM rubric.
-5. Deeper-version items not yet built: pHash dedupe, embeddings-based clustering/search (Pagefind), lychee link check, blind kappa re-rate, IG data-export reconciliation.
+1. ~~Landing redesign~~ DONE Oct 21. ~~Parked dives, carousel videos, re-tier, search, dedupe, link check~~ DONE Oct 22.
+2. ai2/ai5/stock2 still ~20% S (small collections, July tiers) — re-tier with `data/llm_retier/SPEC.md` if it bothers you.
+3. 3 likely reposts (dedupe report "possible", same creator+title+thumb) — download the missing mp4 to confirm, then merge.
+4. Blind re-rate: open /rate.html, rate 30, download JSON → `scripts/apply_ratings.py`.
+5. IG data export → `scripts/reconcile_ig_export.py` for the authoritative save list.
+6. Embedding-based clustering (replace keyword dives/crosslinks) — only remaining "deeper version" item.
 
 ## Next run — Victor setup items (Oct 21 aside: analytics, money, reach)
 

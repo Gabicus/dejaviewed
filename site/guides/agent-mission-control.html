@@ -1,0 +1,344 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mission Control for 80 Agents — Conway&#x27;s law meets game UI · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-agent-mission-control.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Mission Control for 80 Agents — Conway&#x27;s law meets game UI →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Mission Control for 80 Agents — Conway's law meets game UI</h1>
+<p>Insight class: Creative Fusion · Difficulty: Experimental · Quality: 3/5 Connected entries: 11 · Tools: AgentCraft, Arize, BigQuery, Bot Crossing, ChatGPT, Claude, Claude Code, Founder OS, Ghostty, Kafka, Mac Mini, Meta Quest 3, Minecraft, Slack, TouchDesigner, Trackio, git, tmux</p>
+<h2>Thesis</h2>
+<p>Once you run more than a handful of agents, the bottleneck is your attention, not tokens. Creative technologists are already prototyping the answer without naming it — Bot Crossing puts 80 agents on a tiny planet where they raise hands for help, AgentCraft runs them as Minecraft workers in isolated worktrees, a TouchDesigner sketch commands agents by gesture, a Quest 3 canvas directs them spatially. Casey Muratori's point that Conway's law now applies to agents says the interface and the agent org chart are the same design problem. Feed a Booking.com-style trace bus into a game-engine front end and you get a control room where structure is visible.</p>
+<h2>Why it matters</h2>
+<p>Solo operators running Founder-OS-style setups spend their day polling terminals. A spatial view that surfaces only blocked agents, and whose layout mirrors how work is partitioned, lets one person supervise ten times more agents without reading every log.</p>
+<h2>The evidence — connected entries</h2>
+<h3>Bot Crossing — video-game workspace for managing 80 AI agents</h3>
+<p>Creator: @jarrenrocks · Tier: A Tools: Bot Crossing</p>
+<p>Front end — agents as characters that raise hands when blocked</p>
+<p>Open-source game UI where AI agents live on a little planet, walk around, and raise their hands when they need help; click one to see its request. Built by Jarren Rocks, with a GitHub repo, YouTube build review and botcrossing.com site.</p>
+<p>View original post</p>
+<h3>AgentCraft — Minecraft mod where Claude agents write real code</h3>
+<p>Creator: @itsnicconley · Tier: A Tools: AgentCraft, Claude, Minecraft</p>
+<p>Orchestration model — Foreman plus isolated-worktree workers inside a game</p>
+<p>An open-source Minecraft mod built on Claude's agent system: a Foreman tracks tasks, ordering, decisions and inter-agent messages, workers each get an isolated copy of the code, and nothing merges until approved. Agents commit under their own names and can be messaged mid-task, and they walk over to find you when they need input.</p>
+<p>View original post</p>
+<h3>Gestural agent interface — TouchDesigner concept for hand-commanded AI</h3>
+<p>Creator: @the.poet.engineer · Tier: B Tools: TouchDesigner</p>
+<p>Input layer — gestures as commands, from the TouchDesigner world</p>
+<p>Non-functional TouchDesigner prototype imagining agentic UI driven by gestures: two running fingers run the program, spinning fingers spin up a new idea, a pinch delegates heavy lifting.</p>
+<p>View original post</p>
+<h3>Mixed-reality infinite canvas — directing Claude Code agents from Quest 3</h3>
+<p>Creator: @rndyrbrts · Tier: B Tools: Claude, Claude Code, Meta Quest 3</p>
+<p>Spatial layer — directing coding agents on an XR infinite canvas</p>
+<p>Early demo of an XR infinite canvas on Meta Quest 3 synced with a desktop canvas: drop reference images into a sphere, put your hand in it and speak a request (e.g. components visualizing multi-agent progress), make a fist to send it to Claude Code agents under custom orchestration, and watch results build up in place.</p>
+<p>View original post</p>
+<h3>Conway's law — Casey Muratori on the one unbreakable rule, now for agents</h3>
+<p>Creator: @ryanlpeterman · Tier: A</p>
+<p>Design law — split agent work only along slow communication boundaries</p>
+<p>Casey Muratori argues Conway's law is software's only real law: once you split work among workers (people or agents) whose communication is slower than their internal compute, design iteration across that boundary is locked in as slower. 'Products look like the org chart' is a consequence, not the law itself.</p>
+<p>View original post</p>
+<h3>Conway's Law — your product ships your org chart</h3>
+<p>Creator: @shakib_hammad · Tier: B</p>
+<p>Corollary — the reverse Conway maneuver: design the org to get the architecture you want</p>
+<p>Melvin Conway's 1967 observation: systems copy the communication structure of the organization that builds them. Modern teams apply the reverse Conway maneuver, designing the target architecture first and then shaping teams to match.</p>
+<p>View original post</p>
+<h3>Booking.com AI observability — Kafka buffer and PII redaction before Arize</h3>
+<p>Creator: @therobertta · Tier: A Tools: Arize, Kafka</p>
+<p>Plumbing — traces normalized onto a durable bus, with PII redaction, before any UI</p>
+<p>Walkthrough of Booking.com's GenAI telemetry architecture: apps emit traces to a collector, which normalizes them onto a managed Kafka bus (durable buffer decoupling producers and consumers), through a dedicated PII-redaction service that masks span attributes and text, then out to Arize for real-time monitoring and a warehouse for offline analytics and backfills. A second pipeline ships ML prediction logs to Arize for ranking and fraud models.</p>
+<p>View original post</p>
+<h3>Founder OS — 17 always-on AI agents running a one-person business</h3>
+<p>Creator: @brodyautomates · Tier: B Tools: Founder OS, Mac Mini, Trackio</p>
+<p>Scale case — 17 always-on agents for one person, the load this UI must carry</p>
+<p>Tour of a custom Founder OS dashboard: 17 agents on a Mac Mini covering comms, sales, finance, marketing and clients, with a skills tree, task panel, workflow builder, Trackio lead attribution and a 'wizard' conductor agent. The base Founder OS is described as open source with a waitlist.</p>
+<p>View original post</p>
+<h3>MacBook notch agent monitor — software answer to OpenAI's agent controller</h3>
+<p>Creator: @cooper.simson · Tier: B Tools: ChatGPT, Claude, Claude Code</p>
+<p>Minimal baseline — a notch widget showing who is working and who is waiting</p>
+<p>Instead of OpenAI's $230 hardware controller for babysitting coding agents, the creator had Claude build a MacBook notch app showing which agents are working, need attention or are done, with jump-to-session and permission approvals. Build guide is comment-gated.</p>
+<p>View original post</p>
+<h3>Claude Code auto-approve mode — control is reading the plan, not pressing Y</h3>
+<p>Creator: @shellonback · Tier: A Tools: Claude, Claude Code</p>
+<p>Human role — supervision means reading plans, not pressing Y</p>
+<p>CLAUDE CODE — @shellonback; uses Claude, Claude Code; demonstrates automation.</p>
+<p>View original post</p>
+<h3>Claude Code Team Tips — Boris Cherny's 10 habits for parallel, plan-first agent work</h3>
+<p>Creator: @evolving.ai · Tier: S Tools: BigQuery, Claude, Claude Code, Ghostty, Slack, git, tmux</p>
+<p>Parallelism source — 3-5+ worktrees per person is already the norm</p>
+<p>Boris Cherny's thread of tips from the Claude Code team: 3-5 git worktrees with parallel sessions, plan mode for every complex task, a CLAUDE.md you update after each correction, skills committed to git, Slack MCP bug fixing, subagents, a BigQuery skill for analytics and learning output styles. It ends with a ready-to-paste CLAUDE.md workflow template (plan, subagents, lessons file, verify before done).</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Emit one JSON event per agent state change (started, blocked, needs-review, done) from your harness hooks onto a local queue — Redis or a file tail is enough to start</p>
+<p>Point Bot Crossing (or a 200-line Three.js scene) at that queue so blocked agents visibly raise hands; cluster agents by the repo/module they own to make the Conway structure visible</p>
+<p>Run a week with dashboard versus without and log minutes-to-unblock per blocked agent</p>
+<p>Falsifier: if minutes-to-unblock does not drop by at least a third versus a plain notification, the game layer is decoration and a notch widget wins</p>
+<h2>Prerequisites</h2>
+<p>A multi-agent setup with hooks</p>
+<p>Basic Three.js or TouchDesigner</p>
+<p>Willingness to treat this as an art-tech experiment first</p>
+<h2>Key tools and resources</h2>
+<p>AgentCraft</p>
+<p>Arize</p>
+<p>BigQuery</p>
+<p>Bot Crossing</p>
+<p>ChatGPT</p>
+<p>Claude</p>
+<p>Claude Code</p>
+<p>Founder OS</p>
+<p>Ghostty</p>
+<p>Kafka</p>
+<p>Mac Mini</p>
+<p>Meta Quest 3</p>
+<p>Minecraft</p>
+<p>Slack</p>
+<p>TouchDesigner</p>
+<p>Trackio</p>
+<p>git</p>
+<p>tmux</p>
+<h2>Creators to follow</h2>
+<p>@brodyautomates</p>
+<p>@cooper.simson</p>
+<p>@evolving.ai</p>
+<p>@itsnicconley</p>
+<p>@jarrenrocks</p>
+<p>@rndyrbrts</p>
+<p>@ryanlpeterman</p>
+<p>@shakib_hammad</p>
+<p>@shellonback</p>
+<p>@the.poet.engineer</p>
+<p>@therobertta</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
+<script id="md" type="text/markdown"># Mission Control for 80 Agents — Conway's law meets game UI
+
+**Insight class:** Creative Fusion · **Difficulty:** Experimental · **Quality:** 3/5
+**Connected entries:** 11 · **Tools:** AgentCraft, Arize, BigQuery, Bot Crossing, ChatGPT, Claude, Claude Code, Founder OS, Ghostty, Kafka, Mac Mini, Meta Quest 3, Minecraft, Slack, TouchDesigner, Trackio, git, tmux
+
+---
+
+## Thesis
+
+Once you run more than a handful of agents, the bottleneck is your attention, not tokens. Creative technologists are already prototyping the answer without naming it — Bot Crossing puts 80 agents on a tiny planet where they raise hands for help, AgentCraft runs them as Minecraft workers in isolated worktrees, a TouchDesigner sketch commands agents by gesture, a Quest 3 canvas directs them spatially. Casey Muratori's point that Conway's law now applies to agents says the interface and the agent org chart are the same design problem. Feed a Booking.com-style trace bus into a game-engine front end and you get a control room where structure is visible.
+
+---
+
+## Why it matters
+
+Solo operators running Founder-OS-style setups spend their day polling terminals. A spatial view that surfaces only blocked agents, and whose layout mirrors how work is partitioned, lets one person supervise ten times more agents without reading every log.
+
+---
+
+## The evidence — connected entries
+
+### Bot Crossing — video-game workspace for managing 80 AI agents
+**Creator:** [@jarrenrocks](https://instagram.com/jarrenrocks) · **Tier:** A
+**Tools:** Bot Crossing
+
+> Front end — agents as characters that raise hands when blocked
+
+Open-source game UI where AI agents live on a little planet, walk around, and raise their hands when they need help; click one to see its request. Built by Jarren Rocks, with a GitHub repo, YouTube build review and botcrossing.com site.
+
+[View original post](https://www.instagram.com/p/DczR-QlSMdK/)
+### AgentCraft — Minecraft mod where Claude agents write real code
+**Creator:** [@itsnicconley](https://instagram.com/itsnicconley) · **Tier:** A
+**Tools:** AgentCraft, Claude, Minecraft
+
+> Orchestration model — Foreman plus isolated-worktree workers inside a game
+
+An open-source Minecraft mod built on Claude's agent system: a Foreman tracks tasks, ordering, decisions and inter-agent messages, workers each get an isolated copy of the code, and nothing merges until approved. Agents commit under their own names and can be messaged mid-task, and they walk over to find you when they need input.
+
+[View original post](https://www.instagram.com/p/DeIfDwPI_ma/)
+### Gestural agent interface — TouchDesigner concept for hand-commanded AI
+**Creator:** [@the.poet.engineer](https://instagram.com/the.poet.engineer) · **Tier:** B
+**Tools:** TouchDesigner
+
+> Input layer — gestures as commands, from the TouchDesigner world
+
+Non-functional TouchDesigner prototype imagining agentic UI driven by gestures: two running fingers run the program, spinning fingers spin up a new idea, a pinch delegates heavy lifting.
+
+[View original post](https://www.instagram.com/p/DctoIMltaNN/)
+### Mixed-reality infinite canvas — directing Claude Code agents from Quest 3
+**Creator:** [@rndyrbrts](https://instagram.com/rndyrbrts) · **Tier:** B
+**Tools:** Claude, Claude Code, Meta Quest 3
+
+> Spatial layer — directing coding agents on an XR infinite canvas
+
+Early demo of an XR infinite canvas on Meta Quest 3 synced with a desktop canvas: drop reference images into a sphere, put your hand in it and speak a request (e.g. components visualizing multi-agent progress), make a fist to send it to Claude Code agents under custom orchestration, and watch results build up in place.
+
+[View original post](https://www.instagram.com/p/DcNrwpyiRlh/)
+### Conway's law — Casey Muratori on the one unbreakable rule, now for agents
+**Creator:** [@ryanlpeterman](https://instagram.com/ryanlpeterman) · **Tier:** A
+
+> Design law — split agent work only along slow communication boundaries
+
+Casey Muratori argues Conway's law is software's only real law: once you split work among workers (people or agents) whose communication is slower than their internal compute, design iteration across that boundary is locked in as slower. 'Products look like the org chart' is a consequence, not the law itself.
+
+[View original post](https://www.instagram.com/p/DdY7NUbDys2/)
+### Conway's Law — your product ships your org chart
+**Creator:** [@shakib_hammad](https://instagram.com/shakib_hammad) · **Tier:** B
+
+> Corollary — the reverse Conway maneuver: design the org to get the architecture you want
+
+Melvin Conway's 1967 observation: systems copy the communication structure of the organization that builds them. Modern teams apply the reverse Conway maneuver, designing the target architecture first and then shaping teams to match.
+
+[View original post](https://www.instagram.com/p/DbSjJT7sLUf/)
+### Booking.com AI observability — Kafka buffer and PII redaction before Arize
+**Creator:** [@therobertta](https://instagram.com/therobertta) · **Tier:** A
+**Tools:** Arize, Kafka
+
+> Plumbing — traces normalized onto a durable bus, with PII redaction, before any UI
+
+Walkthrough of Booking.com's GenAI telemetry architecture: apps emit traces to a collector, which normalizes them onto a managed Kafka bus (durable buffer decoupling producers and consumers), through a dedicated PII-redaction service that masks span attributes and text, then out to Arize for real-time monitoring and a warehouse for offline analytics and backfills. A second pipeline ships ML prediction logs to Arize for ranking and fraud models.
+
+[View original post](https://www.instagram.com/p/Dcl3dEJAjo0/)
+### Founder OS — 17 always-on AI agents running a one-person business
+**Creator:** [@brodyautomates](https://instagram.com/brodyautomates) · **Tier:** B
+**Tools:** Founder OS, Mac Mini, Trackio
+
+> Scale case — 17 always-on agents for one person, the load this UI must carry
+
+Tour of a custom Founder OS dashboard: 17 agents on a Mac Mini covering comms, sales, finance, marketing and clients, with a skills tree, task panel, workflow builder, Trackio lead attribution and a 'wizard' conductor agent. The base Founder OS is described as open source with a waitlist.
+
+[View original post](https://www.instagram.com/p/Dd-WP0FtFA6/)
+### MacBook notch agent monitor — software answer to OpenAI's agent controller
+**Creator:** [@cooper.simson](https://instagram.com/cooper.simson) · **Tier:** B
+**Tools:** ChatGPT, Claude, Claude Code
+
+> Minimal baseline — a notch widget showing who is working and who is waiting
+
+Instead of OpenAI's $230 hardware controller for babysitting coding agents, the creator had Claude build a MacBook notch app showing which agents are working, need attention or are done, with jump-to-session and permission approvals. Build guide is comment-gated.
+
+[View original post](https://www.instagram.com/p/DbaFoAUMvnK/)
+### Claude Code auto-approve mode — control is reading the plan, not pressing Y
+**Creator:** [@shellonback](https://instagram.com/shellonback) · **Tier:** A
+**Tools:** Claude, Claude Code
+
+> Human role — supervision means reading plans, not pressing Y
+
+CLAUDE CODE — @shellonback; uses Claude, Claude Code; demonstrates automation.
+
+[View original post](https://www.instagram.com/p/DW2J0eUDKHM/)
+### Claude Code Team Tips — Boris Cherny's 10 habits for parallel, plan-first agent work
+**Creator:** [@evolving.ai](https://instagram.com/evolving.ai) · **Tier:** S
+**Tools:** BigQuery, Claude, Claude Code, Ghostty, Slack, git, tmux
+
+> Parallelism source — 3-5+ worktrees per person is already the norm
+
+Boris Cherny's thread of tips from the Claude Code team: 3-5 git worktrees with parallel sessions, plan mode for every complex task, a CLAUDE.md you update after each correction, skills committed to git, Slack MCP bug fixing, subagents, a BigQuery skill for analytics and learning output styles. It ends with a ready-to-paste CLAUDE.md workflow template (plan, subagents, lessons file, verify before done).
+
+[View original post](https://www.instagram.com/p/DVQ5o6YDfsp/)
+
+---
+
+## Action sketch — how to implement this
+
+- Emit one JSON event per agent state change (started, blocked, needs-review, done) from your harness hooks onto a local queue — Redis or a file tail is enough to start
+- Point Bot Crossing (or a 200-line Three.js scene) at that queue so blocked agents visibly raise hands; cluster agents by the repo/module they own to make the Conway structure visible
+- Run a week with dashboard versus without and log minutes-to-unblock per blocked agent
+- Falsifier: if minutes-to-unblock does not drop by at least a third versus a plain notification, the game layer is decoration and a notch widget wins
+
+---
+
+## Prerequisites
+
+- A multi-agent setup with hooks
+- Basic Three.js or TouchDesigner
+- Willingness to treat this as an art-tech experiment first
+
+---
+
+## Key tools and resources
+
+- **AgentCraft**
+- **Arize**
+- **BigQuery**
+- **Bot Crossing**
+- **ChatGPT**
+- **Claude**
+- **Claude Code**
+- **Founder OS**
+- **Ghostty**
+- **Kafka**
+- **Mac Mini**
+- **Meta Quest 3**
+- **Minecraft**
+- **Slack**
+- **TouchDesigner**
+- **Trackio**
+- **git**
+- **tmux**
+
+## Creators to follow
+
+- [@brodyautomates](https://instagram.com/brodyautomates)
+- [@cooper.simson](https://instagram.com/cooper.simson)
+- [@evolving.ai](https://instagram.com/evolving.ai)
+- [@itsnicconley](https://instagram.com/itsnicconley)
+- [@jarrenrocks](https://instagram.com/jarrenrocks)
+- [@rndyrbrts](https://instagram.com/rndyrbrts)
+- [@ryanlpeterman](https://instagram.com/ryanlpeterman)
+- [@shakib_hammad](https://instagram.com/shakib_hammad)
+- [@shellonback](https://instagram.com/shellonback)
+- [@the.poet.engineer](https://instagram.com/the.poet.engineer)
+- [@therobertta](https://instagram.com/therobertta)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>

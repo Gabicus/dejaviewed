@@ -102,3 +102,27 @@ Best cross-lens connections: Ising herding model as a choreography score; an age
 
 ### Rewritten prompt (what to ask next time)
 > Pull every post from IG saved collections X via the collection-feed API; download media immediately; ingest with API captions/creators/dates; Whisper every video from local files on GPU; vision-read every carousel; LLM-enrich from caption+transcript+OCR with the SPEC; run the quality gate; run the researcher curation pass with 4 lenses and review; regenerate dives/deeper/guides/digest/api/context/sitemap; verify every new page serves 200 and appears in index, guides index, api and sitemap; update skill + overlay + primer; commit by explicit paths; push.
+
+---
+
+## 2026-10-21/22 (evening + resume) — close every outstanding item
+
+### Caption integrity finding (the big one)
+Re-tier agents noticed transcripts contradicting captions. Verified per post with page-id checks (`scripts/ig_refresh_captions.py`): **139 of 551 pre-October entries (25%) carried the caption of a different post** — July's page-text scrape read before navigation finished. Transcripts (yt-dlp by URL) were right all along. Fixed: 139 captions, 44 creators, 13 media types (10 carousels + 3 videos that had been "images" — now slide-read / transcribed). 19 posts unverifiable (flagged in user_notes). All 139 re-enriched by Opus from the corrected text. Lesson #51 in the skill.
+
+### Re-tier of July-era S-heavy collections (ai2/ai4/ai7/quant)
+209 entries re-rated tier-only with the LLM rubric (6 batches; one agent was stopped by a safety classifier mid-write and the batches were reassigned). 142 changed. Site-wide S went 98 → ~54 (≈6%). Biggest pattern: "comment X for the guide" posts with nothing delivered were S; now B/C.
+
+### Built this round
+| Item | Result |
+|---|---|
+| Site search (Pagefind) | 940 pages indexed (846 entries + 56 guides + 38 deeper), `/search.html`, hero search box, nav item, 5.4 MB static index |
+| Link audit | `scripts/check_links.py`; 11 internal breakages fixed → 0 across 953 pages; 31 external dead → 5 real ones re-pointed/unlinked, 27 example paths → placeholders; 6 "bot-blocked" verified alive in a real browser |
+| pHash dedupe | `scripts/dedupe_phash.py`; 0 confirmed duplicates (36K video pairs), 3 likely reposts need the missing mp4 to confirm |
+| Blind re-rate instrument | `site/rate.html` (30-entry seeded sample, Cohen's kappa) + `scripts/apply_ratings.py` — for Victor to run |
+| IG export reconciliation | `scripts/reconcile_ig_export.py` — needs Victor's Instagram data export |
+| Carousel slide videos | transcribed; silent slides skipped |
+| Parked dives | 7 promoted → 45 curated |
+
+### Still needs Victor (in primer "Next run")
+Cloudflare Web Analytics (no beacon today), analytics API token, wrangler login, Pay Per Crawl application, Search Console/Bing sitemap submission, the blind re-rate, the IG export.

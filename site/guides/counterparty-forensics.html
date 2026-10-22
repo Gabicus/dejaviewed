@@ -1,0 +1,289 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Who&#x27;s Across the Table — forensics for the system trading against you · DejaViewed</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge medium">Source confidence: medium</div>
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-counterparty-forensics.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Who&#x27;s Across the Table — forensics for the system trading against you →</a></div>
+  <div id="guide-body"></div>
+</article>
+<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+<h1>Who's Across the Table — forensics for the system trading against you</h1>
+<p>Insight class: Life Leverage · Difficulty: Easy · Quality: 3/5 Connected entries: 9 · Tools: Cochlea, Ghidra, Python, REA, Raspberry Pi, React, Ubuntu, XGBoost</p>
+<h2>Thesis</h2>
+<p>Across the catalog, the systems you interact with are quietly optimizing against you: a puzzle game runs an on-device XGBoost model to time difficulty to your ad value, overnight and intraday returns run as a decades-long sawtooth, a bedroom spoofer tripped depth-reading algorithms in the 2010 Flash Crash, wash trading inflates crypto volume, and exchanges sold speed to HFTs. Agent-plus-Ghidra decompilation and cheap tick data mean one person can now audit the counterparty instead of guessing about it.</p>
+<h2>Why it matters</h2>
+<p>This is game theory made practical: before you look for edge, measure the edge that's already being taken from you — your fills, the hours you hold, the apps you pay. It's defensive leverage, and it often turns into an offensive idea, like simply holding overnight.</p>
+<h2>The evidence — connected entries</h2>
+<h3>Block Blast reverse-engineered — on-device XGBoost rigs difficulty for ad revenue</h3>
+<p>Creator: @ayoships · Tier: B Tools: XGBoost</p>
+<p>Block Blast decompiled — on-device model tuning difficulty to ad value, the clearest 'house edge' case</p>
+<p>A reverse engineer found Block Blast runs a local XGBoost model on device signals (phone model, country, past ad revenue, vibration setting) to predict your ad value and adjust difficulty. Rules like 'Boost Then Kill' and 'High Value Ad Harvest' trigger a 'death algorithm' right when a pricey revive ad is ready. Full code evidence is promised later on the creator's site.</p>
+<p>View original post</p>
+<h3>REA MCP — agent-driven reverse engineering with a Ghidra backend</h3>
+<p>Creator: @backsla.sh · Tier: A Tools: Ghidra, REA, Ubuntu</p>
+<p>REA MCP — agent-driven Ghidra decompilation with cited evidence, the audit tool (authorized use only)</p>
+<p>REA is an MCP server that lets an AI agent reverse engineer apps and stripped native binaries, with Ghidra doing the decompilation while the agent drives and cites evidence per call. The creator decompiled a closed-source program in three to four minutes on Ubuntu. Setup is deferred to a follow-up video.</p>
+<p>View original post</p>
+<h3>Overnight vs intraday returns — Knuteson's 'Strikingly Suspicious' anomaly</h3>
+<p>Creator: @quantpapers · Tier: S</p>
+<p>Knuteson's overnight/intraday sawtooth — a claim to replicate, not trust</p>
+<p>Bruce Knuteson (ex-MIT physicist, D. E. Shaw) splits each day into close-to-open and open-to-close: Micron since 1990 is +138M% overnight and -99.9% intraday, and the same sawtooth shows in 21 indices (China reversed). His paper 'Strikingly Suspicious Overnight and Intraday Returns' rejects earnings and news as explanations and alleges large firms push prices at the open; it's a claim, not a proof.</p>
+<p>View original post</p>
+<h3>Overnight return anomaly — most stock gains accrue close-to-open</h3>
+<p>Creator: @eliteoptionstrader2 · Tier: A</p>
+<p>Second take on the overnight anomaly, with the retail-at-open mechanism</p>
+<p>Cites research showing that across global markets most equity returns come overnight (close to next open) while intraday holding loses; the Micron example claims +138M% overnight vs −99% intraday on paper. Proposed mechanism: retail trades the open, institutions trade into the close. Paper not named; frictions and costs ignored.</p>
+<p>View original post</p>
+<h3>2010 Flash Crash — how Navinder Sarao spoofed E-mini S&amp;P futures</h3>
+<p>Creator: @thestockguytwitch · Tier: B</p>
+<p>Spoofing and the Flash Crash — how depth-reading algorithms get gamed</p>
+<p>Story of the May 6, 2010 Flash Crash (about 9% in minutes, $1T wiped then recovered), traced to Navinder Sarao spoofing E-mini S&amp;P 500 futures from his bedroom with large sell orders he cancelled, tricking algos into selling. Good primer on spoofing and cascading algorithmic selling.</p>
+<p>View original post</p>
+<h3>Crypto wash trading — Ben McKenzie doc on fake volume and pump schemes</h3>
+<p>Creator: @cbcgem · Tier: B</p>
+<p>Wash trading — reported volume as the counterparty's marketing</p>
+<p>Clip from the documentary 'Everyone Is Lying to You for Money' where an insider explains wash trading: one actor trading between two accounts to walk prices up, luring outsiders before dumping. The interviewee claims 90-95% of crypto volume is fake and fewer than 20 people control the market.</p>
+<p>View original post</p>
+<h3>Katsuyama vs BATS on CNBC — the 'markets are rigged' HFT showdown</h3>
+<p>Creator: @itsfinancenote · Tier: A Tools: React</p>
+<p>Direct feeds versus the SIP — who pays for speed</p>
+<p>The March 31, 2014 CNBC clash where IEX's Brad Katsuyama (Flash Boys) accused exchanges of selling HFT advantages via direct feeds, co-location and complex order types, and BATS's Bill O'Brien was pressed on whether his matching engine priced off the slower SIP. BATS later corrected the record, and IEX's speed bump came out of this debate.</p>
+<p>View original post</p>
+<h3>HFT short-term reversal — buy weekly losers, sell winners across 4,500 stocks</h3>
+<p>Creator: @7am.research · Tier: B</p>
+<p>Breadth-based reversal — what the fast counterparty is actually doing to your weekly losers</p>
+<p>A 60 Minutes clip with Manoj Narang describing a cross-sectional mean-reversion test: buy $5 of stocks down 5% last week, sell $10 of stocks up 10%, across the whole ~4,500-stock universe at once. Near 50% win rate per trade but no losing month thanks to breadth and speed, with Joe Saluzzi arguing it rigs the game.</p>
+<p>View original post</p>
+<h3>Cochlea — Wi-Fi side-channel attack on Ring cameras</h3>
+<p>Creator: @bennjordan · Tier: A Tools: Cochlea, Python, Raspberry Pi</p>
+<p>Encrypted traffic still leaks activity — the general lesson that timing and volume give intent away</p>
+<p>Benn Jordan's Cochlea is a Python tool that runs on a Raspberry Pi with a monitor-mode Wi-Fi adapter and passively fingerprints encrypted traffic from cloud cameras like Ring. It detects when a camera sees motion and when the owner opens live view, logging to CSV, which shows how much activity leaks without breaking encryption.</p>
+<p>View original post</p>
+<h2>Action sketch — how to implement this</h2>
+<p>Split two years of SPY and QQQ returns into close-to-open and open-to-close legs, then subtract realistic open-gap spreads to see whether the overnight leg survives costs.</p>
+<p>Export your own broker fills and compare each to the NBBO at the time, so you measure the price improvement or slippage you actually got.</p>
+<p>For one paid or free-to-play app you use, run REA MCP on your own install and list every model or rule that adapts to you (authorized analysis only).</p>
+<p>falsifier: if the overnight leg disappears after costs and your fills match or beat the NBBO, the counterparty isn't taking much from you at your size — move your effort to the strategy-loop dive.</p>
+<h2>Prerequisites</h2>
+<p>Free daily open/close price data</p>
+<p>Broker fill export</p>
+<p>Ghidra and REA MCP for the app audit</p>
+<h2>Key tools and resources</h2>
+<p>Cochlea</p>
+<p>Ghidra</p>
+<p>Python</p>
+<p>REA</p>
+<p>Raspberry Pi</p>
+<p>React</p>
+<p>Ubuntu</p>
+<p>XGBoost</p>
+<h2>Creators to follow</h2>
+<p>@7am.research</p>
+<p>@ayoships</p>
+<p>@backsla.sh</p>
+<p>@bennjordan</p>
+<p>@cbcgem</p>
+<p>@eliteoptionstrader2</p>
+<p>@itsfinancenote</p>
+<p>@quantpapers</p>
+<p>@thestockguytwitch</p>
+<h2>Related deep dives</h2>
+<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
+<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
+</div><!--pagefind:end-->
+<script id="md" type="text/markdown"># Who's Across the Table — forensics for the system trading against you
+
+**Insight class:** Life Leverage · **Difficulty:** Easy · **Quality:** 3/5
+**Connected entries:** 9 · **Tools:** Cochlea, Ghidra, Python, REA, Raspberry Pi, React, Ubuntu, XGBoost
+
+---
+
+## Thesis
+
+Across the catalog, the systems you interact with are quietly optimizing against you: a puzzle game runs an on-device XGBoost model to time difficulty to your ad value, overnight and intraday returns run as a decades-long sawtooth, a bedroom spoofer tripped depth-reading algorithms in the 2010 Flash Crash, wash trading inflates crypto volume, and exchanges sold speed to HFTs. Agent-plus-Ghidra decompilation and cheap tick data mean one person can now audit the counterparty instead of guessing about it.
+
+---
+
+## Why it matters
+
+This is game theory made practical: before you look for edge, measure the edge that's already being taken from you — your fills, the hours you hold, the apps you pay. It's defensive leverage, and it often turns into an offensive idea, like simply holding overnight.
+
+---
+
+## The evidence — connected entries
+
+### Block Blast reverse-engineered — on-device XGBoost rigs difficulty for ad revenue
+**Creator:** [@ayoships](https://instagram.com/ayoships) · **Tier:** B
+**Tools:** XGBoost
+
+> Block Blast decompiled — on-device model tuning difficulty to ad value, the clearest 'house edge' case
+
+A reverse engineer found Block Blast runs a local XGBoost model on device signals (phone model, country, past ad revenue, vibration setting) to predict your ad value and adjust difficulty. Rules like 'Boost Then Kill' and 'High Value Ad Harvest' trigger a 'death algorithm' right when a pricey revive ad is ready. Full code evidence is promised later on the creator's site.
+
+[View original post](https://www.instagram.com/p/DecfvksvHiW/)
+### REA MCP — agent-driven reverse engineering with a Ghidra backend
+**Creator:** [@backsla.sh](https://instagram.com/backsla.sh) · **Tier:** A
+**Tools:** Ghidra, REA, Ubuntu
+
+> REA MCP — agent-driven Ghidra decompilation with cited evidence, the audit tool (authorized use only)
+
+REA is an MCP server that lets an AI agent reverse engineer apps and stripped native binaries, with Ghidra doing the decompilation while the agent drives and cites evidence per call. The creator decompiled a closed-source program in three to four minutes on Ubuntu. Setup is deferred to a follow-up video.
+
+[View original post](https://www.instagram.com/p/DerpSl6D8pX/)
+### Overnight vs intraday returns — Knuteson's 'Strikingly Suspicious' anomaly
+**Creator:** [@quantpapers](https://instagram.com/quantpapers) · **Tier:** S
+
+> Knuteson's overnight/intraday sawtooth — a claim to replicate, not trust
+
+Bruce Knuteson (ex-MIT physicist, D. E. Shaw) splits each day into close-to-open and open-to-close: Micron since 1990 is +138M% overnight and -99.9% intraday, and the same sawtooth shows in 21 indices (China reversed). His paper 'Strikingly Suspicious Overnight and Intraday Returns' rejects earnings and news as explanations and alleges large firms push prices at the open; it's a claim, not a proof.
+
+[View original post](https://www.instagram.com/p/DeF6WMaB-NX/)
+### Overnight return anomaly — most stock gains accrue close-to-open
+**Creator:** [@eliteoptionstrader2](https://instagram.com/eliteoptionstrader2) · **Tier:** A
+
+> Second take on the overnight anomaly, with the retail-at-open mechanism
+
+Cites research showing that across global markets most equity returns come overnight (close to next open) while intraday holding loses; the Micron example claims +138M% overnight vs −99% intraday on paper. Proposed mechanism: retail trades the open, institutions trade into the close. Paper not named; frictions and costs ignored.
+
+[View original post](https://www.instagram.com/p/DcbkTCnOxjl/)
+### 2010 Flash Crash — how Navinder Sarao spoofed E-mini S&P futures
+**Creator:** [@thestockguytwitch](https://instagram.com/thestockguytwitch) · **Tier:** B
+
+> Spoofing and the Flash Crash — how depth-reading algorithms get gamed
+
+Story of the May 6, 2010 Flash Crash (about 9% in minutes, $1T wiped then recovered), traced to Navinder Sarao spoofing E-mini S&P 500 futures from his bedroom with large sell orders he cancelled, tricking algos into selling. Good primer on spoofing and cascading algorithmic selling.
+
+[View original post](https://www.instagram.com/p/DYnlB8vJC56/)
+### Crypto wash trading — Ben McKenzie doc on fake volume and pump schemes
+**Creator:** [@cbcgem](https://instagram.com/cbcgem) · **Tier:** B
+
+> Wash trading — reported volume as the counterparty's marketing
+
+Clip from the documentary 'Everyone Is Lying to You for Money' where an insider explains wash trading: one actor trading between two accounts to walk prices up, luring outsiders before dumping. The interviewee claims 90-95% of crypto volume is fake and fewer than 20 people control the market.
+
+[View original post](https://www.instagram.com/p/DdZiaTmJdSC/)
+### Katsuyama vs BATS on CNBC — the 'markets are rigged' HFT showdown
+**Creator:** [@itsfinancenote](https://instagram.com/itsfinancenote) · **Tier:** A
+**Tools:** React
+
+> Direct feeds versus the SIP — who pays for speed
+
+The March 31, 2014 CNBC clash where IEX's Brad Katsuyama (Flash Boys) accused exchanges of selling HFT advantages via direct feeds, co-location and complex order types, and BATS's Bill O'Brien was pressed on whether his matching engine priced off the slower SIP. BATS later corrected the record, and IEX's speed bump came out of this debate.
+
+[View original post](https://www.instagram.com/p/Dc83KJvzPrC/)
+### HFT short-term reversal — buy weekly losers, sell winners across 4,500 stocks
+**Creator:** [@7am.research](https://instagram.com/7am.research) · **Tier:** B
+
+> Breadth-based reversal — what the fast counterparty is actually doing to your weekly losers
+
+A 60 Minutes clip with Manoj Narang describing a cross-sectional mean-reversion test: buy $5 of stocks down 5% last week, sell $10 of stocks up 10%, across the whole ~4,500-stock universe at once. Near 50% win rate per trade but no losing month thanks to breadth and speed, with Joe Saluzzi arguing it rigs the game.
+
+[View original post](https://www.instagram.com/p/DWu_CQnjZjn/)
+### Cochlea — Wi-Fi side-channel attack on Ring cameras
+**Creator:** [@bennjordan](https://instagram.com/bennjordan) · **Tier:** A
+**Tools:** Cochlea, Python, Raspberry Pi
+
+> Encrypted traffic still leaks activity — the general lesson that timing and volume give intent away
+
+Benn Jordan's Cochlea is a Python tool that runs on a Raspberry Pi with a monitor-mode Wi-Fi adapter and passively fingerprints encrypted traffic from cloud cameras like Ring. It detects when a camera sees motion and when the owner opens live view, logging to CSV, which shows how much activity leaks without breaking encryption.
+
+[View original post](https://www.instagram.com/p/DXhxXHOEY7v/)
+
+---
+
+## Action sketch — how to implement this
+
+- Split two years of SPY and QQQ returns into close-to-open and open-to-close legs, then subtract realistic open-gap spreads to see whether the overnight leg survives costs.
+- Export your own broker fills and compare each to the NBBO at the time, so you measure the price improvement or slippage you actually got.
+- For one paid or free-to-play app you use, run REA MCP on your own install and list every model or rule that adapts to you (authorized analysis only).
+- falsifier: if the overnight leg disappears after costs and your fills match or beat the NBBO, the counterparty isn't taking much from you at your size — move your effort to the strategy-loop dive.
+
+---
+
+## Prerequisites
+
+- Free daily open/close price data
+- Broker fill export
+- Ghidra and REA MCP for the app audit
+
+---
+
+## Key tools and resources
+
+- **Cochlea**
+- **Ghidra**
+- **Python**
+- **REA**
+- **Raspberry Pi**
+- **React**
+- **Ubuntu**
+- **XGBoost**
+
+## Creators to follow
+
+- [@7am.research](https://instagram.com/7am.research)
+- [@ayoships](https://instagram.com/ayoships)
+- [@backsla.sh](https://instagram.com/backsla.sh)
+- [@bennjordan](https://instagram.com/bennjordan)
+- [@cbcgem](https://instagram.com/cbcgem)
+- [@eliteoptionstrader2](https://instagram.com/eliteoptionstrader2)
+- [@itsfinancenote](https://instagram.com/itsfinancenote)
+- [@quantpapers](https://instagram.com/quantpapers)
+- [@thestockguytwitch](https://instagram.com/thestockguytwitch)
+
+---
+
+## Related deep dives
+
+Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+
+---
+
+*Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
+</script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script>
+const raw=document.getElementById('md').textContent;
+const html=DOMPurify.sanitize(marked.parse(raw));
+document.getElementById('guide-body').innerHTML=html;
+</script></body></html>
