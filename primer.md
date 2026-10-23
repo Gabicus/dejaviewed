@@ -70,6 +70,8 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 
 ## Next up
 
+**MASTER PLAN:** `docs/plans/GROWTH_PLAN_2026-10-23.md` (12 workstreams, 90-day timeline, KPIs). Status report: `docs/reports/dejaviewed_status_2026-10-23.html` (regen: `scripts/build_report.py`). Week-0 Fable items: hooks.json, no-slop gate + word caps in content_kit, 5 new kit formats + 7-day rotation queue, creator outreach file, UTM tags, /api/ index page.
+
 **Victor (needs his logins):**
 1. Affiliate signups, in order of (links on site × payout): Runway (36 links, $15/sub), Higgsfield (30, 25% rec.), ElevenLabs (18, 22% rec.), n8n (17, 30% rec.), then TradingView, Kling (verify program). For each: sign up → paste tracking URL into `data/monetize/affiliates.json` `affiliate_url`, set `status: active` → tell Fable (or run `python3 scripts/build_monetize.py` + push). Signup URLs are in that file. Rules: no paid ads, no brand bidding, no coupon framing.
 2. Tip jar / GitHub Sponsors handle → `data/monetize/config.json` (`tip_jar_url`, `sponsors_url`). Empty = nothing renders.
