@@ -1,0 +1,673 @@
+{
+ "generated": "2026-10-22",
+ "site": "https://dejaviewed.dev",
+ "method": "Live HTTP checks (curl) on the stratified sample; full-site on-disk crawl of site/ HTML (BeautifulSoup) for distributions, link graph and schema; Lighthouse 13.5.0 mobile on 4 URLs. Read-only.",
+ "sample": [
+  "/",
+  "/start-here",
+  "/catalog",
+  "/prompts",
+  "/guides/",
+  "/guides/gemini-cli",
+  "/guides/onyx-self-hosted-ai",
+  "/guides/llms-txt-standard",
+  "/guides/claude-code-parallel-worktrees",
+  "/guides/hunyuan3d-2",
+  "/guides/quant-project-ideas-list",
+  "/guides/blender-mcp-tripo-pipeline",
+  "/guides/ai-trading-agents",
+  "/deeper/deeper-insight-agent-architecture",
+  "/deeper/deeper-insight-autonomous-brand-machine",
+  "/deeper/deeper-insight-interactive-installations",
+  "/deeper/deeper-insight-scan-fit-print",
+  "/e/0f74b7982e15",
+  "/e/DepYGAgFDiM",
+  "/e/DVCBNQ8jCly",
+  "/e/DeSEkPfjvDA",
+  "/e/CnWjiJ_p6nw",
+  "/e/Dcw7PqeRrI4",
+  "/e/DWo1eJSCddV",
+  "/e/DdCVB6eTvVD",
+  "/e/DXcs7NJiSy1",
+  "/e/C6JRjOVAOf-",
+  "/e/DYiiwmzpRM7",
+  "/e/C9Ai2ERKUHd",
+  "/e/DW1BfmDkrNZ",
+  "/e/DESXhHhx5KW",
+  "/e/DR4980qAHEF",
+  "/feed.xml",
+  "/llms.txt",
+  "/robots.txt",
+  "/sitemap.xml"
+ ],
+ "passes": [
+  "https everywhere; http -> https 301 single hop",
+  ".html -> clean URL 308 single hop; trailing-slash variants 308 single hop",
+  "canonical present, https, clean, self-referential on all 32 sampled live pages and 961/966 pages on disk (missing only on /graph, /graph-cosmos, /board, /links, /about)",
+  "robots.txt valid, allows all incl. AI crawlers, declares sitemap",
+  "noindex correctly on /admin, /rate (and about 404 pages); none of them in sitemap",
+  "meta description present on 966/966 indexable pages, 962 within 70-160 chars",
+  "OG + Twitter summary_large_image on all sampled pages; 112 /og/*.jpg cards are exactly 1200x630 with og:image:width/height (guides, deeper, hubs)",
+  "JSON-LD parses on all pages (0 errors); Article has headline, datePublished, dateModified, author, image; BreadcrumbList valid",
+  "Entry pages have rel=prev/next sequential links and median 9 inlinks (min 2); no orphan entries/guides/deeper",
+  "No broken internal links except /go/* which resolve via _redirects (302)",
+  "Fonts use display=swap",
+  "Hidden guide prerender exists on all 63 guides and covers >=80% of markdown words on every one (see SEO-01 for why it is still a problem)"
+ ],
+ "findings": [
+  {
+   "id": "SEO-01",
+   "area": "indexability/content",
+   "severity": "high",
+   "title": "Guide bodies are client-rendered; the only server HTML copy is a visually-hidden, aria-hidden, lossy prerender",
+   "evidence": "All 63 guides ship an empty <div id=\"guide-body\"> filled at runtime by marked+DOMPurify from <script type=\"text/markdown\">. The server-side copy lives in <div class=\"sr-index\" aria-hidden=\"true\" style=\"position:absolute;width:1px;height:1px;clip:...\">. Verified complete in word terms (prerender median 4,736 words vs markdown 5,142; 0 of 63 under 80%), BUT it is lossy: 0 <a> links (markdown has a median of 22 external citations per guide), no <ul>/<pre>/<code>, and shell \"# comment\" lines inside code fences become <h1> (hunyuan3d-2 has 5 H1s such as \"<h1>clone code (small)\", blender-mcp-tripo-pipeline 15, n8n-mcp-and-obsidian-skills 18). Server-HTML visible words outside the hidden div: median 130, 34 of 63 guides under 150. Non-JS crawlers (GPTBot, ClaudeBot, PerplexityBot, CCBot, most AEO fetchers) therefore read only hidden text with no links; Googlebot gets the content twice in the rendered DOM (hidden + visible), i.e. 2 H1s on every guide. Hidden text whose only purpose is crawlers is the pattern Google spam policies describe, even when identical to visible text.",
+   "affected_estimate": "63 guides (all)",
+   "fix": "scripts/build_guides.py: render the markdown to HTML at build time (python-markdown or mistune with fenced_code + tables) directly into #guide-body; remove the marked/DOMPurify <script> tags and the client render block; scripts/search_prep.py: stop emitting .sr-index for guides (point data-pagefind-body at #guide-body instead). Keep the <script type=\"text/markdown\"> only if something else reads it (prompt-system copy buttons), otherwise drop it to halve HTML weight.",
+   "effort": "M",
+   "expected_impact": "Full linked content for every crawler without JS; removes duplicate/hidden text and multi-H1; guide LCP should drop roughly 1-2 s on mobile (Lighthouse attributes 1,053 ms to marked and 184 ms to DOMPurify as render-blocking, LCP element is the JS-inserted first paragraph with 2.2 s render delay)."
+  },
+  {
+   "id": "SEO-02",
+   "area": "performance",
+   "severity": "high",
+   "title": "Home and catalog block rendering on a 2.7 MB catalog.js (798 KB brotli) loaded synchronously",
+   "evidence": "index.html and catalog.html include <script src=\"catalog.js\"> and <script src=\"deep_dives.js\"> (273 KB raw) as parser-blocking scripts. Lighthouse mobile: /catalog performance 35, FCP=LCP 7.6 s, TBT 1,161 ms, TTI 11.8 s, main-thread work 20.4 s, render-blocking est. 5.58 s (catalog.js alone 6.1 s). Home performance 66, TBT 583 ms, TTI 7.8 s, 889 KB of script transferred. Home only needs counts/featured items from it.",
+   "affected_estimate": "2 pages (home + catalog) — the two highest-authority URLs",
+   "fix": "scripts/catalog_js.py: emit a small catalog-index (id,title,tier,collection,thumb) and lazy-load full records on demand; add defer to all non-critical scripts in index.html/catalog.html; scripts/build_landing_meta.py: give the home page the few numbers it needs inline instead of loading catalog.js. Server-render the first 24-48 catalog cards into catalog.html so LCP is static HTML.",
+   "effort": "M",
+   "expected_impact": "Catalog LCP from 7.6 s toward <2.5 s (passes Core Web Vitals LCP); home TBT/INP improves; both hubs become crawlable without JS."
+  },
+  {
+   "id": "SEO-03",
+   "area": "crawlability/internal-linking",
+   "severity": "high",
+   "title": "Internal links point at .html URLs that 308-redirect, and the site nav exists only in JavaScript",
+   "evidence": "Static HTML contains 16,487 internal hrefs ending in .html across 961 pages (e.g. 2,508x href=\"../catalog.html\", 846x \"../index.html\", entry prev/next \"Dd6W2q5gZJ-.html\"); every one costs a 308 hop to the clean URL. The nav is built by shared.js DV.nav() with BASE+\"catalog.html\", \"start-here.html\", \"prompts.html\", \"search.html\", \"graph.html\", \"board.html\" — also .html. Because nav is JS-only, /start-here, /links, /graph, /graph-cosmos and /board have 0 static inlinks; /start-here and /search are unreachable from / in a no-JS crawl. llms.txt and llms-full link .html URLs too.",
+   "affected_estimate": "961 pages emit .html links; 5 orphan pages",
+   "fix": "scripts/render_entries.py, scripts/build_guides.py, scripts/deeper_dives.py, scripts/render_template.py, site/shared.js (DV.nav BASE+...): emit clean root-relative URLs (/catalog, /e/<id>, /guides/<slug>) everywhere; render the nav as static <nav> HTML in the page templates (JS may enhance it). scripts/check_links.py: fail the build on any internal href ending .html.",
+   "effort": "M",
+   "expected_impact": "Removes ~16k redirecting links from Google's link graph (redirects leak crawl budget and consolidate signals slowly on a new site with 13 of 20 sampled URLs \"discovered - not indexed\"); puts start-here and the nav hubs into the static graph."
+  },
+  {
+   "id": "SEO-04",
+   "area": "crawlability/architecture",
+   "severity": "high",
+   "title": "Entry pages sit 3-5 clicks deep in the static link graph; the catalog hub has no crawlable links to them",
+   "evidence": "BFS over static HTML from /: guides at depth 2, deeper at 3, entries at 3 (306), 4 (416) and 5 (124). /catalog server HTML has 0 <a> to entries and 277 words (cards are rendered from catalog.js). /e/ (the static all-entries index, 848 links) is linked only from the 846 entry pages themselves, not from home or catalog. Home links statically only to /catalog and /guides/.",
+   "affected_estimate": "846 entry pages (87% of URLs)",
+   "fix": "scripts/render_template.py / site/index.html and catalog.html: add a static link to /e/ (\"Browse all 846 entries\") and to /start-here, /prompts in a server-rendered nav/footer; add per-collection or per-tier static index pages (e.g. /e/?c=quant is not crawlable — use /collections/<slug>) generated by scripts/render_entries.py so every entry is within 2-3 clicks of home.",
+   "effort": "S",
+   "expected_impact": "Shallower discovery path and stronger internal PageRank to the long tail; helps move entries out of \"discovered - currently not indexed\"."
+  },
+  {
+   "id": "SEO-05",
+   "area": "structured-data/social",
+   "severity": "medium",
+   "title": "Entry pages have no primary-entity schema, no image on the page, and undersized og:images",
+   "evidence": "All 846 /e/ pages carry only Organization + BreadcrumbList JSON-LD (no CreativeWork/SocialMediaPosting/VideoObject describing the entry). They contain 0 <img> elements. og:image is /thumb/<id>.jpg with no og:image:width/height; of 876 thumbs, 569 are under 600 px wide, 250 are 600-1199, only 3 are 1200x630; 155 exceed 100 KB (max 2 MB, all JPEG). summary_large_image cards and Google Discover want >=1200 px wide.",
+   "affected_estimate": "846 entry pages",
+   "fix": "scripts/build_seo.py: add a CreativeWork (or SocialMediaPosting with sharedContent url) node per entry with name, description, author=creator Person with url, datePublished=entry date, image, isBasedOn=source post URL, about=tools/techniques; add og:image:width/height. scripts/build_og.py: generate 1200x630 cards for entries (title + thumb) like the guide cards. scripts/render_entries.py: show the thumbnail with width/height/alt/loading=\"lazy\" and emit a 480w WebP.",
+   "effort": "M",
+   "expected_impact": "Eligibility for image search and richer link previews; clearer entity understanding for Google and AI answer engines."
+  },
+  {
+   "id": "SEO-06",
+   "area": "performance/CWV",
+   "severity": "high",
+   "title": "Home page Cumulative Layout Shift 0.323 (poor; threshold 0.25)",
+   "evidence": "Lighthouse mobile on https://dejaviewed.dev/: CLS 0.323, culprit \"body > main#lp > section.sec\" (2 layout shifts) — content injected after load by landing_meta.js/catalog.js pushes the section down. Guide, entry and catalog CLS are 0.",
+   "affected_estimate": "1 page (home)",
+   "fix": "scripts/build_landing_meta.py + site/index.html: server-render the numbers/featured blocks or reserve their height with min-height/aspect-ratio in shared.css; avoid inserting content above existing sections after first paint.",
+   "effort": "S",
+   "expected_impact": "Home passes CLS in field data once CrUX accumulates; better first impression for the most-linked URL."
+  },
+  {
+   "id": "SEO-07",
+   "area": "sitemap/freshness",
+   "severity": "medium",
+   "title": "Every sitemap <lastmod> and every Article dateModified is the build date",
+   "evidence": "969 of 974 sitemap URLs have <lastmod>2026-10-22</lastmod>; all 108 Article nodes (63 guides + 45 deeper) have dateModified 2026-10-22 regardless of whether the content changed. Google stops trusting lastmod that changes without content changes; uniform dates also make the \"Updated\" signal meaningless for answer engines.",
+   "affected_estimate": "969 sitemap URLs, 108 Article nodes",
+   "fix": "scripts/build_api.py (sitemap) and scripts/build_seo.py (dateModified): compute per-page content hashes, persist {url: [hash, last_changed]} in data/seo/lastmod.json, and only bump lastmod/dateModified when the hash changes (or use git log -1 --format=%cs on the source markdown/catalog row).",
+   "effort": "S",
+   "expected_impact": "Restores lastmod as a crawl-prioritisation signal so real updates get recrawled quickly."
+  },
+  {
+   "id": "SEO-08",
+   "area": "sitemap/indexability",
+   "severity": "medium",
+   "title": "Sitemap lists low-value and non-HTML URLs",
+   "evidence": "sitemap.xml includes /graph, /graph-cosmos, /board (no canonical, no meta description, no H1, no JSON-LD, 0 static inlinks), /search (internal search, 49 words, empty without a query), 6 /api/*.json files, /llms.txt, /llms-full.txt and /feed.xml. JSON/TXT/XML cannot rank and dilute the sitemap's quality ratio; /e/ (the static all-entries index, canonical https://dejaviewed.dev/e/) is missing.",
+   "affected_estimate": "14 URLs",
+   "fix": "scripts/build_api.py: emit only canonical, indexable HTML pages; add /e/; add <meta name=\"robots\" content=\"noindex,follow\"> to search.html; for graph/graph-cosmos/board either add canonical + description + H1 + intro copy via scripts/build_seo.py or noindex them. Keep API/llms discoverable via robots.txt, llms.txt and <link rel=\"alternate\">.",
+   "effort": "S",
+   "expected_impact": "Cleaner signal for Search Console coverage; fewer \"crawled - not indexed\" URLs."
+  },
+  {
+   "id": "SEO-09",
+   "area": "indexability",
+   "severity": "medium",
+   "title": "Soft-404s: unknown and wrong-case URLs return 200 with the homepage",
+   "evidence": "/this-does-not-exist -> 200 (homepage HTML); /e/depygagfdim (lowercased valid id DepYGAgFDiM) -> 200 homepage; /deeper/ -> 200 homepage (there is no deeper index page). Noted per brief: the 404 fix is in progress by another agent — listed only so it is tracked; the extra cases to include are case-variant entry ids and the missing /deeper/ index.",
+   "affected_estimate": "unbounded (any unknown path)",
+   "fix": "In progress (site/404.html by other agent). Also: generate site/deeper/index.html (list of 45 deeper dives) in scripts/deeper_dives.py, or 301 /deeper/ -> /guides/ in site/_redirects.",
+   "effort": "S",
+   "expected_impact": "Prevents soft-404 classification and duplicate-of-homepage noise in Search Console."
+  },
+  {
+   "id": "SEO-10",
+   "area": "on-page",
+   "severity": "medium",
+   "title": "Titles are long: 789 of 966 indexable titles exceed 70 characters",
+   "evidence": "Title length median 80 chars; >60 chars on 796 entries, 57 guides, 45 deeper. Example entry: \"Lifestyle Magazines — editorial layout & design reference scans — DejaViewed\" (77). Google truncates around 580-600 px (~55-60 chars), so the brand suffix and often the differentiating half are cut and Google rewrites many of them. Uniqueness is good: only 1 duplicate title pair (\"Comment “agent” to get my Claude code guides — DejaViewed\").",
+   "affected_estimate": "789 pages",
+   "fix": "scripts/render_entries.py (entry <title>), scripts/build_guides.py, scripts/deeper_dives.py: keep the subject first, trim to <=60 chars, drop \" — DejaViewed\" when the title would exceed 60, and rewrite the \"Comment “agent”...\" pair (call-to-action captions are poor titles).",
+   "effort": "S",
+   "expected_impact": "Higher CTR from fuller, un-rewritten titles."
+  },
+  {
+   "id": "SEO-11",
+   "area": "on-page",
+   "severity": "medium",
+   "title": "Guide and deeper-dive twins share the same meta description",
+   "evidence": "46 description values are used twice (92 pages): each /deeper/deeper-insight-<slug> reuses its /guides/<slug> description (e.g. \"The art market's gatekeeping structure — galleries, curators...\" on /guides/art-market-disruption, /deeper/deeper-insight-art-market-disruption and /e/DZZxvq7IPeE). 669 descriptions are machine-truncated with \"…\" at ~155 chars.",
+   "affected_estimate": "92 pages",
+   "fix": "scripts/build_seo.py: derive deeper descriptions from the deeper page's own lede; end descriptions on a sentence boundary under 155 chars instead of hard truncation with an ellipsis.",
+   "effort": "S",
+   "expected_impact": "Distinct snippets for the two pages per topic; less cannibalisation between guide and deeper twin."
+  },
+  {
+   "id": "SEO-12",
+   "area": "on-page/headings",
+   "severity": "medium",
+   "title": "H1 and heading-hierarchy defects",
+   "evidence": "12 guides have 2-18 H1s in server HTML (code-comment bug, see SEO-01); after client render every guide has 2 H1s. /catalog, /graph, /graph-cosmos, /board have no H1. All 846 entry pages jump H1 -> H3 (Lighthouse heading-order fails on entry and catalog); all 45 deeper pages also skip levels.",
+   "affected_estimate": "~910 pages",
+   "fix": "SEO-01 fixes guides. scripts/render_entries.py: make the tableau section headings H2 (\".level h3\" -> h2, keep the styling in CSS). catalog.html / graph / board templates: add one visible H1.",
+   "effort": "S",
+   "expected_impact": "Cleaner document outline for crawlers and screen readers (accessibility score 86 on catalog)."
+  },
+  {
+   "id": "SEO-13",
+   "area": "structured-data",
+   "severity": "medium",
+   "title": "FAQPage markup on all 63 guides earns no rich result and its Q/A pairs do not match",
+   "evidence": "Since August 2023 Google shows FAQ rich results only for well-known authoritative government and health sites, so the 63 FAQPage nodes (254 questions) produce no SERP feature. Worse, answers do not answer their questions: gemini-cli Q \"Are the quotas and model names in my notes from Google's page today...?\" has A \"Step 1, Ground truth: install, quotas, terms, output schema: Pin what Gemini CLI actually is today...\". The question text is visible on the page (254/254 found), so it is not hidden-markup, but mismatched Q/A is a structured-data quality risk.",
+   "affected_estimate": "63 guides",
+   "fix": "scripts/build_seo.py: either drop FAQPage, or generate genuine reader questions with the answer paragraph that actually answers them (the \"In two sentences\" lede is a good A for \"What is <tool>?\"). If kept, keep it for AI answer engines only and make sure each answer is the visible text under that question.",
+   "effort": "S",
+   "expected_impact": "Removes a low-quality structured-data signal; no ranking loss (no rich result today)."
+  },
+  {
+   "id": "SEO-14",
+   "area": "E-E-A-T",
+   "severity": "medium",
+   "title": "No real About/author identity for DejaViewed",
+   "evidence": "/about/ is a Next.js export titled \"Career Intelligence System\" (\"Personal Work Intelligence System — 16 years of professional work\") that never mentions DejaViewed and has no canonical. All 108 Article nodes use author = Organization \"DejaViewed\"; there is no Person, no editorial/method page, no contact page on the domain (contact is only via /go/service -> 1gabe.com/contact). Organization.sameAs lists GitHub and Instagram only.",
+   "affected_estimate": "sitewide",
+   "fix": "Add site/about-dejaviewed (or replace /about/) generated by scripts/build_start_here.py-style script: who curates, how entries are processed (transcription, enrichment, AI assistance disclosure), update cadence, contact. scripts/build_seo.py: author -> Person {name, url: about page, sameAs: [github, instagram, 1gabe.com]}, publisher stays Organization; add the about/contact link to the static footer.",
+   "effort": "S",
+   "expected_impact": "Stronger trust signals for YMYL-adjacent topics (quant/trading guides) and for AI answer engines that weigh authorship."
+  },
+  {
+   "id": "SEO-15",
+   "area": "content-quality",
+   "severity": "medium",
+   "title": "Internal agent/process notes are published in guide text",
+   "evidence": "Phrases leaked into live guides: \"this session\" in 6 guide/deeper pages, \"sandbox blocked git clone\" in 3, \"clone pending\" in 3, \"Repo path: repos/...\" in 3, \"Not cloned locally\" in 1. Example (gemini-cli, live): \"Repo path: repos/gemini-cli/ (clone pending — sandbox blocked git clone in this session; run git clone ... manually)\".",
+   "affected_estimate": "~6-9 pages",
+   "fix": "Edit the source markdown for those guides; add a denylist lint to scripts/quality_gate.py (or rebuild.sh) that fails the build on \"this session\", \"sandbox\", \"repos/\", \"clone pending\", \"TODO\".",
+   "effort": "S",
+   "expected_impact": "Removes visible low-quality / auto-generated signals that hurt helpful-content assessment."
+  },
+  {
+   "id": "SEO-16",
+   "area": "performance",
+   "severity": "medium",
+   "title": "Render-blocking third-party CSS/JS and an unpinned CDN dependency",
+   "evidence": "Google Fonts stylesheet is render-blocking on every page (Lighthouse est. 888-949 ms); fonts are 72-184 KB (Inter + JetBrains Mono, up to 4 woff2 files on /catalog). display=swap is present (font-display audit passes). Guides load https://cdn.jsdelivr.net/npm/marked/marked.min.js with NO version and dompurify@3 (major-range): a breaking marked release would blank all 63 guide bodies for users and Googlebot overnight.",
+   "affected_estimate": "all pages (fonts); 63 guides (CDN)",
+   "fix": "Self-host subsetted woff2 (latin) for Inter 400/600/800 and JetBrains Mono 400 under site/fonts/, preload the two above-the-fold files, @font-face in site/shared.css; remove fonts.googleapis.com links from templates. Pin marked@<exact> and dompurify@<exact> in scripts/build_guides.py or remove them entirely via SEO-01.",
+   "effort": "S",
+   "expected_impact": "~0.5-1 s faster FCP on mobile; eliminates a single point of failure for guide content."
+  },
+  {
+   "id": "SEO-17",
+   "area": "performance/caching",
+   "severity": "low",
+   "title": "No _headers file: static assets cached 4 h, HTML not cached at the edge",
+   "evidence": "curl: HTML cache-control \"public, max-age=0, must-revalidate\" (cf-cache-status DYNAMIC); shared.css, catalog.js, /thumb/*.jpg and /og/*.jpg \"max-age=14400\". site/_headers does not exist.",
+   "affected_estimate": "all static assets",
+   "fix": "Add site/_headers: /thumb/* and /og/* -> \"Cache-Control: public, max-age=2592000, immutable\" (filenames are content ids); /shared.css,/shared.js,/catalog.js -> max-age=86400, stale-while-revalidate=604800 (or fingerprint names in scripts/render_template.py and go immutable).",
+   "effort": "S",
+   "expected_impact": "Faster repeat views and fewer revalidations; small CWV gain."
+  },
+  {
+   "id": "SEO-18",
+   "area": "security-headers",
+   "severity": "low",
+   "title": "Missing HSTS, CSP and Permissions-Policy",
+   "evidence": "Live headers on / and /guides/gemini-cli: x-content-type-options: nosniff and referrer-policy: strict-origin-when-cross-origin present; Strict-Transport-Security, Content-Security-Policy, Permissions-Policy, X-Frame-Options absent. http:// -> https:// is a 301 (good). No mixed content found (0 http:// src/href in static HTML).",
+   "affected_estimate": "sitewide",
+   "fix": "site/_headers \"/*\": Strict-Transport-Security: max-age=31536000; includeSubDomains; Permissions-Policy: camera=(), microphone=(), geolocation=(); Content-Security-Policy-Report-Only first (scripts from self, cdn.jsdelivr.net, static.cloudflareinsights.com; fonts.gstatic.com) then enforce; X-Frame-Options: SAMEORIGIN.",
+   "effort": "S",
+   "expected_impact": "Hygiene and Lighthouse best-practices; not a ranking factor beyond HTTPS."
+  },
+  {
+   "id": "SEO-19",
+   "area": "performance",
+   "severity": "low",
+   "title": "Cloudflare Email Obfuscation rewrites \"git@github.com\" and injects a render-blocking script",
+   "evidence": "On / and /catalog the string git@github.com is replaced by <a class=\"__cf_email__\" data-cfemail=...> (crawlers see \"[email protected]\") and /cdn-cgi/scripts/.../email-decode.min.js is added; Lighthouse lists it as render-blocking (est. 720 ms on home, 578 ms on catalog).",
+   "affected_estimate": "2 pages",
+   "fix": "Cloudflare dashboard -> Scrape Shield -> Email Address Obfuscation off (no real emails are published), or wrap the clone command in <!--email_off-->...<!--/email_off--> in the template.",
+   "effort": "S",
+   "expected_impact": "Removes one render-blocking request on the two heaviest pages."
+  },
+  {
+   "id": "SEO-20",
+   "area": "AEO/llms.txt",
+   "severity": "low",
+   "title": "llms.txt is stale and does not list the guides",
+   "evidence": "Live /llms.txt (1,072 bytes) says \"20 deep-dive guides\" (63 exist + 45 deeper), links .html URLs (catalog.html, prompts.html) that redirect, points to /catalog.json rather than /api/catalog.json, and has no per-guide links. Format matches llmstxt.org (H1, blockquote, H2 link lists) but there is no \"## Optional\" section and no guide/deeper list, which is the main thing an agent wants.",
+   "affected_estimate": "1 file",
+   "fix": "scripts/build_api.py: regenerate llms.txt with live counts, clean URLs, a \"## Guides\" section (63 lines \"- [Title](https://dejaviewed.dev/guides/<slug>): one-line answer\"), \"## Deeper dives\" (45), \"## Data\" (api/*.json), and \"## Optional\" (llms-full.txt, feed.xml).",
+   "effort": "S",
+   "expected_impact": "Better agent/answer-engine routing to the strongest pages."
+  },
+  {
+   "id": "SEO-21",
+   "area": "images",
+   "severity": "low",
+   "title": "Image weight and markup on deeper pages and catalog thumbs",
+   "evidence": "464 <img> on deeper pages (e.g. 50 on deeper-insight-claude-mastery): all alt=\"\" (decorative — acceptable for duplicate thumbnails, but they are the only images and carry no text), none have width/height, none use loading=\"lazy\". Catalog: Lighthouse image-delivery saving est. 51 KB, first thumb 126 KB. Thumbs are JPEG only; 155/876 > 100 KB, max 2 MB. A corrupt stray file site/thumb/DVW9iXtiIty_tmp.jpg is deployed.",
+   "affected_estimate": "45 deeper pages, catalog",
+   "fix": "scripts/deeper_dives.py: add width/height, loading=\"lazy\" (except first), and alt = entry title. scripts/download_thumbs.py / build_og.py: emit 480w WebP alongside JPEG, cap at ~60 KB; delete *_tmp.jpg from site/thumb in the build.",
+   "effort": "S",
+   "expected_impact": "Lower LCP/CLS risk on image-heavy pages; image-search eligibility."
+  },
+  {
+   "id": "SEO-22",
+   "area": "links/compliance",
+   "severity": "low",
+   "title": "/go/ outbound redirect links carry no rel=\"sponsored\"/\"nofollow\"",
+   "evidence": "/go/diy and /go/service appear on 961 pages; tool /go/ links on dozens (e.g. /go/blender 23 pages). They 302 to external sites (all pending today, per build_monetize). When any becomes an affiliate URL, Google's link-spam policy requires rel=\"sponsored\". 0 external links in the site use nofollow/ugc/sponsored. 15 target=_blank links on /links lack rel=noopener (modern browsers imply it).",
+   "affected_estimate": "961 pages",
+   "fix": "scripts/build_monetize.py: emit rel=\"sponsored nofollow\" on every /go/ link now (pending or active) and optionally add \"Disallow: /go/\" to site/robots.txt so crawlers do not spend budget on redirect hops.",
+   "effort": "S",
+   "expected_impact": "Compliance before monetization goes live; no ranking downside."
+  },
+  {
+   "id": "SEO-23",
+   "area": "structured-data",
+   "severity": "low",
+   "title": "Minor schema notes: retired SearchAction, Dataset license claim",
+   "evidence": "WebSite.potentialAction SearchAction (/search?q=) is valid, but Google retired the sitelinks search box in Nov 2024, so it has no SERP effect. Dataset node on / and /catalog declares license https://opensource.org/licenses/MIT while its own description says original posts remain the property of their creators — the dataset includes third-party captions/transcripts, so an MIT claim is inaccurate for those fields and could matter for Google Dataset Search.",
+   "affected_estimate": "2 pages",
+   "fix": "scripts/build_seo.py: keep SearchAction (harmless) or drop it; scope the Dataset license to the metadata/code (e.g. CC BY 4.0 for curation fields) and state that source content is linked, not relicensed.",
+   "effort": "S",
+   "expected_impact": "Accuracy; low ranking impact."
+  },
+  {
+   "id": "SEO-24",
+   "area": "crawlers/CDN",
+   "severity": "low",
+   "title": "Cloudflare bot features inject hidden links and challenge JS into HTML",
+   "evidence": "For unverified clients (including a spoofed Googlebot UA) Cloudflare injects <a href=\"/cdn-cgi/content?id=...\" aria-hidden rel=\"nofollow\" style=\"display:none\"> (AI Labyrinth) and /cdn-cgi/challenge-platform JS. GPTBot, ClaudeBot, PerplexityBot and CCBot UAs received 200 with full HTML. Could not verify behaviour for verified Googlebot from this machine (cannot originate from Google IPs); Cloudflare documents that verified crawlers are excluded.",
+   "affected_estimate": "sitewide",
+   "fix": "No action required; check Cloudflare Security -> Bots that \"Block AI bots\" stays off (robots.txt welcomes them) and watch GSC Crawl Stats for /cdn-cgi/ fetches.",
+   "effort": "S",
+   "expected_impact": "Informational."
+  },
+  {
+   "id": "SEO-25",
+   "area": "content/AEO",
+   "severity": "low",
+   "title": "Citations and answer-first coverage",
+   "evidence": "Guide markdown carries a median of 22 external links, but 7 of 63 guides have zero outbound citations. \"In two sentences\" answer lede is present in 63/63 guides on disk (another agent is adding/refining it — in progress, not double-reported). lang=\"en\" on all 970 pages; no hreflang needed (single language). Feed: valid RSS 2.0 with atom:self, 75 items, all pubDates RFC-822 parseable, no duplicate guids.",
+   "affected_estimate": "7 guides",
+   "fix": "scripts/build_guides.py / quality_gate.py: warn when a guide has fewer than 3 primary-source links (official docs, repo, paper).",
+   "effort": "S",
+   "expected_impact": "AEO trust; answer engines prefer cited claims."
+  }
+ ],
+ "lighthouse": {
+  "https://dejaviewed.dev/": {
+   "scores": {
+    "performance": 66,
+    "accessibility": 96,
+    "best-practices": 81,
+    "seo": 100
+   },
+   "lcp_ms": 2188,
+   "fcp_ms": 2188,
+   "cls": 0.323,
+   "tbt_ms": 583,
+   "speed_index_ms": 2569,
+   "bytes": {
+    "total": {
+     "transfer": 983533,
+     "requests": 15
+    },
+    "script": {
+     "transfer": 889071,
+     "requests": 7
+    },
+    "font": {
+     "transfer": 71894,
+     "requests": 2
+    },
+    "document": {
+     "transfer": 12571,
+     "requests": 1
+    },
+    "stylesheet": {
+     "transfer": 8461,
+     "requests": 2
+    },
+    "image": {
+     "transfer": 0,
+     "requests": 0
+    },
+    "third-party": {
+     "transfer": 83966,
+     "requests": 4
+    }
+   },
+   "render_blocking_est_ms": {
+    "https://dejaviewed.dev/deep_dives.js": 0,
+    "https://dejaviewed.dev/landing_meta.js": 0,
+    "https://dejaviewed.dev/shared.css": 337,
+    "00;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap": 888,
+    "https://dejaviewed.dev/shared.js": 720,
+    "wed.dev/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js": 720
+   },
+   "failing_non_perf_audits": {
+    "target-size": "Touch targets do not have sufficient size or spacing.",
+    "deprecations": "Uses deprecated APIs"
+   }
+  },
+  "https://dejaviewed.dev/guides/gemini-cli": {
+   "scores": {
+    "performance": 70,
+    "accessibility": 98,
+    "best-practices": 81,
+    "seo": 100
+   },
+   "lcp_ms": 3856,
+   "fcp_ms": 3406,
+   "cls": 0,
+   "tbt_ms": 371,
+   "speed_index_ms": 4887,
+   "bytes": {
+    "total": {
+     "transfer": 157825,
+     "requests": 13
+    },
+    "font": {
+     "transfer": 79833,
+     "requests": 2
+    },
+    "script": {
+     "transfer": 47888,
+     "requests": 5
+    },
+    "document": {
+     "transfer": 20176,
+     "requests": 1
+    },
+    "stylesheet": {
+     "transfer": 8404,
+     "requests": 2
+    },
+    "image": {
+     "transfer": 0,
+     "requests": 0
+    },
+    "third-party": {
+     "transfer": 114849,
+     "requests": 6
+    }
+   },
+   "render_blocking_est_ms": {
+    "00;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap": 946,
+    "https://dejaviewed.dev/shared.js": 722,
+    "https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js": 184,
+    "https://cdn.jsdelivr.net/npm/marked/marked.min.js": 1053,
+    "https://dejaviewed.dev/shared.css": 286
+   },
+   "failing_non_perf_audits": {
+    "landmark-one-main": "Document does not have a main landmark.",
+    "deprecations": "Uses deprecated APIs"
+   }
+  },
+  "https://dejaviewed.dev/e/0252755ce996": {
+   "scores": {
+    "performance": 86,
+    "accessibility": 98,
+    "best-practices": 81,
+    "seo": 100
+   },
+   "lcp_ms": 3082,
+   "fcp_ms": 3082,
+   "cls": 0,
+   "tbt_ms": 0,
+   "speed_index_ms": 4508,
+   "bytes": {
+    "total": {
+     "transfer": 119074,
+     "requests": 11
+    },
+    "font": {
+     "transfer": 79833,
+     "requests": 2
+    },
+    "script": {
+     "transfer": 25357,
+     "requests": 3
+    },
+    "stylesheet": {
+     "transfer": 8278,
+     "requests": 2
+    },
+    "document": {
+     "transfer": 4070,
+     "requests": 1
+    },
+    "image": {
+     "transfer": 0,
+     "requests": 0
+    },
+    "third-party": {
+     "transfer": 91725,
+     "requests": 4
+    }
+   },
+   "render_blocking_est_ms": {
+    "r:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap": 949,
+    "https://dejaviewed.dev/shared.js": 611,
+    "https://dejaviewed.dev/shared.css": 264
+   },
+   "failing_non_perf_audits": {
+    "heading-order": "Heading elements are not in a sequentially-descending order",
+    "deprecations": "Uses deprecated APIs"
+   }
+  },
+  "https://dejaviewed.dev/catalog": {
+   "scores": {
+    "performance": 35,
+    "accessibility": 86,
+    "best-practices": 81,
+    "seo": 100
+   },
+   "lcp_ms": 7577,
+   "fcp_ms": 7577,
+   "cls": 0,
+   "tbt_ms": 1161,
+   "speed_index_ms": 7577,
+   "bytes": {
+    "total": {
+     "transfer": 1257499,
+     "requests": 18
+    },
+    "script": {
+     "transfer": 888478,
+     "requests": 6
+    },
+    "font": {
+     "transfer": 184217,
+     "requests": 4
+    },
+    "image": {
+     "transfer": 158004,
+     "requests": 2
+    },
+    "document": {
+     "transfer": 16911,
+     "requests": 1
+    },
+    "stylesheet": {
+     "transfer": 8360,
+     "requests": 2
+    },
+    "third-party": {
+     "transfer": 196188,
+     "requests": 6
+    }
+   },
+   "render_blocking_est_ms": {
+    "https://dejaviewed.dev/catalog.js": 6086,
+    "00;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap": 901,
+    "https://dejaviewed.dev/deep_dives.js": 1999,
+    "https://dejaviewed.dev/shared.css": 223,
+    "https://dejaviewed.dev/shared.js": 578,
+    "wed.dev/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js": 578
+   },
+   "failing_non_perf_audits": {
+    "heading-order": "Heading elements are not in a sequentially-descending order",
+    "select-name": "Select elements do not have associated label elements.",
+    "target-size": "Touch targets do not have sufficient size or spacing.",
+    "landmark-one-main": "Document does not have a main landmark.",
+    "deprecations": "Uses deprecated APIs"
+   }
+  },
+  "_meta": "Lighthouse 13.5.0, mobile preset (default throttling), headless Chrome, single run each on 2026-10-22; expect +-10 point run-to-run variance."
+ },
+ "distributions": {
+  "scope": "computed over all 966 indexable HTML pages in site/ (excludes pagefind/, legacy/, about/_next, ai_presentation/, doetug/, and 4 noindex pages)",
+  "title_len": {
+   "bins": {
+    "0-0": 0,
+    "1-29": 10,
+    "30-60": 58,
+    "61-70": 109,
+    "71-999": 789
+   },
+   "median": 80.0,
+   "over_60_by_section": {
+    "guides": 57,
+    "deeper": 45,
+    "e": 796
+   }
+  },
+  "desc_len": {
+   "bins": {
+    "0-0": 3,
+    "1-69": 1,
+    "70-160": 962,
+    "161-999": 0
+   },
+   "median": 154.0,
+   "ending_in_ellipsis": 669
+  },
+  "word_count": {
+   "note": "server-HTML visible words, scripts/hidden prerender removed; for guides the markdown word count is used because the body is client-rendered",
+   "bins": {
+    "0-149": 6,
+    "150-299": 82,
+    "300-599": 494,
+    "600-1199": 273,
+    "1200-1000000": 111
+   },
+   "by_section": {
+    "e": {
+     "median": 518.0,
+     "min": 162,
+     "under_150": 0,
+     "under_300": 80
+    },
+    "guides": {
+     "median": 5142,
+     "min": 4155,
+     "under_150": 0,
+     "under_300": 0
+    },
+    "deeper": {
+     "median": 4237,
+     "min": 3646,
+     "under_150": 0,
+     "under_300": 0
+    }
+   },
+   "guides_static_html_words_without_js": {
+    "median": 130,
+    "under_150": 34
+   },
+   "under_150_pages": [
+    "/about",
+    "/board",
+    "/graph",
+    "/graph-cosmos",
+    "/links",
+    "/search"
+   ]
+  },
+  "crawl_depth": {
+   "note": "BFS from / over static <a href> in site/ HTML (no JS execution; nav injected by shared.js is NOT counted)",
+   "distribution": {
+    "0": 1,
+    "1": 2,
+    "2": 63,
+    "3": 351,
+    "4": 418,
+    "5": 124,
+    "unreachable": 7
+   },
+   "max_depth": 5,
+   "by_section": {
+    "e": {
+     "3": 306,
+     "4": 416,
+     "5": 124
+    },
+    "guides": {
+     "2": 63
+    },
+    "deeper": {
+     "3": 45
+    }
+   },
+   "unreachable_static": [
+    "/about",
+    "/board",
+    "/graph",
+    "/graph-cosmos",
+    "/links",
+    "/search",
+    "/start-here"
+   ]
+  }
+ },
+ "top_10_fixes_ranked": [
+  "SEO-01",
+  "SEO-02",
+  "SEO-03",
+  "SEO-04",
+  "SEO-06",
+  "SEO-05",
+  "SEO-07",
+  "SEO-08",
+  "SEO-15",
+  "SEO-14"
+ ]
+}
