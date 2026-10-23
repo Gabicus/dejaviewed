@@ -186,6 +186,8 @@ def prerender_index(meta: dict | None = None) -> None:
          "A force-directed map of the creators you keep saving, and the tools and techniques they share."),
         ("✦", "g-blue", "Graph · Cosmos", "/graph-cosmos", n_tools + n_tech, "tools + techniques",
          "The same knowledge as a drifting canvas galaxy. Zoom out to see the clusters you didn’t know you had."),
+        ("⇶", "g-gold", "Flow", "/flow", n_guides, "guides fed",
+         "How every save flows: sources to pillars, tools, techniques, guides and outputs, with the gaps lit up."),
         ("▦", "g-pink", "Board", "/board", None, "",
          "A drag-to-connect thought board. Pull saves onto a canvas and wire them into projects and ideas."),
         ("❯", "g-ok", "API for agents", None, None, "",

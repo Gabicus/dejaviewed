@@ -55,14 +55,14 @@ NAV_RE = re.compile(re.escape(NAV_START) + r".*?" + re.escape(NAV_END) + r"\n?",
 NAV_LINKS = [
     ("/", "Home"), ("/start-here", "Start here"), ("/catalog", "Catalog"),
     ("/guides/", "Guides"), ("/prompts", "Prompts"), ("/e/", "All entries"),
-    ("/collections/", "Collections"), ("/tools/", "Tools"), ("/compare/", "Compare"), ("/search", "Search"), ("/graph", "Graph"),
+    ("/collections/", "Collections"), ("/tools/", "Tools"), ("/compare/", "Compare"), ("/search", "Search"), ("/graph", "Graph"), ("/flow", "Flow"),
     ("/graph-cosmos", "Cosmos"), ("/board", "Board"), ("/links/", "Links"),
     ("/method", "How it works"), ("/feed.xml", "RSS"), ("/llms.txt", "llms.txt"),
 ]
 NAV_CSS = (".sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid "
            "var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',"
            "ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}"
-           ".sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}"
+           ".sitenav a{display:inline-block;color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}"
            ".sitenav a:hover{color:var(--accent,#a78bfa)}")
 
 # Protected regions are consumed whole by the scanner; <a ...> tags outside them get rewritten.

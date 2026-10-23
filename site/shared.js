@@ -82,11 +82,12 @@
       { id:'prompts',  href:DV.url('prompts'),      label:'Prompts' },
       { id:'search',   href:DV.url('search'),       label:'Search'  },
       { id:'graph',    href:DV.url('graph'),        label:'Graph · Force'  },
+      { id:'flow',     href:DV.url('flow'),         label:'Flow' },
       { id:'cosmos',   href:DV.url('graph-cosmos'), label:'Graph · Cosmos' },
       { id:'board',    href:DV.url('board'),        label:'Board'   },
       { id:'about',    href:DV.url('about/'),       label:'About'   },
       // Entries (/e/) and Collections (/collections/) live in the static footer nav
-      // (scripts/normalize_links.py) — this bar is already 9 items wide.
+      // (scripts/normalize_links.py) — this bar is already 10 items wide.
       // Admin is intentionally not in the public nav — still reachable at admin.html
     ];
     return DV.el('div', { class:'nav' }, items.map(it =>

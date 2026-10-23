@@ -48,7 +48,8 @@ BLOCK_RE = re.compile(r"<!-- seo:start -->.*?<!-- seo:end -->\n?", re.S)
 
 # top-level pages processed (everything else at site root is skipped:
 # admin, rate, board, graph*, legacy/, pagefind/, about/, links/, ai_presentation/)
-TOP_PAGES = ["index.html", "catalog.html", "prompts.html", "start-here.html", "method.html", "system-prompts.html"]
+TOP_PAGES = ["index.html", "catalog.html", "prompts.html", "start-here.html", "method.html", "system-prompts.html",
+             "flow.html"]
 SUB_DIRS = ["guides", "deeper", "e", "tools", "compare", "best"]  # collections/ writes its own seo block (build_collections.py)
 
 # private / superseded pages: get a seo block holding only robots noindex,follow
@@ -700,8 +701,19 @@ def entry_node(e: dict, url: str, desc: str, image: str, title: str) -> dict:
     return node
 
 
+def flow_description(c: Ctx) -> str:
+    """Live counts from site/flow_data.json (scripts/build_flow.py); <= 155 chars."""
+    try:
+        t = json.loads((SITE / "flow_data.json").read_text(encoding="utf-8"))["totals"]
+    except (OSError, ValueError, KeyError):
+        return f"How {c.n_entries} saved posts flow from creators and collections through tools into guides and prompt systems."
+    return (f"Map of how {t['entries']} saved posts flow from creators through tools and techniques into "
+            f"{t['guides']} guides and {t['prompt_systems']} prompt systems, with a gap analysis.")
+
+
 def top_descriptions(c: Ctx) -> dict[str, str]:
     return {
+        "flow.html": flow_description(c),
         "index.html": (f"A curated archive of {c.n_entries} saved posts on AI tools, agents, creative code and quant, "
                        f"transcribed and tiered, with {len(c.guides)} guides and {c.n_packs} prompt systems."),
         "catalog.html": (f"Filter {c.n_entries} curated posts by tier, tool, technique, creator and collection. "
