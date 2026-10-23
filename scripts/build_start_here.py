@@ -3,22 +3,25 @@
 
 All numbers come from site/catalog.json, data/prompt_systems.json and the
 pages on disk, so the page never states a stale count. Idempotent: the file
-is only rewritten when its content (ignoring the seo block) changes.
+is only rewritten when its content (ignoring the seo and monetize blocks) changes.
 
 Usage: python3 scripts/build_start_here.py
 """
 from __future__ import annotations
 
 import html
+import re
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_seo import (BASE, DATA, REPO_URL, AUTHOR_URL, SITE, load_json,  # noqa: E402
-                       parse_date, write_if_changed)
+                       parse_date, strip_block, write_if_changed)
 
 OUT = SITE / "start-here.html"
+MON_CFG = DATA / "monetize" / "config.json"
+MON_RE = re.compile(r"<!-- monetize:start -->.*?<!-- monetize:end -->\n?", re.S)
 esc = lambda s: html.escape(str(s), quote=True)
 
 
@@ -63,6 +66,20 @@ def main() -> int:
            f"}}")
     plain = (f"DejaViewed ({year}). DejaViewed: a curated archive of practitioner AI posts "
              f"(catalog version {gen_s}, {n} entries). {BASE}/")
+
+    # "Want this for your own saves?" CTAs: each link only when its URL is set in
+    # data/monetize/config.json; routed through /go/ (site/_redirects, build_monetize.py)
+    mon = load_json(MON_CFG, {}) or {}
+    ctas = []
+    if (mon.get("diy_url") or "").strip():
+        ctas.append('<div class="card"><h3>Do it yourself, free</h3><p>The Claude Code skill that builds this site is open source. '
+                    'Point it at your own Instagram, TikTok, X or browser saves and it builds the same catalog, guides and prompt systems.</p>'
+                    '<p><a href="/go/diy" rel="noopener">Get the free skill on GitHub</a></p></div>')
+    if (mon.get("service_url") or "").strip():
+        ctas.append('<div class="card"><h3>Done for you</h3><p>Want your saves turned into a site like this without running anything yourself? '
+                    'Ask about a done-for-you build.</p>'
+                    '<p><a href="/go/service" rel="noopener">Get in touch</a></p></div>')
+    cta_html = ('<h2 id="yours">Want this for your own saves?</h2>\n<div class="two">' + "".join(ctas) + "</div>\n") if ctas else ""
 
     page = f"""<!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -136,6 +153,7 @@ pre.soft{{white-space:pre-wrap;overflow-wrap:anywhere}}
 </ul></div>
 </div>
 
+{cta_html}
 <h2 id="cite">How to cite</h2>
 <p>Plain text:</p>
 <pre class="soft">{esc(plain)}</pre>
@@ -165,7 +183,12 @@ pre.soft{{white-space:pre-wrap;overflow-wrap:anywhere}}
 <footer class="site" style="margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center"><a href="index.html" style="color:var(--text-dim)">← Back to DejaViewed</a></footer>
 </body></html>
 """
-    changed = write_if_changed(OUT, page, ignore_seo_block=True)
+    # build_monetize.py adds a footer block after this; ignore it like the seo block
+    old = OUT.read_text(encoding="utf-8") if OUT.exists() else None
+    if old is not None and strip_block(MON_RE.sub("", old)) == strip_block(page):
+        changed = False
+    else:
+        changed = write_if_changed(OUT, page, ignore_seo_block=True)
     print(f"start-here: {'written' if changed else 'unchanged'} ({n} entries, {len(colls)} collections, "
           f"{len(guides)} guides, {len(packs)} prompt systems)")
     return 0

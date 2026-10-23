@@ -80,12 +80,40 @@ def is_templated(u: str) -> bool:
     return "${" in u or "{{" in u or "' +" in u or '" +' in u
 
 
+_REDIRECTS: dict[str, str] | None = None
+
+
+def redirect_sources() -> dict[str, str]:
+    """site/_redirects (Cloudflare Pages): {source path: target}. /go/<slug> links resolve here,
+    not to files; a /go/ path with no rule is broken."""
+    global _REDIRECTS
+    if _REDIRECTS is None:
+        _REDIRECTS = {}
+        f = SITE / "_redirects"
+        if f.is_file():
+            for line in f.read_text(encoding="utf-8").splitlines():
+                parts = line.split()
+                if len(parts) >= 2 and not parts[0].startswith("#"):
+                    _REDIRECTS[parts[0].rstrip("/") or "/"] = parts[1]
+    return _REDIRECTS
+
+
 def resolve_internal(src: Path, url: str) -> tuple[bool, str]:
     """Return (ok, resolved_site_relative_path)."""
     parts = urlsplit(url)
     path = unquote(parts.path)
     if not path:  # pure "#frag" or "?q"
         return True, ""
+    if path.startswith("/"):
+        rkey = path
+    else:  # relative link -> site-absolute path for the _redirects lookup
+        abs_t = (src.parent / path).resolve()
+        rkey = "/" + str(abs_t.relative_to(SITE.resolve())) if abs_t.is_relative_to(SITE.resolve()) else path
+    rkey = rkey.rstrip("/") or "/"
+    if rkey in redirect_sources():
+        return True, f"_redirects {rkey} -> {redirect_sources()[rkey]}"
+    if rkey.startswith("/go/"):
+        return False, f"_redirects has no rule for {rkey}"
     if path.startswith("/"):
         target = SITE / path.lstrip("/")
     else:

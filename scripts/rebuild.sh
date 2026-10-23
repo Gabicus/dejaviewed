@@ -34,7 +34,8 @@
 #   start       scripts/build_start_here.py    site/start-here.html (positioning page, live counts) — before api (sitemap)
 #   feed        scripts/build_feed.py          site/feed.xml (RSS: newest entries + guides/deeper)
 #   og          scripts/build_og.py            site/og/*.jpg share images (guides, deeper, top pages)
-#   seo         scripts/build_seo.py           canonical/description/OG/JSON-LD block on every public page (idempotent, last)
+#   seo         scripts/build_seo.py           canonical/description/OG/JSON-LD block on every public page (idempotent)
+#   monetize    scripts/build_monetize.py      /go/ redirects (site/_redirects), tool links, CTA/disclosure footer (idempotent, after seo)
 #   analytics   scripts/analytics_report.py    Cloudflare + Search Console report (needs ~/.config creds; skips cleanly)
 #   indexnow    scripts/indexnow.py            submit sitemap URLs to IndexNow (after deploy; needs key served)
 #
@@ -133,6 +134,7 @@ if should_skip search; then echo "[skip] search"; else echo "[run ] search — s
 run_py feed    scripts/build_feed.py
 run_py og      scripts/build_og.py
 run_py seo     scripts/build_seo.py
+run_py monetize scripts/build_monetize.py
 run_py gate    scripts/quality_gate.py
 run_py analytics scripts/analytics_report.py
 echo "[note] after deploy: python3 scripts/indexnow.py   (submits sitemap URLs; needs the key file live)"

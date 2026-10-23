@@ -211,6 +211,18 @@ query($zone: String!, $start: Time!, $end: Time!) {
   } }
 }"""
 
+# Outbound clicks: /go/<slug> redirects (site/_redirects, built by build_monetize.py).
+# Filtered server-side so the long tail never pushes them out of a top-N.
+# [UNVERIFIED: clientRequestPath_like filter on the adaptive dataset; errors are isolated]
+Q_ZONE_GO_DAY = """
+query($zone: String!, $start: Time!, $end: Time!) {
+  viewer { zones(filter: {zoneTag: $zone}) {
+    httpRequestsAdaptiveGroups(limit: 2000, filter: {datetime_geq: $start, datetime_lt: $end, clientRequestPath_like: "/go/%"}, orderBy: [count_DESC]) {
+      count dimensions { clientRequestPath userAgent }
+    }
+  } }
+}"""
+
 # Web Analytics (RUM). Account-scoped.  [UNVERIFIED: dimension names requestHost/requestPath/countryName]
 Q_RUM = """
 query($acct: String!, $since: Date!, $until: Date!) {
@@ -284,6 +296,7 @@ def cf_collect(dry: bool) -> dict | None:
         print("  [dry-run] GraphQL httpRequests1dGroups: last 7d and 28d (requests, bytes, cache, status, countries, uniques)")
         print("  [dry-run] GraphQL httpRequestsAdaptiveGroups per UTC day x7: totals, top paths, top UAs, UA x path, status x cache")
         print("  [dry-run] GraphQL httpRequestsAdaptiveGroups bot fields (botScoreSrcName, verifiedBotCategory) x7")
+        print("  [dry-run] GraphQL httpRequestsAdaptiveGroups path LIKE /go/% per UTC day x28: outbound clicks by slug x UA class")
         print("  [dry-run] GraphQL rumPageloadEventsAdaptiveGroups + rumWebVitalsEventsAdaptiveGroups: 7d and 28d")
         return None
 
@@ -402,6 +415,33 @@ def cf_collect(dry: bool) -> dict | None:
         out["errors"]["bot_fields"] = bot_err + " (bot-management fields are often Enterprise-only; UA classification used instead)"
     else:
         out["bot_fields_7d"] = dict(bots.most_common())
+
+    # ---- outbound /go/ clicks (7d and 28d; per-day windows, older days may fall outside plan retention)
+    go_7, go_28 = defaultdict(Counter), defaultdict(Counter)
+    go_days, go_errs = [], []
+    wins = _day_windows(28)
+    for i, (start, end) in enumerate(wins):
+        try:
+            d = cf_gql(token, Q_ZONE_GO_DAY, {"zone": zone, "start": start, "end": end})
+            for r in d["viewer"]["zones"][0]["httpRequestsAdaptiveGroups"]:
+                dm = r["dimensions"]
+                slug = (dm.get("clientRequestPath") or "")[len("/go/"):].strip("/") or "(root)"
+                cls = "human" if classify_ua(dm.get("userAgent") or "") == "human/browser" else "bot"
+                go_28[slug][cls] += r["count"]
+                if i >= len(wins) - 7:
+                    go_7[slug][cls] += r["count"]
+            go_days.append(start[:10])
+        except (CFError, KeyError, IndexError, TypeError) as e:
+            go_errs.append(f"{start[:10]}: {e}")
+    if go_errs:
+        out["errors"]["outbound_go"] = go_errs[:5] + ([f"... {len(go_errs) - 5} more"] if len(go_errs) > 5 else [])
+    if go_days:
+        out["outbound_go"] = {
+            "days_covered": len(go_days), "first_day": go_days[0], "last_day": go_days[-1], "sampled": True,
+            "rows": [{"slug": s, "human_7d": go_7[s]["human"], "bot_7d": go_7[s]["bot"],
+                      "human_28d": go_28[s]["human"], "bot_28d": go_28[s]["bot"]}
+                     for s in sorted(go_28, key=lambda k: (-go_28[k]["human"], -sum(go_28[k].values()), k))],
+        }
 
     # ---- Web Analytics (RUM)
     if not acct:
@@ -633,6 +673,16 @@ def render_md(d: dict, prev: tuple[str, dict] | None) -> str:
             L.append("### Status x cache (7d, sampled)\n")
             L.append(_table(["status", "cache", "requests"],
                             [[x["status"], x["cache"], x["requests"]] for x in a["status_cache"][:20]]))
+        g = cf.get("outbound_go")
+        if g:
+            L.append(f"## Outbound (/go/) clicks (7d/28d)\n\nRedirect hits on /go/<slug> (affiliate and CTA links, "
+                     f"see data/monetize/README.md). Sampled; {g['days_covered']} day(s) of data "
+                     f"({g['first_day']} to {g['last_day']}). Human = browser user agent; bot = everything else.\n")
+            if g["rows"]:
+                L.append(_table(["slug", "human 7d", "bot 7d", "human 28d", "bot 28d"],
+                                [[x["slug"], x["human_7d"], x["bot_7d"], x["human_28d"], x["bot_28d"]] for x in g["rows"]]))
+            else:
+                L.append("No /go/ requests in the window.\n")
         L.append("## Web Analytics (real visitors)\n")
         rum_any = False
         for k in ("rum_7d", "rum_28d"):
