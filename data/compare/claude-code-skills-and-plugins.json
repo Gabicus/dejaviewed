@@ -1,0 +1,781 @@
+{
+ "slug": "claude-code-skills-and-plugins",
+ "dir": "best",
+ "kind": "best",
+ "order": 10,
+ "title": "Best Claude Code skills and plugins, tested (2026) · DejaViewed",
+ "h1": "Best Claude Code skills and plugins",
+ "crumb": "Claude Code skills and plugins",
+ "description": "35 Claude Code skills, plugins and CLAUDE.md patterns from 68 saved creator posts, each with a keep, try or skip verdict and GitHub status, Oct 2026.",
+ "answer": "The Claude Code add-ons with the strongest evidence in our corpus are free patterns, not packages: Boris Cherny's plan-first CLAUDE.md, a primer.md handoff file, and hooks that enforce your rules. Among installs, keep Anthropic's frontend-design and skill-creator, Impeccable for design, Caveman with Codeburn for token cost, and find-skills for discovery. Skip GSD, whose repo is archived and which used about six times the tokens of plain Claude Code in a head-to-head test ([[e:DXD7DaWtZrD]]).",
+ "last_verified": "2026-10-22",
+ "scope_note": "GitHub status checked through the GitHub API on that date",
+ "tools": [
+  "claude-code"
+ ],
+ "sources": [
+  {
+   "key": "cc-skills",
+   "url": "https://code.claude.com/docs/en/skills",
+   "title": "Claude Code Agent Skills (Anthropic docs)",
+   "accessed": "2026-10-22"
+  },
+  {
+   "key": "cc-plugins",
+   "url": "https://code.claude.com/docs/en/plugins",
+   "title": "Claude Code plugins and marketplaces (Anthropic docs)",
+   "accessed": "2026-10-22"
+  },
+  {
+   "key": "cc-hooks",
+   "url": "https://code.claude.com/docs/en/hooks",
+   "title": "Claude Code hooks reference (Anthropic docs)",
+   "accessed": "2026-10-22"
+  },
+  {
+   "key": "gh-api",
+   "url": "https://docs.github.com/en/rest/repos/repos#get-a-repository",
+   "title": "GitHub REST API: repository metadata (archived flag, stars, license) and latest commit",
+   "accessed": "2026-10-22"
+  }
+ ],
+ "intro": [
+  "We went through the 68 saved posts in the DejaViewed corpus that cover Claude Code skills, plugins, CLAUDE.md files, hooks and memory add-ons (19 S-tier, 25 A-tier, 21 B-tier, 3 C-tier by our ratings). Every item below is something at least one of those posts actually covers. The verdict weighs how strong that evidence is, whether the repo is still maintained, and what it costs you in tokens or setup. The result is 13 keep, 19 try and 3 skip.",
+  "Skills are folders with a SKILL.md file that Claude loads when a task matches [[s:cc-skills]]. Plugins bundle skills, hooks, commands and MCP servers and install from a marketplace with `/plugin` [[s:cc-plugins]]. Hooks are shell commands that run on events such as before a tool call [[s:cc-hooks]].",
+  "Status comes from the GitHub API on 22 October 2026 [[s:gh-api]]. **Maintained** means a commit in the last 90 days, **slow updates** means 90 to 365 days, **stale** means older, and **archived** means the owner archived the repo. **Unverified** means no repo could be matched to the entry. Install commands are copied from the entry or the repo README, never written by us."
+ ],
+ "sections": [
+  {
+   "h2": "Skills, plugins and tools",
+   "id": "tools",
+   "items": [
+    {
+     "name": "Caveman (JuliusBrussee/caveman)",
+     "kind": "skill",
+     "what": "Skill that makes Claude answer in terse 'caveman' style at light/full/ultra levels to cut output tokens without changing code or reasoning.",
+     "entries": [
+      "DWs66z3DyGA",
+      "DW19ezVx9km",
+      "DXXs8LCjYR7",
+      "DWxK27wkT9q"
+     ],
+     "verdict": "keep",
+     "reason": "Two S-tier and two B-tier entries; savings apply to response text only, not total usage. Very actively maintained, Apache-2.0. One entry notes skills and context hygiene save more.",
+     "install": "/plugin marketplace add JuliusBrussee/caveman\n/plugin install caveman@caveman",
+     "install_source": "https://github.com/JuliusBrussee/caveman#readme",
+     "repo": "JuliusBrussee/caveman",
+     "stars": 114436,
+     "last_commit": "2026-10-17",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Impeccable (pbakaus/impeccable)",
+     "kind": "skill-pack",
+     "what": "Design skill with a set of steering commands (polish, layout, typeset, etc.) that gives an AI coding tool design vocabulary and rules.",
+     "entries": [
+      "DXdVUiOjKUv",
+      "Dd8Cx9xzUi4",
+      "DdJ5ynbDxqS",
+      "DbLuwUVlE9Z"
+     ],
+     "verdict": "keep",
+     "reason": "Most-cited design skill: four A-tier entries, one calling it the only design skill you need. Very actively maintained, Apache-2.0.",
+     "install": "npx impeccable install",
+     "install_source": "https://github.com/pbakaus/impeccable#readme",
+     "repo": "pbakaus/impeccable",
+     "stars": 85035,
+     "last_commit": "2026-10-23",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "frontend-design (Anthropic)",
+     "kind": "skill",
+     "what": "Anthropic's official skill that makes Claude decide on a visual direction before writing UI code, to avoid generic-looking pages.",
+     "entries": [
+      "DW_8FsslNJi",
+      "DXdVUiOjKUv",
+      "DXGRONttjhp"
+     ],
+     "verdict": "keep",
+     "reason": "Named in three A-tier entries as the baseline design skill, paired with CLAUDE.md design rules and screenshot self-review. Official Anthropic repo, actively updated.",
+     "install": "/plugin marketplace add anthropics/skills\n/plugin install example-skills@anthropic-agent-skills",
+     "install_source": "https://github.com/anthropics/skills#readme",
+     "repo": "anthropics/skills",
+     "stars": 183068,
+     "last_commit": "2026-10-09",
+     "archived": false,
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Graphify (Graphify-Labs/graphify)",
+     "kind": "skill",
+     "what": "/graphify skill that turns a folder of code, docs and PDFs into a queryable knowledge graph the agent reads instead of grepping files.",
+     "entries": [
+      "DW4OC7qDj_w",
+      "DXAshxEDM5m"
+     ],
+     "verdict": "keep",
+     "reason": "S-tier walkthrough plus B-tier reel; the 70x and 71.5x token-saving numbers are the creators' unverified claims. Very actively maintained, Apache-2.0.",
+     "install": "uv tool install graphifyy",
+     "install_source": "https://github.com/Graphify-Labs/graphify#readme",
+     "repo": "Graphify-Labs/graphify",
+     "stars": 133074,
+     "last_commit": "2026-10-22",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Playwright CLI (microsoft/playwright-cli)",
+     "kind": "cli",
+     "what": "Microsoft's Playwright command line that coding agents use for browser automation and screenshots instead of the Playwright MCP server.",
+     "entries": [
+      "DVryCC1jfi1",
+      "DXGRONttjhp"
+     ],
+     "verdict": "keep",
+     "reason": "S-tier and A-tier roundups both prefer the CLI over the MCP for agents; design entries rely on screenshots for self-review. Official, maintained.",
+     "install": "npm install -g @playwright/cli@latest",
+     "install_source": "https://github.com/microsoft/playwright-cli#readme",
+     "repo": "microsoft/playwright-cli",
+     "stars": 14523,
+     "last_commit": "2026-10-19",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "skill-creator (Anthropic)",
+     "kind": "skill",
+     "what": "Anthropic's skill for writing new skills and testing, benchmarking and evaluating existing ones.",
+     "entries": [
+      "DVryCC1jfi1",
+      "DWxK27wkT9q"
+     ],
+     "verdict": "keep",
+     "reason": "Called the most powerful item in an S-tier roundup; a B-tier entry uses it to cut token use by moving context into skills. Official, maintained.",
+     "install": "/plugin marketplace add anthropics/skills\n/plugin install example-skills@anthropic-agent-skills",
+     "install_source": "https://github.com/anthropics/skills#readme",
+     "repo": "anthropics/skills",
+     "stars": 183068,
+     "last_commit": "2026-10-09",
+     "archived": false,
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Codeburn (getagentseal/codeburn)",
+     "kind": "cli",
+     "what": "Local tool that reads your coding-agent logs and shows where tokens and cost go by model, project, task, skill or MCP server.",
+     "entries": [
+      "DXXs8LCjYR7"
+     ],
+     "verdict": "keep",
+     "reason": "S-tier entry pairs it with Caveman to find token leaks (old skills, MCPs, bloated CLAUDE.md). Read-only and local, actively maintained, MIT.",
+     "install": "npx codeburn",
+     "install_source": "https://github.com/getagentseal/codeburn#readme",
+     "repo": "getagentseal/codeburn",
+     "stars": 11554,
+     "last_commit": "2026-10-20",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "find-skills (vercel-labs/skills)",
+     "kind": "skill",
+     "what": "Skill from Vercel's open skills CLI that searches published skills and tells you which one fits a plain-language request.",
+     "entries": [
+      "DXcWjL0jLsd"
+     ],
+     "verdict": "keep",
+     "reason": "A-tier entry gives the exact command; same repo powers `npx skills`, the installer many other skills use. Actively maintained, MIT.",
+     "install": "npx skills add https://github.com/vercel-labs/skills --skill find-skills",
+     "install_source": "DXcWjL0jLsd",
+     "repo": "vercel-labs/skills",
+     "stars": 36161,
+     "last_commit": "2026-10-19",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Humanizer (blader/humanizer)",
+     "kind": "skill",
+     "what": "Skill that removes signs of AI-generated writing, based on Wikipedia's 'Signs of AI writing' list.",
+     "entries": [
+      "DbJzWBfxPvD"
+     ],
+     "verdict": "keep",
+     "reason": "A-tier entry names the repo and shows extending it with research-paper tells and enforcing it via a CLAUDE.md rule or hook. Actively maintained, MIT.",
+     "install": "/plugin marketplace add blader/humanizer\n/plugin install humanizer@humanizer",
+     "install_source": "https://github.com/blader/humanizer#readme",
+     "repo": "blader/humanizer",
+     "stars": 59688,
+     "last_commit": "2026-10-16",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "claude-mem (thedotmack/claude-mem)",
+     "kind": "plugin",
+     "what": "Plugin that records what the agent does each session, compresses it, and injects relevant context into later sessions.",
+     "entries": [
+      "DUzg0n1jRK-",
+      "DXFzCMeE56r"
+     ],
+     "verdict": "try",
+     "reason": "S-tier list plus a B-tier reel (repo inferred from features). '95% fewer tokens' claim is unmeasured in the entries. Maintained, Apache-2.0; runs a background worker.",
+     "install": "/plugin marketplace add thedotmack/claude-mem\n/plugin install claude-mem",
+     "install_source": "https://github.com/thedotmack/claude-mem#readme",
+     "repo": "thedotmack/claude-mem",
+     "stars": 102346,
+     "last_commit": "2026-10-22",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Codex plugin for Claude Code (openai/codex-plugin-cc)",
+     "kind": "plugin",
+     "what": "OpenAI's plugin that lets Claude Code call Codex to review code or take delegated tasks.",
+     "entries": [
+      "DaojVuSNKno",
+      "DV3lILoEfzS"
+     ],
+     "verdict": "try",
+     "reason": "A-tier and B-tier entries use it for second-opinion audits and to split work across two subscriptions. Official repo; updates slowed (last commit July 2026). Needs an OpenAI account.",
+     "install": "/plugin marketplace add openai/codex-plugin-cc\n/plugin install codex@openai-codex",
+     "install_source": "https://github.com/openai/codex-plugin-cc#readme",
+     "repo": "openai/codex-plugin-cc",
+     "stars": 34500,
+     "last_commit": "2026-07-08",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "slow",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Emil Kowalski design skills (emilkowalski/skills)",
+     "kind": "skill-pack",
+     "what": "Skills from designer Emil Kowalski covering interface craft: spacing, typography, layout and animation rules.",
+     "entries": [
+      "DdJ5ynbDxqS",
+      "DbLuwUVlE9Z"
+     ],
+     "verdict": "try",
+     "reason": "Two A-tier entries (same creator, near-duplicate posts) pair it with Impeccable. Maintained, MIT. Evidence is a recipe, not a comparison.",
+     "install": "npx skills@latest add emilkowalski/skills",
+     "install_source": "https://github.com/emilkowalski/skills#readme",
+     "repo": "emilkowalski/skills",
+     "stars": 48776,
+     "last_commit": "2026-10-11",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Obsidian Skills (kepano/obsidian-skills)",
+     "kind": "skill-pack",
+     "what": "Skills from Obsidian's CEO that teach an agent Obsidian's CLI and file formats (Markdown, Bases, JSON Canvas) so it can manage a vault.",
+     "entries": [
+      "DUzg0n1jRK-",
+      "DVryCC1jfi1"
+     ],
+     "verdict": "try",
+     "reason": "Recommended in two S-tier roundups, but only as list mentions with no demo. Maintained, MIT. Useful if you already keep notes in Obsidian.",
+     "install": "/plugin marketplace add kepano/obsidian-skills\n/plugin install obsidian@obsidian-skills",
+     "install_source": "https://github.com/kepano/obsidian-skills#readme",
+     "repo": "kepano/obsidian-skills",
+     "stars": 49936,
+     "last_commit": "2026-09-15",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Superpowers (obra/superpowers)",
+     "kind": "skill-pack",
+     "what": "Skill pack that makes Claude Code brainstorm, write a plan, use test-driven development and request code review before calling work done.",
+     "entries": [
+      "DUzg0n1jRK-",
+      "DXD7DaWtZrD"
+     ],
+     "verdict": "try",
+     "reason": "Two S-tier entries recommend it, but the only head-to-head in the corpus ([[e:DXD7DaWtZrD]]) found plain Claude Code as good: about 250K vs 200K tokens and three times slower for the same landing page. Very actively maintained. Try it on a multi-step build, not small tasks.",
+     "install": "/plugin marketplace add obra/superpowers-marketplace\n/plugin install superpowers@superpowers-marketplace",
+     "install_source": "https://github.com/obra/superpowers#readme",
+     "repo": "obra/superpowers",
+     "stars": 303785,
+     "last_commit": "2026-10-21",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Taste skill (Leonxlnx/taste-skill)",
+     "kind": "skill",
+     "what": "Skill that gives coding agents art direction from reference sites and images plus a browser check, instead of generic AI pages.",
+     "entries": [
+      "DdJ5ynbDxqS",
+      "DbLuwUVlE9Z"
+     ],
+     "verdict": "try",
+     "reason": "Named in two A-tier design-stack entries without a repo; the obvious repo matches the described behavior. Maintained, MIT.",
+     "install": "npx skills add https://github.com/Leonxlnx/taste-skill --skill \"design-taste-frontend\"",
+     "install_source": "https://github.com/Leonxlnx/taste-skill#readme",
+     "repo": "Leonxlnx/taste-skill",
+     "stars": 101172,
+     "last_commit": "2026-10-20",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "UI UX Pro Max (nextlevelbuilder/ui-ux-pro-max-skill)",
+     "kind": "skill",
+     "what": "Design-knowledge skill with UI styles, color palettes and font pairings that generates a design system before building interfaces.",
+     "entries": [
+      "DUzg0n1jRK-",
+      "DYIzu9HTz1V"
+     ],
+     "verdict": "try",
+     "reason": "One S-tier list mention plus a B-tier 'websites in one line' reel with no before/after. Very actively maintained, MIT. Overlaps with Impeccable; pick one design skill.",
+     "install": "/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill\n/plugin install ui-ux-pro-max@ui-ux-pro-max-skill",
+     "install_source": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill#readme",
+     "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+     "stars": 139059,
+     "last_commit": "2026-10-23",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Agent Reach (Panniantong/Agent-Reach)",
+     "kind": "skill",
+     "what": "Skill plus CLI that lets agents read and search Reddit, X, YouTube, GitHub and other sites without paid APIs.",
+     "entries": [
+      "Dd6izTYiln1"
+     ],
+     "verdict": "try",
+     "reason": "A-tier demo: Claude fails to read a Reddit post and an X thread, then succeeds after install. Actively maintained, MIT. Relies on scraping backends that can break.",
+     "install": "Install Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md",
+     "install_source": "https://github.com/Panniantong/Agent-Reach/blob/main/docs/README_en.md",
+     "repo": "Panniantong/Agent-Reach",
+     "stars": 101049,
+     "last_commit": "2026-10-07",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Career Ops (career-ops-hq/career-ops)",
+     "kind": "skill-pack",
+     "what": "Job-search agent built on Claude Code and Playwright: scans job boards, scores roles against your CV, tailors resumes and tracks applications.",
+     "entries": [
+      "DW5bfmLt4bS"
+     ],
+     "verdict": "try",
+     "reason": "S-tier entry names it (about 14 skills). Actively maintained, MIT. Niche: only for job seekers.",
+     "install": "npx @santifer/career-ops init",
+     "install_source": "https://github.com/career-ops-hq/career-ops#readme",
+     "repo": "career-ops-hq/career-ops",
+     "stars": 76639,
+     "last_commit": "2026-10-22",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "CLI-Anything (HKUDS/CLI-Anything)",
+     "kind": "cli",
+     "what": "Generates command-line wrappers for desktop apps like GIMP, Blender and Inkscape so coding agents can drive them.",
+     "entries": [
+      "DWfxDzktVfI"
+     ],
+     "verdict": "try",
+     "reason": "S-tier roundup names the repo; no hands-on result shown. Maintained, Apache-2.0. Useful when an app has no API.",
+     "install": "pip install cli-anything-hub",
+     "install_source": "https://github.com/HKUDS/CLI-Anything#readme",
+     "repo": "HKUDS/CLI-Anything",
+     "stars": 56276,
+     "last_commit": "2026-09-22",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Design Motion Principles (kylezantos/design-motion-principles)",
+     "kind": "skill",
+     "what": "Motion-design skill that builds or audits animations using guidance distilled from Emil Kowalski, Jakub Krehel and Jhey Tompkins.",
+     "entries": [
+      "DXdVUiOjKUv"
+     ],
+     "verdict": "try",
+     "reason": "One A-tier entry ranks it among three must-have design skills. Repo updates have slowed (last commit May 2026). Niche: only matters if you ship animation.",
+     "install": "npx skills add kylezantos/design-motion-principles",
+     "install_source": "https://github.com/kylezantos/design-motion-principles#readme",
+     "repo": "kylezantos/design-motion-principles",
+     "stars": 1399,
+     "last_commit": "2026-05-30",
+     "archived": false,
+     "license": "MIT",
+     "status": "slow",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "LLM Council (tenfoldmarc/llm-council-skill)",
+     "kind": "skill",
+     "what": "Skill that runs a question past five subagent advisors with different thinking styles, has them peer-review anonymously, and returns a verdict.",
+     "entries": [
+      "DXSKVJCE9pl"
+     ],
+     "verdict": "try",
+     "reason": "B-tier entry (creator says he made the repo; credits Ole Lehmann and Karpathy's idea). Small repo, slow since April 2026, no license. Good antidote to agreeable answers.",
+     "install": "git clone https://github.com/tenfoldmarc/llm-council-skill ~/.claude/skills/llm-council",
+     "install_source": "https://github.com/tenfoldmarc/llm-council-skill#readme",
+     "repo": "tenfoldmarc/llm-council-skill",
+     "stars": 929,
+     "last_commit": "2026-04-18",
+     "archived": false,
+     "status": "slow",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "SkillOpt (microsoft/SkillOpt)",
+     "kind": "cli",
+     "what": "Microsoft optimizer that rewrites a skill's instructions from run results and keeps only edits that beat a benchmark.",
+     "entries": [
+      "DbEK3bustQ7"
+     ],
+     "verdict": "try",
+     "reason": "S-tier entry; claims of beating hand-written prompts and TextGrad come from the authors, not tested. Maintained, MIT. Needs an eval set to be useful.",
+     "install": "pip install skillopt",
+     "install_source": "https://github.com/microsoft/SkillOpt#readme",
+     "repo": "microsoft/SkillOpt",
+     "stars": 18636,
+     "last_commit": "2026-10-18",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "StopSlop (hardikpandya/stop-slop)",
+     "kind": "skill",
+     "what": "Skill file listing banned filler phrases, throat-clearing openers and adverbs so prose stops reading as AI-written.",
+     "entries": [
+      "DcT15tflt4K"
+     ],
+     "verdict": "try",
+     "reason": "A-tier entry: removes most tells but can't add a point of view; last 20% still needs a human. Repo is slow (last commit March 2026). Overlaps Humanizer.",
+     "install_source": "https://github.com/hardikpandya/stop-slop#readme",
+     "repo": "hardikpandya/stop-slop",
+     "stars": 18252,
+     "last_commit": "2026-03-17",
+     "archived": false,
+     "license": "MIT",
+     "status": "slow",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Get Shit Done (GSD)",
+     "kind": "skill-pack",
+     "what": "Spec-driven framework that interviews you, plans phases and executes them with verification on top of Claude Code.",
+     "entries": [
+      "DUzg0n1jRK-",
+      "DVryCC1jfi1",
+      "DXD7DaWtZrD"
+     ],
+     "verdict": "skip",
+     "reason": "The original repo is archived and the project moved to open-gsd/gsd-core, which no entry covers. In the same head-to-head ([[e:DXD7DaWtZrD]]) it used 1.3M tokens and 1h45 against 200K and about 20 minutes for plain Claude Code, for the same result.",
+     "install": "npx get-shit-done-cc",
+     "install_source": "DUzg0n1jRK-",
+     "repo": "gsd-build/get-shit-done",
+     "stars": 64242,
+     "last_commit": "2026-05-31",
+     "archived": true,
+     "license": "MIT",
+     "status": "archived",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Claudex",
+     "kind": "skill",
+     "what": "Skill where Claude plans and GPT audits the plan, then roles swap so GPT builds and Claude audits.",
+     "entries": [
+      "DeW79CbCkO3"
+     ],
+     "verdict": "skip",
+     "reason": "A-tier idea but the skill is comment-gated and no repo is named; several unrelated 'claudex' repos exist. Get the same cross-audit loop from the official Codex plugin.",
+     "status": "unverified",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Scroll World skill",
+     "kind": "skill",
+     "what": "Skill that generates stills for a site, turns approved ones into video clips with Higgsfield and stitches a scroll-animated page.",
+     "entries": [
+      "DawRY1kJ_ch"
+     ],
+     "verdict": "skip",
+     "reason": "Single B-tier entry; neither the original repo nor the creator's fork is named (fork is comment-gated). Burns paid video-generation credits.",
+     "status": "unverified",
+     "checked": "2026-10-22"
+    }
+   ],
+   "what_col": "What it does"
+  },
+  {
+   "h2": "Patterns worth copying (no install)",
+   "id": "patterns",
+   "items": [
+    {
+     "name": "Boris Cherny's CLAUDE.md workflow",
+     "kind": "pattern",
+     "what": "Plan first, push hard work to subagents, log every correction to a lessons file, verify before marking done, run several sessions in parallel worktrees.",
+     "entries": [
+      "DVQ5o6YDfsp",
+      "DV6QY8QjoRW",
+      "DVMmXlME6mZ",
+      "DVRnpZsj21m"
+     ],
+     "verdict": "keep",
+     "reason": "Strongest evidence in the corpus: two S-tier and two B-tier entries tracing back to the Claude Code creator's own setup. Free, no install.",
+     "status": "n/a",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Hooks for guardrails and enforcement",
+     "kind": "pattern",
+     "what": "Claude Code hooks that run on events: block deletions into a staging folder, chime when input is needed, force a writing pass or audit on certain files.",
+     "entries": [
+      "DV8rkpGEbBJ",
+      "DbJzWBfxPvD",
+      "DV3lILoEfzS",
+      "DW6wPs2DQuK"
+     ],
+     "verdict": "keep",
+     "reason": "Three A-tier entries show concrete hooks; an S-tier report cites a stop hook that caught lazy behavior 173 times. Hooks enforce what CLAUDE.md can only ask.",
+     "status": "n/a",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Orchestrator plans, cheaper model executes",
+     "kind": "pattern",
+     "what": "Top model writes specs and reviews; cheaper subagents or another vendor's model do the implementation in a fix-and-review loop.",
+     "entries": [
+      "Da1hOm7scjR",
+      "DaojVuSNKno",
+      "DVQ5o6YDfsp",
+      "DZVXehQRe3T"
+     ],
+     "verdict": "keep",
+     "reason": "A-tier, B-tier and S-tier entries describe the same split to stretch usage limits. Works with built-in subagents; no install.",
+     "status": "n/a",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "primer.md + memory.sh",
+     "kind": "pattern",
+     "what": "A primer.md file Claude rewrites each session end (state, next step, blockers) plus a launch hook that injects recent commits and changed files.",
+     "entries": [
+      "DVzvsgijOLT"
+     ],
+     "verdict": "keep",
+     "reason": "S-tier entry with a clear, copyable rule; fixes CLAUDE.md going stale. One line in CLAUDE.md, no dependencies.",
+     "status": "n/a",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Second brain / LLM wiki memory",
+     "kind": "pattern",
+     "what": "Keep agent memory as a linked folder of markdown (often an Obsidian vault) structured per Karpathy's LLM-Wiki note, with session logs and per-project context files.",
+     "entries": [
+      "DWzPgGhiTcR",
+      "DXCu2p4EQe3",
+      "Db7Vx2Hhf9c",
+      "DXYSxNLpIAY",
+      "Dc-Awvkhdop"
+     ],
+     "verdict": "try",
+     "reason": "Four A-tier entries show working setups but most templates are comment-gated. Plain files, so it's cheap to try and portable across models.",
+     "status": "n/a",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Turn repeated work into skills",
+     "kind": "pattern",
+     "what": "Record a process by hand (e.g. Loom transcript), have Claude write it as a skill, patch it on failure, then schedule it; optionally a fixer skill improves the rest.",
+     "entries": [
+      "DYxDK5ixq07",
+      "DaLT2hFRrFZ",
+      "DZnY2vaxWRF",
+      "DX62rNWxOB2",
+      "DXXHP5hj45o"
+     ],
+     "verdict": "try",
+     "reason": "Two A-tier and three B-tier entries; one tests a skill against an n8n workflow and prefers the skill. Keep a human check on creative work.",
+     "status": "n/a",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Agent teams",
+     "kind": "pattern",
+     "what": "Built-in experimental mode where parallel Claude sessions message each other through a shared mailbox instead of only reporting back like subagents.",
+     "entries": [
+      "DUZzpnyjFUz"
+     ],
+     "verdict": "try",
+     "reason": "One A-tier entry; ships disabled behind an experimental setting. Use when parallel workers must share findings mid-task.",
+     "status": "n/a",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "LightRAG as skills (HKUDS/LightRAG)",
+     "kind": "pattern",
+     "what": "Run LightRAG graph retrieval locally, then have Claude turn its server API endpoints into skills so it can query thousands of documents.",
+     "entries": [
+      "DWnkds9Nfgo"
+     ],
+     "verdict": "try",
+     "reason": "S-tier walkthrough with concrete setup (Docker, let Claude install it, wrap endpoints as skills). LightRAG is actively maintained, MIT. Only worth it past a few hundred docs.",
+     "install": "uv tool install \"lightrag-hku[api]\"",
+     "install_source": "https://github.com/HKUDS/LightRAG#readme",
+     "repo": "HKUDS/LightRAG",
+     "stars": 40275,
+     "last_commit": "2026-10-14",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22"
+    },
+    {
+     "name": "Setup purge for newer models",
+     "kind": "pattern",
+     "what": "Periodically audit every CLAUDE.md rule and skill and delete instructions newer models no longer need.",
+     "entries": [
+      "Dbhuaw7Pk4u"
+     ],
+     "verdict": "try",
+     "reason": "Single B-tier entry and its prompt is comment-gated, but the idea (over-instruction hurts capable models) is free to apply by hand.",
+     "status": "n/a",
+     "checked": "2026-10-22"
+    }
+   ],
+   "what_col": "What it is",
+   "paras": [
+    "These cost nothing to adopt. The corpus backs them more strongly than most packages, because several creators arrived at the same habits on their own."
+   ]
+  }
+ ],
+ "verdict": {
+  "h2": "Where to start",
+  "paras": [
+   "Start with the free patterns: a short CLAUDE.md in Boris Cherny's style, a primer.md for session handoff, and one or two hooks for the rules you keep repeating. Then add one design skill (Impeccable or Anthropic's frontend-design, not both plus UI UX Pro Max), and Caveman with Codeburn once token cost matters.",
+   "Every skill loads text into context and every plugin can run code on your machine. Read a skill's files before you install it, and remove the ones you stop using. One S-tier post names old skills, idle MCP servers and a bloated CLAUDE.md as the usual places tokens leak ([[e:DXXs8LCjYR7]])."
+  ]
+ },
+ "unverified": [
+  "Token-saving claims such as claude-mem's \"95% fewer tokens\" and Graphify's 70x figure are the creators' own numbers. We have not measured them.",
+  "Claudex and the Scroll World skill are shared only with people who comment on the post, so we could not match them to a repo.",
+  "Twelve repos were matched by searching GitHub for the tool the entry names, then checking the repo description fits. Entries that name a repo directly are more certain."
+ ],
+ "related": [
+  [
+   "Best MCP servers",
+   "/best/mcp-servers"
+  ],
+  [
+   "Claude Code vs Codex vs Gemini CLI",
+   "/compare/claude-code-vs-codex-vs-gemini-cli"
+  ],
+  [
+   "Claude Code hooks guide",
+   "/guides/claude-code-hooks-system"
+  ],
+  [
+   "Boris Cherny's CLAUDE.md guide",
+   "/guides/boris-cherny-claude-md"
+  ],
+  [
+   "System prompt examples",
+   "/system-prompts"
+  ]
+ ],
+ "entries_cited": [
+  "DUZzpnyjFUz",
+  "DUzg0n1jRK-",
+  "DV3lILoEfzS",
+  "DV6QY8QjoRW",
+  "DV8rkpGEbBJ",
+  "DVMmXlME6mZ",
+  "DVQ5o6YDfsp",
+  "DVRnpZsj21m",
+  "DVryCC1jfi1",
+  "DVzvsgijOLT",
+  "DW19ezVx9km",
+  "DW4OC7qDj_w",
+  "DW5bfmLt4bS",
+  "DW6wPs2DQuK",
+  "DW_8FsslNJi",
+  "DWfxDzktVfI",
+  "DWnkds9Nfgo",
+  "DWs66z3DyGA",
+  "DWxK27wkT9q",
+  "DWzPgGhiTcR",
+  "DX62rNWxOB2",
+  "DXAshxEDM5m",
+  "DXCu2p4EQe3",
+  "DXD7DaWtZrD",
+  "DXFzCMeE56r",
+  "DXGRONttjhp",
+  "DXSKVJCE9pl",
+  "DXXHP5hj45o",
+  "DXXs8LCjYR7",
+  "DXYSxNLpIAY",
+  "DXcWjL0jLsd",
+  "DXdVUiOjKUv",
+  "DYIzu9HTz1V",
+  "DYxDK5ixq07",
+  "DZVXehQRe3T",
+  "DZnY2vaxWRF",
+  "Da1hOm7scjR",
+  "DaLT2hFRrFZ",
+  "DaojVuSNKno",
+  "DawRY1kJ_ch",
+  "Db7Vx2Hhf9c",
+  "DbEK3bustQ7",
+  "DbJzWBfxPvD",
+  "DbLuwUVlE9Z",
+  "Dbhuaw7Pk4u",
+  "Dc-Awvkhdop",
+  "DcT15tflt4K",
+  "Dd6izTYiln1",
+  "Dd8Cx9xzUi4",
+  "DdJ5ynbDxqS",
+  "DeW79CbCkO3"
+ ]
+}

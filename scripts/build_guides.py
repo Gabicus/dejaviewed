@@ -14,7 +14,8 @@ Usage:
   (markdown-it). Re-run it (or search_prep.py, which calls it) after anything edits the md script.
 - index.html is static HTML, so it is regenerated from the real set of *.html files
   in site/guides (plus pages this run would create) and the dive metadata.
-- Read-only on data/*. Never writes data files.
+- Read-only on data/*, except data/guides/facts_state.json (per-guide "Last verified" dates for the
+  Key facts table; changes only when a guide's entry set changes).
 """
 from __future__ import annotations
 
@@ -472,6 +473,7 @@ def intro_paragraph(md: str) -> str:
     body = md
     if ANSWER_START in md and ANSWER_END in md:   # ignore our own block (keeps the result idempotent)
         body = md[:md.index(ANSWER_START)] + md[md.index(ANSWER_END) + len(ANSWER_END):]
+    body = strip_facts(body)
     paras = re.split(r"\n\s*\n", body)
     seen_h1 = False
     for p in paras:
@@ -565,6 +567,201 @@ def apply_answers(curated: dict[str, dict], dry_run: bool) -> tuple[int, int]:
     return have, changed
 
 
+# --------------------------------------------------------------------------- "Key facts" table (AEO)
+# Right after the "In short" block every guide carries a compact fact table computed from data:
+# domains, top tools (linked to /tools/<slug> when that page exists), posts covered (S/A counts, top
+# entry pages), top creators, source date span, difficulty, prompt system, last verified. Idempotent:
+# "Last verified" is stored per slug in data/guides/facts_state.json and only moves when the set of
+# entries behind the guide changes. Generated guides: the dive's entries. Hand-written guides: the
+# /e/<id> (and /catalog#post-<id>) links in their markdown + catalog entries whose deep_dive_slug is
+# the guide's slug.
+FACTS_START = "<!-- facts:start -->"
+FACTS_END = "<!-- facts:end -->"
+FACTS_RE = re.compile(re.escape(FACTS_START) + r".*?" + re.escape(FACTS_END), re.S)
+FACTS_STATE = ROOT / "data" / "guides" / "facts_state.json"
+TOOLS_DIR = SITE / "tools"
+MD_ENTRY_LINK_RE = re.compile(r"\]\((?:\.\./|/)e/([A-Za-z0-9_-]+?)(?:\.html)?(?:[#?][^)]*)?\)")
+MD_POST_LINK_RE = re.compile(r"(?:\.\./catalog\.html|/catalog)#post-([A-Za-z0-9_-]+)")
+TIER_ORDER = {"S": 0, "A": 1, "B": 2, "C": 3, "D": 4}
+_facts_state: dict | None = None
+_facts_dirty = False
+
+
+def strip_facts(md: str) -> str:
+    return FACTS_RE.sub("", md)
+
+
+def tool_slug(name: str) -> str:
+    """Same slug build_tools.py gives the tool hub (aliases + affiliate slugs); kebab-case fallback."""
+    try:
+        from build_tools import ALIASES, slug_for
+        return slug_for(ALIASES.get(name, name))
+    except Exception:
+        return re.sub(r"[^a-z0-9]+", "-", str(name).lower()).strip("-")
+
+
+def _cell(s: str) -> str:
+    return str(s).replace("|", "\\|").replace("\n", " ").strip()
+
+
+def _md_label(s: str, n: int = 48) -> str:
+    s = re.sub(r"\s+", " ", str(s or "")).strip()
+    if len(s) > n:
+        cut = s[:n - 1]
+        s = (cut[:cut.rfind(" ")] if cut.rfind(" ") > n // 2 else cut).rstrip(" ,;:—-") + "…"
+    return s.replace("[", "\\[").replace("]", "\\]")   # '|' is escaped by _cell
+
+
+def _top(counter: dict, n: int) -> list[str]:
+    return [k for k, _ in sorted(counter.items(), key=lambda kv: (-kv[1], kv[0].lower()))][:n]
+
+
+def _state() -> dict:
+    global _facts_state
+    if _facts_state is None:
+        _facts_state = load_json(FACTS_STATE) if FACTS_STATE.exists() else {}
+    return _facts_state
+
+
+def last_verified(slug: str, entries: list[dict]) -> str:
+    """Stable date: set on first sight, bumped only when the guide's entry set changes."""
+    global _facts_dirty
+    import hashlib
+    ids = sorted({str(e.get("id") or e.get("post_id") or e.get("_dive_key") or "") for e in entries} - {""})
+    h = hashlib.sha1("\n".join(ids).encode()).hexdigest()[:12]
+    st = _state()
+    cur = st.get(slug)
+    if not cur or cur.get("entries_hash") != h:
+        st[slug] = {"entries_hash": h, "last_verified": date.today().isoformat()}
+        _facts_dirty = True
+    return st[slug]["last_verified"]
+
+
+def save_facts_state(dry_run: bool = False) -> None:
+    if _facts_dirty and not dry_run and _facts_state is not None:
+        FACTS_STATE.parent.mkdir(parents=True, exist_ok=True)
+        FACTS_STATE.write_text(json.dumps(dict(sorted(_facts_state.items())), indent=1) + "\n")
+
+
+def facts_block(slug: str, entries: list[dict], dive: dict | None, has_ps: bool) -> str:
+    """Markdown 'Key facts' table (<= 8 rows) wrapped in facts markers."""
+    from collections import Counter
+    rows: list[tuple[str, str]] = []
+    doms = Counter(x for e in entries for x in set(e.get("domains") or []) if x)
+    if doms:
+        rows.append(("What it covers", ", ".join(_top(doms, 4))))
+    elif dive and (dive.get("class") or dive.get("dive_class")):
+        rows.append(("What it covers", class_label(dive.get("class") or dive.get("dive_class"), {})))
+    tools = Counter(x for e in entries for x in set(e.get("tools") or []) if x)
+    if tools:
+        cells, used_hubs = [], set()
+        for t in _top(tools, 5):
+            ts = tool_slug(t)
+            lab = _md_label(t, 40)
+            linked = ts and ts not in used_hubs and (TOOLS_DIR / f"{ts}.html").exists()
+            if linked:
+                used_hubs.add(ts)
+            cells.append(f"[{lab}](/tools/{ts})" if linked else lab)
+        rows.append(("Tools", ", ".join(cells)))
+    if entries:
+        tiers = Counter(str(e.get("tier") or "") for e in entries)
+        ranked = sorted(entries, key=lambda e: (TIER_ORDER.get(str(e.get("tier") or ""), 9),
+                                                 -(parse_date(e.get("date")) or date.min).toordinal(),
+                                                 str(e.get("id") or "")))
+        links = [f"[{_md_label(e.get('title') or e.get('id'))}]({entry_page(e)})"
+                 for e in ranked if entry_page(e)][:3]
+        n = len(entries)
+        sa = ", ".join(f"{tiers[t]} {t}-tier" for t in ("S", "A") if tiers.get(t))
+        txt = f"{n} post{'s' if n != 1 else ''}" + (f" ({sa})" if sa else "")
+        if links:
+            txt += " · top: " + " · ".join(links)
+        rows.append(("Posts covered", txt))
+        cr = Counter(clean_handle(e.get("creator")) for e in entries)
+        cr.pop("", None)
+        if cr:
+            rows.append(("Creators", ", ".join(creator_link(h) for h in _top(cr, 3))))
+        dr = date_range(entries)
+        if dr and len(set(dr.split(" – "))) == 1:
+            dr = dr.split(" – ")[0]
+        if dr:
+            rows.append(("Sources dated", dr))
+    if dive and dive.get("execution_difficulty"):
+        rows.append(("Difficulty", str(dive["execution_difficulty"])))
+    if has_ps:
+        rows.append(("Prompt system", "[Run-it-yourself prompts](#prompt-system)"))
+    rows.append(("Last verified", last_verified(slug, entries)))
+    rows = rows[:8]
+    table = ["| Key fact | Detail |", "|---|---|"] + [f"| {_cell(k)} | {_cell(v)} |" for k, v in rows]
+    return f"{FACTS_START}\n\n" + "\n".join(table) + f"\n\n{FACTS_END}"
+
+
+def put_facts(md: str, block: str) -> str:
+    """Replace the marked block, else insert right after the answer block (or the H1). Idempotent."""
+    if FACTS_START in md and FACTS_END in md:
+        a, b = md.index(FACTS_START), md.index(FACTS_END) + len(FACTS_END)
+        return md[:a] + block + md[b:]
+    if ANSWER_END in md:
+        i = md.index(ANSWER_END) + len(ANSWER_END)
+        return md[:i] + "\n\n" + block + md[i:]
+    m = re.search(r"(?m)^# .*$", md)
+    if not m:
+        return md
+    return md[:m.end()] + "\n\n" + block + md[m.end():]
+
+
+def handwritten_entries(slug: str, md: str, by_page: dict, by_id: dict, by_deep: dict) -> list[dict]:
+    """Entries a hand-written guide links (/e/<id>, /catalog#post-<id>) + those whose deep_dive_slug is it."""
+    body = strip_facts(md)
+    out, seen = [], set()
+    for m in list(MD_ENTRY_LINK_RE.finditer(body)) + list(MD_POST_LINK_RE.finditer(body)):
+        e = by_page.get(m.group(1)) or by_id.get(m.group(1))
+        if e is not None and id(e) not in seen:
+            seen.add(id(e))
+            out.append(e)
+    for e in by_deep.get(slug, []):
+        if id(e) not in seen:
+            seen.add(id(e))
+            out.append(e)
+    return out
+
+
+def apply_facts(curated: dict[str, dict], resolved: dict[str, list[dict]], entries: list[dict],
+                dry_run: bool) -> tuple[int, int, dict[str, int]]:
+    """Insert/refresh the Key facts table in every guide page. Returns (pages with a table, changed, {slug: n_entries})."""
+    by_id, by_page, by_deep = {}, {}, {}
+    for e in entries:
+        for k in (e.get("id"), e.get("post_id")):
+            if k:
+                by_id.setdefault(k, e)
+        rid = e.get("id") or e.get("post_id") or ""
+        by_page.setdefault("".join(c if c.isalnum() or c in "-_" else "_" for c in rid), e)
+        if e.get("deep_dive_slug"):
+            by_deep.setdefault(e["deep_dive_slug"], []).append(e)
+    have = changed = 0
+    counts: dict[str, int] = {}
+    for path in sorted(GUIDES.glob("*.html")):
+        if path.stem == "index":
+            continue
+        txt = path.read_text(encoding="utf-8")
+        m = MD_SCRIPT_RE.search(txt)
+        if not m:
+            continue
+        md, slug = m.group(2), path.stem
+        if slug in curated:
+            ents, dive = resolved.get(slug, []), curated[slug]
+        else:
+            ents, dive = handwritten_entries(slug, md, by_page, by_id, by_deep), None
+        counts[slug] = len(ents)
+        has_ps = bool(PACKS.get(slug)) or "<!-- prompt-system:start -->" in md
+        new_md = put_facts(md, escape_script(facts_block(slug, ents, dive, has_ps)))
+        have += 1
+        if new_md != md:
+            changed += 1
+            if not dry_run:
+                path.write_text(txt[:m.start(2)] + new_md + txt[m.end(2):], encoding="utf-8")
+    return have, changed, counts
+
+
 HANDLE_RE = re.compile(r"[a-z0-9._]{1,30}")
 
 
@@ -617,7 +814,9 @@ def build_markdown(d: dict, entries: list[dict], classes: dict, catalog_total: i
     line = f"**Connected entries:** {len(entries)}"
     if tools:
         line += f" · **Tools:** {', '.join(tools)}"
-    out += [line, "", answer_block(answer_text(slug_of(d["id"]), d)), "", "---", ""]
+    slug = slug_of(d["id"])
+    out += [line, "", answer_block(answer_text(slug, d)), "",
+            facts_block(slug, entries, d, bool(PACKS.get(slug))), "", "---", ""]
 
     out += ["## Thesis", "", text_block(d.get("thesis")), "", "---", ""]
     if d.get("why_it_matters"):
@@ -918,6 +1117,11 @@ def main() -> int:
         print(f"standalone guides given an entry-page link: {n_sa}")
         n_ans, n_ch = apply_answers(curated, args.dry_run)
         print(f"answer blocks: {n_ans} guides ({n_ch} {'would change' if args.dry_run else 'updated'})")
+        n_f, n_fch, f_counts = apply_facts(curated, resolved, entries, args.dry_run)
+        empty = sorted(s for s, n in f_counts.items() if n == 0)
+        print(f"facts tables: {n_f} guides ({n_fch} {'would change' if args.dry_run else 'updated'})"
+              + (f"; no linked entries: {', '.join(empty)}" if empty else ""))
+    save_facts_state(args.dry_run or out_dir != GUIDES)
 
     if not args.no_index:
         page_slugs = {p.stem for p in GUIDES.glob("*.html") if p.stem != "index"} | set(new)

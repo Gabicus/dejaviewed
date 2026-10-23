@@ -10,6 +10,7 @@ Outputs:
   site/e/*.html            — per-entry detail pages (via render_entries.py)
 """
 import json
+import re
 import subprocess
 import sys
 from collections import Counter, defaultdict
@@ -40,9 +41,12 @@ def _thumb_rel(e: dict) -> str:
 # discoverable through robots.txt and llms.txt; graph/board/search/about/links are left out.
 SITEMAP_TOP = [("index.html", "1.0", "weekly"), ("start-here.html", "0.9", "monthly"),
                ("method.html", "0.8", "monthly"), ("catalog.html", "0.9", "weekly"),
-               ("prompts.html", "0.8", "weekly")]
+               ("prompts.html", "0.8", "weekly"), ("system-prompts.html", "0.8", "monthly")]
 SITEMAP_DIRS = [("collections", "0.7", "weekly"), ("guides", "0.9", "weekly"), ("deeper", "0.8", "monthly"),
                 ("tools", "0.8", "weekly"), ("compare", "0.8", "monthly"), ("best", "0.8", "monthly")]
+
+
+_NOINDEX_RE = re.compile(r'<meta\s+name="robots"\s+content="[^"]*noindex', re.I)
 
 
 def sitemap_rels() -> list[tuple[str, str, str]]:
@@ -55,6 +59,9 @@ def sitemap_rels() -> list[tuple[str, str, str]]:
             rels.append((f"{sub}/index.html", pri, freq))
         for page in sorted(d.glob("*.html")):
             if page.name == "index.html" or page.name.startswith("_") or page.stem == "404":
+                continue
+            # noindex pages (thin tool hubs etc.) must not be listed: a listed-but-noindex URL is a crawl error
+            if _NOINDEX_RE.search(page.read_text(encoding="utf-8", errors="replace")[:6000]):
                 continue
             rels.append((f"{sub}/{page.name}", pri, freq))
     if (SITE / "e" / "index.html").is_file():

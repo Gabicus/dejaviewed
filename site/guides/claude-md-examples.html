@@ -1,0 +1,1105 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Real CLAUDE.md Examples, Annotated · DejaViewed</title>
+<!-- seo:start -->
+<link rel="canonical" href="https://dejaviewed.dev/guides/claude-md-examples">
+<meta name="description" content="Anthropic&#x27;s own guidance is short, and most of the good public files follow it whether they cite it or not. Includes a 7-step prompt system.">
+<meta property="og:site_name" content="DejaViewed">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Real CLAUDE.md Examples, Annotated">
+<meta property="og:description" content="Anthropic&#x27;s own guidance is short, and most of the good public files follow it whether they cite it or not. Includes a 7-step prompt system.">
+<meta property="og:url" content="https://dejaviewed.dev/guides/claude-md-examples">
+<meta property="og:image" content="https://dejaviewed.dev/og/claude-md-examples.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Real CLAUDE.md Examples, Annotated">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Real CLAUDE.md Examples, Annotated">
+<meta name="twitter:description" content="Anthropic&#x27;s own guidance is short, and most of the good public files follow it whether they cite it or not. Includes a 7-step prompt system.">
+<meta name="twitter:image" content="https://dejaviewed.dev/og/claude-md-examples.jpg">
+<link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","logo":"https://dejaviewed.dev/og/default.png","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"],"founder":{"@id":"https://dejaviewed.dev/#victor"},"publishingPrinciples":"https://dejaviewed.dev/method"},{"@type":"Person","@id":"https://dejaviewed.dev/#victor","name":"Victor","url":"https://www.1gabe.com/","sameAs":["https://github.com/Gabicus","https://instagram.com/6ab3"],"contactPoint":{"@type":"ContactPoint","url":"https://www.1gabe.com/contact/","contactType":"general"}},{"@type":"Article","@id":"https://dejaviewed.dev/guides/claude-md-examples#article","headline":"Real CLAUDE.md Examples, Annotated","description":"Anthropic's own guidance is short, and most of the good public files follow it whether they cite it or not. Includes a 7-step prompt system.","url":"https://dejaviewed.dev/guides/claude-md-examples","mainEntityOfPage":"https://dejaviewed.dev/guides/claude-md-examples","datePublished":"2026-10-22","dateModified":"2026-10-22","author":{"@id":"https://dejaviewed.dev/#victor"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/claude-md-examples.jpg","abstract":"Produce an evidence-backed CLAUDE.md for one real repository the user owns. Every line traces to a trap, command, check or ban the code cannot reveal."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Real CLAUDE.md Examples, Annotated"}]}]}</script>
+<!-- seo:end -->
+<link rel="stylesheet" href="../shared.css">
+<script src="../shared.js"></script>
+<style>
+.chip.guide{color:var(--c-guide);border-color:rgba(167,139,250,.28)}
+.chip.platform{color:var(--c-platform);border-color:rgba(224,208,64,.28)}
+.chip.resource{color:var(--c-resource);border-color:rgba(64,208,224,.28)}
+.card .actions{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.btn{flex:1;text-align:center;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--panel);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--panel-2);border-color:var(--border-hi);color:#fff}
+.btn.primary{background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(244,114,182,.2));border-color:rgba(167,139,250,.4);color:#fff}
+.btn.primary:hover{background:linear-gradient(135deg,rgba(167,139,250,.3),rgba(244,114,182,.3))}
+footer.site{margin:60px 0 40px;padding-top:30px;border-top:1px solid var(--border);color:var(--text-mute);font-size:12.5px;text-align:center}
+footer.site a{color:var(--text-dim)}
+footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--accent);font-family:'JetBrains Mono',Menlo,monospace;font-size:11.5px}
+.guide{max-width:780px;margin:30px auto;padding:0 22px;font-size:16px;line-height:1.75}
+.guide h1,.guide h2,.guide h3{letter-spacing:-0.015em;margin-top:1.7em}
+.guide h1{font-size:34px;font-weight:900;margin-top:0;letter-spacing:-0.02em;background:linear-gradient(135deg,#fff 0%,#a78bfa 50%,#f472b6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.guide h2{font-size:24px;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:6px}
+.guide h3{font-size:18px;color:#fff}.guide p{color:var(--text)}
+.guide code{background:rgba(255,255,255,.07);padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',Menlo,monospace;font-size:.9em;color:var(--accent)}
+.guide pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:16px;border-radius:var(--radius-sm);overflow-x:auto}
+.guide pre code{background:none;padding:0;color:var(--text)}
+.guide blockquote{border-left:3px solid var(--accent);padding-left:16px;color:var(--text-dim);margin:16px 0}
+.guide a{color:var(--accent);text-decoration:underline;text-decoration-color:rgba(167,139,250,.3)}
+.guide a:hover{text-decoration-color:var(--accent)}
+.guide hr{border:none;border-top:1px solid var(--border);margin:30px 0}
+.guide ul,.guide ol{padding-left:24px}
+.confidence-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:18px}
+.confidence-badge.high{background:rgba(76,218,140,.12);color:var(--c-repo);border:1px solid rgba(76,218,140,.4)}
+.confidence-badge.medium{background:rgba(240,160,80,.12);color:var(--c-tool);border:1px solid rgba(240,160,80,.4)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;max-height:none}
+  .nav{gap:4px}
+  .nav a{padding:6px 10px;font-size:11px}}
+</style></head><body>
+<script>DV.mountHeader(document.body, 'home');</script>
+<article class="guide">
+  <div class="confidence-badge high">Source confidence: high</div>
+  <div id="guide-body" data-pagefind-body data-pagefind-filter="kind:Guide"><!-- body:start -->
+<h1>Real CLAUDE.md Examples, Annotated</h1>
+<blockquote>
+<p><strong>In short:</strong> Produce an evidence-backed CLAUDE.md for one real repository the user owns. Every line traces to a trap, command, check or ban the code cannot reveal.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Key fact</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What it covers</td>
+<td>agents, software development, open source, prompt engineering</td>
+</tr>
+<tr>
+<td>Tools</td>
+<td>Claude, <a href="/tools/claude-code">Claude Code</a>, Anthropic, BigQuery, <a href="/tools/chatgpt">ChatGPT</a></td>
+</tr>
+<tr>
+<td>Posts covered</td>
+<td>12 posts (3 S-tier, 3 A-tier) · top: <a href="/e/DV6QY8QjoRW">Boris Cherny's personal CLAUDE.md…</a> · <a href="/e/DVzvsgijOLT">primer.md + memory.sh — live-updating…</a> · <a href="/e/DVQ5o6YDfsp">Claude Code Team Tips — Boris Cherny's 10…</a></td>
+</tr>
+<tr>
+<td>Creators</td>
+<td><a href="https://instagram.com/cooper.simson" target="_blank" rel="noopener">@cooper.simson</a>, <a href="https://instagram.com/keshavsuki" target="_blank" rel="noopener">@keshavsuki</a>, <a href="https://instagram.com/adam_ha_yes" target="_blank" rel="noopener">@adam_ha_yes</a></td>
+</tr>
+<tr>
+<td>Sources dated</td>
+<td>Feb 2026 – Sep 2026</td>
+</tr>
+<tr>
+<td>Prompt system</td>
+<td><a href="#prompt-system">Run-it-yourself prompts</a></td>
+</tr>
+<tr>
+<td>Last verified</td>
+<td>2026-10-22</td>
+</tr>
+</tbody>
+</table>
+<p>The CLAUDE.md files that actually change how Claude Code behaves are short lists of exact commands, codebase traps and hard bans, each with a reason attached. Generic advice like &quot;write clean code&quot; or &quot;be concise&quot; costs context on every turn and changes nothing, so the best files from Bun, PyTorch, MLflow and Anthropic's own repos spend almost no lines on it.</p>
+<p><strong>Category:</strong> Claude Code configuration / agent memory
+<strong>Sources checked:</strong> 2026-10-22. Eight public CLAUDE.md files, each pinned to the commit quoted; the official memory and best-practices docs; 12 saved posts from the DejaViewed catalog.
+<strong>Quoting:</strong> excerpts are verbatim and capped at 25 lines per repo, with a link to the pinned commit. Read the full files at the source; licenses are listed per repo.</p>
+<hr />
+<h2 id="what-the-official-docs-say">What the official docs say</h2>
+<p>Anthropic's own guidance is short, and most of the good public files follow it whether they cite it or not.</p>
+<ul>
+<li><strong>Where it lives.</strong> <code>./CLAUDE.md</code> or <code>./.claude/CLAUDE.md</code> for the team (committed), <code>CLAUDE.local.md</code> for personal notes (gitignored), <code>~/.claude/CLAUDE.md</code> for you across all projects. Files from parent directories are all loaded; CLAUDE.md files in subdirectories load when Claude works there. Source: <a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">How Claude remembers your project</a>.</li>
+<li><strong>Start with <code>/init</code>, then add what Claude cannot discover.</strong> The generated file covers build commands and structure; your job is the non-obvious part.</li>
+<li><strong>Under ~200 lines, concrete and checkable.</strong> &quot;Run <code>npm test</code> before committing&quot;, not &quot;test your changes&quot;. <code>@path</code> imports organise a file but do not reduce what it costs in context.</li>
+<li><strong>The deletion test.</strong> For each line ask: &quot;Would removing this cause Claude to make mistakes?&quot; If not, cut it. Source: <a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Best practices for Claude Code</a>.</li>
+<li><strong>Emphasis is a budget.</strong> Put IMPORTANT on the one rule that keeps getting skipped; if every line shouts, none stands out.</li>
+<li><strong>CLAUDE.md is advice, not enforcement.</strong> A rule that must never be broken belongs in a hook or a permission rule (see the <a href="/guides/claude-code-hooks-system">hooks cookbook</a>). Procedures that only matter sometimes belong in skills.</li>
+</ul>
+<hr />
+<h2 id="the-eight-files-at-a-glance">The eight files at a glance</h2>
+<table>
+<thead>
+<tr>
+<th>Repo</th>
+<th>Lines</th>
+<th>Last change to CLAUDE.md</th>
+<th>License</th>
+<th>What the file is mostly for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/anthropics/claude-code/blob/7dbaea237fca9aed7baf250390ec4d49a57a2211/CLAUDE.md" target="_blank" rel="noopener">anthropics/claude-code</a></td>
+<td>40</td>
+<td>2026-09-29</td>
+<td>All rights reserved</td>
+<td>Security rules for CI jobs that run Claude</td>
+</tr>
+<tr>
+<td><a href="https://github.com/anthropics/anthropic-quickstarts/blob/09bdac604c1709ff1e38175e832b5f8124f0e63e/CLAUDE.md" target="_blank" rel="noopener">anthropics/anthropic-quickstarts</a></td>
+<td>68</td>
+<td>2026-09-22</td>
+<td>MIT</td>
+<td>Shared conventions + per-project commands</td>
+</tr>
+<tr>
+<td><a href="https://github.com/oven-sh/bun/blob/fec4a8850ea444c59f633528ab9f97e2f6219b26/CLAUDE.md" target="_blank" rel="noopener">oven-sh/bun</a></td>
+<td>240</td>
+<td>2026-10-22</td>
+<td>MIT (bundled JavaScriptCore is LGPL-2)</td>
+<td>The debug-build trap and test discipline</td>
+</tr>
+<tr>
+<td><a href="https://github.com/denoland/deno/blob/c439c90d890ad07c2bf4eaa8582cf7389142f97e/CLAUDE.md" target="_blank" rel="noopener">denoland/deno</a></td>
+<td>433</td>
+<td>2026-07-30</td>
+<td>MIT</td>
+<td>A full contributor guide</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pytorch/pytorch/blob/63ad7b4a33ce67e987e216a750f638cbdcf5f2b8/CLAUDE.md" target="_blank" rel="noopener">pytorch/pytorch</a></td>
+<td>365</td>
+<td>2026-10-19</td>
+<td>BSD-3-style</td>
+<td>AI policy + gotchas, each with its reason</td>
+</tr>
+<tr>
+<td><a href="https://github.com/mlflow/mlflow/blob/007775d93f3be8493c9999ad9014207ec65f437c/CLAUDE.md" target="_blank" rel="noopener">mlflow/mlflow</a></td>
+<td>240</td>
+<td>2026-10-21</td>
+<td>Apache-2.0</td>
+<td>Knowledge-cutoff note, supply-chain rule, PR scope</td>
+</tr>
+<tr>
+<td><a href="https://github.com/dagster-io/dagster/blob/f4de04765b5570bed692a1b54107e30ec1896fa1/CLAUDE.md" target="_blank" rel="noopener">dagster-io/dagster</a></td>
+<td>120</td>
+<td>2026-08-26</td>
+<td>Apache-2.0</td>
+<td>An index into <code>.claude/*.md</code> files</td>
+</tr>
+<tr>
+<td><a href="https://github.com/excalidraw/excalidraw/blob/cc571c46810452f1ffdff8db40c0a26bcaf4dcde/CLAUDE.md" target="_blank" rel="noopener">excalidraw/excalidraw</a></td>
+<td>34</td>
+<td>2025-05-25</td>
+<td>MIT</td>
+<td>Close to raw <code>/init</code> output</td>
+</tr>
+</tbody>
+</table>
+<p>Many other large repos do not keep a root CLAUDE.md at all (on 2026-10-22: vercel/next.js, microsoft/vscode, astral-sh/uv, openai/codex, vitejs/vite and others), and a growing group keep their rules in AGENTS.md and point CLAUDE.md at it. That pattern gets its own section below.</p>
+<hr />
+<h2 id="1-bun-name-the-trap-then-repeat-it-where-it-bites">1. Bun: name the trap, then repeat it where it bites</h2>
+<p>From <a href="https://github.com/oven-sh/bun/blob/fec4a8850ea444c59f633528ab9f97e2f6219b26/CLAUDE.md" target="_blank" rel="noopener">oven-sh/bun CLAUDE.md</a>, lines 7–12 and 107–108:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">- **Build Bun**: `bun bd`
+  - Creates a debug build at `./build/debug/bun-debug`
+  - **CRITICAL**: do not set a timeout when running `bun bd`
+- **Run tests with your debug build**: `bun bd test &lt;test-file&gt;`
+  - **CRITICAL**: Never use `bun test` directly - it won't include your changes
+- **Run any command with debug build**: `bun bd &lt;command&gt;`
+...
+- **CRITICAL**: Do not write flaky tests. Do not use `setTimeout` or `await sleep(N)` to wait for a condition; poll with a deadline or `await` the event itself. You are not testing the TIME PASSING, you are testing the CONDITION.
+- **CRITICAL**: Verify your test fails with `USE_SYSTEM_BUN=1 bun test &lt;file&gt;` and passes with `bun bd test &lt;file&gt;`. Your test is NOT VALID if it passes with `USE_SYSTEM_BUN=1`.
+</code></pre></div>
+<p><strong>Why it works.</strong> The most natural command in the repo, <code>bun test</code>, silently runs the <em>installed</em> Bun and so tests none of your changes. Claude cannot discover that from the code; a human contributor learns it once, painfully. The file names the trap, gives the right command, and adds a check that proves a new test actually exercises the fix (fails on the system binary, passes on the debug build). That last rule is a verification oracle, not advice.</p>
+<p><strong>What's weaker.</strong> The file also carries a long crate-by-crate source map, which the official guide explicitly says to leave out, and the pinned version has a stray duplicated line inside a test example (line 70). These files rarely get reviewed like code.</p>
+<h2 id="2-pytorch-policy-first-then-gotchas-that-each-carry-a-reason">2. PyTorch: policy first, then gotchas that each carry a reason</h2>
+<p>From <a href="https://github.com/pytorch/pytorch/blob/63ad7b4a33ce67e987e216a750f638cbdcf5f2b8/CLAUDE.md" target="_blank" rel="noopener">pytorch/pytorch CLAUDE.md</a>, lines 5–8, 63–65 and 101–104:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">- **You may never act autonomously on GitHub.** Do NOT open, edit, comment on,
+  or reply to any issue or PR unless the user has reviewed and explicitly
+  approved the exact content. Fully-agent-generated contributions are banned and
+  will be closed.
+...
+Always check local memory for build configuration (env vars, incremental-build shortcuts, etc.) before running the build, and apply what you find. If nothing applicable is in memory, ask the user.
+All build (both codegen, C++ and python) is done via `pip install -e . -v --no-build-isolation`.
+You should NEVER run any other command to build PyTorch.
+...
+Ruff's S101 (`Use of assert detected`) must be fixed by rewriting the assert,
+never by adding `# noqa: S101`. The lint message itself suggests the noqa; ignore
+that suggestion. Plain `assert` is stripped by `python -O`, so a suppressed
+assert is a check that silently does nothing in an optimized run.
+</code></pre></div>
+<p><strong>Why it works.</strong> Every rule states the consequence it prevents: closed PRs, a wrong build, a check that vanishes under <code>python -O</code>. Rules with reasons generalise; Claude can apply the S101 reasoning to a case the file never mentions. The file also routes multi-step procedures to skills instead of inlining them, which keeps it lean.</p>
+<h2 id="3-mlflow-tell-claude-what-it-does-not-know">3. MLflow: tell Claude what it does not know</h2>
+<p>From <a href="https://github.com/mlflow/mlflow/blob/007775d93f3be8493c9999ad9014207ec65f437c/CLAUDE.md" target="_blank" rel="noopener">mlflow/mlflow CLAUDE.md</a>, lines 5–7 and 89–97:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">## Knowledge Cutoff Note
+
+Claude's training data may lag behind current releases. When reviewing docs or code, don't flag unfamiliar names as speculative or non-existent. Assume the authors are referencing newer, valid resources (e.g., model names like GPT-5, GitHub runner types like ubuntu-slim, library versions, etc.).
+...
+### Package Cooldown Period
+
+7-day cooldown on new package releases to guard against compromised or broken
+versions that get pulled and yanked within a few days. Keep these in sync:
+
+- Python: `exclude-newer = "P7D"` in `pyproject.toml` (`torch`/`torchvision` opted out).
+- JavaScript: `min-release-age=7` in `.npmrc`; `npmMinimalAgeGate: 7d` in `.yarnrc.yml`.
+
+Pass `--min-release-age=7` to any new `npx` invocations.
+</code></pre></div>
+<p><strong>Why it works.</strong> The knowledge-cutoff note fixes a real, recurring failure in code review: a model &quot;correcting&quot; a model name or runner type that is newer than its training data. The cooldown rule is a supply-chain control spread across four config files; writing down &quot;keep these in sync&quot; is the only way an agent touching one of them knows about the other three.</p>
+<h2 id="4-anthropics-claude-code-repo-a-file-that-is-only-guardrails">4. Anthropic's claude-code repo: a file that is only guardrails</h2>
+<p>From <a href="https://github.com/anthropics/claude-code/blob/7dbaea237fca9aed7baf250390ec4d49a57a2211/CLAUDE.md" target="_blank" rel="noopener">anthropics/claude-code CLAUDE.md</a>, lines 10–16 (short quotation for commentary; the repo is not open-licensed):</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">1. **Egress-firewall runner.** The job has `runs-on: ubuntu-24.04-firewall`,
+   a GitHub-hosted runner that filters the job's outbound network traffic. Do
+   not move a job that calls Claude to another runner.
+2. **Network allow list.** `.github/egress-firewall.yaml` lists the hosts
+   those jobs may reach, besides any that GitHub's firewall allows by default.
+   Keep `mode: enforce`, which is what makes the firewall block the rest. Follow
+   that file's header when you add a host.
+</code></pre></div>
+<p><strong>Why it works.</strong> No build commands, no style rules: the whole 40-line file protects the CI jobs that run Claude. It also names the workflow check that fails the build when a protection is broken, so the prose is backed by enforcement. That pairing (rule in CLAUDE.md, check in CI or a hook) is the pattern to copy for anything that must not regress.</p>
+<h2 id="5-anthropic-quickstarts-conventions-that-fail-silently-get-explained">5. anthropic-quickstarts: conventions that fail silently get explained</h2>
+<p>From <a href="https://github.com/anthropics/anthropic-quickstarts/blob/09bdac604c1709ff1e38175e832b5f8124f0e63e/CLAUDE.md" target="_blank" rel="noopener">anthropics/anthropic-quickstarts CLAUDE.md</a>, lines 21–27 and 49–52:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">### Testing &amp; Code Quality
+
+- **Lint**: `ruff check .`
+- **Format**: `ruff format .`
+- **Typecheck**: `pyright`
+- **Run tests**: `pytest`
+- **Run single test**: `pytest tests/path_to_test.py::test_name -v`
+...
+- **TypeScript**: Strict mode with proper interfaces
+- **Components**: Function components with React hooks
+- **Formatting**: Follow ESLint Next.js configuration
+- **UI components**: Use shadcn/ui components library
+</code></pre></div>
+<p><strong>Load-bearing vs filler in one file.</strong> The command block is gold, especially the single-test invocation that saves a full-suite run on every iteration. The style bullets are what <code>/init</code> tends to produce: things Claude reads from <code>tsconfig.json</code> and the existing components anyway. The same file's best line is a tagging convention whose wrong value &quot;is ignored for attribution, with no error to warn you&quot; (line 7). Silent failures are exactly what CLAUDE.md is for.</p>
+<h2 id="6-dagster-a-hub-file-and-a-lesson-in-shouting">6. Dagster: a hub file, and a lesson in shouting</h2>
+<p>From <a href="https://github.com/dagster-io/dagster/blob/f4de04765b5570bed692a1b54107e30ec1896fa1/CLAUDE.md" target="_blank" rel="noopener">dagster-io/dagster CLAUDE.md</a>, lines 5–9 and 117–120:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">- **Package Locations**: [.claude/python_packages.md](./.claude/python_packages.md) - Comprehensive list of all Python packages and their filesystem paths. **ALWAYS check this file first when looking for package locations.**
+- **Development Workflow**: [.claude/dev_workflow.md](./.claude/dev_workflow.md) - Documentation of developer workflows in the Dagster OSS repo.
+- **UI Workflow**: [.claude/ui_workflow.md](./.claude/ui_workflow.md) - UI/TypeScript development workflows and verification commands. **ALWAYS check after UI edits.**
+- **Coding Conventions**: [.claude/coding_conventions.md](./.claude/coding_conventions.md) - Type annotations and code style conventions. **ALWAYS check this before writing data structures - use @record instead of @dataclass.**
+- **CRITICAL**: After ANY Python code changes, ALWAYS run `just ruff` - this is mandatory and must never be skipped.
+...
+### Git Operations
+
+- **NEVER use `git push` directly** - always ask the user before pushing changes to remote
+- Do not automatically do git commit --amend on user's behalf since you lose track of what the agent has done
+</code></pre></div>
+<p><strong>What to take.</strong> The index shape is good: the root file stays short and points at topic files Claude reads only when relevant. The <code>@record</code> instead of <code>@dataclass</code> rule and the &quot;don't search inside <code>.tox</code>&quot; rule are pure codebase knowledge. <strong>What to avoid.</strong> ALWAYS, CRITICAL and MANDATORY appear on most lines, and <code>just ruff</code> is demanded three times. A rule that must run after every edit is a <a href="/guides/claude-code-hooks-system">PostToolUse hook</a>, not a paragraph.</p>
+<h2 id="7-deno-a-contributor-guide-is-not-a-claudemd">7. Deno: a contributor guide is not a CLAUDE.md</h2>
+<p>From <a href="https://github.com/denoland/deno/blob/c439c90d890ad07c2bf4eaa8582cf7389142f97e/CLAUDE.md" target="_blank" rel="noopener">denoland/deno CLAUDE.md</a>, lines 28–33 and 189–192:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">- Before committing, make sure `tools/format.js` is run to format your code
+- Before committing, if only non-Rust was changed, make sure to run
+  `tools/lint.js --js` and fix any lint errors before committing
+- If you changed Rust code, make sure to run `tools/lint.js` and fix any lint
+  errors before committing
+- In the PR description, provide a clear summary of the changes you made, why
+...
+The main form of integration test in deno is the "spec" test. These tests can be
+found in `tests/specs`. The idea is that you have a `__test__.jsonc` file that
+lays out one or more tests, where a test is a CLI command to execute and the
+output is captured and asserted against.
+</code></pre></div>
+<p><strong>Mixed.</strong> The repo-specific scripts and the custom spec-test format are exactly what Claude cannot infer from generic Rust knowledge. But at 433 lines, more than twice the ~200-line target, the file also carries a table of contents, a quick start and troubleshooting tips like checking your internet connection. Every one of those lines loads on every session.</p>
+<h2 id="8-excalidraw-the-minimum-viable-file">8. Excalidraw: the minimum viable file</h2>
+<p>From <a href="https://github.com/excalidraw/excalidraw/blob/cc571c46810452f1ffdff8db40c0a26bcaf4dcde/CLAUDE.md" target="_blank" rel="noopener">excalidraw/excalidraw CLAUDE.md</a>, lines 12–25:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">## Development Workflow
+
+1. **Package Development**: Work in `packages/*` for editor features
+2. **App Development**: Work in `excalidraw-app/` for app-specific features
+3. **Testing**: Always run `yarn test:update` before committing
+4. **Type Safety**: Use `yarn test:typecheck` to verify TypeScript
+
+## Development Commands
+
+yarn test:typecheck  # TypeScript type checking
+yarn test:update     # Run all tests (with snapshot updates)
+yarn fix             # Auto-fix formatting and linting issues
+</code></pre></div>
+<p><strong>Good enough to start.</strong> Thirty-four lines, unchanged since May 2025: where to work, what to run before committing. (The original wraps the three commands in a bash fence.) This is roughly what <code>/init</code> gives you, and it is a fine floor. The rest of this guide is about what to add on top.</p>
+<hr />
+<h2 id="the-sections-that-recur-and-which-ones-earn-their-lines">The sections that recur, and which ones earn their lines</h2>
+<p>Across the eight files and the <a href="/guides/boris-cherny-claude-md">Boris Cherny breakdown</a>, the same five kinds of content show up.</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Seen in</th>
+<th>Load-bearing when…</th>
+<th>Cargo cult when…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Exact commands</strong> (build, test, single test, lint)</td>
+<td>all eight</td>
+<td>the obvious command is wrong (Bun) or there is only one allowed way (PyTorch)</td>
+<td>it repeats <code>npm test</code> that <code>package.json</code> already shows</td>
+</tr>
+<tr>
+<td><strong>Verification rules</strong></td>
+<td>Bun, PyTorch, Dagster, Excalidraw</td>
+<td>it names a check that can fail: &quot;fails with <code>USE_SYSTEM_BUN=1</code>, passes with <code>bun bd test</code>&quot;</td>
+<td>it says &quot;make sure everything works&quot;</td>
+</tr>
+<tr>
+<td><strong>Workflow and git rules</strong></td>
+<td>Deno, MLflow, Dagster, PyTorch</td>
+<td>CI enforces it (DCO sign-off, <code>claude/</code> branch prefix) or it protects reviewers (one concern per PR, no force-push)</td>
+<td>it restates generic etiquette nobody would violate</td>
+</tr>
+<tr>
+<td><strong>Memory and context pointers</strong></td>
+<td>Dagster, PyTorch (&quot;check local memory&quot;), primer.md pattern</td>
+<td>the target file exists, is current and is read only when relevant</td>
+<td>it imports everything with <code>@</code> and the context bill grows anyway</td>
+</tr>
+<tr>
+<td><strong>Tool and action bans</strong></td>
+<td>PyTorch (GitHub), Dagster (push, amend), claude-code (runners)</td>
+<td>the ban carries a reason and, ideally, a hook or CI check behind it</td>
+<td>it is the only defence for something irreversible</td>
+</tr>
+</tbody>
+</table>
+<p>Rules of thumb drawn from the table:</p>
+<ul>
+<li><strong>A rule needs a reason or a check.</strong> &quot;Never X&quot; survives; &quot;Never X, because Y&quot; generalises to cases you did not list.</li>
+<li><strong>Write down only what the code cannot tell Claude.</strong> Style that lives in a linter config is already enforced.</li>
+<li><strong>Anything irreversible needs enforcement outside the file.</strong> CLAUDE.md is read by the model, so a confused turn or a prompt injection can still ignore it.</li>
+</ul>
+<hr />
+<h2 id="the-agentsmd-pointer-pattern">The <code>@AGENTS.md</code> pointer pattern</h2>
+<p>A large share of big repos now keep their real instructions in AGENTS.md, the cross-tool convention, and make CLAUDE.md a pointer. Checked on 2026-10-22:</p>
+<ul>
+<li><strong>One-line <code>@AGENTS.md</code> import:</strong> getsentry/sentry, n8n-io/n8n, astral-sh/ruff, supabase/supabase, modelcontextprotocol/python-sdk, tldraw/tldraw, mastra-ai/mastra, grafana/grafana, ggml-org/llama.cpp. cloudflare/workers-sdk uses a five-line stub that says &quot;See @AGENTS.md&quot;.</li>
+<li><strong>Symlink:</strong> PostHog/posthog (to AGENTS.md), huggingface/transformers (to <code>.ai/AGENTS.md</code>), zed-industries/zed (to <code>.rules</code>).</li>
+</ul>
+<p>If your team uses more than one coding agent, this is the sane default: one source of truth, and the official docs say Claude Code reads AGENTS.md when no CLAUDE.md exists. Put Claude-only material (hooks to know about, skills to use) below the import.</p>
+<hr />
+<h2 id="what-the-saved-posts-add">What the saved posts add</h2>
+<p>The DejaViewed catalog has a run of posts about CLAUDE.md. The useful ideas, with the posts they came from:</p>
+<ul>
+<li><strong>Update it after every correction.</strong> Boris Cherny's team habit: end a correction with &quot;update your CLAUDE.md so you don't make that mistake again&quot; (<a href="/e/DVQ5o6YDfsp">Claude Code team tips</a>). His personal file adds plan mode first, subagents for complex work and a lessons file (<a href="/e/DV6QY8QjoRW">breakdown by @keshavsuki</a>, <a href="/e/DVMmXlME6mZ">the template version</a>). Full analysis: <a href="/guides/boris-cherny-claude-md">Boris Cherny's CLAUDE.md</a>.</li>
+<li><strong>Keep volatile state out of it.</strong> CLAUDE.md goes stale when it carries &quot;current status&quot;. A separate <code>primer.md</code> that Claude rewrites at the end of each session, plus a launch hook that injects recent commits, keeps CLAUDE.md for durable rules (<a href="/e/DVzvsgijOLT">primer.md + memory.sh</a>; guide: <a href="/guides/primer-md-pattern">The primer.md pattern</a>).</li>
+<li><strong>Prune for newer models.</strong> Rules written for older models can hold newer ones back; audit every rule and skill and delete dead weight (<a href="/e/Dbhuaw7Pk4u">Claude setup purge</a>). This matches the official deletion test.</li>
+<li><strong>Give it a stable home in a file tree.</strong> A brain folder with CLAUDE.md, per-project context files and a short-term NOW file survives across sessions (<a href="/e/Db7Vx2Hhf9c">agent workspace file tree</a>).</li>
+<li><strong>Domain rules belong there too.</strong> Design rules for a website build (<a href="/e/DW_8FsslNJi">Claude Code website build</a>), UX laws as instructions (<a href="/e/DcwkX6OyduT">UX laws cheat sheet</a>), or a writing style blacklist enforced by rules plus hooks (<a href="/e/DbJzWBfxPvD">Humanizer skill</a>).</li>
+<li><strong>Know what you are overriding.</strong> The leaked system-prompt &quot;brevity mandate&quot; pushes minimal diffs; some projects override it in CLAUDE.md when code quality matters more (<a href="/e/DWoYMJDD6oO">brevity mandate critique</a>; see <a href="/guides/claude-code-leaked-system-prompt">the leaked system prompt guide</a>).</li>
+<li><strong>Intro-level explainers.</strong> <a href="/e/DVRnpZsj21m">CLAUDE.md explained</a> and <a href="/e/DV3fvORksud">have Claude build its own status dashboard</a> are lighter, but fine starting points.</li>
+</ul>
+<hr />
+<h2 id="a-minimal-starter-template">A minimal starter template</h2>
+<p>An original template that follows the patterns above. Replace every angle-bracket placeholder; delete any section you cannot fill with something specific.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-markdown"># &lt;project&gt; — notes for Claude
+
+## Commands
+- Install: `&lt;exact command&gt;`
+- Test one file: `&lt;exact command&gt; &lt;path&gt;`   # use this while iterating
+- Full suite: `&lt;exact command&gt;`              # run before saying a task is done
+- Lint/format: `&lt;exact command&gt;`             # a PostToolUse hook also runs this
+
+## Traps (things the code will not tell you)
+- `&lt;obvious command&gt;` does NOT do what it looks like: &lt;why&gt;. Use `&lt;right command&gt;`.
+- `&lt;generated file&gt;` is generated from `&lt;source&gt;`; edit the source, then run `&lt;cmd&gt;`.
+- &lt;env quirk, port, service that must be running, flaky area&gt;
+
+## Verification
+- A task is done when `&lt;test command&gt;` passes and &lt;observable check&gt;.
+- A new test must fail without the fix and pass with it.
+
+## Boundaries
+- Never &lt;irreversible action&gt; without asking: &lt;reason&gt;. (Enforced by &lt;hook / CI check&gt;.)
+- Do not edit &lt;paths&gt; (&lt;reason&gt;).
+
+## Pointers
+- Architecture decisions: @docs/architecture.md
+- Current state / next steps: primer.md (rewritten at end of each session)
+</code></pre></div>
+<p>Thirty lines or so. It grows only when a correction teaches you something the code cannot.</p>
+<hr />
+<h2 id="anti-patterns">Anti-patterns</h2>
+<ul>
+<li><strong>The style essay.</strong> &quot;Write clean, maintainable, well-documented code.&quot; Claude already tries; the line only costs context.</li>
+<li><strong>The everything-is-CRITICAL file.</strong> When most lines shout, emphasis stops working. Spend it on one rule.</li>
+<li><strong>The contributor guide paste.</strong> Table of contents, project history, troubleshooting for humans. Link to it instead.</li>
+<li><strong>File-by-file maps.</strong> They rot fastest and Claude can list the directory itself.</li>
+<li><strong>Status in the rules file.</strong> &quot;Currently working on X&quot; belongs in primer.md or an issue tracker.</li>
+<li><strong>Advice standing in for enforcement.</strong> &quot;Never push to main&quot; with no hook or branch protection behind it.</li>
+<li><strong>Write-only files.</strong> Rules added after incidents and never pruned; contradictions between old and new lines. Review it like code, and check what loaded with <code>/context</code>.</li>
+<li><strong>Personal preferences in the team file.</strong> Put them in <code>CLAUDE.local.md</code> or <code>~/.claude/CLAUDE.md</code>.</li>
+</ul>
+<hr />
+<h2 id="bottom-line">Bottom line</h2>
+<p>Start from <code>/init</code>, then add only what the code cannot tell Claude: the command that looks right but isn't, the generated file you must not edit, the check that proves a change works, and the actions that need a human. Give every rule a reason, back the irreversible ones with a hook or CI check, keep volatile state in a separate file, and delete any line that fails the &quot;would Claude get this wrong without it?&quot; test.</p>
+<hr />
+<h2 id="prompt-system">Prompt system — run this yourself</h2>
+<p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
+<p><strong>Mission.</strong> Produce an evidence-backed CLAUDE.md for one real repository the user owns. Every line traces to a trap, command, check or ban the code cannot reveal. Irreversible rules are backed by a hook or CI check, and volatile state moves to primer.md. Done means an A/B run of 5 fixed tasks shows fewer trap hits or tool calls than no file and the old file, lint finds zero cargo-cult lines, and the file stays under 200 lines.</p>
+<h3 id="1-deeper-not-bigger">1 · Deeper, not bigger</h3>
+<p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
+<ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A staff engineer would not copy Boris Cherny's sections or another repo's file. They would mine their own repo's failure history first: commands that look right but are wrong (Bun's <code>bun test</code> versus <code>bun bd test</code>), generated files, flaky areas, and corrections typed into past sessions. Each line faces the official deletion test, 'Would removing this cause Claude to make mistakes?', with a measurement behind it. Anything irreversible becomes a hook or CI check, as the claude-code repo backs its egress-firewall rules with a workflow check. Then they A/B the file on real tasks instead of trusting how it reads.</li>
+<li><strong>Rawest material to start from:</strong> 1) The user's repo: package.json, pyproject.toml, Makefile or justfile, <code>.github/workflows/*.yml</code>, linter configs, reverts in <code>git log</code>, and any existing CLAUDE.md, AGENTS.md or CLAUDE.local.md. 2) Past transcripts in <code>~/.claude/projects/&lt;repo-slug&gt;/*.jsonl</code>, which record every correction the user typed. 3) The eight pinned files, read with <code>git show &lt;sha&gt;:CLAUDE.md</code>: oven-sh/bun fec4a88, pytorch/pytorch 63ad7b4, mlflow/mlflow 007775d, anthropics/claude-code 7dbaea2, anthropics/anthropic-quickstarts 09bdac6, dagster-io/dagster f4de047, denoland/deno c439c90, excalidraw/excalidraw cc571c4. 4) code.claude.com/docs/en/memory and /best-practices.</li>
+<li><strong>Methods and tools:</strong> <code>git clone --filter=blob:none</code> plus <code>git show &lt;sha&gt;:CLAUDE.md | wc -l</code> to verify quotes and line counts. <code>/init</code> for a baseline to diff against. <code>/context</code> for the memory token cost. <code>jq</code> over transcript JSONL to pull correction turns. <code>git worktree add</code> for isolated eval arms. <code>claude -p '&lt;task&gt;' --output-format stream-json --verbose</code> for headless runs, counting <code>tool_use</code> events. A stdlib Python lint that tags lines and flags filler, missing reasons, shouting density and discoverable rules. PreToolUse and PostToolUse hooks plus <code>permissions.deny</code> in <code>.claude/settings.json</code>.</li>
+<li><strong>What proves it right (other than you or the model):</strong> A headless A/B eval: the same 5 tasks in three arms (no file, old file, new file), 3 runs each, scored on tool calls, wrong-command invocations, acceptance-test passes and wall time. A fails-without/passes-with proof for each trap, after Bun's <code>USE_SYSTEM_BUN=1</code> rule. A hook test that attempts each banned action and is blocked. A cold-start teammate who completes a real task with the file. <code>git show</code> diffs confirming every quote matches its pinned commit.</li>
+</ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write a CLAUDE.md for my repo at &lt;path&gt;, built from evidence, not templates. First mine ground truth: read the build, test and lint configs and CI workflows, and run each command. Note which obvious command is wrong, list generated files, and pull every correction I typed from ~/.claude/projects/&lt;slug&gt;/*.jsonl. Calibrate against eight files read with git show at pinned commits: bun fec4a88, pytorch 63ad7b4, mlflow 007775d, anthropics/claude-code 7dbaea2, anthropic-quickstarts 09bdac6, dagster f4de047, deno c439c90 and excalidraw cc571c4. Give every line a source and a reason. Cut anything a linter config, package.json or the directory tree already says. Keep the file under 200 lines with at most one ALL-CAPS rule. Turn every irreversible ban into a PreToolUse hook or CI check and name it in the file. Move status to primer.md. If AGENTS.md exists, start with @AGENTS.md. Prove it with 5 real tasks run headless with no file, the old file and the new file, 3 runs each. Return the file, a provenance table, the hook config, the eval table and a gap list.
+</code></pre></div>
+<h3 id="2-one-shot-prompt">2 · One-shot prompt</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">ROLE AND STANDPOINT: You are a staff engineer writing the CLAUDE.md for the repository at &lt;REPO_PATH&gt;. Treat the file as code. Every line must earn its context cost with evidence, and anything that must never happen gets enforcement outside the file. Do not copy template sections such as Boris Cherny's 'Workflow Orchestration' unless this repo's evidence calls for them.
+
+CONTEXT:
+- The official docs (code.claude.com/docs/en/memory and /best-practices) set a target under about 200 lines and ask for concrete, checkable lines. They pose the deletion test: 'Would removing this cause Claude to make mistakes?' Emphasis is a budget, and CLAUDE.md is advice, not enforcement.
+- Reference files, read at pinned commits with `git show &lt;sha&gt;:CLAUDE.md`. oven-sh/bun fec4a8850: `bun test` runs the installed Bun, so use `bun bd test`, and a test must fail with USE_SYSTEM_BUN=1. pytorch/pytorch 63ad7b4a3: each gotcha carries its reason. mlflow/mlflow 007775d93: a knowledge-cutoff note and a cooldown kept in sync across 4 configs. anthropics/claude-code 7dbaea237: 40 lines of CI guardrails backed by a workflow check. dagster-io/dagster f4de04765: a good index file, but CRITICAL on most lines. denoland/deno c439c90d8: a 433-line contributor guide. excalidraw/excalidraw cc571c468: 34 lines, close to /init output.
+- The @AGENTS.md pointer pattern (getsentry/sentry, astral-sh/ruff) and the primer.md pattern for volatile state.
+
+HARD CONSTRAINTS:
+1. Every line has a provenance entry: file:line, transcript turn, command output or CI log.
+2. Under 200 lines, with at most one IMPORTANT or CRITICAL.
+3. No line restates package.json, a linter config, tsconfig or the directory tree.
+4. Every 'never' rule states its reason. Each irreversible one names the hook, deny rule or CI check that enforces it, which you also write.
+5. No status, TODOs or dates. Those go to primer.md. Personal preferences go to CLAUDE.local.md.
+6. Verify every public quote against its pinned SHA.
+
+DELIVERABLES, IN ORDER:
+1. ground_truth.md: commands run with exit codes, generated files, CI checks, memory files with line and /context token counts, and corrections mined from ~/.claude/projects/&lt;slug&gt;/*.jsonl.
+2. lint_old.csv: each existing line (or /init output) tagged and marked keep, cut, move-to-hook or move-to-primer.
+3. CLAUDE.md shaped as Commands, Traps, Verification, Boundaries and Pointers, using only the sections evidence fills.
+4. provenance.csv mapping each line to a source and a reason.
+5. Hook and permission changes in .claude/settings.json, plus a test showing each ban blocked.
+6. eval/: 5 real tasks, a runner for three arms (none, old, new) with 3 runs each via `claude -p --output-format stream-json`, and results.csv.
+7. gap_report.md.
+
+BUILT-IN GAP ANALYSIS: Keep a GAPS list as you work. Log suspected traps you could not reproduce, commands you could not run, corrections you could not classify, and rules kept without measurement. Fill what you can before finishing and mark the rest UNVERIFIED with a reason.
+
+SELF-QUESTIONS BEFORE FINISHING:
+- Which obvious command here does the wrong thing, and does the file name it?
+- Which line would I cut first, and why is it still there?
+- Does each verification rule name a check that can fail?
+- Which ban has no hook behind it?
+- Did ~/.claude/CLAUDE.md load identically in every eval arm?
+- Did any eval prompt hint at the rule it tests?
+
+STOP CONDITIONS: Stop when the new arm is no worse than old on every metric and better on at least one, lint is clean and every hook test passes. Stop and ask if the eval would touch production, push to a remote or need secrets you lack.
+
+RETURN FORMAT: A table of deliverable paths. An eval table with arms as rows and median tool calls, trap hits, acceptance passes and wall time as columns. Final line count and token count. The GAPS list marked VERIFIED, UNVERIFIED or FIXED.
+</code></pre></div>
+<h3 id="3-step-by-step-prompts">3 · Step-by-step prompts</h3>
+<h4>Step 1 — Establish ground truth</h4>
+<p><em>Goal:</em> Inventory what the user's repo actually does and verify the eight reference files at their pinned commits.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Build ground_truth.md for the repo at &lt;REPO_PATH&gt;. Part A, the user's repo: list every memory file present (CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md, AGENTS.md, subdirectory CLAUDE.md files, ~/.claude/CLAUDE.md) with line counts, and record the memory token cost from /context. Read package.json, pyproject.toml, Makefile, justfile and .github/workflows/*.yml. Extract every build, test, single-test and lint command. Run each one and record exit code and duration. Mark any command whose obvious form is wrong, as `bun test` is in Bun. List generated files and the scripts that produce them. Part B, the reference corpus: in scratch, `git clone --filter=blob:none` oven-sh/bun, pytorch/pytorch, mlflow/mlflow, anthropics/claude-code, anthropics/anthropic-quickstarts, dagster-io/dagster, denoland/deno and excalidraw/excalidraw. Run `git show &lt;sha&gt;:CLAUDE.md | wc -l` at fec4a8850, 63ad7b4a3, 007775d93, 7dbaea237, 09bdac604, f4de04765, c439c90d8 and cc571c468. Expect 240, 365, 240, 40, 68, 120, 433 and 34 lines.
+</code></pre></div>
+<p><strong>Expect:</strong> ground_truth.md with a commands table (command, source, exit code, seconds, trap y/n), a generated-files list, a memory-files table and an 8-row reference table of expected and observed line counts.</p>
+<p><strong>Audit before moving on:</strong> Fail if any command was listed but not run without a stated reason, or if a reference count differs without a note. Re-run or re-check out the SHA. Never edit the expected numbers to match.</p>
+<h4>Step 2 — Mine corrections and failure history</h4>
+<p><em>Goal:</em> Turn past sessions and git history into a ranked list of mistakes Claude actually makes in this repo.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Using ground_truth.md, mine evidence of real mistakes. 1) Run `jq -r 'select(.type=="user") | .message.content | strings' ~/.claude/projects/&lt;slug&gt;/*.jsonl` and keep user turns that correct the agent: 'no', 'don't', 'wrong', 'use X instead', 'I told you', and every 'update your CLAUDE.md' request, which is Boris Cherny's team habit. 2) Read the reverts, fixups and follow-up fix commits from `git log --oneline -n 200`. 3) Read the last 30 CI failure logs if `gh run list` works. 4) Cluster each correction as wrong command, edited generated file, skipped verification, unwanted irreversible action, linter-catchable style, stale knowledge (the MLflow knowledge-cutoff case) or scope creep. Count each cluster. Write corrections.csv with turn_ref, quote, cluster, count and candidate_rule. Write every candidate rule PyTorch style, as 'Never X, because Y'.
+</code></pre></div>
+<p><strong>Expect:</strong> corrections.csv sorted by count, with at least 10 rows if transcripts exist, each citing a transcript file and line or a commit SHA.</p>
+<p><strong>Audit before moving on:</strong> Fail if a candidate_rule lacks a reason or a traceable quote. Fail if linter-catchable style produced a rule, because it belongs in the linter config. If no transcripts exist, log the gap and use git and CI only.</p>
+<h4>Step 3 — Lint the existing file</h4>
+<p><em>Goal:</em> Score every current line against the deletion test and the recurring-sections table.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write lint_claude_md.py using only the standard library. It tags each non-blank line as command, trap, verification, workflow_git, pointer, boundary or filler, and raises these flags. FILLER: no command, path, tool name or number, as in 'write clean, maintainable code'. NO_REASON: a never, always or must rule with no reason or named check. SHOUTING: ALWAYS, NEVER, CRITICAL, MANDATORY or IMPORTANT more than once per 40 lines, the Dagster failure. DUPLICATE: a command demanded twice or more, as Dagster demands `just ruff` 3 times. DISCOVERABLE: restates a package.json script or a rule in .eslintrc, ruff.toml or tsconfig. VOLATILE: holds a date, 'currently' or an unfinished to-do marker. MAP: a file-by-file source map. UNENFORCED_BAN: a push, force, delete, deploy or publish ban with no matching hook in .claude/settings.json. Run it on the user's file, or on fresh /init output if none exists, and on all 8 reference files as calibration. Write lint_old.csv with line, text, tag, flags and decision.
+</code></pre></div>
+<p><strong>Expect:</strong> lint_claude_md.py, lint_old.csv and a calibration table of flag counts for each reference repo.</p>
+<p><strong>Audit before moving on:</strong> Calibration must match the guide: Dagster flags SHOUTING and DUPLICATE, Deno is flagged for length, Excalidraw is mostly commands, and PyTorch has few NO_REASON flags. If not, fix the heuristics before trusting them.</p>
+<h4>Step 4 — Draft the new CLAUDE.md</h4>
+<p><em>Goal:</em> Write the smallest file that encodes every evidenced trap, command, check and boundary.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">From ground_truth.md, corrections.csv and lint_old.csv, draft CLAUDE.md in the guide's starter shape: Commands (install, test one file, full suite, lint), Traps, Verification, Boundaries and Pointers. Fill a section only with evidenced lines, and delete any section you cannot fill. Each trap names the wrong command, why it is wrong and the right one. Each verification line names a check that can fail. If the repo has a without-fix / with-fix toggle like Bun's USE_SYSTEM_BUN=1, encode it. Each boundary states its reason and its enforcer. If the model keeps 'correcting' newer names, add MLflow's knowledge-cutoff note. If AGENTS.md exists or the team uses other agents, make line 1 `@AGENTS.md`, move the shared rules there, and keep only Claude-specific notes below. Point current state at primer.md and put personal preferences in CLAUDE.local.md. Write provenance.csv with each line number, its source and its reason.
+</code></pre></div>
+<p><strong>Expect:</strong> CLAUDE.md under 200 lines, ideally 30 to 80, and provenance.csv with one row per non-blank line.</p>
+<p><strong>Audit before moving on:</strong> Run the linter on the draft. Fail on FILLER, NO_REASON, DUPLICATE, DISCOVERABLE, VOLATILE or MAP, on more than one emphasis keyword, or on a line without provenance. Fix and re-lint. UNENFORCED_BAN may stand until step 5.</p>
+<h4>Step 5 — Move enforcement out of prose</h4>
+<p><em>Goal:</em> Back every irreversible boundary with a hook, permission rule or CI check, and prove each one blocks.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">For each Boundaries line, add real enforcement. 1) Irreversible shell actions such as `git push`, `git push --force`, `rm -rf`, deploys and package publishing get a PreToolUse hook on the Bash matcher in .claude/settings.json. The script reads tool-input JSON on stdin and exits 2 with a reason on a match. Use a `permissions.deny` rule where a pattern suffices. 2) A run-after-every-edit rule, like Dagster's `just ruff`, becomes a PostToolUse hook on Edit|Write, and the prose shrinks to 'a PostToolUse hook runs &lt;cmd&gt;'. 3) Rules that must hold in CI follow the anthropics/claude-code pattern: point to a workflow step that fails the build. 4) Procedures needed only sometimes move to .claude/skills/&lt;name&gt;/SKILL.md, as PyTorch routes procedures to skills. Write tests/hooks_test.sh, which pipes crafted JSON into each hook and asserts exit 2 for banned inputs and exit 0 for allowed ones. Update CLAUDE.md so each boundary names its enforcer.
+</code></pre></div>
+<p><strong>Expect:</strong> Updated .claude/settings.json, hook scripts in .claude/hooks/, a passing hooks_test.sh, and zero UNENFORCED_BAN flags.</p>
+<p><strong>Audit before moving on:</strong> Run hooks_test.sh and show the output. Fail if a banned case exits 0 or an allowed one exits 2. Add near-misses such as <code>git push --dry-run</code> and <code>git status</code> as allowed cases.</p>
+<h4>Step 6 — Build the A/B session eval</h4>
+<p><em>Goal:</em> Measure whether the new file changes behavior on real tasks.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Create eval/. Pick 5 tasks from the last month of real work, each under 15 minutes. At least 2 must hit a documented trap, such as needing the single-test command or touching a generated file. At least 1 must tempt a boundary, such as 'ship this fix', which invites a push. Write tasks as plain requests that never mention the rule under test. Create three git worktrees from one base SHA: arm_none without CLAUDE.md, arm_old with the original and arm_new with the new file and hooks. Keep ~/.claude/CLAUDE.md identical across arms and record its hash. run.sh runs each arm, task and run 1-3 with `claude -p "$(cat tasks/N.md)" --output-format stream-json --verbose &gt; logs/&lt;arm&gt;_&lt;N&gt;_&lt;run&gt;.jsonl` and records wall time. score.py counts tool_use events, known-wrong commands from the trap list, blocked-hook events, edits to generated files, and whether the acceptance test passes. Headless runs get no corrections, so trap hits and failed acceptance tests stand in for them.
+</code></pre></div>
+<p><strong>Expect:</strong> eval/tasks/1..5.md, run.sh, score.py, 45 logs and results.csv with one row per arm, task and run.</p>
+<p><strong>Audit before moving on:</strong> Fail if arms differ in base SHA, a prompt names its rule, or a log is empty or truncated. Re-run failures. A win in 1 of 3 runs does not count.</p>
+<h4>Step 7 — Validate against oracles and write the gap report</h4>
+<p><em>Goal:</em> Decide ship or revise on external evidence and record what is still unproven.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Run every oracle and write gap_report.md. 1) A/B: compute medians per arm from results.csv. The new arm passes if acceptance passes are at least equal to the old and none arms, and trap hits or tool calls are strictly lower. 2) Traps: for each Traps line, show the wrong command misbehaving and the right one working, Bun-style. 3) Hooks: paste hooks_test.sh output. 4) Lint: show zero flags, the line count, and the /context token cost before and after. 5) Quotes: diff each cited reference excerpt against `git show &lt;sha&gt;:CLAUDE.md | sed -n '&lt;range&gt;p'`. 6) Have a teammate, or a fresh agent session with no history, do one task cold and record where it stalled. List every CLAUDE.md line the eval never exercised as UNMEASURED. Rank the gaps by the cost of the mistake they allow. Cut cheap UNMEASURED lines and note the rest for the next correction cycle. End with ship or revise.
+</code></pre></div>
+<p><strong>Expect:</strong> gap_report.md with the A/B table, trap proofs, hook results, lint and token delta, quote diffs, cold-start notes, an UNMEASURED list and a verdict.</p>
+<p><strong>Audit before moving on:</strong> Fail if the verdict is ship while any oracle failed or was skipped without a reason. If A/B shows no gain, say so, cut the file toward the minimum and re-run step 6.</p>
+<h3 id="4-gap-analysis-and-audit">4 · Gap analysis and audit</h3>
+<p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">You are an independent auditor who did not write this CLAUDE.md. Inputs: CLAUDE.md, provenance.csv, ground_truth.md, corrections.csv, .claude/settings.json, hooks_test.sh, eval/results.csv and gap_report.md. 1) List every claim the file makes: each command, trap, verification rule and boundary. Mark each VERIFIED if you re-ran it this session and it behaved as stated, UNVERIFIED if you could not run it, or FALSE if it behaved differently, with output attached. 2) Re-run lint_claude_md.py and hooks_test.sh yourself instead of trusting pasted output. 3) Sample 10 provenance rows and open each cited source. Mark any row whose source does not say what the row claims. 4) Look for what is missing: a correction cluster with no rule, a CI check that often fails but goes unmentioned, an unlisted generated file, or a boundary with no enforcer. 5) Check the eval for confounds: shared base SHA, identical user-level memory, hint-free prompts and 3 runs per cell. 6) Rank findings by the cost of the mistake each allows. Fix the top 3 now and re-lint. 7) Report the claims table, the fixes and what you could not fix and why.
+</code></pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p>
+<ul>
+<li>Which command in this repo looks right but silently does the wrong thing, the way <code>bun test</code> does in Bun, and is it in Traps?</li>
+<li>Did I read every reference excerpt at its pinned SHA, or trust the guide's quote?</li>
+<li>Which lines would /init have produced anyway, and do they pass the deletion test?</li>
+<li>Does any line restate what ruff.toml, .eslintrc, tsconfig or package.json already enforces?</li>
+<li>Is there a without-fix / with-fix toggle here like USE_SYSTEM_BUN=1, and did I encode it?</li>
+<li>Which correction cluster from the transcripts has no rule, and is that deliberate?</li>
+<li>Does every never rule carry a reason, so Claude can generalize it the way PyTorch's S101 rule generalizes?</li>
+<li>Which ban is still prose only, and what would get through a confused turn or a prompt injection?</li>
+<li>If a teammate runs Codex or Cursor, do they get the same rules through AGENTS.md?</li>
+<li>Did user-level and parent-directory CLAUDE.md files load identically in every eval arm?</li>
+<li>Am I winning only on tasks chosen because they test my rules?</li>
+</ul>
+<h3 id="5-what-proves-it-right">5 · What proves it right</h3>
+<ul>
+<li>Headless A/B eval: <code>claude -p</code> runs 5 real tasks in three arms from one base SHA, 3 runs each. The new arm's median trap hits and tool calls are at or below both others, with acceptance tests passing at least as often.</li>
+<li>Trap reproduction, Bun-style: each Traps line has captured output of the wrong command misbehaving and the right one succeeding.</li>
+<li>hooks_test.sh: crafted tool-input JSON for each banned action makes the PreToolUse hook exit 2, and near-misses like <code>git push --dry-run</code> exit 0.</li>
+<li>Pinned-commit diff: <code>git show &lt;sha&gt;:CLAUDE.md</code> matches every cited excerpt exactly, and line counts match 240/365/240/40/68/120/433/34.</li>
+<li>Cold-start reviewer: a teammate or fresh agent session completes one eval task from the new file alone without stalling on missing context.</li>
+</ul>
+<h3 id="6-failure-modes">6 · Failure modes</h3>
+<ul>
+<li>Cargo-culting a template. Sign: sections like 'Self-Improvement Loop' with no provenance row. Fix: delete every line without a source in this repo.</li>
+<li>Everything is CRITICAL. Sign: the SHOUTING flag fires and the one rule that matters still gets skipped. Fix: keep one emphasis keyword and turn other must-run rules into hooks.</li>
+<li>Advice standing in for enforcement. Sign: a 'never push' line with no hook, and an eval run that pushes. Fix: add a PreToolUse hook or deny rule and test it.</li>
+<li>Contributor-guide bloat, Deno-style. Sign: over 200 lines, a table of contents and a high /context cost. Fix: link the human guide and keep only agent-relevant traps.</li>
+<li>Unmeasured wins. Sign: one lucky run, or task prompts that hint at the rule. Fix: 3 runs per cell, hint-free tasks, and honest no-gain reports.</li>
+<li>Write-only growth and forked truth. Sign: contradicting rules, rising length, or other agents breaking rules Claude follows. Fix: re-lint after every correction and use @AGENTS.md as the single source.</li>
+</ul>
+<h3 id="7-agent-direction-unattended-runs">7 · Agent direction (unattended runs)</h3>
+<p>Start with local evidence: repo configs and CI, then transcripts in ~/.claude/projects, then the 8 reference repos cloned with --filter=blob:none into scratch. Cache excerpts and line counts in refs.json so they are fetched once. Spawn one sub-agent for the mechanical reference verification in step 1. Spawn another to write the eval tasks in step 6 without seeing CLAUDE.md, so the prompts stay hint-free. Keep the keep/cut decisions and the ship verdict in the main loop. Work in a branch or worktree. Never push, publish or edit CI on a shared branch. Ask before merging hooks that block teammates' commands, and ask if tasks need secrets or production services. Cap the eval at 45 headless runs and report the spend. Return CLAUDE.md, provenance.csv, settings and hook changes, lint_claude_md.py, eval/ with results.csv, gap_report.md, and a summary of line count, token cost before and after, A/B medians and the verdict.</p>
+<p><em>Prompt system updated 2026-10-22 · <a href="/prompts">all prompt systems</a> · <a href="/api/prompts.json">JSON</a></em></p>
+<!-- body:end --></div>
+</article>
+<footer class="site"><div class="wrap"><a href="/">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
+<script id="md" type="text/markdown"># Real CLAUDE.md Examples, Annotated
+
+<!-- answer:start -->
+
+> **In short:** Produce an evidence-backed CLAUDE.md for one real repository the user owns. Every line traces to a trap, command, check or ban the code cannot reveal.
+
+<!-- answer:end -->
+
+<!-- facts:start -->
+
+| Key fact | Detail |
+|---|---|
+| What it covers | agents, software development, open source, prompt engineering |
+| Tools | Claude, [Claude Code](/tools/claude-code), Anthropic, BigQuery, [ChatGPT](/tools/chatgpt) |
+| Posts covered | 12 posts (3 S-tier, 3 A-tier) · top: [Boris Cherny's personal CLAUDE.md…](/e/DV6QY8QjoRW) · [primer.md + memory.sh — live-updating…](/e/DVzvsgijOLT) · [Claude Code Team Tips — Boris Cherny's 10…](/e/DVQ5o6YDfsp) |
+| Creators | [@cooper.simson](https://instagram.com/cooper.simson), [@keshavsuki](https://instagram.com/keshavsuki), [@adam_ha_yes](https://instagram.com/adam_ha_yes) |
+| Sources dated | Feb 2026 – Sep 2026 |
+| Prompt system | [Run-it-yourself prompts](#prompt-system) |
+| Last verified | 2026-10-22 |
+
+<!-- facts:end -->
+
+The CLAUDE.md files that actually change how Claude Code behaves are short lists of exact commands, codebase traps and hard bans, each with a reason attached. Generic advice like "write clean code" or "be concise" costs context on every turn and changes nothing, so the best files from Bun, PyTorch, MLflow and Anthropic's own repos spend almost no lines on it.
+
+**Category:** Claude Code configuration / agent memory
+**Sources checked:** 2026-10-22. Eight public CLAUDE.md files, each pinned to the commit quoted; the official memory and best-practices docs; 12 saved posts from the DejaViewed catalog.
+**Quoting:** excerpts are verbatim and capped at 25 lines per repo, with a link to the pinned commit. Read the full files at the source; licenses are listed per repo.
+
+---
+
+## What the official docs say
+
+Anthropic's own guidance is short, and most of the good public files follow it whether they cite it or not.
+
+- **Where it lives.** `./CLAUDE.md` or `./.claude/CLAUDE.md` for the team (committed), `CLAUDE.local.md` for personal notes (gitignored), `~/.claude/CLAUDE.md` for you across all projects. Files from parent directories are all loaded; CLAUDE.md files in subdirectories load when Claude works there. Source: [How Claude remembers your project](https://code.claude.com/docs/en/memory).
+- **Start with `/init`, then add what Claude cannot discover.** The generated file covers build commands and structure; your job is the non-obvious part.
+- **Under ~200 lines, concrete and checkable.** "Run `npm test` before committing", not "test your changes". `@path` imports organise a file but do not reduce what it costs in context.
+- **The deletion test.** For each line ask: "Would removing this cause Claude to make mistakes?" If not, cut it. Source: [Best practices for Claude Code](https://code.claude.com/docs/en/best-practices).
+- **Emphasis is a budget.** Put IMPORTANT on the one rule that keeps getting skipped; if every line shouts, none stands out.
+- **CLAUDE.md is advice, not enforcement.** A rule that must never be broken belongs in a hook or a permission rule (see the [hooks cookbook](/guides/claude-code-hooks-system)). Procedures that only matter sometimes belong in skills.
+
+---
+
+## The eight files at a glance
+
+| Repo | Lines | Last change to CLAUDE.md | License | What the file is mostly for |
+|---|---|---|---|---|
+| [anthropics/claude-code](https://github.com/anthropics/claude-code/blob/7dbaea237fca9aed7baf250390ec4d49a57a2211/CLAUDE.md) | 40 | 2026-09-29 | All rights reserved | Security rules for CI jobs that run Claude |
+| [anthropics/anthropic-quickstarts](https://github.com/anthropics/anthropic-quickstarts/blob/09bdac604c1709ff1e38175e832b5f8124f0e63e/CLAUDE.md) | 68 | 2026-09-22 | MIT | Shared conventions + per-project commands |
+| [oven-sh/bun](https://github.com/oven-sh/bun/blob/fec4a8850ea444c59f633528ab9f97e2f6219b26/CLAUDE.md) | 240 | 2026-10-22 | MIT (bundled JavaScriptCore is LGPL-2) | The debug-build trap and test discipline |
+| [denoland/deno](https://github.com/denoland/deno/blob/c439c90d890ad07c2bf4eaa8582cf7389142f97e/CLAUDE.md) | 433 | 2026-07-30 | MIT | A full contributor guide |
+| [pytorch/pytorch](https://github.com/pytorch/pytorch/blob/63ad7b4a33ce67e987e216a750f638cbdcf5f2b8/CLAUDE.md) | 365 | 2026-10-19 | BSD-3-style | AI policy + gotchas, each with its reason |
+| [mlflow/mlflow](https://github.com/mlflow/mlflow/blob/007775d93f3be8493c9999ad9014207ec65f437c/CLAUDE.md) | 240 | 2026-10-21 | Apache-2.0 | Knowledge-cutoff note, supply-chain rule, PR scope |
+| [dagster-io/dagster](https://github.com/dagster-io/dagster/blob/f4de04765b5570bed692a1b54107e30ec1896fa1/CLAUDE.md) | 120 | 2026-08-26 | Apache-2.0 | An index into `.claude/*.md` files |
+| [excalidraw/excalidraw](https://github.com/excalidraw/excalidraw/blob/cc571c46810452f1ffdff8db40c0a26bcaf4dcde/CLAUDE.md) | 34 | 2025-05-25 | MIT | Close to raw `/init` output |
+
+Many other large repos do not keep a root CLAUDE.md at all (on 2026-10-22: vercel/next.js, microsoft/vscode, astral-sh/uv, openai/codex, vitejs/vite and others), and a growing group keep their rules in AGENTS.md and point CLAUDE.md at it. That pattern gets its own section below.
+
+---
+
+## 1. Bun: name the trap, then repeat it where it bites
+
+From [oven-sh/bun CLAUDE.md](https://github.com/oven-sh/bun/blob/fec4a8850ea444c59f633528ab9f97e2f6219b26/CLAUDE.md), lines 7–12 and 107–108:
+
+```text
+- **Build Bun**: `bun bd`
+  - Creates a debug build at `./build/debug/bun-debug`
+  - **CRITICAL**: do not set a timeout when running `bun bd`
+- **Run tests with your debug build**: `bun bd test <test-file>`
+  - **CRITICAL**: Never use `bun test` directly - it won't include your changes
+- **Run any command with debug build**: `bun bd <command>`
+...
+- **CRITICAL**: Do not write flaky tests. Do not use `setTimeout` or `await sleep(N)` to wait for a condition; poll with a deadline or `await` the event itself. You are not testing the TIME PASSING, you are testing the CONDITION.
+- **CRITICAL**: Verify your test fails with `USE_SYSTEM_BUN=1 bun test <file>` and passes with `bun bd test <file>`. Your test is NOT VALID if it passes with `USE_SYSTEM_BUN=1`.
+```
+
+**Why it works.** The most natural command in the repo, `bun test`, silently runs the *installed* Bun and so tests none of your changes. Claude cannot discover that from the code; a human contributor learns it once, painfully. The file names the trap, gives the right command, and adds a check that proves a new test actually exercises the fix (fails on the system binary, passes on the debug build). That last rule is a verification oracle, not advice.
+
+**What's weaker.** The file also carries a long crate-by-crate source map, which the official guide explicitly says to leave out, and the pinned version has a stray duplicated line inside a test example (line 70). These files rarely get reviewed like code.
+
+## 2. PyTorch: policy first, then gotchas that each carry a reason
+
+From [pytorch/pytorch CLAUDE.md](https://github.com/pytorch/pytorch/blob/63ad7b4a33ce67e987e216a750f638cbdcf5f2b8/CLAUDE.md), lines 5–8, 63–65 and 101–104:
+
+```text
+- **You may never act autonomously on GitHub.** Do NOT open, edit, comment on,
+  or reply to any issue or PR unless the user has reviewed and explicitly
+  approved the exact content. Fully-agent-generated contributions are banned and
+  will be closed.
+...
+Always check local memory for build configuration (env vars, incremental-build shortcuts, etc.) before running the build, and apply what you find. If nothing applicable is in memory, ask the user.
+All build (both codegen, C++ and python) is done via `pip install -e . -v --no-build-isolation`.
+You should NEVER run any other command to build PyTorch.
+...
+Ruff's S101 (`Use of assert detected`) must be fixed by rewriting the assert,
+never by adding `# noqa: S101`. The lint message itself suggests the noqa; ignore
+that suggestion. Plain `assert` is stripped by `python -O`, so a suppressed
+assert is a check that silently does nothing in an optimized run.
+```
+
+**Why it works.** Every rule states the consequence it prevents: closed PRs, a wrong build, a check that vanishes under `python -O`. Rules with reasons generalise; Claude can apply the S101 reasoning to a case the file never mentions. The file also routes multi-step procedures to skills instead of inlining them, which keeps it lean.
+
+## 3. MLflow: tell Claude what it does not know
+
+From [mlflow/mlflow CLAUDE.md](https://github.com/mlflow/mlflow/blob/007775d93f3be8493c9999ad9014207ec65f437c/CLAUDE.md), lines 5–7 and 89–97:
+
+```text
+## Knowledge Cutoff Note
+
+Claude's training data may lag behind current releases. When reviewing docs or code, don't flag unfamiliar names as speculative or non-existent. Assume the authors are referencing newer, valid resources (e.g., model names like GPT-5, GitHub runner types like ubuntu-slim, library versions, etc.).
+...
+### Package Cooldown Period
+
+7-day cooldown on new package releases to guard against compromised or broken
+versions that get pulled and yanked within a few days. Keep these in sync:
+
+- Python: `exclude-newer = "P7D"` in `pyproject.toml` (`torch`/`torchvision` opted out).
+- JavaScript: `min-release-age=7` in `.npmrc`; `npmMinimalAgeGate: 7d` in `.yarnrc.yml`.
+
+Pass `--min-release-age=7` to any new `npx` invocations.
+```
+
+**Why it works.** The knowledge-cutoff note fixes a real, recurring failure in code review: a model "correcting" a model name or runner type that is newer than its training data. The cooldown rule is a supply-chain control spread across four config files; writing down "keep these in sync" is the only way an agent touching one of them knows about the other three.
+
+## 4. Anthropic's claude-code repo: a file that is only guardrails
+
+From [anthropics/claude-code CLAUDE.md](https://github.com/anthropics/claude-code/blob/7dbaea237fca9aed7baf250390ec4d49a57a2211/CLAUDE.md), lines 10–16 (short quotation for commentary; the repo is not open-licensed):
+
+```text
+1. **Egress-firewall runner.** The job has `runs-on: ubuntu-24.04-firewall`,
+   a GitHub-hosted runner that filters the job's outbound network traffic. Do
+   not move a job that calls Claude to another runner.
+2. **Network allow list.** `.github/egress-firewall.yaml` lists the hosts
+   those jobs may reach, besides any that GitHub's firewall allows by default.
+   Keep `mode: enforce`, which is what makes the firewall block the rest. Follow
+   that file's header when you add a host.
+```
+
+**Why it works.** No build commands, no style rules: the whole 40-line file protects the CI jobs that run Claude. It also names the workflow check that fails the build when a protection is broken, so the prose is backed by enforcement. That pairing (rule in CLAUDE.md, check in CI or a hook) is the pattern to copy for anything that must not regress.
+
+## 5. anthropic-quickstarts: conventions that fail silently get explained
+
+From [anthropics/anthropic-quickstarts CLAUDE.md](https://github.com/anthropics/anthropic-quickstarts/blob/09bdac604c1709ff1e38175e832b5f8124f0e63e/CLAUDE.md), lines 21–27 and 49–52:
+
+```text
+### Testing & Code Quality
+
+- **Lint**: `ruff check .`
+- **Format**: `ruff format .`
+- **Typecheck**: `pyright`
+- **Run tests**: `pytest`
+- **Run single test**: `pytest tests/path_to_test.py::test_name -v`
+...
+- **TypeScript**: Strict mode with proper interfaces
+- **Components**: Function components with React hooks
+- **Formatting**: Follow ESLint Next.js configuration
+- **UI components**: Use shadcn/ui components library
+```
+
+**Load-bearing vs filler in one file.** The command block is gold, especially the single-test invocation that saves a full-suite run on every iteration. The style bullets are what `/init` tends to produce: things Claude reads from `tsconfig.json` and the existing components anyway. The same file's best line is a tagging convention whose wrong value "is ignored for attribution, with no error to warn you" (line 7). Silent failures are exactly what CLAUDE.md is for.
+
+## 6. Dagster: a hub file, and a lesson in shouting
+
+From [dagster-io/dagster CLAUDE.md](https://github.com/dagster-io/dagster/blob/f4de04765b5570bed692a1b54107e30ec1896fa1/CLAUDE.md), lines 5–9 and 117–120:
+
+```text
+- **Package Locations**: [.claude/python_packages.md](./.claude/python_packages.md) - Comprehensive list of all Python packages and their filesystem paths. **ALWAYS check this file first when looking for package locations.**
+- **Development Workflow**: [.claude/dev_workflow.md](./.claude/dev_workflow.md) - Documentation of developer workflows in the Dagster OSS repo.
+- **UI Workflow**: [.claude/ui_workflow.md](./.claude/ui_workflow.md) - UI/TypeScript development workflows and verification commands. **ALWAYS check after UI edits.**
+- **Coding Conventions**: [.claude/coding_conventions.md](./.claude/coding_conventions.md) - Type annotations and code style conventions. **ALWAYS check this before writing data structures - use @record instead of @dataclass.**
+- **CRITICAL**: After ANY Python code changes, ALWAYS run `just ruff` - this is mandatory and must never be skipped.
+...
+### Git Operations
+
+- **NEVER use `git push` directly** - always ask the user before pushing changes to remote
+- Do not automatically do git commit --amend on user's behalf since you lose track of what the agent has done
+```
+
+**What to take.** The index shape is good: the root file stays short and points at topic files Claude reads only when relevant. The `@record` instead of `@dataclass` rule and the "don't search inside `.tox`" rule are pure codebase knowledge. **What to avoid.** ALWAYS, CRITICAL and MANDATORY appear on most lines, and `just ruff` is demanded three times. A rule that must run after every edit is a [PostToolUse hook](/guides/claude-code-hooks-system), not a paragraph.
+
+## 7. Deno: a contributor guide is not a CLAUDE.md
+
+From [denoland/deno CLAUDE.md](https://github.com/denoland/deno/blob/c439c90d890ad07c2bf4eaa8582cf7389142f97e/CLAUDE.md), lines 28–33 and 189–192:
+
+```text
+- Before committing, make sure `tools/format.js` is run to format your code
+- Before committing, if only non-Rust was changed, make sure to run
+  `tools/lint.js --js` and fix any lint errors before committing
+- If you changed Rust code, make sure to run `tools/lint.js` and fix any lint
+  errors before committing
+- In the PR description, provide a clear summary of the changes you made, why
+...
+The main form of integration test in deno is the "spec" test. These tests can be
+found in `tests/specs`. The idea is that you have a `__test__.jsonc` file that
+lays out one or more tests, where a test is a CLI command to execute and the
+output is captured and asserted against.
+```
+
+**Mixed.** The repo-specific scripts and the custom spec-test format are exactly what Claude cannot infer from generic Rust knowledge. But at 433 lines, more than twice the ~200-line target, the file also carries a table of contents, a quick start and troubleshooting tips like checking your internet connection. Every one of those lines loads on every session.
+
+## 8. Excalidraw: the minimum viable file
+
+From [excalidraw/excalidraw CLAUDE.md](https://github.com/excalidraw/excalidraw/blob/cc571c46810452f1ffdff8db40c0a26bcaf4dcde/CLAUDE.md), lines 12–25:
+
+```text
+## Development Workflow
+
+1. **Package Development**: Work in `packages/*` for editor features
+2. **App Development**: Work in `excalidraw-app/` for app-specific features
+3. **Testing**: Always run `yarn test:update` before committing
+4. **Type Safety**: Use `yarn test:typecheck` to verify TypeScript
+
+## Development Commands
+
+yarn test:typecheck  # TypeScript type checking
+yarn test:update     # Run all tests (with snapshot updates)
+yarn fix             # Auto-fix formatting and linting issues
+```
+
+**Good enough to start.** Thirty-four lines, unchanged since May 2025: where to work, what to run before committing. (The original wraps the three commands in a bash fence.) This is roughly what `/init` gives you, and it is a fine floor. The rest of this guide is about what to add on top.
+
+---
+
+## The sections that recur, and which ones earn their lines
+
+Across the eight files and the [Boris Cherny breakdown](/guides/boris-cherny-claude-md), the same five kinds of content show up.
+
+| Section | Seen in | Load-bearing when… | Cargo cult when… |
+|---|---|---|---|
+| **Exact commands** (build, test, single test, lint) | all eight | the obvious command is wrong (Bun) or there is only one allowed way (PyTorch) | it repeats `npm test` that `package.json` already shows |
+| **Verification rules** | Bun, PyTorch, Dagster, Excalidraw | it names a check that can fail: "fails with `USE_SYSTEM_BUN=1`, passes with `bun bd test`" | it says "make sure everything works" |
+| **Workflow and git rules** | Deno, MLflow, Dagster, PyTorch | CI enforces it (DCO sign-off, `claude/` branch prefix) or it protects reviewers (one concern per PR, no force-push) | it restates generic etiquette nobody would violate |
+| **Memory and context pointers** | Dagster, PyTorch ("check local memory"), primer.md pattern | the target file exists, is current and is read only when relevant | it imports everything with `@` and the context bill grows anyway |
+| **Tool and action bans** | PyTorch (GitHub), Dagster (push, amend), claude-code (runners) | the ban carries a reason and, ideally, a hook or CI check behind it | it is the only defence for something irreversible |
+
+Rules of thumb drawn from the table:
+
+- **A rule needs a reason or a check.** "Never X" survives; "Never X, because Y" generalises to cases you did not list.
+- **Write down only what the code cannot tell Claude.** Style that lives in a linter config is already enforced.
+- **Anything irreversible needs enforcement outside the file.** CLAUDE.md is read by the model, so a confused turn or a prompt injection can still ignore it.
+
+---
+
+## The `@AGENTS.md` pointer pattern
+
+A large share of big repos now keep their real instructions in AGENTS.md, the cross-tool convention, and make CLAUDE.md a pointer. Checked on 2026-10-22:
+
+- **One-line `@AGENTS.md` import:** getsentry/sentry, n8n-io/n8n, astral-sh/ruff, supabase/supabase, modelcontextprotocol/python-sdk, tldraw/tldraw, mastra-ai/mastra, grafana/grafana, ggml-org/llama.cpp. cloudflare/workers-sdk uses a five-line stub that says "See @AGENTS.md".
+- **Symlink:** PostHog/posthog (to AGENTS.md), huggingface/transformers (to `.ai/AGENTS.md`), zed-industries/zed (to `.rules`).
+
+If your team uses more than one coding agent, this is the sane default: one source of truth, and the official docs say Claude Code reads AGENTS.md when no CLAUDE.md exists. Put Claude-only material (hooks to know about, skills to use) below the import.
+
+---
+
+## What the saved posts add
+
+The DejaViewed catalog has a run of posts about CLAUDE.md. The useful ideas, with the posts they came from:
+
+- **Update it after every correction.** Boris Cherny's team habit: end a correction with "update your CLAUDE.md so you don't make that mistake again" ([Claude Code team tips](/e/DVQ5o6YDfsp)). His personal file adds plan mode first, subagents for complex work and a lessons file ([breakdown by @keshavsuki](/e/DV6QY8QjoRW), [the template version](/e/DVMmXlME6mZ)). Full analysis: [Boris Cherny's CLAUDE.md](/guides/boris-cherny-claude-md).
+- **Keep volatile state out of it.** CLAUDE.md goes stale when it carries "current status". A separate `primer.md` that Claude rewrites at the end of each session, plus a launch hook that injects recent commits, keeps CLAUDE.md for durable rules ([primer.md + memory.sh](/e/DVzvsgijOLT); guide: [The primer.md pattern](/guides/primer-md-pattern)).
+- **Prune for newer models.** Rules written for older models can hold newer ones back; audit every rule and skill and delete dead weight ([Claude setup purge](/e/Dbhuaw7Pk4u)). This matches the official deletion test.
+- **Give it a stable home in a file tree.** A brain folder with CLAUDE.md, per-project context files and a short-term NOW file survives across sessions ([agent workspace file tree](/e/Db7Vx2Hhf9c)).
+- **Domain rules belong there too.** Design rules for a website build ([Claude Code website build](/e/DW_8FsslNJi)), UX laws as instructions ([UX laws cheat sheet](/e/DcwkX6OyduT)), or a writing style blacklist enforced by rules plus hooks ([Humanizer skill](/e/DbJzWBfxPvD)).
+- **Know what you are overriding.** The leaked system-prompt "brevity mandate" pushes minimal diffs; some projects override it in CLAUDE.md when code quality matters more ([brevity mandate critique](/e/DWoYMJDD6oO); see [the leaked system prompt guide](/guides/claude-code-leaked-system-prompt)).
+- **Intro-level explainers.** [CLAUDE.md explained](/e/DVRnpZsj21m) and [have Claude build its own status dashboard](/e/DV3fvORksud) are lighter, but fine starting points.
+
+---
+
+## A minimal starter template
+
+An original template that follows the patterns above. Replace every angle-bracket placeholder; delete any section you cannot fill with something specific.
+
+```markdown
+# <project> — notes for Claude
+
+## Commands
+- Install: `<exact command>`
+- Test one file: `<exact command> <path>`   # use this while iterating
+- Full suite: `<exact command>`              # run before saying a task is done
+- Lint/format: `<exact command>`             # a PostToolUse hook also runs this
+
+## Traps (things the code will not tell you)
+- `<obvious command>` does NOT do what it looks like: <why>. Use `<right command>`.
+- `<generated file>` is generated from `<source>`; edit the source, then run `<cmd>`.
+- <env quirk, port, service that must be running, flaky area>
+
+## Verification
+- A task is done when `<test command>` passes and <observable check>.
+- A new test must fail without the fix and pass with it.
+
+## Boundaries
+- Never <irreversible action> without asking: <reason>. (Enforced by <hook / CI check>.)
+- Do not edit <paths> (<reason>).
+
+## Pointers
+- Architecture decisions: @docs/architecture.md
+- Current state / next steps: primer.md (rewritten at end of each session)
+```
+
+Thirty lines or so. It grows only when a correction teaches you something the code cannot.
+
+---
+
+## Anti-patterns
+
+- **The style essay.** "Write clean, maintainable, well-documented code." Claude already tries; the line only costs context.
+- **The everything-is-CRITICAL file.** When most lines shout, emphasis stops working. Spend it on one rule.
+- **The contributor guide paste.** Table of contents, project history, troubleshooting for humans. Link to it instead.
+- **File-by-file maps.** They rot fastest and Claude can list the directory itself.
+- **Status in the rules file.** "Currently working on X" belongs in primer.md or an issue tracker.
+- **Advice standing in for enforcement.** "Never push to main" with no hook or branch protection behind it.
+- **Write-only files.** Rules added after incidents and never pruned; contradictions between old and new lines. Review it like code, and check what loaded with `/context`.
+- **Personal preferences in the team file.** Put them in `CLAUDE.local.md` or `~/.claude/CLAUDE.md`.
+
+---
+
+## Bottom line
+
+Start from `/init`, then add only what the code cannot tell Claude: the command that looks right but isn't, the generated file you must not edit, the check that proves a change works, and the actions that need a human. Give every rule a reason, back the irreversible ones with a hook or CI check, keep volatile state in a separate file, and delete any line that fails the "would Claude get this wrong without it?" test.
+
+<!-- prompt-system:start -->
+
+---
+
+## Prompt system — run this yourself
+
+Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.
+
+**Mission.** Produce an evidence-backed CLAUDE.md for one real repository the user owns. Every line traces to a trap, command, check or ban the code cannot reveal. Irreversible rules are backed by a hook or CI check, and volatile state moves to primer.md. Done means an A/B run of 5 fixed tasks shows fewer trap hits or tool calls than no file and the old file, lint finds zero cargo-cult lines, and the file stays under 200 lines.
+
+### 1 · Deeper, not bigger
+
+Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.
+
+- **What a top professional would do (that you didn't ask for):** A staff engineer would not copy Boris Cherny's sections or another repo's file. They would mine their own repo's failure history first: commands that look right but are wrong (Bun's `bun test` versus `bun bd test`), generated files, flaky areas, and corrections typed into past sessions. Each line faces the official deletion test, 'Would removing this cause Claude to make mistakes?', with a measurement behind it. Anything irreversible becomes a hook or CI check, as the claude-code repo backs its egress-firewall rules with a workflow check. Then they A/B the file on real tasks instead of trusting how it reads.
+- **Rawest material to start from:** 1) The user's repo: package.json, pyproject.toml, Makefile or justfile, `.github/workflows/*.yml`, linter configs, reverts in `git log`, and any existing CLAUDE.md, AGENTS.md or CLAUDE.local.md. 2) Past transcripts in `~/.claude/projects/<repo-slug>/*.jsonl`, which record every correction the user typed. 3) The eight pinned files, read with `git show <sha>:CLAUDE.md`: oven-sh/bun fec4a88, pytorch/pytorch 63ad7b4, mlflow/mlflow 007775d, anthropics/claude-code 7dbaea2, anthropics/anthropic-quickstarts 09bdac6, dagster-io/dagster f4de047, denoland/deno c439c90, excalidraw/excalidraw cc571c4. 4) code.claude.com/docs/en/memory and /best-practices.
+- **Methods and tools:** `git clone --filter=blob:none` plus `git show <sha>:CLAUDE.md | wc -l` to verify quotes and line counts. `/init` for a baseline to diff against. `/context` for the memory token cost. `jq` over transcript JSONL to pull correction turns. `git worktree add` for isolated eval arms. `claude -p '<task>' --output-format stream-json --verbose` for headless runs, counting `tool_use` events. A stdlib Python lint that tags lines and flags filler, missing reasons, shouting density and discoverable rules. PreToolUse and PostToolUse hooks plus `permissions.deny` in `.claude/settings.json`.
+- **What proves it right (other than you or the model):** A headless A/B eval: the same 5 tasks in three arms (no file, old file, new file), 3 runs each, scored on tool calls, wrong-command invocations, acceptance-test passes and wall time. A fails-without/passes-with proof for each trap, after Bun's `USE_SYSTEM_BUN=1` rule. A hook test that attempts each banned action and is blocked. A cold-start teammate who completes a real task with the file. `git show` diffs confirming every quote matches its pinned commit.
+
+**Rewritten prompt — ask for exactly that:**
+
+```text
+Write a CLAUDE.md for my repo at <path>, built from evidence, not templates. First mine ground truth: read the build, test and lint configs and CI workflows, and run each command. Note which obvious command is wrong, list generated files, and pull every correction I typed from ~/.claude/projects/<slug>/*.jsonl. Calibrate against eight files read with git show at pinned commits: bun fec4a88, pytorch 63ad7b4, mlflow 007775d, anthropics/claude-code 7dbaea2, anthropic-quickstarts 09bdac6, dagster f4de047, deno c439c90 and excalidraw cc571c4. Give every line a source and a reason. Cut anything a linter config, package.json or the directory tree already says. Keep the file under 200 lines with at most one ALL-CAPS rule. Turn every irreversible ban into a PreToolUse hook or CI check and name it in the file. Move status to primer.md. If AGENTS.md exists, start with @AGENTS.md. Prove it with 5 real tasks run headless with no file, the old file and the new file, 3 runs each. Return the file, a provenance table, the hook config, the eval table and a gap list.
+```
+
+### 2 · One-shot prompt
+
+```text
+ROLE AND STANDPOINT: You are a staff engineer writing the CLAUDE.md for the repository at <REPO_PATH>. Treat the file as code. Every line must earn its context cost with evidence, and anything that must never happen gets enforcement outside the file. Do not copy template sections such as Boris Cherny's 'Workflow Orchestration' unless this repo's evidence calls for them.
+
+CONTEXT:
+- The official docs (code.claude.com/docs/en/memory and /best-practices) set a target under about 200 lines and ask for concrete, checkable lines. They pose the deletion test: 'Would removing this cause Claude to make mistakes?' Emphasis is a budget, and CLAUDE.md is advice, not enforcement.
+- Reference files, read at pinned commits with `git show <sha>:CLAUDE.md`. oven-sh/bun fec4a8850: `bun test` runs the installed Bun, so use `bun bd test`, and a test must fail with USE_SYSTEM_BUN=1. pytorch/pytorch 63ad7b4a3: each gotcha carries its reason. mlflow/mlflow 007775d93: a knowledge-cutoff note and a cooldown kept in sync across 4 configs. anthropics/claude-code 7dbaea237: 40 lines of CI guardrails backed by a workflow check. dagster-io/dagster f4de04765: a good index file, but CRITICAL on most lines. denoland/deno c439c90d8: a 433-line contributor guide. excalidraw/excalidraw cc571c468: 34 lines, close to /init output.
+- The @AGENTS.md pointer pattern (getsentry/sentry, astral-sh/ruff) and the primer.md pattern for volatile state.
+
+HARD CONSTRAINTS:
+1. Every line has a provenance entry: file:line, transcript turn, command output or CI log.
+2. Under 200 lines, with at most one IMPORTANT or CRITICAL.
+3. No line restates package.json, a linter config, tsconfig or the directory tree.
+4. Every 'never' rule states its reason. Each irreversible one names the hook, deny rule or CI check that enforces it, which you also write.
+5. No status, TODOs or dates. Those go to primer.md. Personal preferences go to CLAUDE.local.md.
+6. Verify every public quote against its pinned SHA.
+
+DELIVERABLES, IN ORDER:
+1. ground_truth.md: commands run with exit codes, generated files, CI checks, memory files with line and /context token counts, and corrections mined from ~/.claude/projects/<slug>/*.jsonl.
+2. lint_old.csv: each existing line (or /init output) tagged and marked keep, cut, move-to-hook or move-to-primer.
+3. CLAUDE.md shaped as Commands, Traps, Verification, Boundaries and Pointers, using only the sections evidence fills.
+4. provenance.csv mapping each line to a source and a reason.
+5. Hook and permission changes in .claude/settings.json, plus a test showing each ban blocked.
+6. eval/: 5 real tasks, a runner for three arms (none, old, new) with 3 runs each via `claude -p --output-format stream-json`, and results.csv.
+7. gap_report.md.
+
+BUILT-IN GAP ANALYSIS: Keep a GAPS list as you work. Log suspected traps you could not reproduce, commands you could not run, corrections you could not classify, and rules kept without measurement. Fill what you can before finishing and mark the rest UNVERIFIED with a reason.
+
+SELF-QUESTIONS BEFORE FINISHING:
+- Which obvious command here does the wrong thing, and does the file name it?
+- Which line would I cut first, and why is it still there?
+- Does each verification rule name a check that can fail?
+- Which ban has no hook behind it?
+- Did ~/.claude/CLAUDE.md load identically in every eval arm?
+- Did any eval prompt hint at the rule it tests?
+
+STOP CONDITIONS: Stop when the new arm is no worse than old on every metric and better on at least one, lint is clean and every hook test passes. Stop and ask if the eval would touch production, push to a remote or need secrets you lack.
+
+RETURN FORMAT: A table of deliverable paths. An eval table with arms as rows and median tool calls, trap hits, acceptance passes and wall time as columns. Final line count and token count. The GAPS list marked VERIFIED, UNVERIFIED or FIXED.
+```
+
+### 3 · Step-by-step prompts
+
+#### Step 1 — Establish ground truth
+
+*Goal:* Inventory what the user's repo actually does and verify the eight reference files at their pinned commits.
+
+```text
+Build ground_truth.md for the repo at <REPO_PATH>. Part A, the user's repo: list every memory file present (CLAUDE.md, .claude/CLAUDE.md, CLAUDE.local.md, AGENTS.md, subdirectory CLAUDE.md files, ~/.claude/CLAUDE.md) with line counts, and record the memory token cost from /context. Read package.json, pyproject.toml, Makefile, justfile and .github/workflows/*.yml. Extract every build, test, single-test and lint command. Run each one and record exit code and duration. Mark any command whose obvious form is wrong, as `bun test` is in Bun. List generated files and the scripts that produce them. Part B, the reference corpus: in scratch, `git clone --filter=blob:none` oven-sh/bun, pytorch/pytorch, mlflow/mlflow, anthropics/claude-code, anthropics/anthropic-quickstarts, dagster-io/dagster, denoland/deno and excalidraw/excalidraw. Run `git show <sha>:CLAUDE.md | wc -l` at fec4a8850, 63ad7b4a3, 007775d93, 7dbaea237, 09bdac604, f4de04765, c439c90d8 and cc571c468. Expect 240, 365, 240, 40, 68, 120, 433 and 34 lines.
+```
+
+**Expect:** ground_truth.md with a commands table (command, source, exit code, seconds, trap y/n), a generated-files list, a memory-files table and an 8-row reference table of expected and observed line counts.
+
+**Audit before moving on:** Fail if any command was listed but not run without a stated reason, or if a reference count differs without a note. Re-run or re-check out the SHA. Never edit the expected numbers to match.
+
+#### Step 2 — Mine corrections and failure history
+
+*Goal:* Turn past sessions and git history into a ranked list of mistakes Claude actually makes in this repo.
+
+```text
+Using ground_truth.md, mine evidence of real mistakes. 1) Run `jq -r 'select(.type=="user") | .message.content | strings' ~/.claude/projects/<slug>/*.jsonl` and keep user turns that correct the agent: 'no', 'don't', 'wrong', 'use X instead', 'I told you', and every 'update your CLAUDE.md' request, which is Boris Cherny's team habit. 2) Read the reverts, fixups and follow-up fix commits from `git log --oneline -n 200`. 3) Read the last 30 CI failure logs if `gh run list` works. 4) Cluster each correction as wrong command, edited generated file, skipped verification, unwanted irreversible action, linter-catchable style, stale knowledge (the MLflow knowledge-cutoff case) or scope creep. Count each cluster. Write corrections.csv with turn_ref, quote, cluster, count and candidate_rule. Write every candidate rule PyTorch style, as 'Never X, because Y'.
+```
+
+**Expect:** corrections.csv sorted by count, with at least 10 rows if transcripts exist, each citing a transcript file and line or a commit SHA.
+
+**Audit before moving on:** Fail if a candidate_rule lacks a reason or a traceable quote. Fail if linter-catchable style produced a rule, because it belongs in the linter config. If no transcripts exist, log the gap and use git and CI only.
+
+#### Step 3 — Lint the existing file
+
+*Goal:* Score every current line against the deletion test and the recurring-sections table.
+
+```text
+Write lint_claude_md.py using only the standard library. It tags each non-blank line as command, trap, verification, workflow_git, pointer, boundary or filler, and raises these flags. FILLER: no command, path, tool name or number, as in 'write clean, maintainable code'. NO_REASON: a never, always or must rule with no reason or named check. SHOUTING: ALWAYS, NEVER, CRITICAL, MANDATORY or IMPORTANT more than once per 40 lines, the Dagster failure. DUPLICATE: a command demanded twice or more, as Dagster demands `just ruff` 3 times. DISCOVERABLE: restates a package.json script or a rule in .eslintrc, ruff.toml or tsconfig. VOLATILE: holds a date, 'currently' or an unfinished to-do marker. MAP: a file-by-file source map. UNENFORCED_BAN: a push, force, delete, deploy or publish ban with no matching hook in .claude/settings.json. Run it on the user's file, or on fresh /init output if none exists, and on all 8 reference files as calibration. Write lint_old.csv with line, text, tag, flags and decision.
+```
+
+**Expect:** lint_claude_md.py, lint_old.csv and a calibration table of flag counts for each reference repo.
+
+**Audit before moving on:** Calibration must match the guide: Dagster flags SHOUTING and DUPLICATE, Deno is flagged for length, Excalidraw is mostly commands, and PyTorch has few NO_REASON flags. If not, fix the heuristics before trusting them.
+
+#### Step 4 — Draft the new CLAUDE.md
+
+*Goal:* Write the smallest file that encodes every evidenced trap, command, check and boundary.
+
+```text
+From ground_truth.md, corrections.csv and lint_old.csv, draft CLAUDE.md in the guide's starter shape: Commands (install, test one file, full suite, lint), Traps, Verification, Boundaries and Pointers. Fill a section only with evidenced lines, and delete any section you cannot fill. Each trap names the wrong command, why it is wrong and the right one. Each verification line names a check that can fail. If the repo has a without-fix / with-fix toggle like Bun's USE_SYSTEM_BUN=1, encode it. Each boundary states its reason and its enforcer. If the model keeps 'correcting' newer names, add MLflow's knowledge-cutoff note. If AGENTS.md exists or the team uses other agents, make line 1 `@AGENTS.md`, move the shared rules there, and keep only Claude-specific notes below. Point current state at primer.md and put personal preferences in CLAUDE.local.md. Write provenance.csv with each line number, its source and its reason.
+```
+
+**Expect:** CLAUDE.md under 200 lines, ideally 30 to 80, and provenance.csv with one row per non-blank line.
+
+**Audit before moving on:** Run the linter on the draft. Fail on FILLER, NO_REASON, DUPLICATE, DISCOVERABLE, VOLATILE or MAP, on more than one emphasis keyword, or on a line without provenance. Fix and re-lint. UNENFORCED_BAN may stand until step 5.
+
+#### Step 5 — Move enforcement out of prose
+
+*Goal:* Back every irreversible boundary with a hook, permission rule or CI check, and prove each one blocks.
+
+```text
+For each Boundaries line, add real enforcement. 1) Irreversible shell actions such as `git push`, `git push --force`, `rm -rf`, deploys and package publishing get a PreToolUse hook on the Bash matcher in .claude/settings.json. The script reads tool-input JSON on stdin and exits 2 with a reason on a match. Use a `permissions.deny` rule where a pattern suffices. 2) A run-after-every-edit rule, like Dagster's `just ruff`, becomes a PostToolUse hook on Edit|Write, and the prose shrinks to 'a PostToolUse hook runs <cmd>'. 3) Rules that must hold in CI follow the anthropics/claude-code pattern: point to a workflow step that fails the build. 4) Procedures needed only sometimes move to .claude/skills/<name>/SKILL.md, as PyTorch routes procedures to skills. Write tests/hooks_test.sh, which pipes crafted JSON into each hook and asserts exit 2 for banned inputs and exit 0 for allowed ones. Update CLAUDE.md so each boundary names its enforcer.
+```
+
+**Expect:** Updated .claude/settings.json, hook scripts in .claude/hooks/, a passing hooks_test.sh, and zero UNENFORCED_BAN flags.
+
+**Audit before moving on:** Run hooks_test.sh and show the output. Fail if a banned case exits 0 or an allowed one exits 2. Add near-misses such as `git push --dry-run` and `git status` as allowed cases.
+
+#### Step 6 — Build the A/B session eval
+
+*Goal:* Measure whether the new file changes behavior on real tasks.
+
+```text
+Create eval/. Pick 5 tasks from the last month of real work, each under 15 minutes. At least 2 must hit a documented trap, such as needing the single-test command or touching a generated file. At least 1 must tempt a boundary, such as 'ship this fix', which invites a push. Write tasks as plain requests that never mention the rule under test. Create three git worktrees from one base SHA: arm_none without CLAUDE.md, arm_old with the original and arm_new with the new file and hooks. Keep ~/.claude/CLAUDE.md identical across arms and record its hash. run.sh runs each arm, task and run 1-3 with `claude -p "$(cat tasks/N.md)" --output-format stream-json --verbose > logs/<arm>_<N>_<run>.jsonl` and records wall time. score.py counts tool_use events, known-wrong commands from the trap list, blocked-hook events, edits to generated files, and whether the acceptance test passes. Headless runs get no corrections, so trap hits and failed acceptance tests stand in for them.
+```
+
+**Expect:** eval/tasks/1..5.md, run.sh, score.py, 45 logs and results.csv with one row per arm, task and run.
+
+**Audit before moving on:** Fail if arms differ in base SHA, a prompt names its rule, or a log is empty or truncated. Re-run failures. A win in 1 of 3 runs does not count.
+
+#### Step 7 — Validate against oracles and write the gap report
+
+*Goal:* Decide ship or revise on external evidence and record what is still unproven.
+
+```text
+Run every oracle and write gap_report.md. 1) A/B: compute medians per arm from results.csv. The new arm passes if acceptance passes are at least equal to the old and none arms, and trap hits or tool calls are strictly lower. 2) Traps: for each Traps line, show the wrong command misbehaving and the right one working, Bun-style. 3) Hooks: paste hooks_test.sh output. 4) Lint: show zero flags, the line count, and the /context token cost before and after. 5) Quotes: diff each cited reference excerpt against `git show <sha>:CLAUDE.md | sed -n '<range>p'`. 6) Have a teammate, or a fresh agent session with no history, do one task cold and record where it stalled. List every CLAUDE.md line the eval never exercised as UNMEASURED. Rank the gaps by the cost of the mistake they allow. Cut cheap UNMEASURED lines and note the rest for the next correction cycle. End with ship or revise.
+```
+
+**Expect:** gap_report.md with the A/B table, trap proofs, hook results, lint and token delta, quote diffs, cold-start notes, an UNMEASURED list and a verdict.
+
+**Audit before moving on:** Fail if the verdict is ship while any oracle failed or was skipped without a reason. If A/B shows no gain, say so, cut the file toward the minimum and re-run step 6.
+
+### 4 · Gap analysis and audit
+
+Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.
+
+```text
+You are an independent auditor who did not write this CLAUDE.md. Inputs: CLAUDE.md, provenance.csv, ground_truth.md, corrections.csv, .claude/settings.json, hooks_test.sh, eval/results.csv and gap_report.md. 1) List every claim the file makes: each command, trap, verification rule and boundary. Mark each VERIFIED if you re-ran it this session and it behaved as stated, UNVERIFIED if you could not run it, or FALSE if it behaved differently, with output attached. 2) Re-run lint_claude_md.py and hooks_test.sh yourself instead of trusting pasted output. 3) Sample 10 provenance rows and open each cited source. Mark any row whose source does not say what the row claims. 4) Look for what is missing: a correction cluster with no rule, a CI check that often fails but goes unmentioned, an unlisted generated file, or a boundary with no enforcer. 5) Check the eval for confounds: shared base SHA, identical user-level memory, hint-free prompts and 3 runs per cell. 6) Rank findings by the cost of the mistake each allows. Fix the top 3 now and re-lint. 7) Report the claims table, the fixes and what you could not fix and why.
+```
+
+**Questions the agent must ask itself before it says done:**
+
+- Which command in this repo looks right but silently does the wrong thing, the way `bun test` does in Bun, and is it in Traps?
+- Did I read every reference excerpt at its pinned SHA, or trust the guide's quote?
+- Which lines would /init have produced anyway, and do they pass the deletion test?
+- Does any line restate what ruff.toml, .eslintrc, tsconfig or package.json already enforces?
+- Is there a without-fix / with-fix toggle here like USE_SYSTEM_BUN=1, and did I encode it?
+- Which correction cluster from the transcripts has no rule, and is that deliberate?
+- Does every never rule carry a reason, so Claude can generalize it the way PyTorch's S101 rule generalizes?
+- Which ban is still prose only, and what would get through a confused turn or a prompt injection?
+- If a teammate runs Codex or Cursor, do they get the same rules through AGENTS.md?
+- Did user-level and parent-directory CLAUDE.md files load identically in every eval arm?
+- Am I winning only on tasks chosen because they test my rules?
+
+### 5 · What proves it right
+
+- Headless A/B eval: `claude -p` runs 5 real tasks in three arms from one base SHA, 3 runs each. The new arm's median trap hits and tool calls are at or below both others, with acceptance tests passing at least as often.
+- Trap reproduction, Bun-style: each Traps line has captured output of the wrong command misbehaving and the right one succeeding.
+- hooks_test.sh: crafted tool-input JSON for each banned action makes the PreToolUse hook exit 2, and near-misses like `git push --dry-run` exit 0.
+- Pinned-commit diff: `git show <sha>:CLAUDE.md` matches every cited excerpt exactly, and line counts match 240/365/240/40/68/120/433/34.
+- Cold-start reviewer: a teammate or fresh agent session completes one eval task from the new file alone without stalling on missing context.
+
+### 6 · Failure modes
+
+- Cargo-culting a template. Sign: sections like 'Self-Improvement Loop' with no provenance row. Fix: delete every line without a source in this repo.
+- Everything is CRITICAL. Sign: the SHOUTING flag fires and the one rule that matters still gets skipped. Fix: keep one emphasis keyword and turn other must-run rules into hooks.
+- Advice standing in for enforcement. Sign: a 'never push' line with no hook, and an eval run that pushes. Fix: add a PreToolUse hook or deny rule and test it.
+- Contributor-guide bloat, Deno-style. Sign: over 200 lines, a table of contents and a high /context cost. Fix: link the human guide and keep only agent-relevant traps.
+- Unmeasured wins. Sign: one lucky run, or task prompts that hint at the rule. Fix: 3 runs per cell, hint-free tasks, and honest no-gain reports.
+- Write-only growth and forked truth. Sign: contradicting rules, rising length, or other agents breaking rules Claude follows. Fix: re-lint after every correction and use @AGENTS.md as the single source.
+
+### 7 · Agent direction (unattended runs)
+
+Start with local evidence: repo configs and CI, then transcripts in ~/.claude/projects, then the 8 reference repos cloned with --filter=blob:none into scratch. Cache excerpts and line counts in refs.json so they are fetched once. Spawn one sub-agent for the mechanical reference verification in step 1. Spawn another to write the eval tasks in step 6 without seeing CLAUDE.md, so the prompts stay hint-free. Keep the keep/cut decisions and the ship verdict in the main loop. Work in a branch or worktree. Never push, publish or edit CI on a shared branch. Ask before merging hooks that block teammates' commands, and ask if tasks need secrets or production services. Cap the eval at 45 headless runs and report the spend. Return CLAUDE.md, provenance.csv, settings and hook changes, lint_claude_md.py, eval/ with results.csv, gap_report.md, and a summary of line count, token cost before and after, A/B medians and the verdict.
+
+*Prompt system updated 2026-10-22 · [all prompt systems](/prompts) · [JSON](/api/prompts.json)*
+
+<!-- prompt-system:end -->
+</script><!-- ps-tail --><style>
+.ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
+.ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
+.ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
+.ps h4{font-size:13.5px;font-weight:800;color:var(--accent);margin:18px 0 6px}
+.ps p,.ps li{font-size:13.5px;line-height:1.65;color:var(--text-dim)}
+.ps ul{padding-left:22px}
+.ps-lead{color:var(--text-mute)}
+.ps-pre{position:relative;margin:10px 0 14px}
+.ps-pre pre{background:rgba(0,0,0,.55);border:1px solid var(--border);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;color:var(--text);margin:0}
+.ps-copy{position:absolute;top:8px;right:8px;font:700 11px/1 'JetBrains Mono',monospace;padding:5px 9px;border-radius:6px;
+  border:1px solid var(--border);background:var(--panel);color:var(--text-dim);cursor:pointer}
+.ps-copy:hover{color:#fff;border-color:var(--border-hi)}
+.ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
+</style><script>
+document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
+const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
+</script><!-- /ps-tail --><!-- sitenav:start --><nav class="sitenav" aria-label="Site" data-pagefind-ignore><style>.sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}.sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}.sitenav a:hover{color:var(--accent,#a78bfa)}</style><a href="/">Home</a><a href="/start-here">Start here</a><a href="/catalog">Catalog</a><a href="/guides/">Guides</a><a href="/prompts">Prompts</a><a href="/e/">All entries</a><a href="/collections/">Collections</a><a href="/tools/">Tools</a><a href="/compare/">Compare</a><a href="/search">Search</a><a href="/graph">Graph</a><a href="/graph-cosmos">Cosmos</a><a href="/board">Board</a><a href="/links/">Links</a><a href="/method">How it works</a><a href="/feed.xml">RSS</a><a href="/llms.txt">llms.txt</a></nav><!-- sitenav:end -->
+<!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
+</body></html>

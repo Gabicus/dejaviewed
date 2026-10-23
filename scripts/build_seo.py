@@ -48,7 +48,7 @@ BLOCK_RE = re.compile(r"<!-- seo:start -->.*?<!-- seo:end -->\n?", re.S)
 
 # top-level pages processed (everything else at site root is skipped:
 # admin, rate, board, graph*, legacy/, pagefind/, about/, links/, ai_presentation/)
-TOP_PAGES = ["index.html", "catalog.html", "prompts.html", "start-here.html", "method.html"]
+TOP_PAGES = ["index.html", "catalog.html", "prompts.html", "start-here.html", "method.html", "system-prompts.html"]
 SUB_DIRS = ["guides", "deeper", "e", "tools", "compare", "best"]  # collections/ writes its own seo block (build_collections.py)
 
 # private / superseded pages: get a seo block holding only robots noindex,follow
@@ -710,6 +710,8 @@ def top_descriptions(c: Ctx) -> dict[str, str]:
                          f"{c.n_steps} step prompts with audits, gap audits and validation oracles."),
         "method.html": (f"How DejaViewed works: saved posts are captioned, transcribed, enriched and tiered S to C, "
                         f"then curated into {len(c.guides)} guides. Who runs it, update cadence, affiliate policy."),
+        "system-prompts.html": (f"System prompt examples: {c.n_packs} role, stance and constraint blocks lifted from DejaViewed "
+                                f"prompt systems, grouped by pillar, each copyable and linked to its full guide."),
         "start-here.html": (f"What DejaViewed is, who it is for, how humans and agents use it, how to cite it, "
                             f"and what is inside its {c.n_entries} entries and {c.n_colls} collections."),
         "guides/index.html": (f"{len(c.guides)} DejaViewed guides that connect saved posts into one build plan, "
@@ -942,6 +944,32 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
         crumbs.append(("Deeper dive", None))
         graph.append(breadcrumbs(crumbs))
 
+    elif parts[0] in ("tools", "compare", "best") and len(parts) == 2:
+        # Hub / comparison / best-of pages (build_tools.py, build_compare.py) carry their own
+        # <meta name="description"> and <h1>; reuse them, add Article + breadcrumb.
+        section = {"tools": "Tools", "compare": "Compare", "best": "Best of"}[parts[0]]
+        og_type = "article"
+        md = re.search(r'<meta\s+name="description"\s+content="([^"]*)"', text, re.I)
+        desc = clip_sentence(html.unescape(md.group(1))) if md and md.group(1).strip() else ""
+        if not desc:
+            lead = re.search(r'<p[^>]*class="[^"]*lead[^"]*"[^>]*>(.*?)</p>', text, re.S | re.I) \
+                or re.search(r'<main[^>]*>.*?<p[^>]*>(.*?)</p>', text, re.S | re.I)
+            desc = clip_sentence(clean_text(lead.group(1))) if lead else ttl
+        image = og_image_rel(f"{parts[0]}-{Path(rel).stem}") or og_image_rel(parts[0]) or image
+        pub, mod = c.fresh.dates(rel) if c.fresh else file_dates(SITE / rel)
+        art = {"@type": "Article", "@id": url + "#article", "headline": ttl[:110], "description": desc,
+               "url": url, "mainEntityOfPage": url, "datePublished": pub.isoformat(),
+               "dateModified": mod.isoformat(), "author": AUTHOR_REF,
+               "publisher": {"@id": ORG["@id"]}, "isPartOf": WEBSITE_REF,
+               "image": BASE + "/" + (image or "og/default.png")}
+        graph.append(art)
+        crumbs = [("Home", BASE + "/")]
+        if parts[1] != "index.html":
+            crumbs += [(section, canonical_url(f"{parts[0]}/index.html")), (ttl, None)]
+        else:
+            crumbs.append((section, None))
+        graph.append(breadcrumbs(crumbs))
+
     elif parts[0] == "e":
         og_type = "article"
         e = c.by_slug.get(Path(rel).stem) or {}
@@ -1069,6 +1097,13 @@ def process(rel: str, c: Ctx, qmap: dict, title_log: dict) -> tuple[str, str, di
     if c.fresh:
         c.fresh.observe(rel, head + rest)
 
+    if rel.split("/")[0] in ("tools", "compare", "best") and START in orig \
+            and not re.search(r'<meta\s+name="description"', text, re.I):
+        # generator-owned description lived outside the block on first run and inside it after;
+        # on a standalone re-run the outside tag is gone (STRAY-stripped), so carry it over from the previous block.
+        prev = re.search(r'<meta\s+name="description"\s+content="([^"]*)"', orig[orig.find(START):], re.I)
+        if prev and prev.group(1).strip():
+            text = text.replace("<head>", f'<head><meta name="description" content="{prev.group(1)}">', 1)
     meta = page_meta(rel, text, c, title)
     block = build_block(meta)
     if tm:

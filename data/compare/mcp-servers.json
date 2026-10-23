@@ -1,0 +1,566 @@
+{
+ "slug": "mcp-servers",
+ "dir": "best",
+ "kind": "best",
+ "order": 20,
+ "title": "Best MCP servers, with maintained status (2026) · DejaViewed",
+ "h1": "Best MCP servers, with maintained and archived status",
+ "crumb": "MCP servers",
+ "description": "25 MCP servers from 43 saved creator posts: what each unlocks, keep or skip verdicts, and GitHub maintained or archived status checked Oct 2026.",
+ "answer": "The MCP servers with the best evidence and upkeep as of 22 October 2026 are Playwright for browser control, Context7 for current library docs, n8n-MCP for building n8n workflows, and Figma's official server for design-to-code. Before you install a server from an older list, check it is not one of the reference servers the MCP project archived in May 2025, such as the old Slack, GitHub, Puppeteer or Brave Search servers [[s:servers-archived]].",
+ "last_verified": "2026-10-22",
+ "scope_note": "GitHub status checked through the GitHub API on that date",
+ "tools": [],
+ "sources": [
+  {
+   "key": "mcp-intro",
+   "url": "https://modelcontextprotocol.io/introduction",
+   "title": "Model Context Protocol introduction",
+   "accessed": "2026-10-22"
+  },
+  {
+   "key": "cc-mcp",
+   "url": "https://code.claude.com/docs/en/mcp",
+   "title": "Connect Claude Code to tools via MCP (Anthropic docs)",
+   "accessed": "2026-10-22"
+  },
+  {
+   "key": "servers-archived",
+   "url": "https://github.com/modelcontextprotocol/servers-archived",
+   "title": "modelcontextprotocol/servers-archived on GitHub (archived reference servers)",
+   "accessed": "2026-10-22"
+  },
+  {
+   "key": "servers",
+   "url": "https://github.com/modelcontextprotocol/servers",
+   "title": "modelcontextprotocol/servers on GitHub (current reference servers)",
+   "accessed": "2026-10-22"
+  },
+  {
+   "key": "gh-api",
+   "url": "https://docs.github.com/en/rest/repos/repos#get-a-repository",
+   "title": "GitHub REST API: repository metadata (archived flag, stars, license) and latest commit",
+   "accessed": "2026-10-22"
+  }
+ ],
+ "intro": [
+  "An MCP server gives an AI agent a set of tools for one outside system, such as a browser, a design file or an ad account, over the Model Context Protocol [[s:mcp-intro]]. Claude Code adds one with `claude mcp add` [[s:cc-mcp]]. We took every MCP server named in the 43 saved posts in the DejaViewed corpus that mention MCP (9 S-tier, 19 A-tier, 7 B-tier, 8 C-tier). We checked each server's repo or official docs page and gave it a verdict: 4 keep, 18 try, 3 skip.",
+  "Status comes from the GitHub API on 22 October 2026 [[s:gh-api]]. **Maintained** means a commit in the last 90 days, **slow updates** means 90 to 365 days, and **archived** means the owner archived the repo. **Official, hosted** means the vendor of the app runs the server and documents it, with no public repo to check. Install commands are copied from the entry, the README or the vendor's docs.",
+  "A server runs with whatever access you give it. Servers that can spend money, such as ad accounts, post publicly, or scrape sites that forbid it carry the most risk, and the reasons below say so where it applies."
+ ],
+ "sections": [
+  {
+   "h2": "MCP servers, best evidence first",
+   "id": "servers",
+   "items": [
+    {
+     "name": "Playwright MCP",
+     "unlocks": "Drives a real browser by natural language: navigate, click, fill forms, screenshot pages so the agent can test or operate websites.",
+     "entries": [
+      "DWncXNCD07J",
+      "DdJ5ynbDxqS",
+      "DbLuwUVlE9Z",
+      "DXKFrnQEfEQ",
+      "DXKani5jWFi",
+      "DXIpm6TjE5M",
+      "DXGRONttjhp"
+     ],
+     "verdict": "keep",
+     "reason": "Most-cited server in the corpus (7 entries); Microsoft-maintained, committed today. DXGRONttjhp argues the Playwright CLI is leaner for scale. Agent acts in logged-in browser sessions.",
+     "install": "claude mcp add playwright npx @playwright/mcp@latest",
+     "install_source": "https://github.com/microsoft/playwright-mcp",
+     "repo": "microsoft/playwright-mcp",
+     "stars": 38516,
+     "last_commit": "2026-10-22",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "Figma MCP (Dev Mode MCP server)",
+     "unlocks": "Lets the agent read Figma frames, variables and components so generated code matches the design, and push work back.",
+     "entries": [
+      "DdJ5ynbDxqS",
+      "DbLuwUVlE9Z",
+      "DV09StsDI2d",
+      "DXNv-N3AEbJ"
+     ],
+     "verdict": "keep",
+     "reason": "Four entries use it in design-to-code loops (two pair it with Playwright). Official Figma server, hosted; DV09StsDI2d notes it burns Pro usage quickly.",
+     "install_source": "https://developers.figma.com/docs/figma-mcp-server/",
+     "docs_url": "https://developers.figma.com/docs/figma-mcp-server/",
+     "status": "official-hosted",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "Context7",
+     "unlocks": "Injects current, version-specific library docs into the prompt so the agent stops inventing deprecated or nonexistent APIs.",
+     "entries": [
+      "DWncXNCD07J",
+      "DMRI00_iQgW"
+     ],
+     "verdict": "keep",
+     "reason": "Two entries cite it for fewer hallucinated APIs; Upstash ships it, committed today. Read-only docs lookup, low risk; hosted mode needs an API key.",
+     "install": "npx ctx7 setup",
+     "install_source": "https://github.com/upstash/context7",
+     "repo": "upstash/context7",
+     "docs_url": "https://mcp.context7.com/mcp",
+     "stars": 63519,
+     "last_commit": "2026-10-22",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "n8n-MCP",
+     "unlocks": "Gives the agent knowledge of n8n's nodes so it can design, validate and deploy n8n automation workflows.",
+     "entries": [
+      "DUzg0n1jRK-",
+      "DX62rNWxOB2"
+     ],
+     "verdict": "keep",
+     "reason": "Named with repo in DUzg0n1jRK-; DX62rNWxOB2 uses it to build a Gmail workflow. Community-built, very active. With an n8n API key it can create/edit live workflows.",
+     "install_source": "https://github.com/czlonkowski/n8n-mcp",
+     "repo": "czlonkowski/n8n-mcp",
+     "docs_url": "https://dashboard.n8n-mcp.com",
+     "stars": 23121,
+     "last_commit": "2026-10-22",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "21st.dev MCP (formerly Magic MCP)",
+     "unlocks": "Searches and generates shadcn/Tailwind React components from the 21st.dev library inside the coding agent.",
+     "entries": [
+      "18ddc4b68b6c",
+      "DV4OGI0D1hS"
+     ],
+     "verdict": "try",
+     "reason": "Two entries recommend it to escape generic AI UI. Official 21st.dev server; Magic MCP renamed to 21st MCP, old npx package proxies. Needs API key.",
+     "install": "npx -y @21st-dev/magic@latest API_KEY=\"...\"",
+     "install_source": "https://github.com/21st-dev/magic-mcp",
+     "repo": "21st-dev/magic-mcp",
+     "docs_url": "https://21st.dev/mcp",
+     "stars": 6200,
+     "last_commit": "2026-09-09",
+     "archived": false,
+     "license": "ISC",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "Blender MCP (now mcp-for-blender)",
+     "unlocks": "Lets an LLM inspect and build Blender scenes, generate assets (e.g. via Tripo) and arrange them from a reference image.",
+     "entries": [
+      "DHoPsMOxIRl",
+      "DbIxSSaEtGd"
+     ],
+     "verdict": "try",
+     "reason": "Two entries demo full scene assembly. Repo renamed ahujasid/blender-mcp to ahujasid/mcp-for-blender; old uvx name still works. Community, not Blender Foundation; runs arbitrary Python inside Blender.",
+     "install": "uvx mcp-for-blender setup",
+     "install_source": "https://github.com/ahujasid/mcp-for-blender",
+     "repo": "ahujasid/mcp-for-blender",
+     "stars": 32043,
+     "last_commit": "2026-10-20",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "Google Stitch MCP",
+     "unlocks": "Exposes Stitch-generated UI screens to the coding agent so it can build production code from those mockups.",
+     "entries": [
+      "DVbfcdTkZ7R",
+      "DXVY2cZDJoq"
+     ],
+     "verdict": "try",
+     "reason": "Two entries export Stitch designs to Claude Code via its MCP setup button. Official Google hosted server; davideast/stitch-mcp is a separate community CLI.",
+     "install_source": "https://stitch.withgoogle.com/docs/mcp/setup",
+     "docs_url": "https://stitch.withgoogle.com/docs/mcp/setup",
+     "status": "official-hosted",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "Higgsfield MCP",
+     "unlocks": "Generates images and video (Seedance etc.) from Claude via Higgsfield's model catalog.",
+     "entries": [
+      "DdSYPwEzYEU",
+      "DcUsVlvpYYu"
+     ],
+     "verdict": "try",
+     "reason": "Both entries are sponsored with inflated income claims; the server itself is official and hosted (mcp.higgsfield.ai). Consumes paid credits.",
+     "install_source": "https://higgsfield.ai/mcp",
+     "docs_url": "https://higgsfield.ai/mcp",
+     "status": "official-hosted",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "Meta Ads MCP (official)",
+     "unlocks": "Reads Meta ad performance and creates, edits and launches campaigns and creatives from the agent.",
+     "entries": [
+      "DZVXehQRe3T",
+      "DcR6KUyPC0n"
+     ],
+     "verdict": "try",
+     "reason": "Two entries wire it in via custom connector. Meta's official hosted server (mcp.facebook.com/ads). Write access to live ad accounts: agent can spend money; start read-only.",
+     "install_source": "https://developers.facebook.com/blog/post/2026/07/16/meta-ads-mcp-server/",
+     "docs_url": "https://developers.facebook.com/blog/post/2026/07/16/meta-ads-mcp-server/",
+     "status": "official-hosted",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "Apify MCP",
+     "unlocks": "Runs Apify Store scrapers so the agent can pull data on videos, channels and posts across social platforms.",
+     "entries": [
+      "DVmw74XEbk7"
+     ],
+     "verdict": "try",
+     "reason": "DVmw74XEbk7 uses it as a social-media analyst. Official Apify server, active; hosted at mcp.apify.com. Pay-per-run scraping; check each platform's terms.",
+     "install_source": "https://github.com/apify/apify-mcp-server",
+     "repo": "apify/apify-mcp-server",
+     "docs_url": "https://mcp.apify.com",
+     "stars": 12682,
+     "last_commit": "2026-10-21",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "ARTEMIS (Google)",
+     "unlocks": "Turns natural-language instructions into Android phone automations, with logs and screenshots, callable from Codex or Claude Code.",
+     "entries": [
+      "Ddg3yiFRtMg"
+     ],
+     "verdict": "try",
+     "reason": "One news entry; Google repo confirmed matching description, active. Gives the agent control of a connected device; use a test phone.",
+     "install_source": "https://github.com/google/artemis",
+     "repo": "google/artemis",
+     "stars": 13832,
+     "last_commit": "2026-09-29",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "Buffer MCP",
+     "unlocks": "Schedules and publishes posts to all connected social accounts in one command.",
+     "entries": [
+      "DZVXehQRe3T"
+     ],
+     "verdict": "try",
+     "reason": "Used in DZVXehQRe3T for cross-posting. Official Buffer page. Agent can post publicly as you; review queue before publish.",
+     "install_source": "https://buffer.com/mcp",
+     "docs_url": "https://buffer.com/mcp",
+     "status": "official-hosted",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "GitMCP",
+     "unlocks": "Turns any public GitHub repo into a remote MCP endpoint (gitmcp.io/owner/repo) so the agent can query its docs and code live.",
+     "entries": [
+      "DdeoJI9KGtq"
+     ],
+     "verdict": "try",
+     "reason": "Named in DdeoJI9KGtq's URL-swap tips. Free, read-only, public repos only; last commit May 2026.",
+     "install_source": "https://github.com/idosal/git-mcp",
+     "repo": "idosal/git-mcp",
+     "docs_url": "https://gitmcp.io",
+     "stars": 8472,
+     "last_commit": "2026-05-08",
+     "archived": false,
+     "license": "Apache-2.0",
+     "status": "slow",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "Gmail connector",
+     "unlocks": "Reads, triages and drafts replies to email from inside Claude.",
+     "entries": [
+      "DZVXehQRe3T"
+     ],
+     "verdict": "try",
+     "reason": "DZVXehQRe3T auto-answers 13 of 16 support emails with it plus FAQ markdown. Anthropic's built-in connector, not Google's. Full inbox access; incoming email is untrusted input.",
+     "install_source": "https://support.claude.com/en/articles/10166901-use-google-workspace-connectors",
+     "docs_url": "https://support.claude.com/en/articles/10166901-use-google-workspace-connectors",
+     "status": "official-hosted",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "MapQuest MCP",
+     "unlocks": "Gives the agent place search, distances, travel times and traffic to order multi-stop routes.",
+     "entries": [
+      "DdHHpICiRjB"
+     ],
+     "verdict": "try",
+     "reason": "One entry; official MapQuest setup guide; 50,000 free transactions per the entry. Location queries go to MapQuest.",
+     "install_source": "https://developer.mapquest.com/documentation/mcp",
+     "docs_url": "https://developer.mapquest.com/documentation/mcp",
+     "status": "official-hosted",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "Markdownify MCP",
+     "unlocks": "Converts PDFs, images, audio and web pages into Markdown the agent can read.",
+     "entries": [
+      "DWncXNCD07J"
+     ],
+     "verdict": "try",
+     "reason": "One shortlist entry; last commit May 2026. Microsoft's markitdown (very active) covers similar conversion if this stalls. Local file access only.",
+     "install_source": "https://github.com/zcaceres/markdownify-mcp",
+     "repo": "zcaceres/markdownify-mcp",
+     "stars": 2996,
+     "last_commit": "2026-05-01",
+     "archived": false,
+     "license": "MIT",
+     "status": "slow",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "MemPalace",
+     "unlocks": "Persistent long-term memory for agents, exposed as an MCP server the agent queries for past context.",
+     "entries": [
+      "DW1O6ZBEfDa"
+     ],
+     "verdict": "try",
+     "reason": "NetworkChuck connects it via MCP in DW1O6ZBEfDa. Repo moved milla-jovovich/mempalace to MemPalace/mempalace; active. Stores your conversation data locally.",
+     "install": "pip install mempalace",
+     "install_source": "https://github.com/MemPalace/mempalace",
+     "repo": "MemPalace/mempalace",
+     "stars": 59701,
+     "last_commit": "2026-10-20",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "REA (Reverse Engineer Anything)",
+     "unlocks": "Lets the agent reverse engineer apps and stripped binaries with Ghidra as backend, citing evidence per call.",
+     "entries": [
+      "DerpSl6D8pX"
+     ],
+     "verdict": "try",
+     "reason": "Repo description matches the entry's caption word for word. Very active. Dual-use: only analyze software you are authorized to; runs local tooling on untrusted binaries.",
+     "install": "npx rea-agents setup",
+     "install_source": "https://github.com/morluto/rea",
+     "repo": "morluto/rea",
+     "stars": 366924,
+     "last_commit": "2026-10-23",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "community",
+     "hide_stars": true
+    },
+    {
+     "name": "RevenueCat MCP",
+     "unlocks": "Queries app subscription revenue, subscribers and entitlements from RevenueCat.",
+     "entries": [
+      "DZVXehQRe3T"
+     ],
+     "verdict": "try",
+     "reason": "Used in DZVXehQRe3T's daily brief. Official RevenueCat hosted server (mcp.revenuecat.ai). Scope the API key read-only unless you want the agent editing products.",
+     "install_source": "https://www.revenuecat.com/docs/tools/mcp",
+     "docs_url": "https://www.revenuecat.com/docs/tools/mcp",
+     "status": "official-hosted",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "Slack MCP",
+     "unlocks": "Lets the agent read Slack threads (e.g. bug reports) and act on them.",
+     "entries": [
+      "DVQ5o6YDfsp"
+     ],
+     "verdict": "try",
+     "reason": "Claude Code team uses it to fix bugs from Slack (DVQ5o6YDfsp summary). Old reference server is in archived modelcontextprotocol/servers-archived; use Slack's official hosted server. Workspace read access.",
+     "install_source": "https://docs.slack.dev/ai/mcp-server",
+     "docs_url": "https://docs.slack.dev/ai/mcp-server",
+     "status": "official-hosted",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "Task Master AI",
+     "unlocks": "Turns a product requirements doc into dependency-ordered tasks the agent executes one at a time.",
+     "entries": [
+      "DWncXNCD07J"
+     ],
+     "verdict": "try",
+     "reason": "One shortlist entry. Popular but last commit April 2026 (about 6 months). Calls third-party LLM APIs with your keys.",
+     "install": "claude mcp add taskmaster-ai -- npx -y task-master-ai",
+     "install_source": "https://github.com/eyaltoledano/claude-task-master",
+     "repo": "eyaltoledano/claude-task-master",
+     "stars": 28266,
+     "last_commit": "2026-04-23",
+     "archived": false,
+     "license": "NOASSERTION",
+     "status": "slow",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "Tavily MCP",
+     "unlocks": "Web search, extract, map and crawl returning clean LLM-ready text instead of blue links.",
+     "entries": [
+      "DWncXNCD07J"
+     ],
+     "verdict": "try",
+     "reason": "Listed in DWncXNCD07J's five-server shortlist. Official Tavily server, active. Paid API key after free tier; fetched pages are untrusted input (prompt-injection surface).",
+     "install": "claude mcp add --transport http tavily https://mcp.tavily.com/mcp",
+     "install_source": "https://github.com/tavily-ai/tavily-mcp",
+     "repo": "tavily-ai/tavily-mcp",
+     "docs_url": "https://mcp.tavily.com/mcp",
+     "stars": 2453,
+     "last_commit": "2026-10-15",
+     "archived": false,
+     "license": "MIT",
+     "status": "maintained",
+     "checked": "2026-10-22",
+     "kind": "official"
+    },
+    {
+     "name": "Facebook Marketplace MCP",
+     "unlocks": "Searches Marketplace listings on a schedule so the agent can flag below-market deals.",
+     "entries": [
+      "Da6AHzxNtNZ"
+     ],
+     "verdict": "skip",
+     "reason": "Entry says 'one of these' tools, no repo; top match jdcodes1/facebook-marketplace-mcp uses your Chrome session cookies, unofficial scraping (account-ban risk), last commit April 2026, no license.",
+     "install_source": "https://github.com/jdcodes1/facebook-marketplace-mcp",
+     "repo": "jdcodes1/facebook-marketplace-mcp",
+     "stars": 492,
+     "last_commit": "2026-04-10",
+     "archived": false,
+     "status": "slow",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "JobSpy MCP",
+     "unlocks": "Searches job listings across Indeed, LinkedIn and Google Jobs for the agent to score and draft proposals.",
+     "entries": [
+      "DX4VJO6zMzL"
+     ],
+     "verdict": "skip",
+     "reason": "Entry names no repo; several community wrappers exist, borgius/jobspy-mcp-server is most-starred (120), last commit March 2026, no license. Unofficial scraping of job boards.",
+     "install_source": "https://github.com/borgius/jobspy-mcp-server",
+     "repo": "borgius/jobspy-mcp-server",
+     "stars": 120,
+     "last_commit": "2026-03-13",
+     "archived": false,
+     "status": "slow",
+     "checked": "2026-10-22",
+     "kind": "community"
+    },
+    {
+     "name": "TradingView MCP",
+     "unlocks": "Screens and replays TradingView charts for backtests from the agent.",
+     "entries": [
+      "DcZI9GWEqao"
+     ],
+     "verdict": "skip",
+     "reason": "Only source is a sponsored trading ad; no repo named and several unofficial servers compete. Trading-related; no evidence of results.",
+     "status": "unverified",
+     "checked": "2026-10-22",
+     "kind": "community"
+    }
+   ],
+   "what_col": "What it unlocks"
+  },
+  {
+   "h2": "Archived reference servers to avoid",
+   "id": "archived",
+   "paras": [
+    "In May 2025 the Model Context Protocol project moved most of its original reference servers into an archived repository, and they get no further fixes [[s:servers-archived]]. That set includes the Slack, GitHub, Puppeteer, Brave Search, Google Drive and Postgres servers that many older lists still recommend. The live reference repo now keeps a small set of maintained examples [[s:servers]]. Prefer each vendor's own server where one exists."
+   ]
+  }
+ ],
+ "verdict": {
+  "h2": "Where to start",
+  "paras": [
+   "For coding work, add Playwright and Context7 first: one lets the agent see and test what it builds, and the other stops it from guessing at library APIs. Add n8n-MCP if you build n8n workflows, and Figma's server if you turn designs into code. Add account-level servers such as Meta Ads, Gmail or Buffer only for a task that needs them, with the narrowest permissions the vendor offers.",
+   "Each server you connect adds its tool descriptions to the agent's context on every turn. Remove the ones you do not use. One S-tier post names idle MCP servers, old skills and a bloated CLAUDE.md as the usual places tokens leak ([[e:DXXs8LCjYR7]])."
+  ]
+ },
+ "unverified": [
+  "Meta Ads: Meta announced an official MCP server in July 2026, but the entry that covers it does not show which server the creator connected, so it may be a third-party one.",
+  "JobSpy and Facebook Marketplace: no entry names a repo, so we list the most-starred matching server and say so in its reason.",
+  "TradingView: several unofficial servers compete and none is named in the entry.",
+  "REA's GitHub star count looks wrong, so we leave it out."
+ ],
+ "related": [
+  [
+   "Best Claude Code skills and plugins",
+   "/best/claude-code-skills-and-plugins"
+  ],
+  [
+   "Claude Code vs Codex vs Gemini CLI",
+   "/compare/claude-code-vs-codex-vs-gemini-cli"
+  ],
+  [
+   "AI video generators",
+   "/compare/ai-video-generators"
+  ]
+ ],
+ "entries_cited": [
+  "18ddc4b68b6c",
+  "DHoPsMOxIRl",
+  "DMRI00_iQgW",
+  "DUzg0n1jRK-",
+  "DV09StsDI2d",
+  "DV4OGI0D1hS",
+  "DVQ5o6YDfsp",
+  "DVbfcdTkZ7R",
+  "DVmw74XEbk7",
+  "DW1O6ZBEfDa",
+  "DWncXNCD07J",
+  "DX4VJO6zMzL",
+  "DX62rNWxOB2",
+  "DXGRONttjhp",
+  "DXIpm6TjE5M",
+  "DXKFrnQEfEQ",
+  "DXKani5jWFi",
+  "DXNv-N3AEbJ",
+  "DXVY2cZDJoq",
+  "DXXs8LCjYR7",
+  "DZVXehQRe3T",
+  "Da6AHzxNtNZ",
+  "DbIxSSaEtGd",
+  "DbLuwUVlE9Z",
+  "DcR6KUyPC0n",
+  "DcUsVlvpYYu",
+  "DcZI9GWEqao",
+  "DdHHpICiRjB",
+  "DdJ5ynbDxqS",
+  "DdSYPwEzYEU",
+  "DdeoJI9KGtq",
+  "Ddg3yiFRtMg",
+  "DerpSl6D8pX"
+ ]
+}

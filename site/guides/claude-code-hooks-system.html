@@ -1,24 +1,24 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Claude Code Hooks System — Deep Dive · DejaViewed</title>
+<title>Claude Code Hooks Cookbook: 18 Recipes, All 33 Events</title>
 <!-- seo:start -->
 <link rel="canonical" href="https://dejaviewed.dev/guides/claude-code-hooks-system">
-<meta name="description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes…">
+<meta name="description" content="Hooks are commands that Claude Code runs automatically at fixed points in its lifecycle: before a tool runs, after it runs, when a prompt is submitted…">
 <meta property="og:site_name" content="DejaViewed">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Claude Code Hooks System — Deep Dive">
-<meta property="og:description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes…">
+<meta property="og:title" content="Claude Code Hooks Cookbook: 18 Recipes, All 33 Events">
+<meta property="og:description" content="Hooks are commands that Claude Code runs automatically at fixed points in its lifecycle: before a tool runs, after it runs, when a prompt is submitted…">
 <meta property="og:url" content="https://dejaviewed.dev/guides/claude-code-hooks-system">
 <meta property="og:image" content="https://dejaviewed.dev/og/claude-code-hooks-system.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Claude Code Hooks System — Deep Dive">
+<meta property="og:image:alt" content="Claude Code Hooks Cookbook: 18 Recipes, All 33 Events">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Claude Code Hooks System — Deep Dive">
-<meta name="twitter:description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes…">
+<meta name="twitter:title" content="Claude Code Hooks Cookbook: 18 Recipes, All 33 Events">
+<meta name="twitter:description" content="Hooks are commands that Claude Code runs automatically at fixed points in its lifecycle: before a tool runs, after it runs, when a prompt is submitted…">
 <meta name="twitter:image" content="https://dejaviewed.dev/og/claude-code-hooks-system.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","logo":"https://dejaviewed.dev/og/default.png","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"],"founder":{"@id":"https://dejaviewed.dev/#victor"},"publishingPrinciples":"https://dejaviewed.dev/method"},{"@type":"Person","@id":"https://dejaviewed.dev/#victor","name":"Victor","url":"https://www.1gabe.com/","sameAs":["https://github.com/Gabicus","https://instagram.com/6ab3"],"contactPoint":{"@type":"ContactPoint","url":"https://www.1gabe.com/contact/","contactType":"general"}},{"@type":"Article","@id":"https://dejaviewed.dev/guides/claude-code-hooks-system#article","headline":"Claude Code Hooks System — Deep Dive","description":"Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes…","url":"https://dejaviewed.dev/guides/claude-code-hooks-system","mainEntityOfPage":"https://dejaviewed.dev/guides/claude-code-hooks-system","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@id":"https://dejaviewed.dev/#victor"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/claude-code-hooks-system.jpg","about":[{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"}],"abstract":"Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Claude Code Hooks System — Deep Dive"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","logo":"https://dejaviewed.dev/og/default.png","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"],"founder":{"@id":"https://dejaviewed.dev/#victor"},"publishingPrinciples":"https://dejaviewed.dev/method"},{"@type":"Person","@id":"https://dejaviewed.dev/#victor","name":"Victor","url":"https://www.1gabe.com/","sameAs":["https://github.com/Gabicus","https://instagram.com/6ab3"],"contactPoint":{"@type":"ContactPoint","url":"https://www.1gabe.com/contact/","contactType":"general"}},{"@type":"Article","@id":"https://dejaviewed.dev/guides/claude-code-hooks-system#article","headline":"Claude Code Hooks Cookbook: 18 Recipes, All 33 Events","description":"Hooks are commands that Claude Code runs automatically at fixed points in its lifecycle: before a tool runs, after it runs, when a prompt is submitted…","url":"https://dejaviewed.dev/guides/claude-code-hooks-system","mainEntityOfPage":"https://dejaviewed.dev/guides/claude-code-hooks-system","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@id":"https://dejaviewed.dev/#victor"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/claude-code-hooks-system.jpg","about":[{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"}],"abstract":"Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Claude Code Hooks Cookbook: 18 Recipes, All 33 Events"}]}]}</script>
 <!-- seo:end -->
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
@@ -68,307 +68,1084 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
   <div id="guide-body" data-pagefind-body data-pagefind-filter="kind:Guide"><!-- body:start -->
-<h1>Claude Code Hooks System — Deep Dive</h1>
+<h1>Claude Code Hooks Cookbook: 18 Recipes, All 33 Events</h1>
 <blockquote>
 <p><strong>In short:</strong> Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail.</p>
 </blockquote>
+<table>
+<thead>
+<tr>
+<th>Key fact</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What it covers</td>
+<td>agents, open source, marketing, LLM</td>
+</tr>
+<tr>
+<td>Tools</td>
+<td>Claude, <a href="/tools/claude-code">Claude Code</a>, Anthropic, <a href="/tools/codex">Codex</a>, humanizer</td>
+</tr>
+<tr>
+<td>Posts covered</td>
+<td>5 posts (2 S-tier, 3 A-tier) · top: <a href="/e/DW6wPs2DQuK">Someone finally put numbers to what developers…</a> · <a href="/e/DVzvsgijOLT">primer.md + memory.sh — live-updating…</a> · <a href="/e/DbJzWBfxPvD">Humanizer skill for Claude Code — strip AI…</a></td>
+</tr>
+<tr>
+<td>Creators</td>
+<td><a href="https://instagram.com/jens.heitmann" target="_blank" rel="noopener">@jens.heitmann</a>, <a href="https://instagram.com/aiemerges" target="_blank" rel="noopener">@aiemerges</a>, <a href="https://instagram.com/keshavsuki" target="_blank" rel="noopener">@keshavsuki</a></td>
+</tr>
+<tr>
+<td>Sources dated</td>
+<td>Mar 2026 – Jul 2026</td>
+</tr>
+<tr>
+<td>Prompt system</td>
+<td><a href="#prompt-system">Run-it-yourself prompts</a></td>
+</tr>
+<tr>
+<td>Last verified</td>
+<td>2026-10-22</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Category:</strong> Claude Code automation / lifecycle
-<strong>Confidence:</strong> High — officially documented by Anthropic, with a mature community ecosystem.
-<strong>Primary sources:</strong></p>
+<strong>Confidence:</strong> High for the reference tables (checked against the official docs); recipes are fixture-tested scripts, not run inside a live Claude Code session.
+<strong>Primary sources (verified 2026-10-22):</strong></p>
 <ul>
-<li>Official reference: <a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">https://code.claude.com/docs/en/hooks</a></li>
+<li>Hooks reference: <a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">https://code.claude.com/docs/en/hooks</a></li>
 <li>Hooks guide: <a href="https://code.claude.com/docs/en/hooks-guide" target="_blank" rel="noopener">https://code.claude.com/docs/en/hooks-guide</a></li>
-<li>Agent SDK hooks: <a href="https://platform.claude.com/docs/en/agent-sdk/hooks" target="_blank" rel="noopener">https://platform.claude.com/docs/en/agent-sdk/hooks</a></li>
-<li><code>disler/claude-code-hooks-mastery</code> (reference examples): <a href="https://github.com/disler/claude-code-hooks-mastery" target="_blank" rel="noopener">https://github.com/disler/claude-code-hooks-mastery</a></li>
-<li>ClaudeLog: <a href="https://claudelog.com/mechanics/hooks/" target="_blank" rel="noopener">https://claudelog.com/mechanics/hooks/</a></li>
-<li>If you have the <code>hookify</code> plugin installed (provides <code>/hookify</code>, <code>/hookify:configure</code>, <code>/hookify:list</code>).</li>
+<li>Reference examples: <a href="https://github.com/disler/claude-code-hooks-mastery" target="_blank" rel="noopener">https://github.com/disler/claude-code-hooks-mastery</a></li>
 </ul>
 <hr />
 <h2 id="what-it-is">What it is</h2>
-<p>Claude Code hooks are <strong>shell commands that run automatically at specific points in the Claude Code lifecycle</strong> — before a tool executes, after it executes, when a session starts, when the model finishes its response, when context compaction happens, and so on. They are Anthropic's answer to &quot;how do I make Claude Code behave deterministically?&quot;</p>
-<p>The critical insight: <strong>Claude itself cannot reliably enforce rules on itself.</strong> If you put &quot;never run <code>rm -rf</code>&quot; in CLAUDE.md, Claude <em>usually</em> follows it, but prompt injection or a confused turn can bypass it. Hooks are executed by the harness — the outer runtime — not by the model. A hook that exits with code 2 on <code>PreToolUse</code> will <strong>block</strong> the tool call no matter what the model decided. This is why your global CLAUDE.md should say: <em>&quot;Automated behaviors require hooks configured in settings.json — the harness executes these, not Claude.&quot;</em></p>
-<p>Hooks are configured in JSON settings files, take tool I/O as JSON on stdin, and signal via exit codes or structured JSON output. They can run shell commands, call HTTP endpoints, or invoke LLMs for dynamic decisions.</p>
+<p>Hooks are <strong>commands that Claude Code runs automatically at fixed points in its lifecycle</strong>: before a tool runs, after it runs, when a prompt is submitted, when Claude tries to stop, before compaction, when a session starts or ends, and more. The harness runs them, not the model.</p>
+<p>That is the whole point. A rule in CLAUDE.md (&quot;never run <code>rm -rf</code>&quot;) is advice that Claude <em>usually</em> follows; a confused turn or a prompt injection can skip it. A <code>PreToolUse</code> hook that exits 2 blocks the call every time, whatever the model decided, and a hook's <code>deny</code> holds even in <code>bypassPermissions</code> mode. Any time you catch yourself writing &quot;from now on, always X&quot; into CLAUDE.md, X probably belongs in a hook.</p>
+<p>Hooks live in settings JSON, receive the event as JSON on stdin, and answer with an exit code and, optionally, JSON on stdout. Besides shell commands they can be HTTP calls, MCP tool calls, or a Claude model judging a condition.</p>
 <hr />
-<h2 id="how-it-works-the-lifecycle-events">How it works — the lifecycle events</h2>
-<p>Claude Code fires hooks at ~12 lifecycle events. The stable, documented ones (as of early 2026):</p>
+<h2 id="reference-events-matchers-exit-codes-json-output">Reference — events, matchers, exit codes, JSON output</h2>
+<p>Verified against <a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">https://code.claude.com/docs/en/hooks</a> and <a href="https://code.claude.com/docs/en/hooks-guide" target="_blank" rel="noopener">https://code.claude.com/docs/en/hooks-guide</a> on 2026-10-22. The event list grows between releases; run <code>claude --version</code> and re-check the reference if an event below is missing in your install.</p>
+<h3 id="events">Events</h3>
 <table>
 <thead>
 <tr>
 <th>Event</th>
 <th>When it fires</th>
+<th>Matcher filters on</th>
 <th>Can block?</th>
-<th>Typical use</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>SessionStart</strong></td>
-<td>New session or resume</td>
-<td>No (advisory)</td>
-<td>Inject git context, load env vars, greet</td>
+<td><code>SessionStart</code></td>
+<td>Session starts or resumes</td>
+<td><code>startup</code>, <code>resume</code>, <code>clear</code>, <code>compact</code>, <code>fork</code></td>
+<td>No (stdout becomes context)</td>
 </tr>
 <tr>
-<td><strong>UserPromptSubmit</strong></td>
-<td>User submits a prompt, before Claude sees it</td>
-<td>Yes</td>
-<td>Rewrite prompt, inject context, block unsafe prompts</td>
-</tr>
-<tr>
-<td><strong>PreToolUse</strong></td>
-<td>Claude decides to run a tool, before execution</td>
-<td>Yes (exit 2)</td>
-<td>Validate args, block dangerous commands, rewrite args</td>
-</tr>
-<tr>
-<td><strong>PostToolUse</strong></td>
-<td>Tool finished executing</td>
-<td>No (advisory)</td>
-<td>Format code, run tests, log command, trigger downstream</td>
-</tr>
-<tr>
-<td><strong>Notification</strong></td>
-<td>Claude waits for permission, or idles</td>
+<td><code>Setup</code></td>
+<td><code>--init-only</code>, or <code>--init</code>/<code>--maintenance</code> with <code>-p</code></td>
+<td><code>init</code>, <code>maintenance</code></td>
 <td>No</td>
-<td>Desktop notify, Slack ping, sound</td>
 </tr>
 <tr>
-<td><strong>Stop</strong></td>
-<td>Claude finishes its overall response</td>
-<td>Yes (force continue)</td>
-<td>Final checks, generate report, block &quot;done&quot; if tests fail</td>
+<td><code>UserPromptSubmit</code></td>
+<td>You submit a prompt, before Claude sees it</td>
+<td>—</td>
+<td>Yes: exit 2 or <code>decision: &quot;block&quot;</code></td>
 </tr>
 <tr>
-<td><strong>SubagentStop</strong></td>
-<td>A Task-tool sub-agent finishes</td>
+<td><code>UserPromptExpansion</code></td>
+<td>A typed command expands into a prompt</td>
+<td>command name</td>
 <td>Yes</td>
-<td>Validate sub-agent output, gate merging</td>
 </tr>
 <tr>
-<td><strong>PreCompact</strong></td>
-<td>Before context compaction (manual or auto)</td>
+<td><code>PreToolUse</code></td>
+<td>Before a tool call</td>
+<td>tool name</td>
+<td>Yes: exit 2 or <code>permissionDecision: &quot;deny&quot;</code></td>
+</tr>
+<tr>
+<td><code>PermissionRequest</code></td>
+<td>A tool call needs a permission decision</td>
+<td>tool name</td>
+<td>Via <code>decision.behavior: &quot;deny&quot;</code> (exit 2 not honored)</td>
+</tr>
+<tr>
+<td><code>PermissionDenied</code></td>
+<td>Auto mode denied a tool call</td>
+<td>tool name</td>
+<td>No (<code>retry: true</code> lets the model retry)</td>
+</tr>
+<tr>
+<td><code>PostToolUse</code></td>
+<td>After a tool call succeeds</td>
+<td>tool name</td>
+<td>Can't undo; <code>decision: &quot;block&quot;</code> feeds a reason back to Claude</td>
+</tr>
+<tr>
+<td><code>PostToolUseFailure</code></td>
+<td>After a tool call fails</td>
+<td>tool name</td>
+<td>No (stderr shown to Claude)</td>
+</tr>
+<tr>
+<td><code>PostToolBatch</code></td>
+<td>A parallel batch of tool calls resolved, before the next model call</td>
+<td>—</td>
+<td>Yes: exit 2 stops the loop</td>
+</tr>
+<tr>
+<td><code>Notification</code></td>
+<td>Claude Code sends a notification</td>
+<td>notification type</td>
 <td>No</td>
-<td>Back up full transcript, snapshot state</td>
 </tr>
 <tr>
-<td><strong>SessionEnd</strong></td>
+<td><code>MessageDisplay</code></td>
+<td>Assistant text is displayed</td>
+<td>—</td>
+<td>No (can replace the displayed text only)</td>
+</tr>
+<tr>
+<td><code>SubagentStart</code></td>
+<td>A subagent is spawned</td>
+<td>agent type</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>SubagentStop</code></td>
+<td>A subagent finishes</td>
+<td>agent type</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>TaskCreated</code></td>
+<td>A task is being created</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>TaskCompleted</code></td>
+<td>A task is being marked complete</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>Stop</code></td>
+<td>Claude finishes responding</td>
+<td>—</td>
+<td>Yes: Claude keeps working</td>
+</tr>
+<tr>
+<td><code>StopFailure</code></td>
+<td>The turn ended on an API error</td>
+<td>error type</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>TeammateIdle</code></td>
+<td>An agent-team teammate is about to go idle</td>
+<td>—</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>InstructionsLoaded</code></td>
+<td>CLAUDE.md or <code>.claude/rules/*.md</code> loaded</td>
+<td>load reason</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>ConfigChange</code></td>
+<td>A settings file or skills change mid-session</td>
+<td><code>user_settings</code>, <code>project_settings</code>, <code>local_settings</code>, <code>policy_settings</code>, <code>skills</code></td>
+<td>Yes, except <code>policy_settings</code></td>
+</tr>
+<tr>
+<td><code>CwdChanged</code></td>
+<td>Working directory changes</td>
+<td>—</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>DirectoryAdded</code></td>
+<td>A directory is added (<code>/add-dir</code>)</td>
+<td><code>slash_command</code>, <code>register_repo_root</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>FileChanged</code></td>
+<td>A watched file changes on disk</td>
+<td>literal filenames</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>WorktreeCreate</code></td>
+<td>A worktree is being created</td>
+<td>—</td>
+<td>Any non-zero exit fails creation</td>
+</tr>
+<tr>
+<td><code>WorktreeRemove</code></td>
+<td>A worktree is removed</td>
+<td>—</td>
+<td>Non-zero exit fails removal</td>
+</tr>
+<tr>
+<td><code>PreCompact</code></td>
+<td>Before compaction</td>
+<td><code>manual</code>, <code>auto</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>PostCompact</code></td>
+<td>After compaction</td>
+<td><code>manual</code>, <code>auto</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>PreModelSwitch</code></td>
+<td>Before a requested model switch</td>
+<td>model name</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>PostModelSwitch</code></td>
+<td>After the model changes</td>
+<td>model name</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>Elicitation</code></td>
+<td>An MCP server asks you for input</td>
+<td>MCP server name</td>
+<td>Yes (declines)</td>
+</tr>
+<tr>
+<td><code>ElicitationResult</code></td>
+<td>After you answer an elicitation</td>
+<td>MCP server name</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>SessionEnd</code></td>
 <td>Session terminates</td>
+<td><code>clear</code>, <code>resume</code>, <code>logout</code>, <code>prompt_input_exit</code>, <code>other</code></td>
 <td>No</td>
-<td>Persist logs, push metrics, retro capture</td>
 </tr>
 </tbody>
 </table>
-<p>The Agent SDK and recent Claude Code versions have added more (<code>ConfigChange</code>, <code>CwdChanged</code>, <code>FileChanged</code>, <code>PermissionDenied</code>, <code>WorktreeCreate</code>, <code>WorktreeRemove</code>, etc.) but they are less widely documented and churn more between versions. Start with the nine above.</p>
-<h3 id="where-hooks-are-configured">Where hooks are configured</h3>
-<p>Three settings files, merged in order (later wins for same key):</p>
-<ol>
-<li><code>~/.claude/settings.json</code> — user-global hooks, apply to every project</li>
-<li><code>.claude/settings.json</code> — project-shared hooks, checked into git</li>
-<li><code>.claude/settings.local.json</code> — per-machine overrides, gitignored</li>
-</ol>
-<p>Structure:</p>
+<h3 id="matchers">Matchers</h3>
+<ul>
+<li><code>&quot;*&quot;</code>, <code>&quot;&quot;</code>, or no <code>matcher</code> matches everything. A matcher on an event without matcher support is ignored.</li>
+<li>A matcher made only of letters, digits, <code>_</code>, <code>-</code>, spaces, <code>,</code> and <code>|</code> is an <strong>exact</strong> name or a list: <code>Edit|Write</code>, <code>Bash</code>. Matching is case-sensitive.</li>
+<li>Any other character turns it into an unanchored JavaScript regex: <code>^Notebook</code>, <code>mcp__github__.*</code>.</li>
+<li>MCP tools are named <code>mcp__&lt;server&gt;__&lt;tool&gt;</code>; plugin MCP servers are <code>mcp__plugin_&lt;plugin&gt;_&lt;server&gt;__&lt;tool&gt;</code>. Use <code>mcp__memory__.*</code> for a whole server; a bare <code>mcp__memory</code> matches nothing.</li>
+<li>To filter on <strong>arguments</strong>, add an <code>if</code> field with one permission rule, such as <code>&quot;if&quot;: &quot;Bash(git *)&quot;</code> or <code>&quot;if&quot;: &quot;Edit(*.ts)&quot;</code> (tool events only), or check the arguments inside your script.</li>
+</ul>
+<h3 id="hook-types">Hook types</h3>
+<table>
+<thead>
+<tr>
+<th><code>type</code></th>
+<th>What runs</th>
+<th>Default timeout</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>command</code></td>
+<td>A shell command (or an executable with <code>args: []</code>, no shell). Supports <code>async</code>, <code>asyncRewake</code></td>
+<td>600 s</td>
+</tr>
+<tr>
+<td><code>http</code></td>
+<td>POSTs the input JSON to <code>url</code>; <code>headers</code> can interpolate env vars listed in <code>allowedEnvVars</code></td>
+<td>600 s</td>
+</tr>
+<tr>
+<td><code>mcp_tool</code></td>
+<td>Calls <code>tool</code> on a configured MCP <code>server</code> with <code>input</code> (supports <code>${tool_input.file_path}</code>)</td>
+<td>600 s</td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>A Claude model answers <code>{&quot;ok&quot;: true}</code> or <code>{&quot;ok&quot;: false, &quot;reason&quot;: &quot;...&quot;}</code> about <code>$ARGUMENTS</code></td>
+<td>30 s</td>
+</tr>
+<tr>
+<td><code>agent</code></td>
+<td>Like <code>prompt</code>, but a subagent that can use tools (experimental)</td>
+<td>60 s</td>
+</tr>
+</tbody>
+</table>
+<p>The 600 s default drops to 30 s on <code>UserPromptSubmit</code>, <code>PreModelSwitch</code> and <code>PostModelSwitch</code>, and 10 s on <code>MessageDisplay</code>. All <code>SessionEnd</code> hooks share a 1.5 s budget, raised to your longest configured <code>timeout</code> up to 60 s. Hooks for one event run in parallel; identical handlers from several settings files run once.</p>
+<h3 id="exit-codes">Exit codes</h3>
+<table>
+<thead>
+<tr>
+<th>Exit</th>
+<th>Meaning</th>
+<th>stdout</th>
+<th>stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>Success</td>
+<td>Parsed if it is one JSON object; otherwise plain text. Plain text becomes context only on <code>SessionStart</code>, <code>UserPromptSubmit</code>, <code>UserPromptExpansion</code> and <code>PostModelSwitch</code> (debug log elsewhere)</td>
+<td>Debug log only</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>Block (on events that can block)</td>
+<td>JSON is read but can't undo the block</td>
+<td>Sent as the reason: to Claude for tool and stop events, to you for <code>UserPromptSubmit</code></td>
+</tr>
+<tr>
+<td>other</td>
+<td>Non-blocking error; the action proceeds (unless the hook sets <code>onFailure: &quot;block&quot;</code>)</td>
+<td>Ignored unless valid JSON</td>
+<td>First line shown as a notice</td>
+</tr>
+</tbody>
+</table>
+<p>Exit 1 does <strong>not</strong> block. Use exit 2 to enforce policy.</p>
+<h3 id="json-output">JSON output</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Where</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>continue</code></td>
+<td>any</td>
+<td><code>false</code> stops Claude entirely; overrides event decisions</td>
+</tr>
+<tr>
+<td><code>stopReason</code></td>
+<td>any</td>
+<td>Shown to you when <code>continue</code> is <code>false</code></td>
+</tr>
+<tr>
+<td><code>systemMessage</code></td>
+<td>any</td>
+<td>Warning shown to you</td>
+</tr>
+<tr>
+<td><code>suppressOutput</code></td>
+<td>any</td>
+<td>Documented as having no effect</td>
+</tr>
+<tr>
+<td><code>terminalSequence</code></td>
+<td>any</td>
+<td>Terminal escape to emit (OSC 0/1/2/9/99/777, BEL)</td>
+</tr>
+<tr>
+<td><code>decision: &quot;block&quot;</code> + <code>reason</code></td>
+<td><code>UserPromptSubmit</code>, <code>UserPromptExpansion</code>, <code>PostToolUse</code>, <code>PostToolUseFailure</code>, <code>PostToolBatch</code>, <code>Stop</code>, <code>SubagentStop</code>, <code>ConfigChange</code>, <code>PreCompact</code>, <code>TaskCreated</code>, <code>PreModelSwitch</code>, <code>Elicitation</code>, <code>ElicitationResult</code></td>
+<td>Blocks, or for <code>Stop</code>, makes Claude continue with <code>reason</code> as its instruction</td>
+</tr>
+<tr>
+<td><code>hookSpecificOutput.permissionDecision</code></td>
+<td><code>PreToolUse</code></td>
+<td><code>allow</code>, <code>deny</code>, <code>ask</code>, <code>defer</code> (<code>-p</code> only). Precedence across hooks: deny &gt; defer &gt; ask &gt; allow</td>
+</tr>
+<tr>
+<td><code>hookSpecificOutput.permissionDecisionReason</code></td>
+<td><code>PreToolUse</code>, <code>PreModelSwitch</code></td>
+<td>For <code>deny</code>, shown to Claude</td>
+</tr>
+<tr>
+<td><code>hookSpecificOutput.updatedInput</code></td>
+<td><code>PreToolUse</code></td>
+<td>Replaces the <strong>whole</strong> tool input; pair with <code>allow</code> or <code>ask</code></td>
+</tr>
+<tr>
+<td><code>hookSpecificOutput.additionalContext</code></td>
+<td><code>PreToolUse</code>, <code>PostToolUse</code>, <code>SessionStart</code>, <code>SubagentStart</code>, <code>PostModelSwitch</code>, <code>Stop</code>, <code>SubagentStop</code>, <code>UserPromptSubmit</code></td>
+<td>Added to Claude's context as a system reminder (capped at 10,000 chars)</td>
+</tr>
+<tr>
+<td><code>hookSpecificOutput.updatedToolOutput</code></td>
+<td><code>PostToolUse</code></td>
+<td>Replaces what Claude sees; must match the tool's output shape</td>
+</tr>
+<tr>
+<td><code>hookSpecificOutput.decision.behavior</code></td>
+<td><code>PermissionRequest</code></td>
+<td><code>allow</code> or <code>deny</code></td>
+</tr>
+</tbody>
+</table>
+<p>Every <code>hookSpecificOutput</code> object needs <code>hookEventName</code>. Top-level <code>decision: &quot;approve&quot;/&quot;block&quot;</code> on <code>PreToolUse</code> is deprecated (it maps to allow/deny).</p>
+<p><strong>Common input fields on stdin:</strong> <code>session_id</code>, <code>transcript_path</code>, <code>cwd</code>, <code>permission_mode</code>, <code>hook_event_name</code>, plus per-event fields: <code>tool_name</code>, <code>tool_input</code>, <code>tool_use_id</code> (tool events), <code>tool_response</code> and <code>duration_ms</code> (<code>PostToolUse</code>), <code>prompt</code> (<code>UserPromptSubmit</code>), <code>source</code> (<code>SessionStart</code>), <code>stop_hook_active</code> and <code>last_assistant_message</code> (<code>Stop</code>), <code>trigger</code> and <code>custom_instructions</code> (<code>PreCompact</code>), <code>reason</code> (<code>SessionEnd</code>), <code>message</code>, <code>title</code>, <code>notification_type</code> (<code>Notification</code>), <code>error</code> (<code>StopFailure</code>), <code>from_model</code>/<code>to_model</code> (model switch events).</p>
+<p><strong>Environment:</strong> <code>CLAUDE_PROJECT_DIR</code> (project root; stays fixed in worktrees), <code>CLAUDE_ENV_FILE</code> (in <code>SessionStart</code>, <code>Setup</code>, <code>CwdChanged</code>, <code>FileChanged</code>: append <code>export NAME=value</code> lines to set env vars for later Bash commands), <code>CLAUDE_PLUGIN_ROOT</code> and <code>CLAUDE_PLUGIN_DATA</code> (plugin hooks), <code>CLAUDE_CODE_REMOTE</code> (<code>&quot;true&quot;</code> in remote web sessions), <code>CLAUDE_EFFORT</code>.</p>
+<h3 id="where-hooks-live">Where hooks live</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.claude/settings.json</code></td>
+<td>You, every project</td>
+</tr>
+<tr>
+<td><code>.claude/settings.json</code></td>
+<td>This project, committed and shared</td>
+</tr>
+<tr>
+<td><code>.claude/settings.local.json</code></td>
+<td>This project, gitignored</td>
+</tr>
+<tr>
+<td>Managed policy settings</td>
+<td>Whole organization</td>
+</tr>
+<tr>
+<td>Plugin <code>hooks/hooks.json</code></td>
+<td>While the plugin is enabled</td>
+</tr>
+<tr>
+<td>Skill or subagent frontmatter</td>
+<td>While that skill or subagent is active</td>
+</tr>
+</tbody>
+</table>
+<p>Hook entries from all levels <strong>merge</strong>: every matching hook runs; a later file does not replace an earlier one. <code>&quot;disableAllHooks&quot;: true</code> turns hooks off (it can't disable managed hooks). Edits are normally picked up automatically; run <code>/hooks</code> to see what is loaded. The shape is always <code>hooks → event → [ { matcher, hooks: [ handler, ... ] } ]</code>.</p>
+<hr />
+<h2 id="the-cookbook-18-recipes">The cookbook — 18 recipes</h2>
+<p>Conventions: project scripts live in <code>.claude/hooks/</code> and are referenced in exec form (<code>&quot;args&quot;: []</code>, no shell, no quoting problems). Personal hooks live in <code>~/.claude/hooks/</code>. Every script reads the event JSON from stdin, needs <code>jq</code> or <code>python3</code>, and must be <code>chmod +x</code>. &quot;Tested&quot; means fixture-tested: each script was fed sample stdin JSON shaped per the reference and its exit code and output were checked. None of them was run inside a live Claude Code session, so confirm each with <code>/hooks</code> and <code>claude --debug</code> after installing. Test any of them yourself the same way:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">echo '{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}' | .claude/hooks/block-destructive.sh; echo "exit $?"
+</code></pre></div>
+<h3 id="guardrails">Guardrails</h3>
+<h4>1. Block destructive shell commands</h4>
+<p>Prevents: <code>rm -rf /</code>, <code>~</code>, <code>.</code> or <code>*</code>, <code>mkfs</code>, <code>dd</code> onto a device, fork bombs, <code>git push --force</code>, <code>git reset --hard</code>, <code>git clean -f</code>. Claude gets the reason and tries something narrower.</p>
 <div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
   "hooks": {
     "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/block-rm-rf.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          { "type": "command", "command": "prettier --write" }
-        ]
-      }
+      { "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-destructive.sh", "args": [] }] }
     ]
   }
 }
 </code></pre></div>
-<p>Top level is <code>hooks</code>. Each event is an array of <strong>matcher groups</strong>. Each group has:</p>
-<ul>
-<li><code>matcher</code> — a regex tested against the tool name (for tool-scoped events). For <code>PreToolUse</code>/<code>PostToolUse</code>: the tool name (<code>Bash</code>, <code>Edit</code>, <code>Write</code>, <code>mcp__github__.*</code>). For other events: often empty string or omitted.</li>
-<li><code>hooks</code> — an array of hook entries. Each entry has:
-<ul>
-<li><code>type</code> — <code>&quot;command&quot;</code> (shell), or in Agent SDK contexts <code>&quot;http&quot;</code> / <code>&quot;prompt&quot;</code>.</li>
-<li><code>command</code> — the shell command to run.</li>
-<li><code>async</code> — optional boolean. If <code>true</code>, hook runs in background and doesn't block Claude.</li>
-<li><code>timeout</code> — optional seconds before kill.</li>
-</ul>
-</li>
-</ul>
-<p>To disable all hooks temporarily: <code>&quot;disableAllHooks&quot;: true</code> at settings root.</p>
-<h3 id="how-hooks-communicate-with-claude">How hooks communicate with Claude</h3>
-<p><strong>Input:</strong> Hooks receive JSON on <strong>stdin</strong> describing the event. For a <code>PreToolUse</code> on Bash:</p>
+<p><code>.claude/hooks/block-destructive.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# PreToolUse, matcher "Bash". Exit 2 blocks the call; stderr becomes Claude's reason.
+cmd=$(jq -r '.tool_input.command // empty')
+patterns=(
+  'rm[[:space:]]+-[[:alnum:]-]*[rR][[:alnum:]-]*[[:space:]]+(/|~|\$HOME|\.|\*)/?([[:space:]]|$)'  # rm -rf / ~ $HOME . *
+  'mkfs(\.[a-z0-9]+)?[[:space:]]'                                                       # format a filesystem
+  'dd[[:space:]].*of=/dev/'                                                             # raw write to a device
+  ':\(\)[[:space:]]*\{'                                                                 # fork bomb
+  '&gt;[[:space:]]*/dev/(sd|nvme|disk)'                                                    # redirect onto a disk
+  'chmod[[:space:]]+-R[[:space:]]+777[[:space:]]+/'                                     # world-writable root
+  'git[[:space:]]+push([[:space:]].*)?[[:space:]](--force|-f)([[:space:]]|$)'         # force push (--force-with-lease allowed)
+  'git[[:space:]]+reset[[:space:]]+--hard'                                              # discard work
+  'git[[:space:]]+clean[[:space:]]+-[[:alnum:]]*f'                                      # delete untracked files
+)
+for p in "${patterns[@]}"; do
+  if [[ "$cmd" =~ $p ]]; then
+    echo "Blocked by block-destructive hook (pattern: $p). Use a narrower, reversible command or ask the user to run it." &gt;&amp;2
+    exit 2
+  fi
+done
+exit 0
+</code></pre></div>
+<p>Tested: yes — exit 2 on <code>rm -rf /</code>, <code>rm -rf ~</code>, <code>sudo rm -fr /</code>, <code>rm -rf .</code>, <code>mkfs.ext4</code>, <code>dd ... of=/dev/sda</code>, the fork bomb, <code>git push -f</code>, <code>git push origin main --force</code>, <code>git reset --hard</code>, <code>git clean -fd</code>, <code>&gt; /dev/sda</code>; exit 0 on <code>ls</code>, <code>git status</code>, <code>rm -rf ./build</code>, <code>rm -rf /tmp/x</code>, <code>git push --force-with-lease</code>. Pattern matching is a speed bump, not a sandbox: <code>bash -c &quot;$(echo ...)&quot;</code> or a script file gets around it.</p>
+<h4>2. Turn deletes into a reviewable trash folder</h4>
+<p>Enables: Claude can never delete files; it is told to move them to <code>.trash/</code> and you empty it after review. Uses a JSON <code>deny</code> with a reason instead of exit 2.</p>
 <div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
-  "session_id": "abc123",
-  "hook_event_name": "PreToolUse",
-  "tool_name": "Bash",
-  "tool_input": {
-    "command": "rm -rf /",
-    "description": "delete everything"
-  },
-  "cwd": "/home/user/project"
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/rm-to-trash.sh", "args": [] }] }
+    ]
+  }
 }
 </code></pre></div>
-<p><code>UserPromptSubmit</code> gets <code>{ session_id, hook_event_name, prompt }</code>. <code>SessionStart</code> gets the minimal set. Each event has its own schema — the canonical reference is the gist at <a href="https://gist.github.com/FrancisBourre/50dca37124ecc43eaf08328cdcccdb34" target="_blank" rel="noopener">https://gist.github.com/FrancisBourre/50dca37124ecc43eaf08328cdcccdb34</a> and the Anthropic docs.</p>
-<p><strong>Output / control:</strong></p>
-<ul>
-<li><strong>Exit code 0</strong> — success, allow the operation, stdout is shown as informational.</li>
-<li><strong>Exit code 2</strong> — <strong>block</strong> the operation. stderr is surfaced to Claude as an error, and Claude gets a chance to react (e.g. try a different approach).</li>
-<li><strong>Any other non-zero</strong> — error, shown to user but does not block.</li>
-<li><strong>Structured JSON on stdout</strong> — advanced: you can return <code>{ &quot;decision&quot;: &quot;block&quot;, &quot;reason&quot;: &quot;...&quot; }</code> or <code>{ &quot;decision&quot;: &quot;approve&quot; }</code> or <code>{ &quot;modified_tool_input&quot;: {...} }</code> to rewrite arguments. This is the powerful path — a hook can <em>rewrite</em> Claude's tool call mid-flight.</li>
-</ul>
-<p><code>async: true</code> hooks are fire-and-forget and cannot block or modify.</p>
-<hr />
-<h2 id="quick-start-five-hooks-worth-installing-today">Quick start — five hooks worth installing today</h2>
-<h3 id="1-block-destructive-bash-commands">1. Block destructive Bash commands</h3>
-<p><code>~/.claude/hooks/block-destructive.sh</code>:</p>
+<p><code>.claude/hooks/rm-to-trash.sh</code>:</p>
 <div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# PreToolUse, matcher "Bash". Denies rm / find -delete and tells Claude to move files to .trash/ instead.
 cmd=$(jq -r '.tool_input.command // empty')
-if [[ "$cmd" =~ (rm[[:space:]]+-rf[[:space:]]+/|mkfs|:\(\)\{|dd[[:space:]]+if=) ]]; then
-  echo "Blocked destructive command: $cmd" &gt;&amp;2
+rm_re='(^|[;&amp;|(][[:space:]]*|sudo[[:space:]]+)rm[[:space:]]'
+find_re='find[[:space:]].*-delete'
+if [[ "$cmd" =~ $rm_re || "$cmd" =~ $find_re ]]; then
+  jq -n --arg cmd "$cmd" '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: ("Deleting is disabled in this project. Instead of `" + $cmd + "`, move the files with: mkdir -p .trash &amp;&amp; mv &lt;paths&gt; .trash/  (the user empties .trash/ after review).")
+    }
+  }'
+fi
+exit 0
+</code></pre></div>
+<p>Tested: yes — emits <code>permissionDecision: &quot;deny&quot;</code> for <code>rm foo.txt</code>, <code>cd x &amp;&amp; rm -r build</code>, <code>sudo rm a</code>, <code>find . -name &quot;*.pyc&quot; -delete</code>; silent (allow) for <code>git rm --cached a</code>, <code>npm run rm-cache</code>, <code>ls</code>. Add <code>.trash/</code> to <code>.gitignore</code>.
+Inspired by: <a href="/e/DV8rkpGEbBJ">Claude Code hooks — 3 daily-driver hooks from @jens.heitmann</a> (his anti-deletion hook moves files to a staging folder).</p>
+<h4>3. Protect secrets, git internals and lockfiles from edits</h4>
+<p>Prevents: Claude editing <code>.env*</code>, keys and certificates, anything under <code>.git/</code>, and lockfiles (which should change only through the package manager). <code>.env.example</code> stays editable.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/protect-files.sh", "args": [] }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>.claude/hooks/protect-files.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# PreToolUse, matcher "Edit|Write". Blocks edits to secrets, git internals and lockfiles.
+path=$(jq -r '.tool_input.file_path // empty')
+[[ -z "$path" ]] &amp;&amp; exit 0
+path=${path//\\//}   # normalize Windows separators
+case "$path" in
+  */.env.example|*/.env.sample) exit 0 ;;   # templates are fine
+  */.env|*/.env.*|*.pem|*.key|*/id_rsa*|*/id_ed25519*|*/.git/*|\
+  */package-lock.json|*/yarn.lock|*/pnpm-lock.yaml|*/poetry.lock|*/Cargo.lock|*/uv.lock)
+    echo "Protected file: $path. Lockfiles change via the package manager; secrets and .git/ are off-limits. Ask the user if this edit is really needed." &gt;&amp;2
+    exit 2 ;;
+esac
+exit 0
+</code></pre></div>
+<p>Tested: yes — exit 2 for <code>.env</code>, <code>.env.local</code>, <code>server.pem</code>, <code>.git/config</code>, <code>package-lock.json</code> and a Windows-style <code>C:\p\.env</code>; exit 0 for <code>src/app.ts</code>, <code>README.md</code>, <code>.envrc</code>, <code>.env.example</code>. It does not stop <code>Bash</code> from writing those files (<code>echo x &gt; .env</code>); pair it with recipe 1 or a permission deny rule.</p>
+<h4>4. Block credentials from being written into files</h4>
+<p>Prevents: API keys, tokens and private keys landing in source files. Scans the new text of every <code>Write</code> and <code>Edit</code> and names the kind of secret found, never its value.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/secret-scan.py", "args": [] }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>.claude/hooks/secret-scan.py</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-python">#!/usr/bin/env python3
+"""PreToolUse, matcher "Edit|Write". Blocks writes whose new text contains a credential.
+Prints only the pattern name, never the matched value."""
+import json, re, sys
+
+PATTERNS = {
+    "AWS access key id": r"\bAKIA[0-9A-Z]{16}\b",
+    "private key block": r"-----BEGIN [A-Z ]*PRIVATE KEY-----",
+    "GitHub token": r"\b(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{36}\b|\bgithub_pat_[A-Za-z0-9_]{40,}",
+    "Anthropic key": r"\bsk-ant-[A-Za-z0-9_\-]{20,}",
+    "OpenAI-style key": r"\bsk-(proj-)?[A-Za-z0-9_\-]{32,}",
+    "Slack token": r"\bxox[abprs]-[A-Za-z0-9-]{10,}",
+    "Stripe live key": r"\b[sr]k_live_[A-Za-z0-9]{20,}",
+    "Google API key": r"\bAIza[0-9A-Za-z_\-]{35}\b",
+    "hardcoded secret assignment": r"(?i)\b(private[_-]?key|secret|api[_-]?key|access[_-]?token|password)\b\s*[:=]\s*[\"'][A-Za-z0-9_\-/+=]{16,}[\"']",
+}
+
+data = json.load(sys.stdin)
+ti = data.get("tool_input", {})
+text = "\n".join(str(ti.get(k, "")) for k in ("content", "new_string"))
+hits = [name for name, rx in PATTERNS.items() if re.search(rx, text)]
+if hits:
+    print(f"Blocked: the new text for {ti.get('file_path', '?')} looks like it contains: "
+          f"{', '.join(hits)}. Load secrets from the environment or a gitignored .env at runtime "
+          "instead of writing them into files.", file=sys.stderr)
+    sys.exit(2)
+sys.exit(0)
+</code></pre></div>
+<p>Tested: yes — exit 2 for AWS's documented example access key ID, a PEM private-key header, a quoted <code>API_KEY = &quot;...&quot;</code> literal (via <code>Edit</code>'s <code>new_string</code>) and a GitHub <code>ghp_</code> token; exit 0 for <code>os.environ[&quot;API_KEY&quot;]</code>, plain code and a 64-hex transaction hash. Regexes miss novel formats; run a real scanner such as gitleaks in CI as well.</p>
+<h3 id="formatting-and-code-quality">Formatting and code quality</h3>
+<h4>5. Format every file Claude edits</h4>
+<p>Enables: consistent formatting with no &quot;please run prettier&quot; turns. Uses whichever formatter is installed and never blocks.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/format-on-edit.sh", "args": [] }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>.claude/hooks/format-on-edit.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# PostToolUse, matcher "Edit|Write". Formats the edited file with whatever formatter is installed.
+# Never blocks: a missing or failing formatter just leaves the file as written.
+f=$(jq -r '.tool_input.file_path // empty')
+[[ -f "$f" ]] || exit 0
+has() { command -v "$1" &gt;/dev/null 2&gt;&amp;1; }
+case "$f" in
+  *.ts|*.tsx|*.js|*.jsx|*.mjs|*.css|*.scss|*.json|*.md|*.html|*.yaml|*.yml)
+    if has prettier; then prettier --write --log-level warn "$f"
+    elif [[ -x node_modules/.bin/prettier ]]; then node_modules/.bin/prettier --write --log-level warn "$f"; fi ;;
+  *.py)  has ruff &amp;&amp; ruff format --quiet "$f" ;;   # format only: lint --fix would strip imports Claude is about to use
+  *.rs)  has rustfmt &amp;&amp; rustfmt --edition 2021 "$f" ;;
+  *.go)  has gofmt &amp;&amp; gofmt -w "$f" ;;
+  *.sh)  has shfmt &amp;&amp; shfmt -w "$f" ;;
+esac &gt;/dev/null 2&gt;&amp;1
+exit 0
+</code></pre></div>
+<p>Tested: yes — reformatted <code>x  =  1</code> to <code>x = 1</code> in a <code>.py</code> file with ruff, exited 0 on a missing file. The prettier, rustfmt, gofmt and shfmt branches were not exercised (formatters not installed on the test machine). Keep it to formatting: an auto-<code>--fix</code> linter here deletes an import Claude added one edit before using it.</p>
+<h4>6. Hand Python syntax errors straight back to Claude</h4>
+<p>Prevents: Claude moving on after an edit that broke the file. <code>decision: &quot;block&quot;</code> on <code>PostToolUse</code> can't undo the edit, but it puts the error in front of Claude immediately.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/py-check.sh", "args": [] }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>.claude/hooks/py-check.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# PostToolUse, matcher "Edit|Write". If a Python file no longer parses, hand the error back to Claude.
+f=$(jq -r '.tool_input.file_path // empty')
+[[ "$f" == *.py &amp;&amp; -f "$f" ]] || exit 0
+err=$(python3 - "$f" &lt;&lt;'PY'
+import ast, sys
+try:
+    ast.parse(open(sys.argv[1], encoding="utf-8").read(), sys.argv[1])
+except SyntaxError as e:
+    print(f"{e.filename}:{e.lineno}:{e.offset}: {e.msg}\n    {(e.text or '').rstrip()}")
+PY
+)
+if [[ -n "$err" ]]; then
+  jq -n --arg r "Syntax error after editing — fix it before moving on: $err" '{decision: "block", reason: $r}'
+fi
+exit 0
+</code></pre></div>
+<p>Tested: yes — for a file containing <code>def f(:</code> it returned <code>decision: &quot;block&quot;</code> with <code>bad.py:1:7: invalid syntax</code>; silent for a valid file and for non-Python paths. Uses <code>ast.parse</code>, so it writes no <code>__pycache__</code>. Swap in <code>tsc --noEmit</code> or <code>cargo check</code> for other languages.</p>
+<h4>7. Refuse &quot;done&quot; while tests fail</h4>
+<p>Prevents: Claude declaring victory with a red test suite. On <code>Stop</code>, exit 2 sends the failing output back and Claude keeps working.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "TEST_CMD='pytest -q -x' \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-tests-gate.sh", "timeout": 300 }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>.claude/hooks/stop-tests-gate.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# Stop (no matcher). Refuses to let Claude finish while the test suite fails.
+# Set TEST_CMD in the hook command (default: npm test --silent).
+input=$(cat)
+[[ $(jq -r '.stop_hook_active // false' &lt;&lt;&lt;"$input") == "true" ]] &amp;&amp; exit 0   # already continuing: don't loop
+cd "${CLAUDE_PROJECT_DIR:-$(jq -r '.cwd' &lt;&lt;&lt;"$input")}" || exit 0
+# Skip when nothing changed since the last commit: no edits, no reason to re-run tests.
+if git rev-parse --git-dir &gt;/dev/null 2&gt;&amp;1 &amp;&amp; [[ -z $(git status --porcelain) ]]; then exit 0; fi
+if ! out=$(bash -c "${TEST_CMD:-npm test --silent}" 2&gt;&amp;1); then
+  { echo "Tests are failing, so the task is not done. Fix them, then finish. Last output:"; tail -n 30 &lt;&lt;&lt;"$out"; } &gt;&amp;2
   exit 2
 fi
 exit 0
 </code></pre></div>
-<p>In <code>~/.claude/settings.json</code>:</p>
+<p>Tested: yes — in a scratch git repo: exit 0 with a clean tree (tests skipped), exit 2 with the test output on stderr when the tree is dirty and <code>TEST_CMD</code> fails, exit 0 when it passes, exit 0 whenever <code>stop_hook_active</code> is <code>true</code>. <code>Stop</code> fires after every response, not only at task end, so keep the test command fast. Claude Code also overrides a <code>Stop</code> hook after 8 consecutive blocks.
+Related: <a href="/e/DV3lILoEfzS">Codex + Claude Code — 3 systems to audit CC output with Codex</a> wires a second model's review into a hook; the same <code>Stop</code> slot works for that.</p>
+<h4>8. Catch lazy endings</h4>
+<p>Prevents: final messages that skip work (&quot;for brevity&quot;, &quot;I'll leave the rest to you&quot;, &quot;should work now&quot; with nothing run). Uses <code>last_assistant_message</code>, so it never has to parse the transcript.</p>
 <div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [{ "type": "command", "command": "~/.claude/hooks/block-destructive.sh" }]
-      }
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/lazy-stop.py", "args": [] }] }
     ]
   }
 }
 </code></pre></div>
-<p><code>chmod +x</code> the script. Now any <code>rm -rf /</code>, fork bomb, or <code>dd</code> to a device gets blocked before Claude can run it — and Claude is told why, so it can try something saner.</p>
-<h3 id="2-auto-format-on-edit">2. Auto-format on edit</h3>
+<p><code>.claude/hooks/lazy-stop.py</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-python">#!/usr/bin/env python3
+"""Stop (no matcher). Sends Claude back to work when its final message hands work off
+or admits to skipping it."""
+import json, re, sys
+
+LAZY = {
+    "for brevity": r"\bfor brevity\b",
+    "left as an exercise": r"\bleft as an exercise\b",
+    "hands work to the user": r"\byou (can|could|may want to) (implement|add|fill in)\b|\bI'?ll leave (that|this|the rest|the \w+)\b",
+    "elided code": r"\.\.\. ?(existing|rest of) code|\brest of the (code|implementation) (remains|is) (the same|unchanged)\b",
+    "placeholder": r"\bplaceholder (implementation|logic|code)\b|\bnot (yet )?implemented\b",
+    "unverified 'should work'": r"\bshould (now )?work\b(?![^.]*\b(tested|ran|passed|verified)\b)",
+}
+data = json.load(sys.stdin)
+if data.get("stop_hook_active"):
+    sys.exit(0)                      # one nudge per stop; never loop
+msg = data.get("last_assistant_message") or ""
+hits = [name for name, rx in LAZY.items() if re.search(rx, msg, re.IGNORECASE)]
+if hits:
+    print(json.dumps({
+        "decision": "block",
+        "reason": "Your last message defers or skips work (matched: " + "; ".join(hits[:3]) +
+                  "). Finish the remaining work, or state exactly what is blocked and why.",
+    }))
+sys.exit(0)
+</code></pre></div>
+<p>Tested: yes — blocks &quot;For brevity, I'll leave the error handling to you&quot; and &quot;The fix should work now.&quot;; allows &quot;Ran pytest: 42 passed. This should work now since tests passed.&quot; and &quot;Added the endpoint and its tests; 12 passed.&quot;; allows anything when <code>stop_hook_active</code> is <code>true</code>. Expect occasional false positives; the one-nudge rule keeps them cheap.
+Inspired by: <a href="/e/DW6wPs2DQuK">Someone finally put numbers to what developers have been feeling for weeks.</a> (a stop-hook script catching lazy behavior fired 173 times in the logs it describes).</p>
+<h4>9. Flag AI-writing tells in docs</h4>
+<p>Enables: a de-AI pass on every human-facing document. After Claude writes a <code>.md</code>, <code>.txt</code>, <code>.rst</code> or <code>.html</code> file, it is told which stock phrases to rewrite. Advisory only.</p>
 <div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
   "hooks": {
     "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [{
-          "type": "command",
-          "command": "path=$(jq -r '.tool_input.file_path'); case \"$path\" in *.ts|*.tsx|*.js|*.jsx) prettier --write \"$path\" ;; *.py) ruff format \"$path\" ;; *.rs) rustfmt \"$path\" ;; esac"
-        }]
-      }
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-tells.py", "args": [] }] }
     ]
   }
 }
 </code></pre></div>
-<p>Every file Claude edits gets formatted automatically. No more &quot;please run prettier&quot; prompts.</p>
-<h3 id="3-inject-git-context-at-session-start">3. Inject git context at session start</h3>
-<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [{
-          "type": "command",
-          "command": "echo '## Git state'; git branch --show-current 2&gt;/dev/null; git status --short 2&gt;/dev/null | head -10; echo '## Recent commits'; git log --oneline -5 2&gt;/dev/null"
-        }]
-      }
-    ]
-  }
+<p><code>.claude/hooks/ai-tells.py</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-python">#!/usr/bin/env python3
+"""PostToolUse, matcher "Edit|Write". Flags common AI-writing tells in prose files and
+tells Claude to revise them. Advisory: never blocks."""
+import json, re, sys
+
+TELLS = {
+    "delve": r"\bdelv(e|es|ing)\b", "tapestry": r"\btapestry\b", "testament to": r"\btestament to\b",
+    "it's important to note": r"\bit'?s (important|worth) (to note|noting)\b",
+    "fast-paced world": r"\bin today'?s (fast-paced|digital|ever-evolving)\b",
+    "not just X, but Y": r"\bnot (just|only)\b[^.]{1,60}\bbut( also)?\b",
+    "game-changer": r"\bgame[- ]changer\b", "seamless(ly)": r"\bseamless(ly)?\b",
+    "unlock / unleash": r"\b(unlock|unleash)(es|ing)? the (power|potential)\b",
+    "in conclusion": r"\bin conclusion\b", "navigate the landscape": r"\bnavigat\w+ the (complex )?landscape\b",
 }
+data = json.load(sys.stdin)
+ti = data.get("tool_input", {})
+path = ti.get("file_path", "")
+if not re.search(r"\.(md|mdx|txt|rst|html)$", path):
+    sys.exit(0)
+text = ti.get("content") or ti.get("new_string") or ""
+found = [name for name, rx in TELLS.items() if re.search(rx, text, re.IGNORECASE)]
+dashes = text.count("—")
+if dashes &gt; max(3, len(text) // 1500):
+    found.append(f"{dashes} em dashes")
+if found:
+    print(json.dumps({"hookSpecificOutput": {
+        "hookEventName": "PostToolUse",
+        "additionalContext": f"{path} contains AI-writing tells: {', '.join(found)}. "
+                             "Rewrite those sentences in plain, specific language.",
+    }}))
+sys.exit(0)
 </code></pre></div>
-<p>stdout from SessionStart hooks gets injected into Claude's first system message, so every session begins knowing the current branch, dirty files, and recent history. No more &quot;what branch am I on?&quot;</p>
-<h3 id="4-log-every-bash-command-for-audit">4. Log every Bash command for audit</h3>
+<p>Tested: yes — &quot;In today's fast-paced world, we delve into a rich tapestry. It's not just fast, but also seamless.&quot; in <code>post.md</code> returned <code>additionalContext</code> listing delve, tapestry, fast-paced world, not just X but Y, seamless; a plain technical sentence and any <code>.py</code> file produced nothing.
+Inspired by: <a href="/e/DbJzWBfxPvD">Humanizer skill for Claude Code — strip AI tells from your writing</a>.</p>
+<h3 id="logging-and-telemetry">Logging and telemetry</h3>
+<h4>10. Audit log of every shell command</h4>
+<p>Enables: answering &quot;what did Claude run on Tuesday?&quot; with <code>jq</code>. Logs successes and failures, with duration.</p>
 <div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
   "hooks": {
     "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [{
-          "type": "command",
-          "command": "jq -r '[.session_id, .tool_input.command] | @tsv' &gt;&gt; ~/.claude/bash-log.tsv"
-        }]
-      }
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/audit-bash.sh" }] }
+    ],
+    "PostToolUseFailure": [
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/audit-bash.sh" }] }
     ]
   }
 }
 </code></pre></div>
-<p>Append every command Claude runs, with session id, to a TSV file. Trivial to grep later for &quot;what did Claude do on Tuesday.&quot;</p>
-<h3 id="5-back-up-the-transcript-before-compaction">5. Back up the transcript before compaction</h3>
+<p><code>~/.claude/hooks/audit-bash.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# PostToolUse + PostToolUseFailure, matcher "Bash". Appends one JSON line per command Claude ran.
+log="${HOOK_AUDIT_LOG:-$HOME/.claude/logs/bash-audit.jsonl}"
+mkdir -p "$(dirname "$log")"
+jq -c '{
+  ts: (now | todate),
+  event: .hook_event_name,
+  session: .session_id,
+  cwd: .cwd,
+  command: .tool_input.command,
+  ms: .duration_ms
+}' &gt;&gt; "$log"
+exit 0
+</code></pre></div>
+<p>Tested: yes — appended one valid JSON line per event (<code>PostToolUse</code> with <code>ms: 812</code>, <code>PostToolUseFailure</code> with <code>ms: null</code>). Query it with <code>jq -r 'select(.session==&quot;&lt;id&gt;&quot;) | .command' ~/.claude/logs/bash-audit.jsonl</code>. Commands can contain secrets typed inline; keep the log private.</p>
+<h4>11. Back up the transcript before compaction</h4>
+<p>Enables: a full copy of the conversation before it is summarized, for post-mortems. Keeps the newest 50.</p>
 <div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
   "hooks": {
     "PreCompact": [
-      {
-        "hooks": [{
-          "type": "command",
-          "command": "python ~/.claude/hooks/backup-transcript.py",
-          "async": true
-        }]
-      }
+      { "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/backup-transcript.sh" }] }
     ]
   }
 }
 </code></pre></div>
-<p><code>async: true</code> because you don't want backups blocking Claude. Every time context compacts, the full transcript gets snapshotted — essential for post-mortems and the <code>/forge</code> knowledge workflow.</p>
-<hr />
-<h2 id="real-world-patterns">Real-world patterns</h2>
-<p><strong>Block PR merges until tests pass (Stop hook).</strong> On <code>Stop</code>, check if the git index is dirty or if <code>pytest</code> fails. Exit 2 to force Claude to continue working instead of claiming &quot;done.&quot;</p>
-<p><strong>Prompt rewriting (UserPromptSubmit hook).</strong> Intercept the user's prompt, prepend project-specific context from a file, return the rewritten prompt via structured JSON. This is how you implement &quot;every prompt gets the current GOALS.yaml attached.&quot;</p>
-<p><strong>Permission gating (PreToolUse on mcp__github__.*).</strong> Block any GitHub MCP tool that tries to merge a PR on <code>main</code> without a human-approved signal.</p>
-<p><strong>Session metric export (SessionEnd).</strong> Ship session duration, tool counts, and token spend to a local SQLite DB for weekly retros.</p>
-<p><strong>Auto-commit scratch work (PostToolUse on Edit).</strong> After every edit, auto-commit to a <code>scratch</code> branch so nothing is ever lost even if Claude undoes itself.</p>
-<p><strong>Sub-agent quality gate (SubagentStop).</strong> When a Task sub-agent finishes, run the output through a linter or a small validation LLM. If it fails, exit 2 to tell the parent agent &quot;try again.&quot;</p>
-<p><strong>Notification routing (Notification).</strong> When Claude is waiting on a permission prompt, desktop-notify or send a Discord webhook so you can unblock it from your phone.</p>
-<hr />
-<h2 id="what-you-may-already-have">What you may already have</h2>
-<p>Your global setup may include the <strong><code>hookify</code> plugin</strong> (see <code>reference_installed_plugins.md</code>). It provides:</p>
-<ul>
-<li><code>/hookify</code> — interactive hook creation. Given a behavior you want to prevent, it generates the shell script and the settings.json entry.</li>
-<li><code>/hookify:configure</code> — enable/disable existing hookify rules interactively.</li>
-<li><code>/hookify:list</code> — list all installed hookify rules.</li>
-<li><code>hookify:writing-rules</code> skill — for hand-writing custom hook rules.</li>
-</ul>
-<p>Your memory may also reference the <strong><code>update-config</code> skill</strong>, which explicitly says: <em>&quot;Automated behaviors ('from now on when X', 'each time X', 'whenever X', 'before/after X') require hooks configured in settings.json — the harness executes these, not Claude.&quot;</em> Any time you catch yourself writing a &quot;from now on always X&quot; rule in CLAUDE.md, the correct move is a hook instead.</p>
-<p>Quick check for existing hooks:</p>
-<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">cat ~/.claude/settings.json | jq '.hooks // {}'
-cat .claude/settings.json 2&gt;/dev/null | jq '.hooks // {}'
+<p><code>~/.claude/hooks/backup-transcript.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# PreCompact (matcher "manual|auto" or none). Copies the full transcript before it is summarized.
+input=$(cat)
+src=$(jq -r '.transcript_path // empty' &lt;&lt;&lt;"$input")
+[[ -f "$src" ]] || exit 0
+sid=$(jq -r '.session_id // "unknown"' &lt;&lt;&lt;"$input")
+trigger=$(jq -r '.trigger // "unknown"' &lt;&lt;&lt;"$input")
+dest="${HOOK_BACKUP_DIR:-$HOME/.claude/transcript-backups}"
+mkdir -p "$dest"
+cp "$src" "$dest/$(date -u +%Y%m%dT%H%M%SZ)-${sid}-${trigger}.jsonl"
+# keep the newest 50 backups
+ls -1t "$dest"/*.jsonl 2&gt;/dev/null | tail -n +51 | while IFS= read -r old; do rm -f -- "$old"; done
+exit 0
 </code></pre></div>
-<hr />
-<h2 id="what-we-could-build-with-it">What we could build with it</h2>
-<ul>
-<li><strong>A <code>/forge</code> auto-runner.</strong> <code>SessionEnd</code> hook that pipes the transcript into the <code>forge</code> skill to automatically mine learnings into MEMORY.md without you remembering to run it.</li>
-<li><strong>Bash command classifier.</strong> <code>PreToolUse</code> hook that routes Bash commands through a local classifier (regex or small LLM) and auto-allows safe ones, prompts on medium, hard-blocks destructive.</li>
-<li><strong>Per-project CLAUDE.md injector.</strong> <code>SessionStart</code> hook that checks the cwd, looks for matching project memory in <code>~/.claude/projects/.../MEMORY.md</code>, and injects the relevant entries.</li>
-<li><strong>Trading bot guardrails.</strong> <code>PreToolUse</code> hook on any Bash running <code>python trade.py</code> that blocks if market is closed, if balance is below threshold, or if a kill-switch file exists. This is a hard rule the model cannot override.</li>
-<li><strong>Secret leak prevention.</strong> <code>PreToolUse</code> on Edit/Write that greps the proposed <code>new_string</code> for anything matching private-key / API-key patterns and exit 2 if found. This enforces the global &quot;never expose secrets&quot; rule deterministically.</li>
-<li><strong>Auto-test runner.</strong> <code>PostToolUse</code> on Edit to source files → run the matching test file → append output to Claude's visible context. TDD without asking.</li>
-<li><strong>Compaction-triggered retros.</strong> <code>PreCompact</code> hook that snapshots the transcript <em>and</em> writes a one-line summary of what was accomplished this window, building a running project log.</li>
-<li><strong>Desktop notification on idle.</strong> <code>Notification</code> hook that <code>notify-send</code>s on Linux so you know Claude is waiting on input even if you alt-tabbed.</li>
-</ul>
+<p>Tested: yes — copied a fixture transcript to <code>&lt;timestamp&gt;-&lt;session&gt;-auto.jsonl</code>; with 55 older backups present, pruned to 50 and kept the new one. It runs synchronously on purpose: a copy takes milliseconds, and an async hook in <code>-p</code> mode can be cancelled at teardown before it finishes.</p>
+<h4>12. Session ledger and API-failure log</h4>
+<p>Enables: one line per session (end reason, assistant messages, tool-call counts) and one per API failure (<code>rate_limit</code>, <code>overloaded</code>, <code>billing_error</code>, ...), for weekly retros.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "SessionEnd": [
+      { "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/session-ledger.py", "timeout": 10 }] }
+    ],
+    "StopFailure": [
+      { "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/session-ledger.py" }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>~/.claude/hooks/session-ledger.py</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-python">#!/usr/bin/env python3
+"""SessionEnd and StopFailure. Appends one JSON line per session end (with tool-call counts
+from the transcript) or per API failure (rate_limit, overloaded, billing_error, ...)."""
+import collections, datetime, json, os, sys
+
+data = json.load(sys.stdin)
+log = os.environ.get("HOOK_LEDGER", os.path.expanduser("~/.claude/logs/sessions.jsonl"))
+os.makedirs(os.path.dirname(log), exist_ok=True)
+row = {
+    "ts": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+    "event": data.get("hook_event_name"),
+    "session": data.get("session_id"),
+    "cwd": data.get("cwd"),
+}
+if row["event"] == "StopFailure":
+    row["error"] = data.get("error")
+else:
+    row["reason"] = data.get("reason")
+    tools, turns = collections.Counter(), 0
+    path = data.get("transcript_path") or ""
+    if os.path.isfile(path):
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                try:
+                    entry = json.loads(line)
+                except ValueError:
+                    continue
+                msg = entry.get("message") if isinstance(entry, dict) else None
+                if not isinstance(msg, dict) or msg.get("role") != "assistant":
+                    continue
+                turns += 1
+                for block in msg.get("content") or []:
+                    if isinstance(block, dict) and block.get("type") == "tool_use":
+                        tools[block.get("name", "?")] += 1
+    row.update(assistant_messages=turns, tool_calls=sum(tools.values()), top_tools=dict(tools.most_common(5)))
+with open(log, "a", encoding="utf-8") as fh:
+    fh.write(json.dumps(row) + "\n")
+</code></pre></div>
+<p>Tested: yes — against a fixture transcript (2 assistant messages, 3 tool calls, one corrupt line) it wrote <code>tool_calls: 3, top_tools: {Bash: 2, Edit: 1}</code>; logged <code>error: rate_limit</code> for <code>StopFailure</code>; handled a missing transcript. The transcript line format is not part of the documented hooks contract and may change; the counts degrade to zero rather than crash. <code>timeout: 10</code> raises the 1.5 s <code>SessionEnd</code> budget for long transcripts.</p>
+<h3 id="notifications">Notifications</h3>
+<h4>13. Desktop alert when Claude needs you</h4>
+<p>Enables: alt-tab away and get pinged when Claude is waiting on a permission prompt or idle. Linux <code>notify-send</code>, macOS <code>osascript</code>, terminal bell elsewhere.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "Notification": [
+      { "matcher": "permission_prompt|idle_prompt",
+        "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/notify.sh" }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>~/.claude/hooks/notify.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# Notification (matcher "permission_prompt|idle_prompt", or none for all). Desktop alert with Claude's message.
+input=$(cat)
+title=$(jq -r '.title // "Claude Code"' &lt;&lt;&lt;"$input")
+msg=$(jq -r '.message // "Claude needs your attention"' &lt;&lt;&lt;"$input")
+project=$(basename "$(jq -r '.cwd // empty' &lt;&lt;&lt;"$input")")
+[[ -n "$project" ]] &amp;&amp; title="$title · $project"
+if command -v notify-send &gt;/dev/null 2&gt;&amp;1; then                       # Linux
+  notify-send --app-name="Claude Code" "$title" "$msg"
+elif command -v osascript &gt;/dev/null 2&gt;&amp;1; then                      # macOS
+  osascript - "$title" "$msg" &lt;&lt;'OSA'
+on run argv
+  display notification (item 2 of argv) with title (item 1 of argv) sound name "Glass"
+end run
+OSA
+else                                                                  # anywhere else: terminal bell via Claude Code
+  printf '{"terminalSequence":"\\u0007"}\n'
+fi
+exit 0
+</code></pre></div>
+<p>Tested: partly — with <code>notify-send</code> stubbed, it received title <code>Claude Code · myapp</code> and the message from stdin; with neither notifier on <code>PATH</code> it printed <code>{&quot;terminalSequence&quot;:&quot;\u0007&quot;}</code>. The macOS branch is untested (needs macOS; Script Editor must have notification permission or <code>osascript</code> fails silently).
+Inspired by: <a href="/e/DV8rkpGEbBJ">Claude Code hooks — 3 daily-driver hooks from @jens.heitmann</a> (his chime-when-waiting hook).</p>
+<h4>14. Phone ping through a Discord webhook</h4>
+<p>Enables: the same alert on your phone. Runs <code>async</code> so a slow network never holds up Claude.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "Notification": [
+      { "matcher": "permission_prompt|idle_prompt",
+        "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/discord-ping.sh", "async": true }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>~/.claude/hooks/discord-ping.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# Notification, matcher "permission_prompt|idle_prompt". Posts to a Discord webhook so you can
+# see from your phone that a session is waiting. Needs DISCORD_WEBHOOK_URL in the environment.
+input=$(cat)
+payload=$(jq -c '{
+  username: "Claude Code",
+  content: ("**" + (.notification_type // "notification") + "** in `" + ((.cwd // "?") | split("/") | last) + "`: " + (.message // ""))
+}' &lt;&lt;&lt;"$input")
+if [[ -n "$HOOK_DRY_RUN" ]]; then echo "$payload"; exit 0; fi
+[[ -n "$DISCORD_WEBHOOK_URL" ]] || exit 0
+curl -fsS -m 10 -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK_URL" &gt;/dev/null || exit 1
+exit 0
+</code></pre></div>
+<p>Tested: partly — with <code>HOOK_DRY_RUN=1</code> it built the Discord JSON body (<code>username</code> plus a <code>content</code> line naming the notification type, project folder and message); with no <code>DISCORD_WEBHOOK_URL</code> it exits 0 silently. Delivery is untested (needs a real webhook). Set the URL in your shell environment, never in a committed settings file. For Slack, change the body to <code>{text: ...}</code>.</p>
+<h3 id="context-injection">Context injection</h3>
+<h4>15. Start every session knowing the git state and the plan</h4>
+<p>Enables: Claude opens each session (and re-opens after compaction) with the branch, dirty files, last five commits, <code>primer.md</code> (a state file Claude rewrites at the end of each session) and an optional <code>.claude/after-compact.md</code> of rules worth re-reading.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "SessionStart": [
+      { "matcher": "startup|resume|compact",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-context.sh", "args": [] }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>.claude/hooks/session-context.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# SessionStart, matcher "startup|resume|compact". Plain stdout from SessionStart is added to Claude's context.
+cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
+echo "## Session context ($(date '+%Y-%m-%d %H:%M %Z'))"
+if git rev-parse --is-inside-work-tree &gt;/dev/null 2&gt;&amp;1; then
+  echo "Branch: $(git branch --show-current 2&gt;/dev/null)"
+  echo "### Uncommitted changes"; git status --short | head -15
+  echo "### Last 5 commits"; git log --oneline -5 2&gt;/dev/null
+fi
+for f in primer.md .claude/after-compact.md; do          # living state file + rules worth re-reading
+  [[ -f "$f" ]] &amp;&amp; { echo "### $f"; head -c 4000 "$f"; echo; }
+done
+exit 0
+</code></pre></div>
+<p>Tested: yes — in a scratch repo it printed branch, untracked files, the one commit and the <code>primer.md</code> text, exit 0. Plain stdout from <code>SessionStart</code> is added to Claude's context; output is capped at 4 KB per file to protect the context window.
+Inspired by: <a href="/e/DVzvsgijOLT">primer.md + memory.sh — live-updating CLAUDE.md companion</a>.</p>
+<h4>16. Give every subagent the project's hard rules</h4>
+<p>Enables: subagents start with your non-negotiables (&quot;use pnpm&quot;, &quot;never commit&quot;) from <code>.claude/subagent-rules.md</code>, via <code>SubagentStart</code>'s <code>additionalContext</code>.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "SubagentStart": [
+      { "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/subagent-rules.sh", "args": [] }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>.claude/hooks/subagent-rules.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# SubagentStart (matcher: agent type, or none for all). Gives every subagent the project's hard rules,
+# which it would not otherwise see in full.
+rules="${CLAUDE_PROJECT_DIR:-.}/.claude/subagent-rules.md"
+[[ -f "$rules" ]] || exit 0
+jq -n --rawfile r "$rules" '{hookSpecificOutput: {hookEventName: "SubagentStart", additionalContext: $r}}'
+exit 0
+</code></pre></div>
+<p>Tested: yes — with the rules file present it emitted valid <code>hookSpecificOutput</code> JSON containing the file; without it, nothing and exit 0. Add a matcher such as <code>&quot;Explore|Plan&quot;</code> to target specific agent types.</p>
+<h3 id="cost-and-token-control">Cost and token control</h3>
+<h4>17. Keep vendored, generated and huge files out of context</h4>
+<p>Prevents: <code>Read</code>/<code>Grep</code>/<code>Glob</code> calls into <code>node_modules</code>, <code>dist</code>, <code>.next</code>, <code>.venv</code>, lockfiles, minified bundles, and whole-file reads of anything over 256 KB without <code>limit</code>. Claude is told what to do instead.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Read|Grep|Glob",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/read-guard.py", "args": [] }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>.claude/hooks/read-guard.py</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-python">#!/usr/bin/env python3
+"""PreToolUse, matcher "Read|Grep|Glob". Keeps generated and vendored files out of context and
+makes Claude page through very large files instead of reading them whole."""
+import json, os, re, sys
+
+NOISE = re.compile(r"(^|/)(node_modules|dist|build|\.next|\.venv|venv|__pycache__|\.git|coverage|vendor)(/|$)"
+                   r"|(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|\.min\.(js|css)|\.map)$")
+MAX_BYTES = int(os.environ.get("READ_GUARD_MAX_BYTES", 256_000))
+
+def deny(reason):
+    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse",
+                      "permissionDecision": "deny", "permissionDecisionReason": reason}}))
+    sys.exit(0)
+
+data = json.load(sys.stdin)
+tool, ti = data.get("tool_name"), data.get("tool_input", {})
+target = (ti.get("file_path") or ti.get("path") or "").replace("\\", "/")
+if target and NOISE.search(target):
+    deny(f"{target} is generated or vendored. Read the source that produces it, or grep for one symbol.")
+if tool == "Read" and target and not ti.get("limit"):
+    try:
+        size = os.path.getsize(target)
+    except OSError:
+        sys.exit(0)
+    if size &gt; MAX_BYTES:
+        deny(f"{target} is {size // 1024} KB. Grep for what you need, or Read it with offset/limit in chunks.")
+sys.exit(0)
+</code></pre></div>
+<p>Tested: yes — denied <code>node_modules/x/index.js</code>, <code>Grep</code> on <code>dist</code> and a 292 KB <code>Read</code> without <code>limit</code>; allowed the same file with <code>limit: 200</code>, a small file, <code>src/build_tools.py</code> and <code>Glob</code> on <code>src</code>.</p>
+<h4>18. Ask before switching to the most expensive model</h4>
+<p>Prevents: a session drifting onto an Opus-class model without a decision. <code>PreModelSwitch</code> with <code>permissionDecision: &quot;ask&quot;</code> puts the choice to you.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PreModelSwitch": [
+      { "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/model-switch-guard.sh", "args": [] }] }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>.claude/hooks/model-switch-guard.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+# PreModelSwitch (no matcher). Asks before switching a session onto an Opus-class model.
+input=$(cat)
+to=$(jq -r '.to_model // empty' &lt;&lt;&lt;"$input")
+if [[ "${to,,}" == *opus* ]]; then
+  jq -n --arg to "$to" '{hookSpecificOutput: {
+    hookEventName: "PreModelSwitch",
+    permissionDecision: "ask",
+    permissionDecisionReason: ("Switching to " + $to + " costs more per token. Confirm this task needs it.")
+  }}'
+fi
+exit 0
+</code></pre></div>
+<p>Tested: yes — <code>to_model: claude-opus-4-6</code> returned <code>permissionDecision: &quot;ask&quot;</code> with a reason; <code>claude-sonnet-4-6</code> returned nothing. Model names in the input are the canonical IDs your install reports; check one with <code>claude --debug</code> before relying on the substring.</p>
 <hr />
 <h2 id="gotchas-and-limits">Gotchas and limits</h2>
 <ul>
-<li><strong>Hooks are executed with your shell privileges.</strong> A malicious hook can <code>rm -rf</code> your home directory. Never install hooks from untrusted sources without reading the script first.</li>
-<li><strong>Hooks run synchronously by default.</strong> A slow hook blocks Claude. Use <code>async: true</code> for anything that doesn't need to gate behavior (logging, notifications, backups).</li>
-<li><strong>Per-project <code>.claude/settings.json</code> is checked into git.</strong> Never commit secrets inside hook scripts. Use <code>.claude/settings.local.json</code> for anything sensitive.</li>
-<li><strong>Exit-code 2 vs structured JSON</strong> — these are different control channels. Exit 2 is the simple &quot;block and tell Claude why&quot; path. Structured JSON lets you <em>rewrite</em> tool inputs; use it sparingly because it's harder to debug.</li>
-<li><strong>Matcher regex is tool-name-scoped.</strong> It does <em>not</em> match against tool <em>arguments</em>. To block by args, match the tool name and do the arg check inside your script.</li>
-<li><strong>MCP tool names are prefixed</strong> (<code>mcp__github__create_pull_request</code>, <code>mcp__playwright__browser_click</code>, etc.). Match them with regex: <code>&quot;mcp__github__.*&quot;</code>.</li>
-<li><strong>PostToolUse hooks cannot undo the tool.</strong> The tool already ran. You can react, but you can't reverse — if you need to prevent, it must be a PreToolUse.</li>
-<li><strong>Latency is real.</strong> Every hook adds tens to hundreds of milliseconds per tool call. Five synchronous hooks on every Bash call becomes noticeable. There is a known community issue (ruflo #1530) reporting ~20s hook latency in misconfigured setups. Profile your hooks.</li>
-<li><strong>stdin JSON can be large.</strong> A <code>PostToolUse</code> hook on a big Read can receive megabytes of content. If you just need the file path, parse with <code>jq</code> and ignore the rest.</li>
-<li><strong>Hook stderr is surfaced to the user and to Claude.</strong> Keep it clean. Use stdout for &quot;injected context,&quot; stderr for &quot;error message when blocking.&quot;</li>
-<li><strong>Version drift.</strong> Events like <code>SessionEnd</code>, <code>PreCompact</code>, and the <code>matcher</code>-on-non-tool-events behavior have all been added or renamed across versions. Check <code>claude --version</code> against the docs if something behaves unexpectedly.</li>
-<li><strong>Settings merge order can surprise you.</strong> Local overrides user overrides project in some arrangements. If a hook doesn't fire, dump the merged config to see what Claude actually sees.</li>
-<li><strong>Hooks are harness-enforced, not model-enforced.</strong> This is the whole point — a hook is the only way to make Claude's behavior actually deterministic. Put security-critical rules here, not in CLAUDE.md.</li>
+<li><strong>Hooks run with your full user permissions.</strong> A hook can delete anything you can. Read every script before installing it, and never paste one you don't understand.</li>
+<li><strong>Workspace trust.</strong> Interactive sessions hold back all hooks until you accept the trust dialog for the folder. <code>claude -p</code> and SDK sessions skip the dialog, so a cloned repo's <code>.claude/settings.json</code> hooks run immediately. Review <code>.claude/</code> before scripting <code>-p</code> over code you didn't write, or pass <code>--settings '{&quot;disableAllHooks&quot;: true}'</code>.</li>
+<li><strong>Exit 1 is not a block.</strong> Only exit 2 blocks. Any other non-zero code is a non-blocking error and the action proceeds.</li>
+<li><strong>stdout must start with <code>{</code> to count as JSON.</strong> A shell profile that prints a banner ahead of your JSON makes Claude Code treat it as plain text and silently ignore the decision. Wrap profile <code>echo</code>s in <code>if [[ $- == *i* ]]</code>.</li>
+<li><strong>Fields at the wrong level are ignored silently.</strong> <code>permissionDecision</code> and <code>additionalContext</code> belong inside <code>hookSpecificOutput</code> with <code>hookEventName</code>. <code>claude --debug</code> logs <code>Hook JSON output had unrecognized keys</code>.</li>
+<li><strong><code>updatedInput</code> replaces the whole input.</strong> Include the unchanged fields. If two hooks rewrite the same tool's input, the last to finish wins, and hooks run in parallel, so the order is random.</li>
+<li><strong><code>UserPromptSubmit</code> can't rewrite your prompt.</strong> It can block it or add <code>additionalContext</code> alongside it.</li>
+<li><strong><code>allow</code> doesn't beat your deny rules.</strong> A hook's <code>allow</code> skips the prompt but can't override <code>deny</code> rules in settings; a hook's <code>deny</code> holds in every permission mode, including <code>bypassPermissions</code>.</li>
+<li><strong><code>Stop</code> fires after every response,</strong> not only at task completion, and not on user interrupts (API errors fire <code>StopFailure</code> instead). Check <code>stop_hook_active</code>; Claude Code overrides a <code>Stop</code> hook after 8 consecutive blocks (raise with <code>CLAUDE_CODE_STOP_HOOK_BLOCK_CAP</code>).</li>
+<li><strong>Matchers filter on names, not arguments.</strong> Use the <code>if</code> field (<code>&quot;Bash(git *)&quot;</code>) or check arguments inside the script. Matchers are case-sensitive, and a letters-only matcher is an exact match, not a substring.</li>
+<li><strong>Synchronous hooks add latency to every matching call.</strong> Keep <code>PreToolUse</code> hooks fast; use <code>async: true</code> for logging and network calls. Async hooks can't block, and their <code>additionalContext</code>/<code>systemMessage</code> arrive on the next turn.</li>
+<li><strong>Timeouts:</strong> 600 s for command hooks by default (30 s on <code>UserPromptSubmit</code>), and a shared 1.5 s budget for <code>SessionEnd</code> unless you set <code>timeout</code>. On a <code>UserPromptSubmit</code> timeout the hook's output is discarded and the prompt goes through.</li>
+<li><strong>Never put secrets in committed hook config.</strong> <code>.claude/settings.json</code> is shared through git. Read webhook URLs and tokens from the environment at run time.</li>
+<li><strong>Debugging:</strong> run <code>/hooks</code> to see what loaded, then <code>claude --debug</code> and read <code>~/.claude/debug/&lt;session-id&gt;.txt</code>; each hook run logs a <code>Hooks:</code> line with its exit status and duration. Test scripts by piping fixture JSON before trusting them live.</li>
 </ul>
 <hr />
 <h2 id="bottom-line">Bottom line</h2>
-<p>Hooks are the layer where Claude Code stops being &quot;a smart assistant that mostly follows rules&quot; and becomes &quot;a runtime with hard constraints you can trust.&quot; The nine standard events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd) cover 95% of real use cases. Start with three hooks — block destructive Bash, auto-format on edit, inject git context on session start — and add more as you notice yourself saying &quot;Claude should always X&quot; for the nth time. That sentence is always a hook.</p>
-<p>If you have <code>hookify</code> installed, use <code>/hookify</code> for interactive creation, and treat every <code>from now on</code> / <code>whenever X</code> rule in CLAUDE.md as a candidate to migrate into <code>settings.json</code> where it becomes enforceable instead of advisory.</p>
+<p>Hooks are where Claude Code stops being &quot;a smart assistant that mostly follows rules&quot; and becomes a runtime with hard constraints. The documented surface is now over thirty events, but most value still comes from six: <code>PreToolUse</code> for guardrails, <code>PostToolUse</code> for formatting and fast feedback, <code>Stop</code> for &quot;not done yet&quot;, <code>SessionStart</code> for context, <code>Notification</code> for getting your attention, and <code>PreCompact</code>/<code>SessionEnd</code> for records. Start with recipes 1, 5, 13 and 15, pipe fixture JSON through each script before trusting it, and add a hook every time you catch yourself saying &quot;Claude should always X&quot; for the third time. That sentence is always a hook.</p>
+<hr />
 <hr />
 <h2 id="prompt-system">Prompt system — run this yourself</h2>
 <p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
@@ -499,7 +1276,7 @@ A single message with: (1) file tree of ~/.claude/hooks; (2) test summary (pass/
 <!-- body:end --></div>
 </article>
 <footer class="site"><div class="wrap"><a href="/catalog#post-DV8rkpGEbBJ">← Back to DejaViewed</a> · <a href="/e/DV8rkpGEbBJ">Entry page</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
-<script id="md" type="text/markdown"># Claude Code Hooks System — Deep Dive
+<script id="md" type="text/markdown"># Claude Code Hooks Cookbook: 18 Recipes, All 33 Events
 
 <!-- answer:start -->
 
@@ -507,309 +1284,926 @@ A single message with: (1) file tree of ~/.claude/hooks; (2) test summary (pass/
 
 <!-- answer:end -->
 
+<!-- facts:start -->
+
+| Key fact | Detail |
+|---|---|
+| What it covers | agents, open source, marketing, LLM |
+| Tools | Claude, [Claude Code](/tools/claude-code), Anthropic, [Codex](/tools/codex), humanizer |
+| Posts covered | 5 posts (2 S-tier, 3 A-tier) · top: [Someone finally put numbers to what developers…](/e/DW6wPs2DQuK) · [primer.md + memory.sh — live-updating…](/e/DVzvsgijOLT) · [Humanizer skill for Claude Code — strip AI…](/e/DbJzWBfxPvD) |
+| Creators | [@jens.heitmann](https://instagram.com/jens.heitmann), [@aiemerges](https://instagram.com/aiemerges), [@keshavsuki](https://instagram.com/keshavsuki) |
+| Sources dated | Mar 2026 – Jul 2026 |
+| Prompt system | [Run-it-yourself prompts](#prompt-system) |
+| Last verified | 2026-10-22 |
+
+<!-- facts:end -->
+
 **Category:** Claude Code automation / lifecycle
-**Confidence:** High — officially documented by Anthropic, with a mature community ecosystem.
-**Primary sources:**
-- Official reference: https://code.claude.com/docs/en/hooks
+**Confidence:** High for the reference tables (checked against the official docs); recipes are fixture-tested scripts, not run inside a live Claude Code session.
+**Primary sources (verified 2026-10-22):**
+- Hooks reference: https://code.claude.com/docs/en/hooks
 - Hooks guide: https://code.claude.com/docs/en/hooks-guide
-- Agent SDK hooks: https://platform.claude.com/docs/en/agent-sdk/hooks
-- `disler/claude-code-hooks-mastery` (reference examples): https://github.com/disler/claude-code-hooks-mastery
-- ClaudeLog: https://claudelog.com/mechanics/hooks/
-- If you have the `hookify` plugin installed (provides `/hookify`, `/hookify:configure`, `/hookify:list`).
+- Reference examples: https://github.com/disler/claude-code-hooks-mastery
 
 ---
 
 ## What it is
 
-Claude Code hooks are **shell commands that run automatically at specific points in the Claude Code lifecycle** — before a tool executes, after it executes, when a session starts, when the model finishes its response, when context compaction happens, and so on. They are Anthropic's answer to "how do I make Claude Code behave deterministically?"
+Hooks are **commands that Claude Code runs automatically at fixed points in its lifecycle**: before a tool runs, after it runs, when a prompt is submitted, when Claude tries to stop, before compaction, when a session starts or ends, and more. The harness runs them, not the model.
 
-The critical insight: **Claude itself cannot reliably enforce rules on itself.** If you put "never run `rm -rf`" in CLAUDE.md, Claude *usually* follows it, but prompt injection or a confused turn can bypass it. Hooks are executed by the harness — the outer runtime — not by the model. A hook that exits with code 2 on `PreToolUse` will **block** the tool call no matter what the model decided. This is why your global CLAUDE.md should say: *"Automated behaviors require hooks configured in settings.json — the harness executes these, not Claude."*
+That is the whole point. A rule in CLAUDE.md ("never run `rm -rf`") is advice that Claude *usually* follows; a confused turn or a prompt injection can skip it. A `PreToolUse` hook that exits 2 blocks the call every time, whatever the model decided, and a hook's `deny` holds even in `bypassPermissions` mode. Any time you catch yourself writing "from now on, always X" into CLAUDE.md, X probably belongs in a hook.
 
-Hooks are configured in JSON settings files, take tool I/O as JSON on stdin, and signal via exit codes or structured JSON output. They can run shell commands, call HTTP endpoints, or invoke LLMs for dynamic decisions.
+Hooks live in settings JSON, receive the event as JSON on stdin, and answer with an exit code and, optionally, JSON on stdout. Besides shell commands they can be HTTP calls, MCP tool calls, or a Claude model judging a condition.
 
 ---
 
-## How it works — the lifecycle events
+## Reference — events, matchers, exit codes, JSON output
 
-Claude Code fires hooks at ~12 lifecycle events. The stable, documented ones (as of early 2026):
+Verified against https://code.claude.com/docs/en/hooks and https://code.claude.com/docs/en/hooks-guide on 2026-10-22. The event list grows between releases; run `claude --version` and re-check the reference if an event below is missing in your install.
 
-| Event | When it fires | Can block? | Typical use |
+### Events
+
+| Event | When it fires | Matcher filters on | Can block? |
 |---|---|---|---|
-| **SessionStart** | New session or resume | No (advisory) | Inject git context, load env vars, greet |
-| **UserPromptSubmit** | User submits a prompt, before Claude sees it | Yes | Rewrite prompt, inject context, block unsafe prompts |
-| **PreToolUse** | Claude decides to run a tool, before execution | Yes (exit 2) | Validate args, block dangerous commands, rewrite args |
-| **PostToolUse** | Tool finished executing | No (advisory) | Format code, run tests, log command, trigger downstream |
-| **Notification** | Claude waits for permission, or idles | No | Desktop notify, Slack ping, sound |
-| **Stop** | Claude finishes its overall response | Yes (force continue) | Final checks, generate report, block "done" if tests fail |
-| **SubagentStop** | A Task-tool sub-agent finishes | Yes | Validate sub-agent output, gate merging |
-| **PreCompact** | Before context compaction (manual or auto) | No | Back up full transcript, snapshot state |
-| **SessionEnd** | Session terminates | No | Persist logs, push metrics, retro capture |
+| `SessionStart` | Session starts or resumes | `startup`, `resume`, `clear`, `compact`, `fork` | No (stdout becomes context) |
+| `Setup` | `--init-only`, or `--init`/`--maintenance` with `-p` | `init`, `maintenance` | No |
+| `UserPromptSubmit` | You submit a prompt, before Claude sees it | — | Yes: exit 2 or `decision: "block"` |
+| `UserPromptExpansion` | A typed command expands into a prompt | command name | Yes |
+| `PreToolUse` | Before a tool call | tool name | Yes: exit 2 or `permissionDecision: "deny"` |
+| `PermissionRequest` | A tool call needs a permission decision | tool name | Via `decision.behavior: "deny"` (exit 2 not honored) |
+| `PermissionDenied` | Auto mode denied a tool call | tool name | No (`retry: true` lets the model retry) |
+| `PostToolUse` | After a tool call succeeds | tool name | Can't undo; `decision: "block"` feeds a reason back to Claude |
+| `PostToolUseFailure` | After a tool call fails | tool name | No (stderr shown to Claude) |
+| `PostToolBatch` | A parallel batch of tool calls resolved, before the next model call | — | Yes: exit 2 stops the loop |
+| `Notification` | Claude Code sends a notification | notification type | No |
+| `MessageDisplay` | Assistant text is displayed | — | No (can replace the displayed text only) |
+| `SubagentStart` | A subagent is spawned | agent type | No |
+| `SubagentStop` | A subagent finishes | agent type | Yes |
+| `TaskCreated` | A task is being created | — | Yes |
+| `TaskCompleted` | A task is being marked complete | — | Yes |
+| `Stop` | Claude finishes responding | — | Yes: Claude keeps working |
+| `StopFailure` | The turn ended on an API error | error type | No |
+| `TeammateIdle` | An agent-team teammate is about to go idle | — | Yes |
+| `InstructionsLoaded` | CLAUDE.md or `.claude/rules/*.md` loaded | load reason | No |
+| `ConfigChange` | A settings file or skills change mid-session | `user_settings`, `project_settings`, `local_settings`, `policy_settings`, `skills` | Yes, except `policy_settings` |
+| `CwdChanged` | Working directory changes | — | No |
+| `DirectoryAdded` | A directory is added (`/add-dir`) | `slash_command`, `register_repo_root` | No |
+| `FileChanged` | A watched file changes on disk | literal filenames | No |
+| `WorktreeCreate` | A worktree is being created | — | Any non-zero exit fails creation |
+| `WorktreeRemove` | A worktree is removed | — | Non-zero exit fails removal |
+| `PreCompact` | Before compaction | `manual`, `auto` | Yes |
+| `PostCompact` | After compaction | `manual`, `auto` | No |
+| `PreModelSwitch` | Before a requested model switch | model name | Yes |
+| `PostModelSwitch` | After the model changes | model name | No |
+| `Elicitation` | An MCP server asks you for input | MCP server name | Yes (declines) |
+| `ElicitationResult` | After you answer an elicitation | MCP server name | Yes |
+| `SessionEnd` | Session terminates | `clear`, `resume`, `logout`, `prompt_input_exit`, `other` | No |
 
-The Agent SDK and recent Claude Code versions have added more (`ConfigChange`, `CwdChanged`, `FileChanged`, `PermissionDenied`, `WorktreeCreate`, `WorktreeRemove`, etc.) but they are less widely documented and churn more between versions. Start with the nine above.
+### Matchers
 
-### Where hooks are configured
+- `"*"`, `""`, or no `matcher` matches everything. A matcher on an event without matcher support is ignored.
+- A matcher made only of letters, digits, `_`, `-`, spaces, `,` and `|` is an **exact** name or a list: `Edit|Write`, `Bash`. Matching is case-sensitive.
+- Any other character turns it into an unanchored JavaScript regex: `^Notebook`, `mcp__github__.*`.
+- MCP tools are named `mcp__<server>__<tool>`; plugin MCP servers are `mcp__plugin_<plugin>_<server>__<tool>`. Use `mcp__memory__.*` for a whole server; a bare `mcp__memory` matches nothing.
+- To filter on **arguments**, add an `if` field with one permission rule, such as `"if": "Bash(git *)"` or `"if": "Edit(*.ts)"` (tool events only), or check the arguments inside your script.
 
-Three settings files, merged in order (later wins for same key):
+### Hook types
 
-1. `~/.claude/settings.json` — user-global hooks, apply to every project
-2. `.claude/settings.json` — project-shared hooks, checked into git
-3. `.claude/settings.local.json` — per-machine overrides, gitignored
+| `type` | What runs | Default timeout |
+|---|---|---|
+| `command` | A shell command (or an executable with `args: []`, no shell). Supports `async`, `asyncRewake` | 600 s |
+| `http` | POSTs the input JSON to `url`; `headers` can interpolate env vars listed in `allowedEnvVars` | 600 s |
+| `mcp_tool` | Calls `tool` on a configured MCP `server` with `input` (supports `${tool_input.file_path}`) | 600 s |
+| `prompt` | A Claude model answers `{"ok": true}` or `{"ok": false, "reason": "..."}` about `$ARGUMENTS` | 30 s |
+| `agent` | Like `prompt`, but a subagent that can use tools (experimental) | 60 s |
 
-Structure:
+The 600 s default drops to 30 s on `UserPromptSubmit`, `PreModelSwitch` and `PostModelSwitch`, and 10 s on `MessageDisplay`. All `SessionEnd` hooks share a 1.5 s budget, raised to your longest configured `timeout` up to 60 s. Hooks for one event run in parallel; identical handlers from several settings files run once.
+
+### Exit codes
+
+| Exit | Meaning | stdout | stderr |
+|---|---|---|---|
+| `0` | Success | Parsed if it is one JSON object; otherwise plain text. Plain text becomes context only on `SessionStart`, `UserPromptSubmit`, `UserPromptExpansion` and `PostModelSwitch` (debug log elsewhere) | Debug log only |
+| `2` | Block (on events that can block) | JSON is read but can't undo the block | Sent as the reason: to Claude for tool and stop events, to you for `UserPromptSubmit` |
+| other | Non-blocking error; the action proceeds (unless the hook sets `onFailure: "block"`) | Ignored unless valid JSON | First line shown as a notice |
+
+Exit 1 does **not** block. Use exit 2 to enforce policy.
+
+### JSON output
+
+| Field | Where | Effect |
+|---|---|---|
+| `continue` | any | `false` stops Claude entirely; overrides event decisions |
+| `stopReason` | any | Shown to you when `continue` is `false` |
+| `systemMessage` | any | Warning shown to you |
+| `suppressOutput` | any | Documented as having no effect |
+| `terminalSequence` | any | Terminal escape to emit (OSC 0/1/2/9/99/777, BEL) |
+| `decision: "block"` + `reason` | `UserPromptSubmit`, `UserPromptExpansion`, `PostToolUse`, `PostToolUseFailure`, `PostToolBatch`, `Stop`, `SubagentStop`, `ConfigChange`, `PreCompact`, `TaskCreated`, `PreModelSwitch`, `Elicitation`, `ElicitationResult` | Blocks, or for `Stop`, makes Claude continue with `reason` as its instruction |
+| `hookSpecificOutput.permissionDecision` | `PreToolUse` | `allow`, `deny`, `ask`, `defer` (`-p` only). Precedence across hooks: deny > defer > ask > allow |
+| `hookSpecificOutput.permissionDecisionReason` | `PreToolUse`, `PreModelSwitch` | For `deny`, shown to Claude |
+| `hookSpecificOutput.updatedInput` | `PreToolUse` | Replaces the **whole** tool input; pair with `allow` or `ask` |
+| `hookSpecificOutput.additionalContext` | `PreToolUse`, `PostToolUse`, `SessionStart`, `SubagentStart`, `PostModelSwitch`, `Stop`, `SubagentStop`, `UserPromptSubmit` | Added to Claude's context as a system reminder (capped at 10,000 chars) |
+| `hookSpecificOutput.updatedToolOutput` | `PostToolUse` | Replaces what Claude sees; must match the tool's output shape |
+| `hookSpecificOutput.decision.behavior` | `PermissionRequest` | `allow` or `deny` |
+
+Every `hookSpecificOutput` object needs `hookEventName`. Top-level `decision: "approve"/"block"` on `PreToolUse` is deprecated (it maps to allow/deny).
+
+**Common input fields on stdin:** `session_id`, `transcript_path`, `cwd`, `permission_mode`, `hook_event_name`, plus per-event fields: `tool_name`, `tool_input`, `tool_use_id` (tool events), `tool_response` and `duration_ms` (`PostToolUse`), `prompt` (`UserPromptSubmit`), `source` (`SessionStart`), `stop_hook_active` and `last_assistant_message` (`Stop`), `trigger` and `custom_instructions` (`PreCompact`), `reason` (`SessionEnd`), `message`, `title`, `notification_type` (`Notification`), `error` (`StopFailure`), `from_model`/`to_model` (model switch events).
+
+**Environment:** `CLAUDE_PROJECT_DIR` (project root; stays fixed in worktrees), `CLAUDE_ENV_FILE` (in `SessionStart`, `Setup`, `CwdChanged`, `FileChanged`: append `export NAME=value` lines to set env vars for later Bash commands), `CLAUDE_PLUGIN_ROOT` and `CLAUDE_PLUGIN_DATA` (plugin hooks), `CLAUDE_CODE_REMOTE` (`"true"` in remote web sessions), `CLAUDE_EFFORT`.
+
+### Where hooks live
+
+| File | Scope |
+|---|---|
+| `~/.claude/settings.json` | You, every project |
+| `.claude/settings.json` | This project, committed and shared |
+| `.claude/settings.local.json` | This project, gitignored |
+| Managed policy settings | Whole organization |
+| Plugin `hooks/hooks.json` | While the plugin is enabled |
+| Skill or subagent frontmatter | While that skill or subagent is active |
+
+Hook entries from all levels **merge**: every matching hook runs; a later file does not replace an earlier one. `"disableAllHooks": true` turns hooks off (it can't disable managed hooks). Edits are normally picked up automatically; run `/hooks` to see what is loaded. The shape is always `hooks → event → [ { matcher, hooks: [ handler, ... ] } ]`.
+
+---
+
+## The cookbook — 18 recipes
+
+Conventions: project scripts live in `.claude/hooks/` and are referenced in exec form (`"args": []`, no shell, no quoting problems). Personal hooks live in `~/.claude/hooks/`. Every script reads the event JSON from stdin, needs `jq` or `python3`, and must be `chmod +x`. "Tested" means fixture-tested: each script was fed sample stdin JSON shaped per the reference and its exit code and output were checked. None of them was run inside a live Claude Code session, so confirm each with `/hooks` and `claude --debug` after installing. Test any of them yourself the same way:
+
+```bash
+echo '{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}' | .claude/hooks/block-destructive.sh; echo "exit $?"
+```
+
+### Guardrails
+
+#### 1. Block destructive shell commands
+
+Prevents: `rm -rf /`, `~`, `.` or `*`, `mkfs`, `dd` onto a device, fork bombs, `git push --force`, `git reset --hard`, `git clean -f`. Claude gets the reason and tries something narrower.
 
 ```json
 {
   "hooks": {
     "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/block-rm-rf.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          { "type": "command", "command": "prettier --write" }
-        ]
-      }
+      { "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-destructive.sh", "args": [] }] }
     ]
   }
 }
 ```
 
-Top level is `hooks`. Each event is an array of **matcher groups**. Each group has:
-- `matcher` — a regex tested against the tool name (for tool-scoped events). For `PreToolUse`/`PostToolUse`: the tool name (`Bash`, `Edit`, `Write`, `mcp__github__.*`). For other events: often empty string or omitted.
-- `hooks` — an array of hook entries. Each entry has:
-  - `type` — `"command"` (shell), or in Agent SDK contexts `"http"` / `"prompt"`.
-  - `command` — the shell command to run.
-  - `async` — optional boolean. If `true`, hook runs in background and doesn't block Claude.
-  - `timeout` — optional seconds before kill.
-
-To disable all hooks temporarily: `"disableAllHooks": true` at settings root.
-
-### How hooks communicate with Claude
-
-**Input:** Hooks receive JSON on **stdin** describing the event. For a `PreToolUse` on Bash:
-
-```json
-{
-  "session_id": "abc123",
-  "hook_event_name": "PreToolUse",
-  "tool_name": "Bash",
-  "tool_input": {
-    "command": "rm -rf /",
-    "description": "delete everything"
-  },
-  "cwd": "/home/user/project"
-}
-```
-
-`UserPromptSubmit` gets `{ session_id, hook_event_name, prompt }`. `SessionStart` gets the minimal set. Each event has its own schema — the canonical reference is the gist at https://gist.github.com/FrancisBourre/50dca37124ecc43eaf08328cdcccdb34 and the Anthropic docs.
-
-**Output / control:**
-- **Exit code 0** — success, allow the operation, stdout is shown as informational.
-- **Exit code 2** — **block** the operation. stderr is surfaced to Claude as an error, and Claude gets a chance to react (e.g. try a different approach).
-- **Any other non-zero** — error, shown to user but does not block.
-- **Structured JSON on stdout** — advanced: you can return `{ "decision": "block", "reason": "..." }` or `{ "decision": "approve" }` or `{ "modified_tool_input": {...} }` to rewrite arguments. This is the powerful path — a hook can *rewrite* Claude's tool call mid-flight.
-
-`async: true` hooks are fire-and-forget and cannot block or modify.
-
----
-
-## Quick start — five hooks worth installing today
-
-### 1. Block destructive Bash commands
-
-`~/.claude/hooks/block-destructive.sh`:
+`.claude/hooks/block-destructive.sh`:
 
 ```bash
 #!/usr/bin/env bash
+# PreToolUse, matcher "Bash". Exit 2 blocks the call; stderr becomes Claude's reason.
 cmd=$(jq -r '.tool_input.command // empty')
-if [[ "$cmd" =~ (rm[[:space:]]+-rf[[:space:]]+/|mkfs|:\(\)\{|dd[[:space:]]+if=) ]]; then
-  echo "Blocked destructive command: $cmd" >&2
+patterns=(
+  'rm[[:space:]]+-[[:alnum:]-]*[rR][[:alnum:]-]*[[:space:]]+(/|~|\$HOME|\.|\*)/?([[:space:]]|$)'  # rm -rf / ~ $HOME . *
+  'mkfs(\.[a-z0-9]+)?[[:space:]]'                                                       # format a filesystem
+  'dd[[:space:]].*of=/dev/'                                                             # raw write to a device
+  ':\(\)[[:space:]]*\{'                                                                 # fork bomb
+  '>[[:space:]]*/dev/(sd|nvme|disk)'                                                    # redirect onto a disk
+  'chmod[[:space:]]+-R[[:space:]]+777[[:space:]]+/'                                     # world-writable root
+  'git[[:space:]]+push([[:space:]].*)?[[:space:]](--force|-f)([[:space:]]|$)'         # force push (--force-with-lease allowed)
+  'git[[:space:]]+reset[[:space:]]+--hard'                                              # discard work
+  'git[[:space:]]+clean[[:space:]]+-[[:alnum:]]*f'                                      # delete untracked files
+)
+for p in "${patterns[@]}"; do
+  if [[ "$cmd" =~ $p ]]; then
+    echo "Blocked by block-destructive hook (pattern: $p). Use a narrower, reversible command or ask the user to run it." >&2
+    exit 2
+  fi
+done
+exit 0
+```
+
+Tested: yes — exit 2 on `rm -rf /`, `rm -rf ~`, `sudo rm -fr /`, `rm -rf .`, `mkfs.ext4`, `dd ... of=/dev/sda`, the fork bomb, `git push -f`, `git push origin main --force`, `git reset --hard`, `git clean -fd`, `> /dev/sda`; exit 0 on `ls`, `git status`, `rm -rf ./build`, `rm -rf /tmp/x`, `git push --force-with-lease`. Pattern matching is a speed bump, not a sandbox: `bash -c "$(echo ...)"` or a script file gets around it.
+
+#### 2. Turn deletes into a reviewable trash folder
+
+Enables: Claude can never delete files; it is told to move them to `.trash/` and you empty it after review. Uses a JSON `deny` with a reason instead of exit 2.
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/rm-to-trash.sh", "args": [] }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/rm-to-trash.sh`:
+
+```bash
+#!/usr/bin/env bash
+# PreToolUse, matcher "Bash". Denies rm / find -delete and tells Claude to move files to .trash/ instead.
+cmd=$(jq -r '.tool_input.command // empty')
+rm_re='(^|[;&|(][[:space:]]*|sudo[[:space:]]+)rm[[:space:]]'
+find_re='find[[:space:]].*-delete'
+if [[ "$cmd" =~ $rm_re || "$cmd" =~ $find_re ]]; then
+  jq -n --arg cmd "$cmd" '{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: ("Deleting is disabled in this project. Instead of `" + $cmd + "`, move the files with: mkdir -p .trash && mv <paths> .trash/  (the user empties .trash/ after review).")
+    }
+  }'
+fi
+exit 0
+```
+
+Tested: yes — emits `permissionDecision: "deny"` for `rm foo.txt`, `cd x && rm -r build`, `sudo rm a`, `find . -name "*.pyc" -delete`; silent (allow) for `git rm --cached a`, `npm run rm-cache`, `ls`. Add `.trash/` to `.gitignore`.
+Inspired by: [Claude Code hooks — 3 daily-driver hooks from @jens.heitmann](/e/DV8rkpGEbBJ) (his anti-deletion hook moves files to a staging folder).
+
+#### 3. Protect secrets, git internals and lockfiles from edits
+
+Prevents: Claude editing `.env*`, keys and certificates, anything under `.git/`, and lockfiles (which should change only through the package manager). `.env.example` stays editable.
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/protect-files.sh", "args": [] }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/protect-files.sh`:
+
+```bash
+#!/usr/bin/env bash
+# PreToolUse, matcher "Edit|Write". Blocks edits to secrets, git internals and lockfiles.
+path=$(jq -r '.tool_input.file_path // empty')
+[[ -z "$path" ]] && exit 0
+path=${path//\\//}   # normalize Windows separators
+case "$path" in
+  */.env.example|*/.env.sample) exit 0 ;;   # templates are fine
+  */.env|*/.env.*|*.pem|*.key|*/id_rsa*|*/id_ed25519*|*/.git/*|\
+  */package-lock.json|*/yarn.lock|*/pnpm-lock.yaml|*/poetry.lock|*/Cargo.lock|*/uv.lock)
+    echo "Protected file: $path. Lockfiles change via the package manager; secrets and .git/ are off-limits. Ask the user if this edit is really needed." >&2
+    exit 2 ;;
+esac
+exit 0
+```
+
+Tested: yes — exit 2 for `.env`, `.env.local`, `server.pem`, `.git/config`, `package-lock.json` and a Windows-style `C:\p\.env`; exit 0 for `src/app.ts`, `README.md`, `.envrc`, `.env.example`. It does not stop `Bash` from writing those files (`echo x > .env`); pair it with recipe 1 or a permission deny rule.
+
+#### 4. Block credentials from being written into files
+
+Prevents: API keys, tokens and private keys landing in source files. Scans the new text of every `Write` and `Edit` and names the kind of secret found, never its value.
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/secret-scan.py", "args": [] }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/secret-scan.py`:
+
+```python
+#!/usr/bin/env python3
+"""PreToolUse, matcher "Edit|Write". Blocks writes whose new text contains a credential.
+Prints only the pattern name, never the matched value."""
+import json, re, sys
+
+PATTERNS = {
+    "AWS access key id": r"\bAKIA[0-9A-Z]{16}\b",
+    "private key block": r"-----BEGIN [A-Z ]*PRIVATE KEY-----",
+    "GitHub token": r"\b(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{36}\b|\bgithub_pat_[A-Za-z0-9_]{40,}",
+    "Anthropic key": r"\bsk-ant-[A-Za-z0-9_\-]{20,}",
+    "OpenAI-style key": r"\bsk-(proj-)?[A-Za-z0-9_\-]{32,}",
+    "Slack token": r"\bxox[abprs]-[A-Za-z0-9-]{10,}",
+    "Stripe live key": r"\b[sr]k_live_[A-Za-z0-9]{20,}",
+    "Google API key": r"\bAIza[0-9A-Za-z_\-]{35}\b",
+    "hardcoded secret assignment": r"(?i)\b(private[_-]?key|secret|api[_-]?key|access[_-]?token|password)\b\s*[:=]\s*[\"'][A-Za-z0-9_\-/+=]{16,}[\"']",
+}
+
+data = json.load(sys.stdin)
+ti = data.get("tool_input", {})
+text = "\n".join(str(ti.get(k, "")) for k in ("content", "new_string"))
+hits = [name for name, rx in PATTERNS.items() if re.search(rx, text)]
+if hits:
+    print(f"Blocked: the new text for {ti.get('file_path', '?')} looks like it contains: "
+          f"{', '.join(hits)}. Load secrets from the environment or a gitignored .env at runtime "
+          "instead of writing them into files.", file=sys.stderr)
+    sys.exit(2)
+sys.exit(0)
+```
+
+Tested: yes — exit 2 for AWS's documented example access key ID, a PEM private-key header, a quoted `API_KEY = "..."` literal (via `Edit`'s `new_string`) and a GitHub `ghp_` token; exit 0 for `os.environ["API_KEY"]`, plain code and a 64-hex transaction hash. Regexes miss novel formats; run a real scanner such as gitleaks in CI as well.
+
+### Formatting and code quality
+
+#### 5. Format every file Claude edits
+
+Enables: consistent formatting with no "please run prettier" turns. Uses whichever formatter is installed and never blocks.
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/format-on-edit.sh", "args": [] }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/format-on-edit.sh`:
+
+```bash
+#!/usr/bin/env bash
+# PostToolUse, matcher "Edit|Write". Formats the edited file with whatever formatter is installed.
+# Never blocks: a missing or failing formatter just leaves the file as written.
+f=$(jq -r '.tool_input.file_path // empty')
+[[ -f "$f" ]] || exit 0
+has() { command -v "$1" >/dev/null 2>&1; }
+case "$f" in
+  *.ts|*.tsx|*.js|*.jsx|*.mjs|*.css|*.scss|*.json|*.md|*.html|*.yaml|*.yml)
+    if has prettier; then prettier --write --log-level warn "$f"
+    elif [[ -x node_modules/.bin/prettier ]]; then node_modules/.bin/prettier --write --log-level warn "$f"; fi ;;
+  *.py)  has ruff && ruff format --quiet "$f" ;;   # format only: lint --fix would strip imports Claude is about to use
+  *.rs)  has rustfmt && rustfmt --edition 2021 "$f" ;;
+  *.go)  has gofmt && gofmt -w "$f" ;;
+  *.sh)  has shfmt && shfmt -w "$f" ;;
+esac >/dev/null 2>&1
+exit 0
+```
+
+Tested: yes — reformatted `x  =  1` to `x = 1` in a `.py` file with ruff, exited 0 on a missing file. The prettier, rustfmt, gofmt and shfmt branches were not exercised (formatters not installed on the test machine). Keep it to formatting: an auto-`--fix` linter here deletes an import Claude added one edit before using it.
+
+#### 6. Hand Python syntax errors straight back to Claude
+
+Prevents: Claude moving on after an edit that broke the file. `decision: "block"` on `PostToolUse` can't undo the edit, but it puts the error in front of Claude immediately.
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/py-check.sh", "args": [] }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/py-check.sh`:
+
+```bash
+#!/usr/bin/env bash
+# PostToolUse, matcher "Edit|Write". If a Python file no longer parses, hand the error back to Claude.
+f=$(jq -r '.tool_input.file_path // empty')
+[[ "$f" == *.py && -f "$f" ]] || exit 0
+err=$(python3 - "$f" <<'PY'
+import ast, sys
+try:
+    ast.parse(open(sys.argv[1], encoding="utf-8").read(), sys.argv[1])
+except SyntaxError as e:
+    print(f"{e.filename}:{e.lineno}:{e.offset}: {e.msg}\n    {(e.text or '').rstrip()}")
+PY
+)
+if [[ -n "$err" ]]; then
+  jq -n --arg r "Syntax error after editing — fix it before moving on: $err" '{decision: "block", reason: $r}'
+fi
+exit 0
+```
+
+Tested: yes — for a file containing `def f(:` it returned `decision: "block"` with `bad.py:1:7: invalid syntax`; silent for a valid file and for non-Python paths. Uses `ast.parse`, so it writes no `__pycache__`. Swap in `tsc --noEmit` or `cargo check` for other languages.
+
+#### 7. Refuse "done" while tests fail
+
+Prevents: Claude declaring victory with a red test suite. On `Stop`, exit 2 sends the failing output back and Claude keeps working.
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "TEST_CMD='pytest -q -x' \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-tests-gate.sh", "timeout": 300 }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/stop-tests-gate.sh`:
+
+```bash
+#!/usr/bin/env bash
+# Stop (no matcher). Refuses to let Claude finish while the test suite fails.
+# Set TEST_CMD in the hook command (default: npm test --silent).
+input=$(cat)
+[[ $(jq -r '.stop_hook_active // false' <<<"$input") == "true" ]] && exit 0   # already continuing: don't loop
+cd "${CLAUDE_PROJECT_DIR:-$(jq -r '.cwd' <<<"$input")}" || exit 0
+# Skip when nothing changed since the last commit: no edits, no reason to re-run tests.
+if git rev-parse --git-dir >/dev/null 2>&1 && [[ -z $(git status --porcelain) ]]; then exit 0; fi
+if ! out=$(bash -c "${TEST_CMD:-npm test --silent}" 2>&1); then
+  { echo "Tests are failing, so the task is not done. Fix them, then finish. Last output:"; tail -n 30 <<<"$out"; } >&2
   exit 2
 fi
 exit 0
 ```
 
-In `~/.claude/settings.json`:
+Tested: yes — in a scratch git repo: exit 0 with a clean tree (tests skipped), exit 2 with the test output on stderr when the tree is dirty and `TEST_CMD` fails, exit 0 when it passes, exit 0 whenever `stop_hook_active` is `true`. `Stop` fires after every response, not only at task end, so keep the test command fast. Claude Code also overrides a `Stop` hook after 8 consecutive blocks.
+Related: [Codex + Claude Code — 3 systems to audit CC output with Codex](/e/DV3lILoEfzS) wires a second model's review into a hook; the same `Stop` slot works for that.
+
+#### 8. Catch lazy endings
+
+Prevents: final messages that skip work ("for brevity", "I'll leave the rest to you", "should work now" with nothing run). Uses `last_assistant_message`, so it never has to parse the transcript.
 
 ```json
 {
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [{ "type": "command", "command": "~/.claude/hooks/block-destructive.sh" }]
-      }
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/lazy-stop.py", "args": [] }] }
     ]
   }
 }
 ```
 
-`chmod +x` the script. Now any `rm -rf /`, fork bomb, or `dd` to a device gets blocked before Claude can run it — and Claude is told why, so it can try something saner.
+`.claude/hooks/lazy-stop.py`:
 
-### 2. Auto-format on edit
+```python
+#!/usr/bin/env python3
+"""Stop (no matcher). Sends Claude back to work when its final message hands work off
+or admits to skipping it."""
+import json, re, sys
 
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [{
-          "type": "command",
-          "command": "path=$(jq -r '.tool_input.file_path'); case \"$path\" in *.ts|*.tsx|*.js|*.jsx) prettier --write \"$path\" ;; *.py) ruff format \"$path\" ;; *.rs) rustfmt \"$path\" ;; esac"
-        }]
-      }
-    ]
-  }
+LAZY = {
+    "for brevity": r"\bfor brevity\b",
+    "left as an exercise": r"\bleft as an exercise\b",
+    "hands work to the user": r"\byou (can|could|may want to) (implement|add|fill in)\b|\bI'?ll leave (that|this|the rest|the \w+)\b",
+    "elided code": r"\.\.\. ?(existing|rest of) code|\brest of the (code|implementation) (remains|is) (the same|unchanged)\b",
+    "placeholder": r"\bplaceholder (implementation|logic|code)\b|\bnot (yet )?implemented\b",
+    "unverified 'should work'": r"\bshould (now )?work\b(?![^.]*\b(tested|ran|passed|verified)\b)",
 }
+data = json.load(sys.stdin)
+if data.get("stop_hook_active"):
+    sys.exit(0)                      # one nudge per stop; never loop
+msg = data.get("last_assistant_message") or ""
+hits = [name for name, rx in LAZY.items() if re.search(rx, msg, re.IGNORECASE)]
+if hits:
+    print(json.dumps({
+        "decision": "block",
+        "reason": "Your last message defers or skips work (matched: " + "; ".join(hits[:3]) +
+                  "). Finish the remaining work, or state exactly what is blocked and why.",
+    }))
+sys.exit(0)
 ```
 
-Every file Claude edits gets formatted automatically. No more "please run prettier" prompts.
+Tested: yes — blocks "For brevity, I'll leave the error handling to you" and "The fix should work now."; allows "Ran pytest: 42 passed. This should work now since tests passed." and "Added the endpoint and its tests; 12 passed."; allows anything when `stop_hook_active` is `true`. Expect occasional false positives; the one-nudge rule keeps them cheap.
+Inspired by: [Someone finally put numbers to what developers have been feeling for weeks.](/e/DW6wPs2DQuK) (a stop-hook script catching lazy behavior fired 173 times in the logs it describes).
 
-### 3. Inject git context at session start
+#### 9. Flag AI-writing tells in docs
 
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [{
-          "type": "command",
-          "command": "echo '## Git state'; git branch --show-current 2>/dev/null; git status --short 2>/dev/null | head -10; echo '## Recent commits'; git log --oneline -5 2>/dev/null"
-        }]
-      }
-    ]
-  }
-}
-```
-
-stdout from SessionStart hooks gets injected into Claude's first system message, so every session begins knowing the current branch, dirty files, and recent history. No more "what branch am I on?"
-
-### 4. Log every Bash command for audit
+Enables: a de-AI pass on every human-facing document. After Claude writes a `.md`, `.txt`, `.rst` or `.html` file, it is told which stock phrases to rewrite. Advisory only.
 
 ```json
 {
   "hooks": {
     "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [{
-          "type": "command",
-          "command": "jq -r '[.session_id, .tool_input.command] | @tsv' >> ~/.claude/bash-log.tsv"
-        }]
-      }
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-tells.py", "args": [] }] }
     ]
   }
 }
 ```
 
-Append every command Claude runs, with session id, to a TSV file. Trivial to grep later for "what did Claude do on Tuesday."
+`.claude/hooks/ai-tells.py`:
 
-### 5. Back up the transcript before compaction
+```python
+#!/usr/bin/env python3
+"""PostToolUse, matcher "Edit|Write". Flags common AI-writing tells in prose files and
+tells Claude to revise them. Advisory: never blocks."""
+import json, re, sys
+
+TELLS = {
+    "delve": r"\bdelv(e|es|ing)\b", "tapestry": r"\btapestry\b", "testament to": r"\btestament to\b",
+    "it's important to note": r"\bit'?s (important|worth) (to note|noting)\b",
+    "fast-paced world": r"\bin today'?s (fast-paced|digital|ever-evolving)\b",
+    "not just X, but Y": r"\bnot (just|only)\b[^.]{1,60}\bbut( also)?\b",
+    "game-changer": r"\bgame[- ]changer\b", "seamless(ly)": r"\bseamless(ly)?\b",
+    "unlock / unleash": r"\b(unlock|unleash)(es|ing)? the (power|potential)\b",
+    "in conclusion": r"\bin conclusion\b", "navigate the landscape": r"\bnavigat\w+ the (complex )?landscape\b",
+}
+data = json.load(sys.stdin)
+ti = data.get("tool_input", {})
+path = ti.get("file_path", "")
+if not re.search(r"\.(md|mdx|txt|rst|html)$", path):
+    sys.exit(0)
+text = ti.get("content") or ti.get("new_string") or ""
+found = [name for name, rx in TELLS.items() if re.search(rx, text, re.IGNORECASE)]
+dashes = text.count("—")
+if dashes > max(3, len(text) // 1500):
+    found.append(f"{dashes} em dashes")
+if found:
+    print(json.dumps({"hookSpecificOutput": {
+        "hookEventName": "PostToolUse",
+        "additionalContext": f"{path} contains AI-writing tells: {', '.join(found)}. "
+                             "Rewrite those sentences in plain, specific language.",
+    }}))
+sys.exit(0)
+```
+
+Tested: yes — "In today's fast-paced world, we delve into a rich tapestry. It's not just fast, but also seamless." in `post.md` returned `additionalContext` listing delve, tapestry, fast-paced world, not just X but Y, seamless; a plain technical sentence and any `.py` file produced nothing.
+Inspired by: [Humanizer skill for Claude Code — strip AI tells from your writing](/e/DbJzWBfxPvD).
+
+### Logging and telemetry
+
+#### 10. Audit log of every shell command
+
+Enables: answering "what did Claude run on Tuesday?" with `jq`. Logs successes and failures, with duration.
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/audit-bash.sh" }] }
+    ],
+    "PostToolUseFailure": [
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/audit-bash.sh" }] }
+    ]
+  }
+}
+```
+
+`~/.claude/hooks/audit-bash.sh`:
+
+```bash
+#!/usr/bin/env bash
+# PostToolUse + PostToolUseFailure, matcher "Bash". Appends one JSON line per command Claude ran.
+log="${HOOK_AUDIT_LOG:-$HOME/.claude/logs/bash-audit.jsonl}"
+mkdir -p "$(dirname "$log")"
+jq -c '{
+  ts: (now | todate),
+  event: .hook_event_name,
+  session: .session_id,
+  cwd: .cwd,
+  command: .tool_input.command,
+  ms: .duration_ms
+}' >> "$log"
+exit 0
+```
+
+Tested: yes — appended one valid JSON line per event (`PostToolUse` with `ms: 812`, `PostToolUseFailure` with `ms: null`). Query it with `jq -r 'select(.session=="<id>") | .command' ~/.claude/logs/bash-audit.jsonl`. Commands can contain secrets typed inline; keep the log private.
+
+#### 11. Back up the transcript before compaction
+
+Enables: a full copy of the conversation before it is summarized, for post-mortems. Keeps the newest 50.
 
 ```json
 {
   "hooks": {
     "PreCompact": [
-      {
-        "hooks": [{
-          "type": "command",
-          "command": "python ~/.claude/hooks/backup-transcript.py",
-          "async": true
-        }]
-      }
+      { "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/backup-transcript.sh" }] }
     ]
   }
 }
 ```
 
-`async: true` because you don't want backups blocking Claude. Every time context compacts, the full transcript gets snapshotted — essential for post-mortems and the `/forge` knowledge workflow.
-
----
-
-## Real-world patterns
-
-**Block PR merges until tests pass (Stop hook).** On `Stop`, check if the git index is dirty or if `pytest` fails. Exit 2 to force Claude to continue working instead of claiming "done."
-
-**Prompt rewriting (UserPromptSubmit hook).** Intercept the user's prompt, prepend project-specific context from a file, return the rewritten prompt via structured JSON. This is how you implement "every prompt gets the current GOALS.yaml attached."
-
-**Permission gating (PreToolUse on mcp__github__.*).** Block any GitHub MCP tool that tries to merge a PR on `main` without a human-approved signal.
-
-**Session metric export (SessionEnd).** Ship session duration, tool counts, and token spend to a local SQLite DB for weekly retros.
-
-**Auto-commit scratch work (PostToolUse on Edit).** After every edit, auto-commit to a `scratch` branch so nothing is ever lost even if Claude undoes itself.
-
-**Sub-agent quality gate (SubagentStop).** When a Task sub-agent finishes, run the output through a linter or a small validation LLM. If it fails, exit 2 to tell the parent agent "try again."
-
-**Notification routing (Notification).** When Claude is waiting on a permission prompt, desktop-notify or send a Discord webhook so you can unblock it from your phone.
-
----
-
-## What you may already have
-
-Your global setup may include the **`hookify` plugin** (see `reference_installed_plugins.md`). It provides:
-
-- `/hookify` — interactive hook creation. Given a behavior you want to prevent, it generates the shell script and the settings.json entry.
-- `/hookify:configure` — enable/disable existing hookify rules interactively.
-- `/hookify:list` — list all installed hookify rules.
-- `hookify:writing-rules` skill — for hand-writing custom hook rules.
-
-Your memory may also reference the **`update-config` skill**, which explicitly says: *"Automated behaviors ('from now on when X', 'each time X', 'whenever X', 'before/after X') require hooks configured in settings.json — the harness executes these, not Claude."* Any time you catch yourself writing a "from now on always X" rule in CLAUDE.md, the correct move is a hook instead.
-
-Quick check for existing hooks:
+`~/.claude/hooks/backup-transcript.sh`:
 
 ```bash
-cat ~/.claude/settings.json | jq '.hooks // {}'
-cat .claude/settings.json 2>/dev/null | jq '.hooks // {}'
+#!/usr/bin/env bash
+# PreCompact (matcher "manual|auto" or none). Copies the full transcript before it is summarized.
+input=$(cat)
+src=$(jq -r '.transcript_path // empty' <<<"$input")
+[[ -f "$src" ]] || exit 0
+sid=$(jq -r '.session_id // "unknown"' <<<"$input")
+trigger=$(jq -r '.trigger // "unknown"' <<<"$input")
+dest="${HOOK_BACKUP_DIR:-$HOME/.claude/transcript-backups}"
+mkdir -p "$dest"
+cp "$src" "$dest/$(date -u +%Y%m%dT%H%M%SZ)-${sid}-${trigger}.jsonl"
+# keep the newest 50 backups
+ls -1t "$dest"/*.jsonl 2>/dev/null | tail -n +51 | while IFS= read -r old; do rm -f -- "$old"; done
+exit 0
 ```
 
----
+Tested: yes — copied a fixture transcript to `<timestamp>-<session>-auto.jsonl`; with 55 older backups present, pruned to 50 and kept the new one. It runs synchronously on purpose: a copy takes milliseconds, and an async hook in `-p` mode can be cancelled at teardown before it finishes.
 
-## What we could build with it
+#### 12. Session ledger and API-failure log
 
-- **A `/forge` auto-runner.** `SessionEnd` hook that pipes the transcript into the `forge` skill to automatically mine learnings into MEMORY.md without you remembering to run it.
-- **Bash command classifier.** `PreToolUse` hook that routes Bash commands through a local classifier (regex or small LLM) and auto-allows safe ones, prompts on medium, hard-blocks destructive.
-- **Per-project CLAUDE.md injector.** `SessionStart` hook that checks the cwd, looks for matching project memory in `~/.claude/projects/.../MEMORY.md`, and injects the relevant entries.
-- **Trading bot guardrails.** `PreToolUse` hook on any Bash running `python trade.py` that blocks if market is closed, if balance is below threshold, or if a kill-switch file exists. This is a hard rule the model cannot override.
-- **Secret leak prevention.** `PreToolUse` on Edit/Write that greps the proposed `new_string` for anything matching private-key / API-key patterns and exit 2 if found. This enforces the global "never expose secrets" rule deterministically.
-- **Auto-test runner.** `PostToolUse` on Edit to source files → run the matching test file → append output to Claude's visible context. TDD without asking.
-- **Compaction-triggered retros.** `PreCompact` hook that snapshots the transcript *and* writes a one-line summary of what was accomplished this window, building a running project log.
-- **Desktop notification on idle.** `Notification` hook that `notify-send`s on Linux so you know Claude is waiting on input even if you alt-tabbed.
+Enables: one line per session (end reason, assistant messages, tool-call counts) and one per API failure (`rate_limit`, `overloaded`, `billing_error`, ...), for weekly retros.
+
+```json
+{
+  "hooks": {
+    "SessionEnd": [
+      { "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/session-ledger.py", "timeout": 10 }] }
+    ],
+    "StopFailure": [
+      { "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/session-ledger.py" }] }
+    ]
+  }
+}
+```
+
+`~/.claude/hooks/session-ledger.py`:
+
+```python
+#!/usr/bin/env python3
+"""SessionEnd and StopFailure. Appends one JSON line per session end (with tool-call counts
+from the transcript) or per API failure (rate_limit, overloaded, billing_error, ...)."""
+import collections, datetime, json, os, sys
+
+data = json.load(sys.stdin)
+log = os.environ.get("HOOK_LEDGER", os.path.expanduser("~/.claude/logs/sessions.jsonl"))
+os.makedirs(os.path.dirname(log), exist_ok=True)
+row = {
+    "ts": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+    "event": data.get("hook_event_name"),
+    "session": data.get("session_id"),
+    "cwd": data.get("cwd"),
+}
+if row["event"] == "StopFailure":
+    row["error"] = data.get("error")
+else:
+    row["reason"] = data.get("reason")
+    tools, turns = collections.Counter(), 0
+    path = data.get("transcript_path") or ""
+    if os.path.isfile(path):
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                try:
+                    entry = json.loads(line)
+                except ValueError:
+                    continue
+                msg = entry.get("message") if isinstance(entry, dict) else None
+                if not isinstance(msg, dict) or msg.get("role") != "assistant":
+                    continue
+                turns += 1
+                for block in msg.get("content") or []:
+                    if isinstance(block, dict) and block.get("type") == "tool_use":
+                        tools[block.get("name", "?")] += 1
+    row.update(assistant_messages=turns, tool_calls=sum(tools.values()), top_tools=dict(tools.most_common(5)))
+with open(log, "a", encoding="utf-8") as fh:
+    fh.write(json.dumps(row) + "\n")
+```
+
+Tested: yes — against a fixture transcript (2 assistant messages, 3 tool calls, one corrupt line) it wrote `tool_calls: 3, top_tools: {Bash: 2, Edit: 1}`; logged `error: rate_limit` for `StopFailure`; handled a missing transcript. The transcript line format is not part of the documented hooks contract and may change; the counts degrade to zero rather than crash. `timeout: 10` raises the 1.5 s `SessionEnd` budget for long transcripts.
+
+### Notifications
+
+#### 13. Desktop alert when Claude needs you
+
+Enables: alt-tab away and get pinged when Claude is waiting on a permission prompt or idle. Linux `notify-send`, macOS `osascript`, terminal bell elsewhere.
+
+```json
+{
+  "hooks": {
+    "Notification": [
+      { "matcher": "permission_prompt|idle_prompt",
+        "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/notify.sh" }] }
+    ]
+  }
+}
+```
+
+`~/.claude/hooks/notify.sh`:
+
+```bash
+#!/usr/bin/env bash
+# Notification (matcher "permission_prompt|idle_prompt", or none for all). Desktop alert with Claude's message.
+input=$(cat)
+title=$(jq -r '.title // "Claude Code"' <<<"$input")
+msg=$(jq -r '.message // "Claude needs your attention"' <<<"$input")
+project=$(basename "$(jq -r '.cwd // empty' <<<"$input")")
+[[ -n "$project" ]] && title="$title · $project"
+if command -v notify-send >/dev/null 2>&1; then                       # Linux
+  notify-send --app-name="Claude Code" "$title" "$msg"
+elif command -v osascript >/dev/null 2>&1; then                      # macOS
+  osascript - "$title" "$msg" <<'OSA'
+on run argv
+  display notification (item 2 of argv) with title (item 1 of argv) sound name "Glass"
+end run
+OSA
+else                                                                  # anywhere else: terminal bell via Claude Code
+  printf '{"terminalSequence":"\\u0007"}\n'
+fi
+exit 0
+```
+
+Tested: partly — with `notify-send` stubbed, it received title `Claude Code · myapp` and the message from stdin; with neither notifier on `PATH` it printed `{"terminalSequence":"\u0007"}`. The macOS branch is untested (needs macOS; Script Editor must have notification permission or `osascript` fails silently).
+Inspired by: [Claude Code hooks — 3 daily-driver hooks from @jens.heitmann](/e/DV8rkpGEbBJ) (his chime-when-waiting hook).
+
+#### 14. Phone ping through a Discord webhook
+
+Enables: the same alert on your phone. Runs `async` so a slow network never holds up Claude.
+
+```json
+{
+  "hooks": {
+    "Notification": [
+      { "matcher": "permission_prompt|idle_prompt",
+        "hooks": [{ "type": "command", "command": "\"$HOME\"/.claude/hooks/discord-ping.sh", "async": true }] }
+    ]
+  }
+}
+```
+
+`~/.claude/hooks/discord-ping.sh`:
+
+```bash
+#!/usr/bin/env bash
+# Notification, matcher "permission_prompt|idle_prompt". Posts to a Discord webhook so you can
+# see from your phone that a session is waiting. Needs DISCORD_WEBHOOK_URL in the environment.
+input=$(cat)
+payload=$(jq -c '{
+  username: "Claude Code",
+  content: ("**" + (.notification_type // "notification") + "** in `" + ((.cwd // "?") | split("/") | last) + "`: " + (.message // ""))
+}' <<<"$input")
+if [[ -n "$HOOK_DRY_RUN" ]]; then echo "$payload"; exit 0; fi
+[[ -n "$DISCORD_WEBHOOK_URL" ]] || exit 0
+curl -fsS -m 10 -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK_URL" >/dev/null || exit 1
+exit 0
+```
+
+Tested: partly — with `HOOK_DRY_RUN=1` it built the Discord JSON body (`username` plus a `content` line naming the notification type, project folder and message); with no `DISCORD_WEBHOOK_URL` it exits 0 silently. Delivery is untested (needs a real webhook). Set the URL in your shell environment, never in a committed settings file. For Slack, change the body to `{text: ...}`.
+
+### Context injection
+
+#### 15. Start every session knowing the git state and the plan
+
+Enables: Claude opens each session (and re-opens after compaction) with the branch, dirty files, last five commits, `primer.md` (a state file Claude rewrites at the end of each session) and an optional `.claude/after-compact.md` of rules worth re-reading.
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      { "matcher": "startup|resume|compact",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/session-context.sh", "args": [] }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/session-context.sh`:
+
+```bash
+#!/usr/bin/env bash
+# SessionStart, matcher "startup|resume|compact". Plain stdout from SessionStart is added to Claude's context.
+cd "${CLAUDE_PROJECT_DIR:-.}" || exit 0
+echo "## Session context ($(date '+%Y-%m-%d %H:%M %Z'))"
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Branch: $(git branch --show-current 2>/dev/null)"
+  echo "### Uncommitted changes"; git status --short | head -15
+  echo "### Last 5 commits"; git log --oneline -5 2>/dev/null
+fi
+for f in primer.md .claude/after-compact.md; do          # living state file + rules worth re-reading
+  [[ -f "$f" ]] && { echo "### $f"; head -c 4000 "$f"; echo; }
+done
+exit 0
+```
+
+Tested: yes — in a scratch repo it printed branch, untracked files, the one commit and the `primer.md` text, exit 0. Plain stdout from `SessionStart` is added to Claude's context; output is capped at 4 KB per file to protect the context window.
+Inspired by: [primer.md + memory.sh — live-updating CLAUDE.md companion](/e/DVzvsgijOLT).
+
+#### 16. Give every subagent the project's hard rules
+
+Enables: subagents start with your non-negotiables ("use pnpm", "never commit") from `.claude/subagent-rules.md`, via `SubagentStart`'s `additionalContext`.
+
+```json
+{
+  "hooks": {
+    "SubagentStart": [
+      { "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/subagent-rules.sh", "args": [] }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/subagent-rules.sh`:
+
+```bash
+#!/usr/bin/env bash
+# SubagentStart (matcher: agent type, or none for all). Gives every subagent the project's hard rules,
+# which it would not otherwise see in full.
+rules="${CLAUDE_PROJECT_DIR:-.}/.claude/subagent-rules.md"
+[[ -f "$rules" ]] || exit 0
+jq -n --rawfile r "$rules" '{hookSpecificOutput: {hookEventName: "SubagentStart", additionalContext: $r}}'
+exit 0
+```
+
+Tested: yes — with the rules file present it emitted valid `hookSpecificOutput` JSON containing the file; without it, nothing and exit 0. Add a matcher such as `"Explore|Plan"` to target specific agent types.
+
+### Cost and token control
+
+#### 17. Keep vendored, generated and huge files out of context
+
+Prevents: `Read`/`Grep`/`Glob` calls into `node_modules`, `dist`, `.next`, `.venv`, lockfiles, minified bundles, and whole-file reads of anything over 256 KB without `limit`. Claude is told what to do instead.
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Read|Grep|Glob",
+        "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/read-guard.py", "args": [] }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/read-guard.py`:
+
+```python
+#!/usr/bin/env python3
+"""PreToolUse, matcher "Read|Grep|Glob". Keeps generated and vendored files out of context and
+makes Claude page through very large files instead of reading them whole."""
+import json, os, re, sys
+
+NOISE = re.compile(r"(^|/)(node_modules|dist|build|\.next|\.venv|venv|__pycache__|\.git|coverage|vendor)(/|$)"
+                   r"|(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|\.min\.(js|css)|\.map)$")
+MAX_BYTES = int(os.environ.get("READ_GUARD_MAX_BYTES", 256_000))
+
+def deny(reason):
+    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse",
+                      "permissionDecision": "deny", "permissionDecisionReason": reason}}))
+    sys.exit(0)
+
+data = json.load(sys.stdin)
+tool, ti = data.get("tool_name"), data.get("tool_input", {})
+target = (ti.get("file_path") or ti.get("path") or "").replace("\\", "/")
+if target and NOISE.search(target):
+    deny(f"{target} is generated or vendored. Read the source that produces it, or grep for one symbol.")
+if tool == "Read" and target and not ti.get("limit"):
+    try:
+        size = os.path.getsize(target)
+    except OSError:
+        sys.exit(0)
+    if size > MAX_BYTES:
+        deny(f"{target} is {size // 1024} KB. Grep for what you need, or Read it with offset/limit in chunks.")
+sys.exit(0)
+```
+
+Tested: yes — denied `node_modules/x/index.js`, `Grep` on `dist` and a 292 KB `Read` without `limit`; allowed the same file with `limit: 200`, a small file, `src/build_tools.py` and `Glob` on `src`.
+
+#### 18. Ask before switching to the most expensive model
+
+Prevents: a session drifting onto an Opus-class model without a decision. `PreModelSwitch` with `permissionDecision: "ask"` puts the choice to you.
+
+```json
+{
+  "hooks": {
+    "PreModelSwitch": [
+      { "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/model-switch-guard.sh", "args": [] }] }
+    ]
+  }
+}
+```
+
+`.claude/hooks/model-switch-guard.sh`:
+
+```bash
+#!/usr/bin/env bash
+# PreModelSwitch (no matcher). Asks before switching a session onto an Opus-class model.
+input=$(cat)
+to=$(jq -r '.to_model // empty' <<<"$input")
+if [[ "${to,,}" == *opus* ]]; then
+  jq -n --arg to "$to" '{hookSpecificOutput: {
+    hookEventName: "PreModelSwitch",
+    permissionDecision: "ask",
+    permissionDecisionReason: ("Switching to " + $to + " costs more per token. Confirm this task needs it.")
+  }}'
+fi
+exit 0
+```
+
+Tested: yes — `to_model: claude-opus-4-6` returned `permissionDecision: "ask"` with a reason; `claude-sonnet-4-6` returned nothing. Model names in the input are the canonical IDs your install reports; check one with `claude --debug` before relying on the substring.
 
 ---
 
 ## Gotchas and limits
 
-- **Hooks are executed with your shell privileges.** A malicious hook can `rm -rf` your home directory. Never install hooks from untrusted sources without reading the script first.
-- **Hooks run synchronously by default.** A slow hook blocks Claude. Use `async: true` for anything that doesn't need to gate behavior (logging, notifications, backups).
-- **Per-project `.claude/settings.json` is checked into git.** Never commit secrets inside hook scripts. Use `.claude/settings.local.json` for anything sensitive.
-- **Exit-code 2 vs structured JSON** — these are different control channels. Exit 2 is the simple "block and tell Claude why" path. Structured JSON lets you *rewrite* tool inputs; use it sparingly because it's harder to debug.
-- **Matcher regex is tool-name-scoped.** It does *not* match against tool *arguments*. To block by args, match the tool name and do the arg check inside your script.
-- **MCP tool names are prefixed** (`mcp__github__create_pull_request`, `mcp__playwright__browser_click`, etc.). Match them with regex: `"mcp__github__.*"`.
-- **PostToolUse hooks cannot undo the tool.** The tool already ran. You can react, but you can't reverse — if you need to prevent, it must be a PreToolUse.
-- **Latency is real.** Every hook adds tens to hundreds of milliseconds per tool call. Five synchronous hooks on every Bash call becomes noticeable. There is a known community issue (ruflo #1530) reporting ~20s hook latency in misconfigured setups. Profile your hooks.
-- **stdin JSON can be large.** A `PostToolUse` hook on a big Read can receive megabytes of content. If you just need the file path, parse with `jq` and ignore the rest.
-- **Hook stderr is surfaced to the user and to Claude.** Keep it clean. Use stdout for "injected context," stderr for "error message when blocking."
-- **Version drift.** Events like `SessionEnd`, `PreCompact`, and the `matcher`-on-non-tool-events behavior have all been added or renamed across versions. Check `claude --version` against the docs if something behaves unexpectedly.
-- **Settings merge order can surprise you.** Local overrides user overrides project in some arrangements. If a hook doesn't fire, dump the merged config to see what Claude actually sees.
-- **Hooks are harness-enforced, not model-enforced.** This is the whole point — a hook is the only way to make Claude's behavior actually deterministic. Put security-critical rules here, not in CLAUDE.md.
+- **Hooks run with your full user permissions.** A hook can delete anything you can. Read every script before installing it, and never paste one you don't understand.
+- **Workspace trust.** Interactive sessions hold back all hooks until you accept the trust dialog for the folder. `claude -p` and SDK sessions skip the dialog, so a cloned repo's `.claude/settings.json` hooks run immediately. Review `.claude/` before scripting `-p` over code you didn't write, or pass `--settings '{"disableAllHooks": true}'`.
+- **Exit 1 is not a block.** Only exit 2 blocks. Any other non-zero code is a non-blocking error and the action proceeds.
+- **stdout must start with `{` to count as JSON.** A shell profile that prints a banner ahead of your JSON makes Claude Code treat it as plain text and silently ignore the decision. Wrap profile `echo`s in `if [[ $- == *i* ]]`.
+- **Fields at the wrong level are ignored silently.** `permissionDecision` and `additionalContext` belong inside `hookSpecificOutput` with `hookEventName`. `claude --debug` logs `Hook JSON output had unrecognized keys`.
+- **`updatedInput` replaces the whole input.** Include the unchanged fields. If two hooks rewrite the same tool's input, the last to finish wins, and hooks run in parallel, so the order is random.
+- **`UserPromptSubmit` can't rewrite your prompt.** It can block it or add `additionalContext` alongside it.
+- **`allow` doesn't beat your deny rules.** A hook's `allow` skips the prompt but can't override `deny` rules in settings; a hook's `deny` holds in every permission mode, including `bypassPermissions`.
+- **`Stop` fires after every response,** not only at task completion, and not on user interrupts (API errors fire `StopFailure` instead). Check `stop_hook_active`; Claude Code overrides a `Stop` hook after 8 consecutive blocks (raise with `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`).
+- **Matchers filter on names, not arguments.** Use the `if` field (`"Bash(git *)"`) or check arguments inside the script. Matchers are case-sensitive, and a letters-only matcher is an exact match, not a substring.
+- **Synchronous hooks add latency to every matching call.** Keep `PreToolUse` hooks fast; use `async: true` for logging and network calls. Async hooks can't block, and their `additionalContext`/`systemMessage` arrive on the next turn.
+- **Timeouts:** 600 s for command hooks by default (30 s on `UserPromptSubmit`), and a shared 1.5 s budget for `SessionEnd` unless you set `timeout`. On a `UserPromptSubmit` timeout the hook's output is discarded and the prompt goes through.
+- **Never put secrets in committed hook config.** `.claude/settings.json` is shared through git. Read webhook URLs and tokens from the environment at run time.
+- **Debugging:** run `/hooks` to see what loaded, then `claude --debug` and read `~/.claude/debug/<session-id>.txt`; each hook run logs a `Hooks:` line with its exit status and duration. Test scripts by piping fixture JSON before trusting them live.
 
 ---
 
 ## Bottom line
 
-Hooks are the layer where Claude Code stops being "a smart assistant that mostly follows rules" and becomes "a runtime with hard constraints you can trust." The nine standard events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd) cover 95% of real use cases. Start with three hooks — block destructive Bash, auto-format on edit, inject git context on session start — and add more as you notice yourself saying "Claude should always X" for the nth time. That sentence is always a hook.
+Hooks are where Claude Code stops being "a smart assistant that mostly follows rules" and becomes a runtime with hard constraints. The documented surface is now over thirty events, but most value still comes from six: `PreToolUse` for guardrails, `PostToolUse` for formatting and fast feedback, `Stop` for "not done yet", `SessionStart` for context, `Notification` for getting your attention, and `PreCompact`/`SessionEnd` for records. Start with recipes 1, 5, 13 and 15, pipe fixture JSON through each script before trusting it, and add a hook every time you catch yourself saying "Claude should always X" for the third time. That sentence is always a hook.
 
-If you have `hookify` installed, use `/hookify` for interactive creation, and treat every `from now on` / `whenever X` rule in CLAUDE.md as a candidate to migrate into `settings.json` where it becomes enforceable instead of advisory.
+---
 
 <!-- prompt-system:start -->
 
@@ -1014,6 +2408,6 @@ Run this in the user's home config, so treat ~/.claude/settings.json as precious
 </style><script>
 document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
 const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
-</script><!-- /ps-tail --><!-- sitenav:start --><nav class="sitenav" aria-label="Site" data-pagefind-ignore><style>.sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}.sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}.sitenav a:hover{color:var(--accent,#a78bfa)}</style><a href="/">Home</a><a href="/start-here">Start here</a><a href="/catalog">Catalog</a><a href="/guides/">Guides</a><a href="/prompts">Prompts</a><a href="/e/">All entries</a><a href="/collections/">Collections</a><a href="/search">Search</a><a href="/graph">Graph</a><a href="/graph-cosmos">Cosmos</a><a href="/board">Board</a><a href="/links/">Links</a><a href="/method">How it works</a><a href="/feed.xml">RSS</a><a href="/llms.txt">llms.txt</a></nav><!-- sitenav:end -->
+</script><!-- /ps-tail --><!-- sitenav:start --><nav class="sitenav" aria-label="Site" data-pagefind-ignore><style>.sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}.sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}.sitenav a:hover{color:var(--accent,#a78bfa)}</style><a href="/">Home</a><a href="/start-here">Start here</a><a href="/catalog">Catalog</a><a href="/guides/">Guides</a><a href="/prompts">Prompts</a><a href="/e/">All entries</a><a href="/collections/">Collections</a><a href="/tools/">Tools</a><a href="/compare/">Compare</a><a href="/search">Search</a><a href="/graph">Graph</a><a href="/graph-cosmos">Cosmos</a><a href="/board">Board</a><a href="/links/">Links</a><a href="/method">How it works</a><a href="/feed.xml">RSS</a><a href="/llms.txt">llms.txt</a></nav><!-- sitenav:end -->
 <!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
 </body></html>

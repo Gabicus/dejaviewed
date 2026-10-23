@@ -30,6 +30,8 @@
 #   context     build_context.py               context.md, llms.txt, llms-full.txt, ai-plugin.json
 #   render      scripts/render_template.py     collection page HTML
 #   collections scripts/build_collections.py   site/collections/<c>.html + index (static, every entry <= 3 clicks from /)
+#   tools       scripts/build_tools.py         site/tools/<slug>.html + index (per-tool hubs; data/tools/*.json editor takes; noindex below threshold)
+#   compare     scripts/build_compare.py       site/compare/*, site/best/*, site/system-prompts.html from data/compare/*.json (dated, sourced; --check)
 #   js          scripts/catalog_js.py          window.__CATALOG wrappers for file:// previews
 #   search      scripts/build_search.sh        search_prep.py + Pagefind 1.3.0 -> site/pagefind/ (committed)
 #   start       scripts/build_start_here.py    site/start-here.html (positioning page, live counts) — before api (sitemap)
@@ -134,6 +136,8 @@ run_py api     scripts/build_api.py
 run_py context build_context.py
 run_py render  scripts/render_template.py
 run_py collections scripts/build_collections.py
+run_py tools   scripts/build_tools.py
+run_py compare scripts/build_compare.py
 run_py js      scripts/catalog_js.py
 if should_skip search; then echo "[skip] search"; else echo "[run ] search — scripts/build_search.sh"; bash scripts/build_search.sh; fi
 run_py feed    scripts/build_feed.py
