@@ -3,7 +3,9 @@
 
 Writes one site/e/<id>.html per row, plus an index at site/e/index.html.
 Uses a single template that embeds the shared.css card styling, so pages
-look identical to the rest of the site.
+look identical to the rest of the site. Every page link is a root-absolute clean
+URL (/e/<id>, /catalog, /guides/<slug>, /collections/<c>) — what Cloudflare Pages
+serves without a 308 hop; asset links (../shared.css) stay relative.
 
 Hierarchical tableau (Phase 5): five zoom levels per entry — 100k, 50k,
 10k, 5k, 1k ft. At first render only the top level is populated from the
@@ -22,6 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from cms import load_entries, load_crosslinks  # noqa: E402
+from build_collections import collection_name, collection_url  # noqa: E402
 
 SITE = ROOT / "site"
 OUT = SITE / "e"
@@ -83,48 +86,45 @@ TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <title>{title} — DejaViewed</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
 <style>
   main.entry {{ max-width: 880px; margin: 24px auto 80px; padding: 0 20px; }}
   .entry h1 {{ font: 600 28px/1.25 Inter, system-ui; margin: 8px 0 12px; color: var(--text); }}
-  .entry .meta {{ color: var(--muted); font-size: 13px; margin-bottom: 16px; }}
+  .entry .meta {{ color: var(--text-mute); font-size: 13px; margin-bottom: 16px; }}
   .entry .actions a {{ margin-right: 10px; }}
   .tableau {{ margin-top: 28px; }}
   .level {{ background: var(--panel); border: 1px solid var(--border);
            border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; }}
   .level h3 {{ margin: 0 0 8px; font: 600 13px/1 Inter, system-ui;
-              letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }}
+              letter-spacing: .08em; text-transform: uppercase; color: var(--text-mute); }}
   .level .body {{ white-space: pre-wrap; color: var(--text); font-size: 14px; line-height: 1.55; }}
   .level .tags {{ margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }}
   .pill {{ display: inline-block; padding: 2px 8px; border-radius: 999px;
-          background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
+          background: var(--panel-2); color: var(--text-mute); border: 1px solid var(--border);
           font-size: 11px; }}
   details.level summary {{ cursor: pointer; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
-              text-transform: uppercase; color: var(--muted); }}
+              text-transform: uppercase; color: var(--text-mute); }}
   details.level[open] summary {{ margin-bottom: 8px; }}
-  .back {{ color: var(--muted); font-size: 12px; text-decoration: none; }}
+  .back {{ color: var(--text-mute); font-size: 12px; text-decoration: none; }}
   .back:hover {{ color: var(--accent); }}
-  nav.crumbs {{ font-size: 12px; color: var(--muted); margin-bottom: 6px; }}
-  nav.crumbs a {{ color: var(--muted); text-decoration: none; }}
+  nav.crumbs {{ font-size: 12px; color: var(--text-mute); margin-bottom: 6px; }}
+  nav.crumbs a {{ color: var(--text-mute); text-decoration: none; }}
   nav.crumbs a:hover {{ color: var(--accent); }}
   nav.crumbs .sep {{ margin: 0 6px; opacity: .6; }}
   .hub {{ margin-top: 28px; }}
   .hub h2 {{ margin: 0 0 10px; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
-            text-transform: uppercase; color: var(--muted); }}
+            text-transform: uppercase; color: var(--text-mute); }}
   .hub ul {{ list-style: none; margin: 0; padding: 0; }}
   .hub li {{ background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
             padding: 10px 14px; margin-bottom: 8px; font-size: 14px; line-height: 1.45; }}
   .hub li a {{ color: var(--text); text-decoration: none; font-weight: 500; }}
   .hub li a:hover {{ color: var(--accent); }}
-  .hub .why {{ display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }}
+  .hub .why {{ display: block; color: var(--text-mute); font-size: 11px; margin-top: 3px; }}
   .hub .links a {{ margin-right: 14px; }}
   nav.pn {{ display: flex; justify-content: space-between; gap: 12px; margin-top: 28px;
            border-top: 1px solid var(--border); padding-top: 16px; font-size: 13px; }}
-  nav.pn a {{ color: var(--muted); text-decoration: none; max-width: 48%; }}
+  nav.pn a {{ color: var(--text-mute); text-decoration: none; max-width: 48%; }}
   nav.pn a:hover {{ color: var(--accent); }}
   nav.pn .next {{ margin-left: auto; text-align: right; }}
 </style>
@@ -132,7 +132,7 @@ TEMPLATE = """<!doctype html>
 <script>DV.mountHeader(document.body, 'entries');</script>
 <main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
   {crumbs_html}
-  <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
+  <a class="back" data-pagefind-ignore href="/e/">← all entries</a>
   <div style="margin:10px 0">{tier_pill} {type_pill}</div>
   <h1>{title}</h1>
   <div class="meta">{meta}</div>
@@ -222,7 +222,7 @@ def build_lookups(rows: list[dict]) -> dict:
     # prev/next within source_collection by date
     by_coll: dict[str, list[str]] = defaultdict(list)
     for r in sorted(rows, key=lambda r: (str(r.get("date") or ""), r.get("id") or "")):
-        c = r.get("source_collection") or r.get("collection") or ""
+        c = r.get("collection") or r.get("source_collection") or ""
         if c and r.get("id"):
             by_coll[c].append(r["id"])
     prev_next: dict[str, tuple] = {}
@@ -255,22 +255,22 @@ def build_lookups(rows: list[dict]) -> dict:
             dfile = deeper_file(slug)
             for eid in d.get("entry_ids") or []:
                 if gpath.exists():
-                    add(eid, f"../guides/{slug}.html", f"Guide: {d.get('title') or slug}")
+                    add(eid, f"/guides/{slug}", f"Guide: {d.get('title') or slug}")
                 if dfile:
-                    add(eid, f"../deeper/{dfile}", f"Deeper dive: {d.get('title') or slug}")
+                    add(eid, f"/deeper/{dfile.removesuffix('.html')}", f"Deeper dive: {d.get('title') or slug}")
         for r in rows:  # standalone single-entry guides (deep_dive_slug)
             slug = r.get("deep_dive_slug") or ""
             gpath = GUIDES / f"{slug}.html" if slug else None
             if gpath and gpath.exists():
-                add(r["id"], f"../guides/{slug}.html", f"Guide: {page_title(gpath) or slug}")
+                add(r["id"], f"/guides/{slug}", f"Guide: {page_title(gpath) or slug}")
 
     return {"by_id": by_id, "score": score, "strong": strong, "by_creator": by_creator,
-            "prev_next": prev_next, "appears": appears}
+            "prev_next": prev_next, "appears": appears, "by_coll": by_coll}
 
 
 def _entry_link(r: dict, why: str = "") -> str:
     t = (r.get("title") or r.get("id") or "(untitled)")[:110]
-    return (f'<li>{_tier_pill(r.get("tier") or "C")} <a href="{esc(safe_slug(r["id"]))}.html">{esc(t)}</a>'
+    return (f'<li>{_tier_pill(r.get("tier") or "C")} <a href="/e/{esc(safe_slug(r["id"]))}">{esc(t)}</a>'
             + (f'<span class="why">{esc(why)}</span>' if why else "") + "</li>")
 
 
@@ -278,12 +278,13 @@ def hub_sections(row: dict, lk: dict) -> tuple[str, str]:
     """(breadcrumb html, hub sections html) for one entry."""
     rid = row["id"]
     by_id = lk["by_id"]
-    coll = row.get("source_collection") or row.get("collection") or ""
+    coll = row.get("collection") or row.get("source_collection") or ""
+    cname = collection_name(coll) if coll else ""
     title = row.get("title") or rid
     crumbs = ('<nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore>'
-              '<a href="../index.html">Home</a><span class="sep">›</span>'
-              '<a href="../catalog.html">Catalog</a><span class="sep">›</span>'
-              + (f'<span>{esc(coll)}</span><span class="sep">›</span>' if coll else "")
+              '<a href="/">Home</a><span class="sep">›</span>'
+              '<a href="/catalog">Catalog</a><span class="sep">›</span>'
+              + (f'<a href="{collection_url(coll)}">{esc(cname)}</a><span class="sep">›</span>' if coll else "")
               + f'<span aria-current="page">{esc(title[:70])}</span></nav>')
 
     out = []
@@ -306,19 +307,21 @@ def hub_sections(row: dict, lk: dict) -> tuple[str, str]:
         items = "".join(_entry_link(by_id[x]) for x in same if x in by_id)
         out.append(f'<section class="hub creator" data-pagefind-ignore><h2>More from @{esc(h)}</h2><ul>{items}</ul></section>')
     anchor = catalog_anchor(row)
-    coll_links = (f'<a href="../catalog.html#{esc(anchor)}">Find this post in the catalog</a>'
-                  if anchor != "post-" else "")
-    coll_links += '<a href="../catalog.html">Browse the full catalog</a><a href="index.html">All entries</a>'
-    out.append(f'<section class="hub collection" data-pagefind-ignore><h2>Collection{": " + esc(coll) if coll else ""}</h2>'
+    coll_links = (f'<a href="{collection_url(coll)}">All {len(lk["by_coll"].get(coll, []))} entries in {esc(cname)}</a>'
+                  if coll else "")
+    coll_links += (f'<a href="/catalog#{esc(anchor)}">Find this post in the catalog</a>'
+                   if anchor != "post-" else '<a href="/catalog">Browse the full catalog</a>')
+    coll_links += '<a href="/collections/">All collections</a><a href="/e/">All entries</a>'
+    out.append(f'<section class="hub collection" data-pagefind-ignore><h2>Collection{": " + esc(cname) if coll else ""}</h2>'
                f'<div class="links">{coll_links}</div></section>')
     prev_id, next_id = lk["prev_next"].get(rid, (None, None))
     if prev_id or next_id:
         pn = ""
         if prev_id:
-            pn += f'<a class="prev" rel="prev" href="{esc(safe_slug(prev_id))}.html">← {esc((by_id[prev_id].get("title") or prev_id)[:70])}</a>'
+            pn += f'<a class="prev" rel="prev" href="/e/{esc(safe_slug(prev_id))}">← {esc((by_id[prev_id].get("title") or prev_id)[:70])}</a>'
         if next_id:
-            pn += f'<a class="next" rel="next" href="{esc(safe_slug(next_id))}.html">{esc((by_id[next_id].get("title") or next_id)[:70])} →</a>'
-        out.append(f'<nav class="pn" aria-label="Previous and next in {esc(coll)}" data-pagefind-ignore>{pn}</nav>')
+            pn += f'<a class="next" rel="next" href="/e/{esc(safe_slug(next_id))}">{esc((by_id[next_id].get("title") or next_id)[:70])} →</a>'
+        out.append(f'<nav class="pn" aria-label="Previous and next in {esc(cname)}" data-pagefind-ignore>{pn}</nav>')
     return crumbs, "\n  ".join(out)
 
 
@@ -328,7 +331,7 @@ def render_one(row: dict, lookups: dict | None = None) -> str:
     if row.get("creator"): meta_bits.append(esc(row["creator"]))
     if row.get("date"): meta_bits.append(esc(row["date"]))
     cols = row.get("collections") or []
-    if cols: meta_bits.append("in " + ", ".join(esc(c) for c in cols))
+    if cols: meta_bits.append("in " + ", ".join(f'<a href="{collection_url(c)}">{esc(collection_name(c))}</a>' for c in cols))
     meta = " · ".join(meta_bits)
     source_link = (
         f'<a class="primary" href="{esc(row["url"])}" target="_blank" rel="noopener">Open post ↗</a>'
@@ -360,46 +363,72 @@ def render_one(row: dict, lookups: dict | None = None) -> str:
 
 
 def render_index(rows: list[dict]) -> str:
-    rows = sorted(rows, key=lambda r: (r.get("tier") or "Z", r.get("title") or ""))
-    cards = []
+    """All entries on one static page, grouped by collection (jump links at top), tier then
+    title within a group. Every card links /e/<id>; every group header links /collections/<c>."""
+    groups: dict[str, list[dict]] = defaultdict(list)
     for r in rows:
-        rid = r.get("id")
-        if not rid: continue
-        cards.append(
-            f'<a class="entry-card" href="{esc(safe_slug(rid))}.html">'
-            f'  <div class="row">{_tier_pill(r.get("tier") or "C")} {_pill(r.get("type") or "resource")}</div>'
-            f'  <h3>{esc((r.get("title") or "(untitled)")[:90])}</h3>'
-            f'  <div class="meta">{esc(r.get("creator") or "")}'
-            + (f' · {esc(", ".join(r.get("collections") or []))}' if r.get("collections") else "")
-            + "</div>"
-            f'  <p>{esc((r.get("summary") or "")[:180])}{"…" if (r.get("summary") or "") and len(r["summary"])>180 else ""}</p>'
-            "</a>"
-        )
-    body = "\n".join(cards)
+        if r.get("id"):
+            groups[r.get("collection") or r.get("source_collection") or ""].append(r)
+    order = sorted(groups, key=lambda c: (-len(groups[c]), c))
+    total = sum(len(v) for v in groups.values())
+    jump = " ".join(f'<a href="#c-{esc(c or "none")}">{esc(collection_name(c) if c else "Uncollected")} '
+                    f'<span>{len(groups[c])}</span></a>' for c in order)
+    sections = []
+    for c in order:
+        cards = []
+        for r in sorted(groups[c], key=lambda r: (r.get("tier") or "Z", r.get("title") or "")):
+            summ = r.get("summary") or ""
+            cards.append(
+                f'<a class="entry-card" href="/e/{esc(safe_slug(r["id"]))}">'
+                f'  <div class="row">{_tier_pill(r.get("tier") or "C")} {_pill(r.get("type") or "resource")}</div>'
+                f'  <h3>{esc((r.get("title") or "(untitled)")[:90])}</h3>'
+                f'  <div class="meta">{esc(r.get("creator") or "")}</div>'
+                f'  <p>{esc(summ[:180])}{"…" if len(summ) > 180 else ""}</p>'
+                "</a>")
+        head = (f'<a href="{collection_url(c)}">{esc(collection_name(c))}</a>' if c else "Uncollected")
+        sections.append(f'<section class="group" id="c-{esc(c or "none")}"><h2>{head} '
+                        f'<span class="n">{len(groups[c])} entries</span></h2>'
+                        f'<div class="entries">\n' + "\n".join(cards) + "\n</div></section>")
+    body = "\n".join(sections)
     return f"""<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><title>All Entries — DejaViewed</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
 <style>
-  main.entries {{ max-width: 1200px; margin: 24px auto 80px; padding: 0 20px;
-                  display: grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr)); gap: 14px; }}
+  main.all {{ max-width: 1200px; margin: 24px auto 40px; padding: 0 20px; }}
+  main.all h1 {{ font: 700 28px/1.2 Inter, system-ui; margin: 8px 0 8px; color: var(--text); }}
+  main.all .lead {{ color: var(--text-dim); font-size: 14px; margin: 0 0 14px; }}
+  main.all .lead a {{ color: var(--accent); }}
+  nav.jump {{ display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }}
+  nav.jump a {{ font: 400 11px/1 'JetBrains Mono', ui-monospace, monospace; color: var(--text-dim); text-decoration: none;
+               border: 1px solid var(--border); border-radius: 999px; padding: 5px 10px; background: var(--panel); }}
+  nav.jump a:hover {{ border-color: var(--accent); color: var(--text); }}
+  nav.jump span {{ color: var(--text-mute); }}
+  .group h2 {{ font: 600 18px/1.3 Inter, system-ui; margin: 32px 0 12px; scroll-margin-top: 70px; }}
+  .group h2 a {{ color: var(--text); text-decoration: none; }}
+  .group h2 a:hover {{ color: var(--accent); }}
+  .group h2 .n {{ color: var(--text-mute); font: 400 11px/1 'JetBrains Mono', ui-monospace, monospace; margin-left: 8px; }}
+  .entries {{ display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 14px; }}
   .entry-card {{ display:block; background:var(--panel); border:1px solid var(--border);
                  border-radius:12px; padding:14px 16px; color:var(--text); text-decoration:none;
                  transition:border-color .15s, transform .15s; }}
   .entry-card:hover {{ border-color: var(--accent); transform: translateY(-2px); }}
   .entry-card h3 {{ font: 600 15px/1.35 Inter, system-ui; margin:8px 0 6px; color: var(--text); }}
   .entry-card .row {{ display:flex; gap:6px; font-size:11px; }}
-  .entry-card .meta {{ color: var(--muted); font-size: 12px; margin-bottom: 8px; }}
-  .entry-card p {{ color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }}
+  .entry-card .meta {{ color: var(--text-mute); font-size: 12px; margin-bottom: 8px; }}
+  .entry-card p {{ color: var(--text-mute); font-size: 13px; line-height: 1.5; margin: 0; }}
   .pill {{ display:inline-block; padding:2px 8px; border-radius:999px; background:var(--panel-2);
-          color:var(--muted); border:1px solid var(--border); font-size:11px; }}
+          color:var(--text-mute); border:1px solid var(--border); font-size:11px; }}
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
-<main class="entries">
+<main class="all">
+<h1>All {total} entries</h1>
+<p class="lead">Every saved post, grouped by collection, best tier first. Each collection also has its own page:
+<a href="/collections/">browse collections</a>.</p>
+<nav class="jump" aria-label="Collections on this page">{jump}</nav>
 {body}
 </main>
 </body></html>

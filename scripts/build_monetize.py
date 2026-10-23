@@ -342,6 +342,15 @@ def main() -> int:
     if args.check:
         print(f"[check] {len(would_change)} file(s) would change" + (f": {would_change[:10]}" if would_change else ""))
         return 1 if would_change else 0
+    # Guide bodies are server-rendered from the <script id="md"> source we just rewrote:
+    # re-render so the HTML body never lags the markdown (build_guides.rerender_all is idempotent).
+    if any(rel.startswith("guides/") for rel in would_change):
+        try:
+            from build_guides import rerender_all
+            n_changed, n_total = rerender_all()
+            print(f"monetize: re-rendered guide bodies ({n_changed}/{n_total} changed)")
+        except Exception as e:  # never fail the monetize pass over a render hiccup; report it
+            print(f"monetize: WARNING guide re-render skipped: {e}")
     return 0
 
 

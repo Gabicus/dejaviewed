@@ -1,22 +1,31 @@
 #!/usr/bin/env python3
-"""Write site/landing_meta.js — the small file-existence manifest the landing page needs.
+"""Write site/landing_meta.js and prerender the landing page (site/index.html).
 
-The showcase (site/index.html) is fully data-driven from catalog.js + deep_dives.js,
-but a static page can't ask the filesystem which guide / deeper-dive pages exist.
-This script answers that at build time:
+landing_meta.js is the small file-existence manifest (which guide / deeper-dive pages exist):
 
     window.__LANDING_META = {guideSlugs:[...], deeperSlugs:[...], generated:"..."}
 
 guideSlugs  — basenames (no .html) of site/guides/*.html, excluding index.html
 deeperSlugs — basenames of site/deeper/*.html with the "deeper-insight-" prefix stripped
 
+prerender_index() server-renders every data-driven region of site/index.html (hero stats,
+tier bar, destination tiles, insight dives, freshest saves, pipeline steps, footer count) from
+site/catalog.json + site/api/deep_dives.json, between idempotent markers
+`<!-- landing:<name>:start -->` / `<!-- landing:<name>:end -->`. The page then ships no catalog
+JS at all (was a 2.7 MB blocking script) and has nothing to shift after first paint.
+Everything stays computed from the data at build time; scripts/catalog_js.py re-runs the
+prerender after cms.py has written the final catalog.json.
+
 Run after build_guides.py / deeper_dives.py:  python3 scripts/build_landing_meta.py
 """
 from __future__ import annotations
 
+import html
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import quote
 
 SITE = Path(__file__).resolve().parent.parent / "site"
 
@@ -40,13 +49,17 @@ def _prompt_count() -> int:
     return len(json.loads(p.read_text())) if p.exists() else 0
 
 
-def main() -> None:
-    meta = {
+def build_meta() -> dict:
+    return {
         "guideSlugs": slugs(SITE / "guides"),
         "deeperSlugs": slugs(SITE / "deeper", "deeper-insight-"),
         "promptCount": _prompt_count(),
         "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
+
+
+def main() -> None:
+    meta = build_meta()
     body = json.dumps(meta, ensure_ascii=False, separators=(",", ":"))
     out = SITE / "landing_meta.js"
     out.write_text(
@@ -56,6 +69,226 @@ def main() -> None:
     )
     print(f"[build_landing_meta] {len(meta['guideSlugs'])} guides, "
           f"{len(meta['deeperSlugs'])} deeper dives -> {out.relative_to(SITE.parent)}")
+    prerender_index(meta)
+
+
+# ── landing prerender ────────────────────────────────────────────────────────
+
+esc = lambda s: html.escape(str(s), quote=True)  # noqa: E731
+fmt = lambda n: f"{n:,}" if isinstance(n, int) else "—"  # noqa: E731
+KNOWN_CATS = {"repo", "tool", "skill", "guide", "platform", "resource", "art", "design", "uiux", "technique"}
+INITIAL_DIVES = 9
+
+
+def strip_tags(s) -> str:
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]*>", "", str(s or ""))).strip()
+
+
+def clip(s, n: int) -> str:
+    s = strip_tags(s)
+    if len(s) <= n:
+        return s
+    cut = s[:n]
+    sp = cut.rfind(" ")
+    return re.sub(r"[\s,;:—–-]+$", "", cut[:sp] if sp > n * 0.6 else cut) + "…"
+
+
+def parse_date(s):
+    try:
+        dt = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
+def patch(text: str, name: str, inner: str) -> str:
+    start, end = f"<!-- landing:{name}:start -->", f"<!-- landing:{name}:end -->"
+    pat = re.compile(re.escape(start) + r".*?" + re.escape(end), re.S)
+    if not pat.search(text):
+        raise SystemExit(f"[build_landing_meta] marker {start} missing in index.html")
+    return pat.sub(lambda _m: start + inner + end, text, count=1)
+
+
+def thumb_for(e: dict):
+    for cand in (e.get("post_id"), e.get("id")):
+        if cand:
+            rel = "thumb/" + str(cand).replace("/", "_") + ".jpg"
+            if (SITE / rel).is_file():
+                try:
+                    from PIL import Image
+                    with Image.open(SITE / rel) as im:
+                        return rel, im.size
+                except Exception:
+                    return rel, None
+    return None, None
+
+
+def prerender_index(meta: dict | None = None) -> None:
+    meta = meta or build_meta()
+    page = SITE / "index.html"
+    cat = json.loads((SITE / "catalog.json").read_text(encoding="utf-8"))
+    dd_path = SITE / "api" / "deep_dives.json"
+    dd = json.loads(dd_path.read_text(encoding="utf-8")) if dd_path.exists() else {}
+    entries = cat.get("entries", [])
+    stats = cat.get("stats", {})
+    tiers = stats.get("tiers", {})
+    dives = dd.get("deep_dives", [])
+    curated = [d for d in dives if d.get("suggested_by") == "curated"]
+    guide_set, deeper_set = set(meta["guideSlugs"]), set(meta["deeperSlugs"])
+
+    n_entries = len(entries) or stats.get("total", 0)
+    n_coll = len(stats.get("collections") or {}) or len(
+        {e.get("collection") or e.get("source_collection") for e in entries} - {None, ""})
+    n_creators = len({(e.get("creator") or "").lower() for e in entries} - {""})
+    n_s = tiers["S"] if "S" in tiers else sum(e.get("tier") == "S" for e in entries)
+    n_trans = sum(1 for e in entries if str(e.get("transcript") or "").strip())
+    n_dives, n_guides, n_deeper = len(dives), len(meta["guideSlugs"]), len(meta["deeperSlugs"])
+    n_prompts = meta.get("promptCount") or None
+    idx = cat.get("indices", {})
+    n_tools, n_tech = len(idx.get("by_tool") or {}), len(idx.get("by_technique") or {})
+
+    text = page.read_text(encoding="utf-8")
+
+    # Hero stats
+    stat_defs = [(n_entries, "Entries", "/catalog", "big"), (n_coll, "Collections", "/catalog", ""),
+                 (n_creators, "Creators", "/graph", ""), (n_s, "S-tier", "/catalog", "s"),
+                 (n_trans, "Transcripts", "/catalog", ""), (n_dives, "Deep dives", "#insight-dives", ""),
+                 (n_guides, "Guides", "/guides/", "")]
+    text = patch(text, "stats", "".join(
+        f'<a class="stat{" " + c if c else ""}" href="{h}"><span class="v">{fmt(v)}</span>'
+        f'<span class="l">{label}</span></a>' for v, label, h, c in stat_defs))
+
+    # Tier bar
+    order = [("S", "var(--c-entry-s)"), ("A", "var(--c-entry-a)"), ("B", "var(--c-entry-b)"), ("C", "var(--c-entry-c)")]
+    total = sum(tiers.get(t, 0) for t, _ in order)
+    tierbar = ""
+    if total:
+        aria = "Tier distribution: " + ", ".join(f"{t} {tiers.get(t, 0)}" for t, _ in order)
+        segs = "".join(f'<i style="width:{100 * tiers.get(t, 0) / total:.2f}%;background:{c}"></i>' for t, c in order)
+        keys = "".join(f'<span><i style="background:{c}"></i>{t} <b>{fmt(tiers.get(t, 0))}</b></span>' for t, c in order)
+        tierbar = (f'<div class="label" style="margin-bottom:8px">Tier mix</div>'
+                   f'<div class="bar" role="img" aria-label="{esc(aria)}">{segs}</div><div class="key">{keys}</div>')
+    text = patch(text, "tierbar", tierbar)
+    text = patch(text, "count", f"{fmt(n_entries)} entries · {fmt(n_dives)} deep dives." if n_entries else "")
+
+    # Destination tiles
+    dest = [
+        ("◉", "", "Catalog", "/catalog", n_entries, "entries",
+         "Every save, searchable and filterable by tier, type, collection and creator. The whole pile, finally legible."),
+        ("◆", "", "Guides", "/guides/", n_guides, "guides",
+         "Long-form write-ups that stitch several saves into one plan — with the links the creators never gave you."),
+        ("⬢", "g-pink", "Deeper dives", "#insight-dives", n_deeper, "deeper",
+         "The second pass on each insight — sources chased down, steps spelled out, rough edges named."),
+        ("❯", "g-ok", "Prompt systems", "/prompts", n_prompts, "systems",
+         "One pasteable prompting system per dive and guide: deeper-not-bigger rewrite, one-shot, step prompts "
+         "with audits, gap analysis, oracles."),
+        ("⬡", "g-blue", "Graph · Force", "/graph", n_creators, "creators",
+         "A force-directed map of the creators you keep saving, and the tools and techniques they share."),
+        ("✦", "g-blue", "Graph · Cosmos", "/graph-cosmos", n_tools + n_tech, "tools + techniques",
+         "The same knowledge as a drifting canvas galaxy. Zoom out to see the clusters you didn’t know you had."),
+        ("▦", "g-pink", "Board", "/board", None, "",
+         "A drag-to-connect thought board. Pull saves onto a canvas and wire them into projects and ideas."),
+        ("❯", "g-ok", "API for agents", None, None, "",
+         "Machine-readable everything. Point your agent at it and skip the scraping."),
+        ("▪", "", "About", "/about/", None, "", "Who curates this pile, and the rest of what they build."),
+        ("↗", "g-gold", "Links", "/links/", None, "", "Everywhere else the curator lives online — one page, no algorithm."),
+    ]
+    chips = [("api/catalog.json", "/api/catalog.json"), ("api/prompts.json", "/api/prompts.json"),
+             ("llms.txt", "/llms.txt"), ("context.md", "/context.md")]
+    tiles = []
+    for g, gc, title, href, n, unit, desc in dest:
+        num = f'<span class="num">{fmt(n)}<small>{esc(unit)}</small></span>' if n is not None else ""
+        body = (f'<div class="top"><span class="glyph {gc}" aria-hidden="true">{g}</span>{num}</div>'
+                f"<h3>{esc(title)}</h3><p>{esc(desc)}</p>")
+        if href is None:
+            body += '<div class="chips">' + "".join(f'<a class="chip" href="{h}">{esc(lb)}</a>' for lb, h in chips) + "</div>"
+            tiles.append(f'<div class="tile">{body}</div>')
+        else:
+            tiles.append(f'<a class="tile" href="{href}">{body}</a>')
+    text = patch(text, "dest", "".join(tiles))
+
+    # Insight dives
+    classes = dd.get("classes") or {}
+    ranked = sorted(curated, key=lambda d: str(d.get("title") or ""))
+    ranked = sorted(ranked, key=lambda d: -(d.get("quality_rating") or 0))
+
+    def dive_card(d: dict) -> str:
+        slug = re.sub(r"^dd-insight-", "", str(d.get("id") or ""))
+        has_guide = slug in guide_set
+        href = f"/guides/{quote(slug)}" if has_guide else f"/catalog#dive-{quote(str(d.get('id') or ''))}"
+        cls = d.get("class") or d.get("dive_class") or d.get("dive_type") or ""
+        cls_label = (classes.get(cls) or {}).get("label") or cls.replace("_", " ")
+        r = max(0, min(5, round(d.get("quality_rating") or 0)))
+        n = len(d.get("entry_ids") or []) or d.get("entry_count") or 0
+        meta_html = f"<span>{n} {'entry' if n == 1 else 'entries'}</span>"
+        if slug in deeper_set:
+            meta_html += f'<a href="/deeper/deeper-insight-{quote(slug)}" title="Deeper dive">deeper ↗</a>'
+        meta_html += f'<span class="go">{"guide →" if has_guide else "in catalog →"}</span>'
+        title = strip_tags(d.get("title") or "")
+        return (f'<article class="tile hov dive"><a class="cover" href="{href}" aria-label="{esc(title or "Insight dive")}"></a>'
+                f'<div class="eb"><span class="eyebrow">{esc(cls_label)}</span>'
+                f'<span class="stars" aria-label="{r} of 5">{"★" * r}<span class="off">{"★" * (5 - r)}</span></span></div>'
+                f"<h3>{esc(title)}</h3><p>{esc(clip(d.get('thesis') or d.get('summary') or '', 180))}</p>"
+                f'<div class="meta">{meta_html}</div></article>')
+
+    if ranked:
+        text = patch(text, "dives", "".join(dive_card(d) for d in ranked[:INITIAL_DIVES]))
+        more = ranked[INITIAL_DIVES:]
+        showall = ""
+        if more:
+            showall = (f'<template id="more-dives">{"".join(dive_card(d) for d in more)}</template>'
+                       f'<button class="btn" type="button" id="showall-btn">Show all {len(ranked)} insight dives</button>')
+        text = patch(text, "showall", showall)
+        text = patch(text, "dives-sub", f"{len(ranked)} hand-picked threads that only show up when you read a few "
+                                        "hundred saves side by side — each one stitched from the entries that prove it.")
+    else:
+        text = patch(text, "dives", '<div class="err">No curated dives found.</div>')
+        text = patch(text, "showall", "")
+        text = patch(text, "dives-sub", "Hand-picked threads that only show up when you read a few hundred saves "
+                                        "side by side — each one stitched from the entries that prove it.")
+
+    # Freshest saves
+    dated = [(e, parse_date(e.get("date"))) for e in entries]
+    fresh = sorted([x for x in dated if x[1]], key=lambda x: x[1], reverse=True)[:8]
+    cards = []
+    for e, dt in fresh:
+        typ = str(e.get("type") or "").lower()
+        known = typ in KNOWN_CATS
+        rel, dims = thumb_for(e)
+        img = ""
+        if rel:
+            wh = f' width="{dims[0]}" height="{dims[1]}"' if dims else ""
+            img = f'<img src="{esc(rel)}" alt="" loading="lazy" decoding="async"{wh}>'
+        tier = str(e.get("tier") or "C").upper()
+        href = e.get("url") or f"/catalog#post-{quote(str(e.get('id') or ''))}"
+        style = f' style="--cat:var(--c-{typ})"' if known else ""
+        title = strip_tags(e.get("title") or e.get("summary") or e.get("post_id") or "Untitled save")
+        who = "@" + e["creator"] if e.get("creator") else "unknown"
+        cards.append(f'<a class="tile save{" cat" if known else ""}" href="{esc(href)}" target="_blank" rel="noopener"{style}>'
+                     f'<div class="th">{img}</div><div class="bd"><div class="hd"><h3>{esc(title)}</h3>'
+                     f'<span class="chiptier tier-{tier.lower()}">{tier}</span></div>'
+                     f'<div class="meta">{esc(who)} · {dt.strftime("%b")} {dt.day}, {dt.year}</div></div></a>')
+    text = patch(text, "fresh", "".join(cards) or '<div class="err">Catalog data didn’t load.</div>')
+
+    # Pipeline steps
+    steps = [("Pull", "Saves come out of Instagram, TikTok, X, Reddit, YouTube, Pinterest and your bookmarks.",
+              f"{fmt(n_coll)} collections"),
+             ("Transcribe", "Reels and videos get run through Whisper, so what was said is searchable too.",
+              f"{fmt(n_trans)} transcripts"),
+             ("Enrich", "Each save gets a real title, a summary, tools, techniques, repos and a tier.", f"{fmt(n_s)} made S-tier"),
+             ("Curate", "Saves get read side by side; the threads worth pulling become insight dives.",
+              f"{fmt(len(curated))} curated dives"),
+             ("Publish", "Out comes this site — catalog, guides, graphs — plus an agent-readable layer.",
+              f"{fmt(n_guides)} guides live")]
+    text = patch(text, "steps", "".join(
+        f'<div class="step"><span class="n"><b>0{i + 1}</b> ──</span><h3>{h}</h3><p>{esc(p)}</p>'
+        f'<span class="live">◉ {esc(live)}</span></div>' for i, (h, p, live) in enumerate(steps)))
+
+    if page.read_text(encoding="utf-8") != text:
+        page.write_text(text, encoding="utf-8")
+        print(f"[build_landing_meta] prerendered index.html ({n_entries} entries, {len(ranked)} curated dives)")
+    else:
+        print("[build_landing_meta] index.html prerender unchanged")
 
 
 if __name__ == "__main__":

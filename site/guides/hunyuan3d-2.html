@@ -1,25 +1,25 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator · DejaViewed</title>
+<title>Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator</title>
 <!-- seo:start -->
 <link rel="canonical" href="https://dejaviewed.dev/guides/hunyuan3d-2">
-<meta name="description" content="Hunyuan3D-2 is Tencent&#x27;s open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR)…">
+<meta name="description" content="Hunyuan3D-2 is Tencent&#x27;s open-source two-stage 3D asset generator. Includes a 7-step prompt system.">
 <meta property="og:site_name" content="DejaViewed">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hunyuan3D-2 — Tencent&#x27;s Open Image-to-3D Mesh Generator">
-<meta property="og:description" content="Hunyuan3D-2 is Tencent&#x27;s open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR)…">
+<meta property="og:description" content="Hunyuan3D-2 is Tencent&#x27;s open-source two-stage 3D asset generator. Includes a 7-step prompt system.">
 <meta property="og:url" content="https://dejaviewed.dev/guides/hunyuan3d-2">
 <meta property="og:image" content="https://dejaviewed.dev/og/hunyuan3d-2.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Hunyuan3D-2 — Tencent&#x27;s Open Image-to-3D Mesh Generator">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Hunyuan3D-2 — Tencent&#x27;s Open Image-to-3D Mesh Generator">
-<meta name="twitter:description" content="Hunyuan3D-2 is Tencent&#x27;s open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR)…">
+<meta name="twitter:description" content="Hunyuan3D-2 is Tencent&#x27;s open-source two-stage 3D asset generator. Includes a 7-step prompt system.">
 <meta name="twitter:image" content="https://dejaviewed.dev/og/hunyuan3d-2.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/hunyuan3d-2#article","headline":"Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator","description":"Hunyuan3D-2 is Tencent's open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR)…","url":"https://dejaviewed.dev/guides/hunyuan3d-2","mainEntityOfPage":"https://dejaviewed.dev/guides/hunyuan3d-2","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/hunyuan3d-2.jpg","about":[{"@type":"Thing","name":"Hunyuan3D"},{"@type":"Thing","name":"Hunyuan3D-2"},{"@type":"Thing","name":"Tencent"}],"abstract":"Run Tencent's Hunyuan3D-2 locally as a reproducible image-to-3D pipeline: reference image in, cleaned and textured GLB out, measured for VRAM, time, mesh validity, and fidelity to the input, then extended to the text-to-image-to-mesh chain and a Blender import."},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/hunyuan3d-2#faq","mainEntity":[{"@type":"Question","name":"Are watertight results reported for raw or cleaned meshes, and does cleanup destroy thin parts?","acceptedAnswer":{"@type":"Answer","text":"trimesh iswatertight and degenerate-face checks on cleaned meshes, with rates reported per variant."}},{"@type":"Question","name":"Do textured GLBs embed images, and do they look right under neutral lighting in Blender?","acceptedAnswer":{"@type":"Answer","text":"Step 3, Write the batch runner with preprocessing and cleanup: One script turns a folder of references into cleaned GLBs with timing and VRAM logs. Expect: runbatch.py under 250 lines; a smoke run on 2 images producing 4 GLBs and a 2-row results.csv."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","logo":"https://dejaviewed.dev/og/default.png","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"],"founder":{"@id":"https://dejaviewed.dev/#victor"},"publishingPrinciples":"https://dejaviewed.dev/method"},{"@type":"Person","@id":"https://dejaviewed.dev/#victor","name":"Victor","url":"https://www.1gabe.com/","sameAs":["https://github.com/Gabicus","https://instagram.com/6ab3"],"contactPoint":{"@type":"ContactPoint","url":"https://www.1gabe.com/contact/","contactType":"general"}},{"@type":"Article","@id":"https://dejaviewed.dev/guides/hunyuan3d-2#article","headline":"Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator","description":"Hunyuan3D-2 is Tencent's open-source two-stage 3D asset generator. Includes a 7-step prompt system.","url":"https://dejaviewed.dev/guides/hunyuan3d-2","mainEntityOfPage":"https://dejaviewed.dev/guides/hunyuan3d-2","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@id":"https://dejaviewed.dev/#victor"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/hunyuan3d-2.jpg","about":[{"@type":"Thing","name":"Hunyuan3D"},{"@type":"Thing","name":"Hunyuan3D-2"},{"@type":"Thing","name":"Tencent"}],"abstract":"Run Tencent's Hunyuan3D-2 locally as a reproducible image-to-3D pipeline: reference image in, cleaned and textured GLB out, measured for VRAM, time, mesh validity, and fidelity to the input, then extended to the text-to-image-to-mesh chain and a Blender import."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator"}]}]}</script>
 <!-- seo:end -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
 <style>
@@ -67,204 +67,284 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <script>DV.mountHeader(document.body, 'home');</script>
 <article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
-  <div id="guide-body"></div>
-</article>
-<footer class="site"><div class="wrap"><a href="../catalog.html#post-DIcw6N6snq1">← Back to DejaViewed</a> · <a href="../e/DIcw6N6snq1.html">Entry page</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
-<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+  <div id="guide-body" data-pagefind-body data-pagefind-filter="kind:Guide"><!-- body:start -->
 <h1>Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator</h1>
-<p>In short: Run Tencent's Hunyuan3D-2 locally as a reproducible image-to-3D pipeline: reference image in, cleaned and textured GLB out, measured for VRAM, time, mesh validity, and fidelity to the input, then extended to the text-to-image-to-mesh chain and a Blender import.</p>
-<p>GitHub: https://github.com/Tencent-Hunyuan/Hunyuan3D-2 Latest: Hunyuan3D-2.1 (PBR, production-ready materials) — https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1 License: Tencent Hunyuan Community License (open weights, some commercial restrictions for very large companies) Repo status: Not cloned locally — the code is small (a few hundred MB) but model weights are 50 GB+ and are best pulled on demand from Hugging Face (tencent/Hunyuan3D-2 and tencent/Hunyuan3D-2.1). Clone only when you're ready to run it.</p>
-<h2>What it is</h2>
-<p>Hunyuan3D-2 is Tencent's open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR) surface, ready to drop into Blender, Unity, Unreal, or any standard DCC pipeline. It is the largest and most capable openly released image-to-3D model as of this writing, and it's the missing piece that has a companion: HY-Motion (Tencent's text-to-motion model), available at ~/projects/ai3-resources/repos/HY-Motion-1.0/. Together they form a near-complete text → 3D character → animation pipeline (more on this below).</p>
-<p>The release is actually a family of models, not a single checkpoint. There's a shape generator that hallucinates geometry from the image, a texture generator that paints the bare mesh, "Turbo" and "Fast" distilled variants for speed, a 600M "mini" variant for low-VRAM setups, and a multiview variant that takes 2–4 views of the same object for much better back/side reconstruction. Version 2.1 adds a full PBR texture stack (albedo / metallic-roughness / normal) so the outputs drop straight into a modern render engine without manual material fixup.</p>
-<p>It is important to note: Hunyuan3D-2 is image-to-3D only. It does not natively read text prompts. The text-to-3D workflow everyone uses is "text → SDXL/Flux image → Hunyuan3D-2 mesh," which is what Tencent's own demos do internally. If you want single-call text-to-3D with open weights, this is not that tool — use Trellis or Tripo's hosted API for that (see guides/blender-mcp-tripo-pipeline.md).</p>
-<h2>How it works under the hood</h2>
-<p>Stage 1 — Shape generation (Hunyuan3D-DiT). A diffusion transformer operating in a latent 3D representation. The input image is encoded by a DINOv2-style vision encoder; the DiT denoises a latent volume conditioned on those features; a VAE decoder reconstructs an SDF (signed distance field) which is marched to a triangle mesh. The model was trained on tens of millions of 3D assets with rendered multiview supervision.</p>
-<p>Hunyuan3D-DiT-v2-0 — 1.1B params, standard quality</p>
-<p>Hunyuan3D-DiT-v2-0-Fast — 1.1B, guidance-distilled (fewer CFG steps)</p>
-<p>Hunyuan3D-DiT-v2-0-Turbo — 1.1B, step-distilled (6–8 steps vs 50)</p>
-<p>Hunyuan3D-DiT-v2-mini — 0.6B, low-VRAM variant</p>
-<p>Hunyuan3D-DiT-v2-mv — 1.1B multiview — feed 2–4 images of the same object</p>
-<p>Hunyuan3D-DiT-v2-1 — 3.0B, v2.1 release with new VAE and PBR-aware geometry</p>
-<p>Stage 2 — Texture generation (Hunyuan3D-Paint). A multi-view diffusion model that paints the bare mesh. It renders the mesh from 6+ canonical viewpoints, diffuses textures on each view jointly (with cross-view attention for consistency), then bakes them back into a UV atlas. v2.1's Paint model outputs a full PBR set.</p>
-<p>Hunyuan3D-Paint-v2-0 — 1.3B standard</p>
-<p>Hunyuan3D-Paint-v2-0-Turbo — 1.3B distilled</p>
-<p>v2.1 Paint — adds albedo / metallic-roughness / normal outputs</p>
-<p>Output is always a trimesh.Trimesh object, which you can export as GLB, OBJ, PLY, STL, FBX — anything trimesh supports. GLB is the recommended default since it embeds textures and PBR materials in one file.</p>
-<h2>System requirements</h2>
+<blockquote>
+<p><strong>In short:</strong> Run Tencent's Hunyuan3D-2 locally as a reproducible image-to-3D pipeline: reference image in, cleaned and textured GLB out, measured for VRAM, time, mesh validity, and fidelity to the input, then extended to the text-to-image-to-mesh chain and a Blender import.</p>
+</blockquote>
+<p><strong>GitHub:</strong> <a href="https://github.com/Tencent-Hunyuan/Hunyuan3D-2" target="_blank" rel="noopener">https://github.com/Tencent-Hunyuan/Hunyuan3D-2</a>
+<strong>Latest:</strong> Hunyuan3D-2.1 (PBR, production-ready materials) — <a href="https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1" target="_blank" rel="noopener">https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1</a>
+<strong>License:</strong> Tencent Hunyuan Community License (open weights, some commercial restrictions for very large companies)
+<strong>Size:</strong> the code is small (a few hundred MB) but model weights are 50 GB+ and are best pulled on demand from Hugging Face (<code>tencent/Hunyuan3D-2</code> and <code>tencent/Hunyuan3D-2.1</code>). Clone only when you're ready to run it.</p>
+<hr />
+<h2 id="what-it-is">What it is</h2>
+<p>Hunyuan3D-2 is Tencent's open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR) surface, ready to drop into Blender, Unity, Unreal, or any standard DCC pipeline. It is the largest and most capable openly released image-to-3D model as of this writing, and it's the missing piece that has a companion: <strong>HY-Motion</strong> (Tencent's text-to-motion model), available at <code>./repos/HY-Motion-1.0/</code>. Together they form a near-complete text → 3D character → animation pipeline (more on this below).</p>
+<p>The release is actually a family of models, not a single checkpoint. There's a shape generator that hallucinates geometry from the image, a texture generator that paints the bare mesh, &quot;Turbo&quot; and &quot;Fast&quot; distilled variants for speed, a 600M &quot;mini&quot; variant for low-VRAM setups, and a multiview variant that takes 2–4 views of the same object for much better back/side reconstruction. Version 2.1 adds a full PBR texture stack (albedo / metallic-roughness / normal) so the outputs drop straight into a modern render engine without manual material fixup.</p>
+<p>It is important to note: <strong>Hunyuan3D-2 is image-to-3D only.</strong> It does not natively read text prompts. The text-to-3D workflow everyone uses is &quot;text → SDXL/Flux image → Hunyuan3D-2 mesh,&quot; which is what Tencent's own demos do internally. If you want single-call text-to-3D with open weights, this is not that tool — use Trellis or Tripo's hosted API for that (see <code>guides/blender-mcp-tripo-pipeline.md</code>).</p>
+<hr />
+<h2 id="how-it-works-under-the-hood">How it works under the hood</h2>
+<p><strong>Stage 1 — Shape generation (Hunyuan3D-DiT).</strong> A diffusion transformer operating in a latent 3D representation. The input image is encoded by a DINOv2-style vision encoder; the DiT denoises a latent volume conditioned on those features; a VAE decoder reconstructs an SDF (signed distance field) which is marched to a triangle mesh. The model was trained on tens of millions of 3D assets with rendered multiview supervision.</p>
+<ul>
+<li><code>Hunyuan3D-DiT-v2-0</code> — 1.1B params, standard quality</li>
+<li><code>Hunyuan3D-DiT-v2-0-Fast</code> — 1.1B, guidance-distilled (fewer CFG steps)</li>
+<li><code>Hunyuan3D-DiT-v2-0-Turbo</code> — 1.1B, step-distilled (6–8 steps vs 50)</li>
+<li><code>Hunyuan3D-DiT-v2-mini</code> — 0.6B, low-VRAM variant</li>
+<li><code>Hunyuan3D-DiT-v2-mv</code> — 1.1B multiview — feed 2–4 images of the same object</li>
+<li><code>Hunyuan3D-DiT-v2-1</code> — 3.0B, v2.1 release with new VAE and PBR-aware geometry</li>
+</ul>
+<p><strong>Stage 2 — Texture generation (Hunyuan3D-Paint).</strong> A multi-view diffusion model that paints the bare mesh. It renders the mesh from 6+ canonical viewpoints, diffuses textures on each view jointly (with cross-view attention for consistency), then bakes them back into a UV atlas. v2.1's Paint model outputs a full PBR set.</p>
+<ul>
+<li><code>Hunyuan3D-Paint-v2-0</code> — 1.3B standard</li>
+<li><code>Hunyuan3D-Paint-v2-0-Turbo</code> — 1.3B distilled</li>
+<li>v2.1 Paint — adds albedo / metallic-roughness / normal outputs</li>
+</ul>
+<p>Output is always a <code>trimesh.Trimesh</code> object, which you can export as <strong>GLB, OBJ, PLY, STL, FBX</strong> — anything trimesh supports. GLB is the recommended default since it embeds textures and PBR materials in one file.</p>
+<hr />
+<h2 id="system-requirements">System requirements</h2>
 <p>Be honest with yourself about VRAM. This is a big model.</p>
-<p>Hunyuan3D-2.0:</p>
-<p>Shape only: 6 GB VRAM (mini) to ~10 GB (DiT-v2-0)</p>
-<p>Shape + texture: 16 GB VRAM total</p>
-<p>Fits on a single 3090, 4080, or 4090 comfortably. A 12 GB 3060 can run shape-only or the mini variant.</p>
-<p>Hunyuan3D-2.1 (PBR):</p>
-<p>Shape only: 10 GB VRAM</p>
-<p>Texture only: 21 GB VRAM</p>
-<p>Shape + texture together: 29 GB VRAM</p>
-<p>You want a 4090, A6000, or better for the full 2.1 pipeline. A single 24 GB card can do 2.1 shape + 2.0 texture as a hybrid.</p>
-<p>Disk: model weights are ~50 GB across shape + texture for v2.1. Keep them on an NVMe — loading is I/O bound.</p>
-<p>Software: Python 3.10+, PyTorch 2.1+ with CUDA 11.8 or 12.1, a C++ toolchain for the custom rasterizer/renderer. Linux is the happy path; Windows works via WSL2 or YanWenKun's WinPortable build (https://github.com/YanWenKun/Hunyuan3D-2-WinPortable). macOS works for shape only via MPS — texture gen is effectively CPU-bound and unbearably slow. There's also a GPU-poor fork at https://github.com/deepbeepmeep/Hunyuan3D-2GP that offloads aggressively for 8 GB cards.</p>
-<h2>Quick start</h2>
-<h1>clone code (small)</h1>
-<p>cd ~/projects/ai-catalogs/repos/ git clone https://github.com/Tencent-Hunyuan/Hunyuan3D-2.git cd Hunyuan3D-2</p>
-<h1>python env</h1>
-<p>python -m venv .venv &amp;&amp; source .venv/bin/activate pip install torch==2.3.0 torchvision --index-url https://download.pytorch.org/whl/cu121 pip install -r requirements.txt pip install -e .</p>
-<h1>build the custom rasterizer + renderer (required for texture gen)</h1>
-<p>cd hy3dgen/texgen/custom_rasterizer &amp;&amp; python setup.py install &amp;&amp; cd ../../.. cd hy3dgen/texgen/differentiable_renderer &amp;&amp; python setup.py install &amp;&amp; cd ../../..</p>
-<h1>weights auto-download from HF on first run; or preload:</h1>
-<p>huggingface-cli download tencent/Hunyuan3D-2 --local-dir ./weights</p>
+<p><strong>Hunyuan3D-2.0:</strong></p>
+<ul>
+<li>Shape only: <strong>6 GB VRAM</strong> (mini) to ~10 GB (DiT-v2-0)</li>
+<li>Shape + texture: <strong>16 GB VRAM</strong> total</li>
+<li>Fits on a single 3090, 4080, or 4090 comfortably. A 12 GB 3060 can run shape-only or the mini variant.</li>
+</ul>
+<p><strong>Hunyuan3D-2.1 (PBR):</strong></p>
+<ul>
+<li>Shape only: <strong>10 GB VRAM</strong></li>
+<li>Texture only: <strong>21 GB VRAM</strong></li>
+<li>Shape + texture together: <strong>29 GB VRAM</strong></li>
+<li>You want a <strong>4090, A6000, or better</strong> for the full 2.1 pipeline. A single 24 GB card can do 2.1 shape + 2.0 texture as a hybrid.</li>
+</ul>
+<p><strong>Disk:</strong> model weights are ~50 GB across shape + texture for v2.1. Keep them on an NVMe — loading is I/O bound.</p>
+<p><strong>Software:</strong> Python 3.10+, PyTorch 2.1+ with CUDA 11.8 or 12.1, a C++ toolchain for the custom rasterizer/renderer. Linux is the happy path; Windows works via WSL2 or YanWenKun's WinPortable build (<a href="https://github.com/YanWenKun/Hunyuan3D-2-WinPortable" target="_blank" rel="noopener">https://github.com/YanWenKun/Hunyuan3D-2-WinPortable</a>). macOS works for shape only via MPS — texture gen is effectively CPU-bound and unbearably slow. There's also a GPU-poor fork at <a href="https://github.com/deepbeepmeep/Hunyuan3D-2GP" target="_blank" rel="noopener">https://github.com/deepbeepmeep/Hunyuan3D-2GP</a> that offloads aggressively for 8 GB cards.</p>
+<hr />
+<h2 id="quick-start">Quick start</h2>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash"># clone code (small)
+cd ./repos/
+git clone https://github.com/Tencent-Hunyuan/Hunyuan3D-2.git
+cd Hunyuan3D-2
+
+# python env
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install torch==2.3.0 torchvision --index-url https://download.pytorch.org/whl/cu121
+pip install -r requirements.txt
+pip install -e .
+
+# build the custom rasterizer + renderer (required for texture gen)
+cd hy3dgen/texgen/custom_rasterizer &amp;&amp; python setup.py install &amp;&amp; cd ../../..
+cd hy3dgen/texgen/differentiable_renderer &amp;&amp; python setup.py install &amp;&amp; cd ../../..
+
+# weights auto-download from HF on first run; or preload:
+huggingface-cli download tencent/Hunyuan3D-2 --local-dir ./weights
+</code></pre></div>
 <p>Minimal image-to-mesh script:</p>
-<p>from hy3dgen.shapegen import Hunyuan3DDiTFlowMatchingPipeline from hy3dgen.texgen import Hunyuan3DPaintPipeline from PIL import Image</p>
-<p>img = Image.open("reference.png")</p>
-<p>shape_pipe = Hunyuan3DDiTFlowMatchingPipeline.from_pretrained("tencent/Hunyuan3D-2") mesh = shape_pipe(image=img)[0] # trimesh.Trimesh mesh.export("bare.glb")</p>
-<p>paint_pipe = Hunyuan3DPaintPipeline.from_pretrained("tencent/Hunyuan3D-2") textured = paint_pipe(mesh, image=img) textured.export("final.glb")</p>
-<p>For the Turbo variants, swap the pretrained name to tencent/Hunyuan3D-2/hunyuan3d-dit-v2-0-turbo and drop inference steps to 6. For v2.1 with PBR, use tencent/Hunyuan3D-2.1.</p>
-<p>There is also a Gradio app (python app.py), an API server (python api_server.py), and a ComfyUI integration documented at https://docs.comfy.org/tutorials/3d/hunyuan3D-2 — ComfyUI is the path of least resistance if you already use it for SDXL/Flux work.</p>
-<h2>How image-to-mesh differs from text-to-mesh</h2>
-<p>Text-to-3D tools (Shap-E, Point-E, early DreamFusion) hallucinate geometry from a text prompt alone. They're fast but vague — "a red sports car" gives you something car-shaped but generic and blurry. Image-to-3D is the dominant paradigm now because it cleanly separates concerns: let a mature 2D generator (SDXL, Flux, Midjourney) handle creative ideation and composition, then let a specialist 3D model do what it's good at — recovering geometry from pixels it can see.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-python">from hy3dgen.shapegen import Hunyuan3DDiTFlowMatchingPipeline
+from hy3dgen.texgen import Hunyuan3DPaintPipeline
+from PIL import Image
+
+img = Image.open("reference.png")
+
+shape_pipe = Hunyuan3DDiTFlowMatchingPipeline.from_pretrained("tencent/Hunyuan3D-2")
+mesh = shape_pipe(image=img)[0]          # trimesh.Trimesh
+mesh.export("bare.glb")
+
+paint_pipe = Hunyuan3DPaintPipeline.from_pretrained("tencent/Hunyuan3D-2")
+textured = paint_pipe(mesh, image=img)
+textured.export("final.glb")
+</code></pre></div>
+<p>For the Turbo variants, swap the pretrained name to <code>tencent/Hunyuan3D-2/hunyuan3d-dit-v2-0-turbo</code> and drop inference steps to 6. For v2.1 with PBR, use <code>tencent/Hunyuan3D-2.1</code>.</p>
+<p>There is also a Gradio app (<code>python app.py</code>), an API server (<code>python api_server.py</code>), and a ComfyUI integration documented at <a href="https://docs.comfy.org/tutorials/3d/hunyuan3D-2" target="_blank" rel="noopener">https://docs.comfy.org/tutorials/3d/hunyuan3D-2</a> — ComfyUI is the path of least resistance if you already use it for SDXL/Flux work.</p>
+<hr />
+<h2 id="how-image-to-mesh-differs-from-text-to-mesh">How image-to-mesh differs from text-to-mesh</h2>
+<p>Text-to-3D tools (Shap-E, Point-E, early DreamFusion) hallucinate geometry from a text prompt alone. They're fast but vague — &quot;a red sports car&quot; gives you something car-shaped but generic and blurry. Image-to-3D is the dominant paradigm now because it cleanly separates concerns: let a mature 2D generator (SDXL, Flux, Midjourney) handle creative ideation and composition, then let a specialist 3D model do what it's good at — recovering geometry from pixels it can see.</p>
 <p>Concretely with Hunyuan3D-2:</p>
-<p>Better silhouette lock. The reference image pins the silhouette exactly, so the mesh matches what you designed.</p>
-<p>Style transfers cleanly. The texture stage paints the mesh using the reference image as conditioning, so a stylized anime ref produces a stylized mesh, not a photoreal one.</p>
-<p>Front-bias problem. Single-view input means the back of the object is a hallucination. Use the mv (multiview) variant with 2–4 orthogonal views if you care about the back — it's the single biggest quality unlock.</p>
-<p>Workflow cost. You pay a 2D generation step upfront. Worth it. A Flux image → Hunyuan3D-2 mesh takes ~30 s on a 4090 and beats any pure text-to-3D open model.</p>
-<h2>Integration with HY-Motion — the full pipeline</h2>
-<p>If you have HY-Motion cloned at ~/projects/ai3-resources/repos/HY-Motion-1.0/. HY-Motion generates SMPL-X skeletal motion from text ("a character doing a backflip"). Hunyuan3D-2 generates a static character mesh from an image. Chained, you get:</p>
-<p>Text prompt → Flux/SDXL → character reference image</p>
-<p>Character image → Hunyuan3D-2 (mv variant for quality) → textured GLB</p>
-<p>Auto-rig → Mixamo auto-rigger, Blender's Rigify, or Meshy's auto-rig endpoint</p>
-<p>Motion prompt → HY-Motion → SMPL-X animation</p>
-<p>Retarget → Blender (use the Rokoko or Auto-Rig Pro retargeter) → final animated character</p>
-<p>Render → Blender Eevee/Cycles, or export FBX to Unity/Unreal</p>
+<ul>
+<li><strong>Better silhouette lock.</strong> The reference image pins the silhouette exactly, so the mesh matches what you designed.</li>
+<li><strong>Style transfers cleanly.</strong> The texture stage paints the mesh using the reference image as conditioning, so a stylized anime ref produces a stylized mesh, not a photoreal one.</li>
+<li><strong>Front-bias problem.</strong> Single-view input means the back of the object is a hallucination. Use the <strong>mv (multiview)</strong> variant with 2–4 orthogonal views if you care about the back — it's the single biggest quality unlock.</li>
+<li><strong>Workflow cost.</strong> You pay a 2D generation step upfront. Worth it. A Flux image → Hunyuan3D-2 mesh takes ~30 s on a 4090 and beats any pure text-to-3D open model.</li>
+</ul>
+<hr />
+<h2 id="integration-with-hy-motion-the-full-pipeline">Integration with HY-Motion — the full pipeline</h2>
+<p>If you have HY-Motion cloned at <code>./repos/HY-Motion-1.0/</code>. HY-Motion generates SMPL-X skeletal motion from text (&quot;a character doing a backflip&quot;). Hunyuan3D-2 generates a static character mesh from an image. Chained, you get:</p>
+<ol>
+<li><strong>Text prompt</strong> → Flux/SDXL → character reference image</li>
+<li><strong>Character image</strong> → Hunyuan3D-2 (mv variant for quality) → textured GLB</li>
+<li><strong>Auto-rig</strong> → Mixamo auto-rigger, Blender's Rigify, or Meshy's auto-rig endpoint</li>
+<li><strong>Motion prompt</strong> → HY-Motion → SMPL-X animation</li>
+<li><strong>Retarget</strong> → Blender (use the Rokoko or Auto-Rig Pro retargeter) → final animated character</li>
+<li><strong>Render</strong> → Blender Eevee/Cycles, or export FBX to Unity/Unreal</li>
+</ol>
 <p>The weak link in this chain is step 3 (auto-rigging). Hunyuan3D-2 doesn't output rigs. Mixamo works for humanoid bipeds, breaks on anything else. For non-humanoid creatures you'll need manual rigging or a tool like AnythingWorld.</p>
 <p>This is a genuinely powerful pipeline for indie game devs, VTuber creators, and previs artists. No existing commercial product bundles it this way.</p>
-<h2>What we could build with it</h2>
-<p>Character asset factory — prompt → Flux → Hunyuan3D-2 → Mixamo → Unity prefab, fully scripted</p>
-<p>Reference-to-mesh for concept artists — sketch on iPad, Hunyuan3D mesh on your desk in 60s</p>
-<p>Game jam asset pipeline — generate 20 enemies in an hour for a prototype</p>
-<p>Photogrammetry replacement for flat objects — a single photo of a coin, a leaf, a toy, becomes a usable mesh</p>
-<p>Product visualization — take a product photo, get a spinnable 3D model for an ecommerce site</p>
-<p>AR tryable objects — generate → export GLB → drop into a model-viewer web page with USDZ for iOS Quick Look</p>
-<p>Full text-to-animated-character pipeline — combined with HY-Motion (see above), this is a research-grade creative tool that would be a paid SaaS from anyone else</p>
-<p>Blender MCP driver — Hunyuan3D-2 is exposed as a tool inside the blender-mcp server (see guides/blender-mcp-tripo-pipeline.md), so Claude Code can generate a mesh and import it into Blender in one turn</p>
-<h2>Related resources in the AI3 hub</h2>
-<p>HY-Motion (Tencent text-to-motion): ~/projects/ai3-resources/repos/HY-Motion-1.0/ — direct companion</p>
-<p>Blender MCP pipeline: guides/blender-mcp-tripo-pipeline.md — how to drive Hunyuan3D-2 from Claude through Blender</p>
-<p>TouchDesigner creative coding guide: ~/projects/ai3-resources/guides/touchdesigner-creative-coding.md — for real-time visual pipelines once you've generated meshes</p>
-<p>Creative coding projection mapping: ~/projects/ai3-resources/guides/creative-coding-projection-mapping.md — use generated meshes as projection targets</p>
-<h2>Sources</h2>
-<p>Hunyuan3D-2 GitHub</p>
-<p>Hunyuan3D-2.1 GitHub</p>
-<p>ComfyUI Hunyuan3D-2 tutorial</p>
-<p>Hunyuan3D-2GP (low-VRAM fork)</p>
-<p>Hunyuan3D-2 Windows Portable</p>
-<h2>Prompt system — run this yourself</h2>
+<hr />
+<h2 id="what-we-could-build-with-it">What we could build with it</h2>
+<ul>
+<li><strong>Character asset factory</strong> — prompt → Flux → Hunyuan3D-2 → Mixamo → Unity prefab, fully scripted</li>
+<li><strong>Reference-to-mesh for concept artists</strong> — sketch on iPad, Hunyuan3D mesh on your desk in 60s</li>
+<li><strong>Game jam asset pipeline</strong> — generate 20 enemies in an hour for a prototype</li>
+<li><strong>Photogrammetry replacement for flat objects</strong> — a single photo of a coin, a leaf, a toy, becomes a usable mesh</li>
+<li><strong>Product visualization</strong> — take a product photo, get a spinnable 3D model for an ecommerce site</li>
+<li><strong>AR tryable objects</strong> — generate → export GLB → drop into a model-viewer web page with USDZ for iOS Quick Look</li>
+<li><strong>Full text-to-animated-character pipeline</strong> — combined with HY-Motion (see above), this is a research-grade creative tool that would be a paid SaaS from anyone else</li>
+<li><strong>Blender MCP driver</strong> — Hunyuan3D-2 is exposed as a tool inside the blender-mcp server (see <code>guides/blender-mcp-tripo-pipeline.md</code>), so Claude Code can generate a mesh and import it into Blender in one turn</li>
+</ul>
+<hr />
+<h2 id="related-resources-in-the-ai3-hub">Related resources in the AI3 hub</h2>
+<ul>
+<li><strong>HY-Motion (Tencent text-to-motion):</strong> <code>./repos/HY-Motion-1.0/</code> — direct companion</li>
+<li><strong>Blender MCP pipeline:</strong> <code>guides/blender-mcp-tripo-pipeline.md</code> — how to drive Hunyuan3D-2 from Claude through Blender</li>
+<li><strong>TouchDesigner creative coding guide:</strong> <code>./guides/touchdesigner-creative-coding.md</code> — for real-time visual pipelines once you've generated meshes</li>
+<li><strong>Creative coding projection mapping:</strong> <code>./guides/creative-coding-projection-mapping.md</code> — use generated meshes as projection targets</li>
+</ul>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://github.com/Tencent-Hunyuan/Hunyuan3D-2" target="_blank" rel="noopener">Hunyuan3D-2 GitHub</a></li>
+<li><a href="https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1" target="_blank" rel="noopener">Hunyuan3D-2.1 GitHub</a></li>
+<li><a href="https://docs.comfy.org/tutorials/3d/hunyuan3D-2" target="_blank" rel="noopener">ComfyUI Hunyuan3D-2 tutorial</a></li>
+<li><a href="https://github.com/deepbeepmeep/Hunyuan3D-2GP" target="_blank" rel="noopener">Hunyuan3D-2GP (low-VRAM fork)</a></li>
+<li><a href="https://github.com/YanWenKun/Hunyuan3D-2-WinPortable" target="_blank" rel="noopener">Hunyuan3D-2 Windows Portable</a></li>
+</ul>
+<hr />
+<h2 id="prompt-system">Prompt system — run this yourself</h2>
 <p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
-<p>Mission. Run Tencent's Hunyuan3D-2 locally as a reproducible image-to-3D pipeline: reference image in, cleaned and textured GLB out, measured for VRAM, time, mesh validity, and fidelity to the input, then extended to the text-to-image-to-mesh chain and a Blender import. Done means a scripted batch run on 10-20 of your own reference images with a results table (variant, steps, seconds, peak VRAM, watertight, face count, glTF validator errors, silhouette IoU), a license check for your intended use, and a clear verdict on which variant (Turbo, mini, mv, 2.1 PBR) fits your GPU and quality bar.</p>
-<h3>1 · Deeper, not bigger</h3>
+<p><strong>Mission.</strong> Run Tencent's Hunyuan3D-2 locally as a reproducible image-to-3D pipeline: reference image in, cleaned and textured GLB out, measured for VRAM, time, mesh validity, and fidelity to the input, then extended to the text-to-image-to-mesh chain and a Blender import. Done means a scripted batch run on 10-20 of your own reference images with a results table (variant, steps, seconds, peak VRAM, watertight, face count, glTF validator errors, silhouette IoU), a license check for your intended use, and a clear verdict on which variant (Turbo, mini, mv, 2.1 PBR) fits your GPU and quality bar.</p>
+<h3 id="1-deeper-not-bigger">1 · Deeper, not bigger</h3>
 <p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
-<p>What a top professional would do (that you didn't ask for): A technical artist or 3D ML engineer would read the Hunyuan3D 2.0 technical report and the 2.1 release before installing anything, pin the exact model revisions, and benchmark rather than eyeball: peak VRAM via torch.cuda.max_memory_allocated, wall time per stage, and geometric checks on every mesh. They would preprocess properly (background removal with the repo's rembg-based remover, centered and padded square crops) because input hygiene drives output quality more than variant choice. They would post-process with the repo's FloaterRemover, DegenerateFaceRemover, and FaceReducer, then validate GLBs with the Khronos glTF-Validator and import them headless into Blender to confirm they are usable assets. And they would read the Tencent Hunyuan Community License for territorial and scale restrictions before using outputs commercially.</p>
-<p>Rawest material to start from: github.com/Tencent-Hunyuan/Hunyuan3D-2 and github.com/Tencent-Hunyuan/Hunyuan3D-2.1 source (hy3dgen/shapegen, hy3dgen/texgen, hy3dgen/rembg, minimal_demo.py, app.py, api_server.py); the Hunyuan3D 2.0 technical report on arXiv and the 2.1 report; the Hugging Face model cards and file listings for tencent/Hunyuan3D-2 and tencent/Hunyuan3D-2.1 (subfolders such as hunyuan3d-dit-v2-0-turbo, hunyuan3d-paint-v2-0); the LICENSE file text; the ComfyUI tutorial at docs.comfy.org/tutorials/3d/hunyuan3D-2; the low-VRAM fork deepbeepmeep/Hunyuan3D-2GP; and your own reference images, including 2-4 orthogonal views of at least three objects for the multiview test.</p>
-<p>Methods and tools: Python 3.10 venv, PyTorch with the CUDA build matching the driver (nvidia-smi), the repo's custom_rasterizer and differentiable_renderer built from source; huggingface-cli download with --revision to pin weights; Hunyuan3DDiTFlowMatchingPipeline and Hunyuan3DPaintPipeline; BackgroundRemover from hy3dgen.rembg; FloaterRemover, DegenerateFaceRemover, FaceReducer from hy3dgen.shapegen; torch.cuda.reset_peak_memory_stats and max_memory_allocated; trimesh for is_watertight, euler_number, face counts, bounds; Khronos gltf_validator CLI; Blender 4.x headless (blender -b --python import_check.py) for import and turntable renders; silhouette IoU between the input alpha mask and a front orthographic render; fixed seeds for reproducibility.</p>
-<p>What proves it right (other than you or the model): Independent oracles: (a) Khronos glTF-Validator reports zero errors for each exported GLB; (b) Blender 4.x headless imports every GLB, renders a 4-view turntable, and reports no missing textures; (c) trimesh reports watertight meshes with no degenerate faces after cleanup; (d) silhouette IoU of the front render against the input alpha mask above a threshold you set (for example 0.85) shows the mesh matches the reference; (e) peak VRAM numbers from torch match or contradict the guide's table (6 GB mini shape, 16 GB shape+texture for 2.0, 29 GB full 2.1).</p>
-<p>Rewritten prompt — ask for exactly that:</p>
-<p>Act as a technical artist and 3D ML engineer setting up Tencent Hunyuan3D-2 on my machine (GPU: report from nvidia-smi). First read the Hunyuan3D 2.0 technical report, the repo README for Hunyuan3D-2 and 2.1, the Hugging Face model cards for tencent/Hunyuan3D-2 and tencent/Hunyuan3D-2.1, and the LICENSE; summarize variants, VRAM claims, and any territory or user-count restrictions. Clone the repo, create a Python 3.10 venv, install the CUDA-matched PyTorch, build custom_rasterizer and differentiable_renderer, and download pinned weight revisions. Write run_batch.py that, for each image in refs/: removes the background with hy3dgen.rembg, centers and pads it, generates shape with the chosen variant and seed, cleans it with FloaterRemover, DegenerateFaceRemover and FaceReducer, paints it if VRAM allows, exports GLB, and logs seconds per stage, peak VRAM, face count, watertightness, and silhouette IoU against the input mask. Run Turbo, standard, and mini (and 2.1 if it fits) on 10-20 of my images with fixed seeds. Validate every GLB with Khronos gltf_validator and a headless Blender import plus 4-view turntable render. Test the multiview variant on three objects with 2-4 views versus single view and compare back-side renders. Return results.csv, the turntable contact sheet, a variant recommendation for my GPU, the license verdict for my use, and a list of guide claims that did not hold.</p>
-<h3>2 · One-shot prompt</h3>
-<p>ROLE AND STANCE You are a technical artist and 3D ML engineer turning Tencent's Hunyuan3D-2 into a measured, reproducible image-to-3D asset pipeline on this machine. You benchmark instead of eyeballing, you pin every version, and you validate every mesh with tools other than the model that produced it.</p>
-<p>CONTEXT</p>
-<p>Code: github.com/Tencent-Hunyuan/Hunyuan3D-2 and github.com/Tencent-Hunyuan/Hunyuan3D-2.1. Weights: Hugging Face tencent/Hunyuan3D-2 and tencent/Hunyuan3D-2.1 (~50 GB for 2.1).</p>
-<p>Two stages: shape (Hunyuan3D-DiT, flow-matching DiT over a 3D latent, VAE decodes an SDF, marched to a mesh) and texture (Hunyuan3D-Paint, multiview diffusion baked to UV; 2.1 adds albedo, metallic-roughness, normal).</p>
-<p>Variants from the guide: DiT-v2-0 (1.1B), -Fast (guidance-distilled), -Turbo (step-distilled, 6-8 steps vs 50), v2-mini (0.6B), v2-mv (2-4 views), v2-1 (3.0B); Paint-v2-0 (1.3B), -Turbo, 2.1 Paint PBR.</p>
-<p>API: Hunyuan3DDiTFlowMatchingPipeline.from_pretrained('tencent/Hunyuan3D-2'); Hunyuan3DPaintPipeline.from_pretrained('tencent/Hunyuan3D-2'); outputs trimesh.Trimesh; export GLB.</p>
-<p>Claims to TEST: VRAM 6 GB shape-only mini, ~10 GB DiT-v2-0, 16 GB shape+texture for 2.0; 10 / 21 / 29 GB for 2.1 shape / texture / both; ~30 s per Flux image to mesh on a 4090; outputs 'watertight'; multiview is 'the single biggest quality unlock'; macOS texture is effectively unusable; Turbo at 6 steps is close to standard quality.</p>
-<p>Downstream chain from the guide: text -&gt; Flux/SDXL image -&gt; Hunyuan3D-2 -&gt; auto-rig (Mixamo, Rigify) -&gt; HY-Motion SMPL-X motion -&gt; Blender retarget -&gt; render. Auto-rigging is the weak link; Hunyuan3D outputs no rig.</p>
-<p>HARD CONSTRAINTS</p>
-<p>Read the LICENSE first and state whether the user's territory and intended use are permitted. If not, stop before generating assets for that use.</p>
-<p>Pin the repo commit, the weight revisions, PyTorch and CUDA versions in env.lock.md.</p>
-<p>Fixed seeds; same preprocessed image for every variant comparison.</p>
-<p>Do not exceed available VRAM by guesswork: measure with torch, and use the mini or GP fork if the full pipeline OOMs.</p>
-<p>Store weights on fast local disk; do not commit weights or generated assets to git.</p>
-<p>ORDERED DELIVERABLES</p>
-<p>ground-truth.md: GPU and driver, variant table from model cards, VRAM claims, license verdict with quoted clauses, the report's evaluation metrics and datasets.</p>
-<p>env.lock.md and a working venv with custom_rasterizer and differentiable_renderer built; minimal_demo.py runs.</p>
-<p>run_batch.py with preprocessing (BackgroundRemover, center, pad to square), per-variant shape generation, cleanup (FloaterRemover, DegenerateFaceRemover, FaceReducer to a target face count), optional paint, GLB export, and per-stage logging of seconds and peak VRAM.</p>
-<p>metrics.py: trimesh is_watertight, face/vertex counts, euler number, bounding box; silhouette IoU between the input alpha mask and a front orthographic render; gltf_validator error and warning counts.</p>
-<p>blender_check.py run via blender -b --python: import each GLB, confirm materials and images resolve, render a 4-view turntable to PNG.</p>
-<p>results.csv over 10-20 reference images x variants that fit; contact_sheet.png of turntables.</p>
-<p>mv_test/: three objects with single-view versus 2-4 view runs, back-side renders, and a blind preference record.</p>
-<p>chain_demo/: one text prompt -&gt; image (any local or API image model) -&gt; mesh -&gt; Rigify or Mixamo attempt, documenting where it breaks.</p>
-<p>BUILT-IN GAP ANALYSIS Before finishing, write gaps.md: variants you could not run and why (VRAM, build failure); VRAM claims that did not match your measurements; meshes that failed validation and the failure type; whether 'watertight' held before and after cleanup; textures with seams or baked lighting; anything in the chain demo that needed manual work. Fix what is fixable now (for example tune FaceReducer targets, retry with better background removal), and leave the rest documented.</p>
-<p>SELF-QUESTIONS BEFORE FINISHING</p>
-<p>Did I read the license's territory and scale clauses, and does the user's use fit?</p>
-<p>Are all variant comparisons using the same seed and the same preprocessed image?</p>
-<p>Did I measure peak VRAM with the torch counters reset before each stage?</p>
-<p>Is the silhouette IoU computed from a camera that matches the input framing?</p>
-<p>Did cleanup remove real geometry along with floaters on thin parts?</p>
-<p>Do textured GLBs load in Blender with images embedded, not linked to temp paths?</p>
-<p>Is the multiview comparison blind, and does it include the back side?</p>
-<p>STOP CONDITIONS Stop and ask if the license excludes the user's territory or use, if the CUDA toolchain cannot build the rasterizer after two attempts with exact errors, or if no variant fits VRAM even with the GP fork. Otherwise stop when results.csv, contact sheet, mv_test, and gaps.md exist.</p>
-<p>RETURN FORMAT One message: GPU and env summary; license verdict; results table aggregated per variant (mean seconds, peak VRAM, watertight rate, mean IoU, validator errors); multiview verdict; recommended variant; gaps.md contents; paths to all outputs.</p>
-<h3>3 · Step-by-step prompts</h3>
+<ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A technical artist or 3D ML engineer would read the Hunyuan3D 2.0 technical report and the 2.1 release before installing anything, pin the exact model revisions, and benchmark rather than eyeball: peak VRAM via torch.cuda.max_memory_allocated, wall time per stage, and geometric checks on every mesh. They would preprocess properly (background removal with the repo's rembg-based remover, centered and padded square crops) because input hygiene drives output quality more than variant choice. They would post-process with the repo's FloaterRemover, DegenerateFaceRemover, and FaceReducer, then validate GLBs with the Khronos glTF-Validator and import them headless into Blender to confirm they are usable assets. And they would read the Tencent Hunyuan Community License for territorial and scale restrictions before using outputs commercially.</li>
+<li><strong>Rawest material to start from:</strong> github.com/Tencent-Hunyuan/Hunyuan3D-2 and github.com/Tencent-Hunyuan/Hunyuan3D-2.1 source (hy3dgen/shapegen, hy3dgen/texgen, hy3dgen/rembg, minimal_demo.py, app.py, api_server.py); the Hunyuan3D 2.0 technical report on arXiv and the 2.1 report; the Hugging Face model cards and file listings for tencent/Hunyuan3D-2 and tencent/Hunyuan3D-2.1 (subfolders such as hunyuan3d-dit-v2-0-turbo, hunyuan3d-paint-v2-0); the LICENSE file text; the ComfyUI tutorial at docs.comfy.org/tutorials/3d/hunyuan3D-2; the low-VRAM fork deepbeepmeep/Hunyuan3D-2GP; and your own reference images, including 2-4 orthogonal views of at least three objects for the multiview test.</li>
+<li><strong>Methods and tools:</strong> Python 3.10 venv, PyTorch with the CUDA build matching the driver (<code>nvidia-smi</code>), the repo's custom_rasterizer and differentiable_renderer built from source; huggingface-cli download with --revision to pin weights; Hunyuan3DDiTFlowMatchingPipeline and Hunyuan3DPaintPipeline; BackgroundRemover from hy3dgen.rembg; FloaterRemover, DegenerateFaceRemover, FaceReducer from hy3dgen.shapegen; torch.cuda.reset_peak_memory_stats and max_memory_allocated; trimesh for is_watertight, euler_number, face counts, bounds; Khronos gltf_validator CLI; Blender 4.x headless (<code>blender -b --python import_check.py</code>) for import and turntable renders; silhouette IoU between the input alpha mask and a front orthographic render; fixed seeds for reproducibility.</li>
+<li><strong>What proves it right (other than you or the model):</strong> Independent oracles: (a) Khronos glTF-Validator reports zero errors for each exported GLB; (b) Blender 4.x headless imports every GLB, renders a 4-view turntable, and reports no missing textures; (c) trimesh reports watertight meshes with no degenerate faces after cleanup; (d) silhouette IoU of the front render against the input alpha mask above a threshold you set (for example 0.85) shows the mesh matches the reference; (e) peak VRAM numbers from torch match or contradict the guide's table (6 GB mini shape, 16 GB shape+texture for 2.0, 29 GB full 2.1).</li>
+</ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Act as a technical artist and 3D ML engineer setting up Tencent Hunyuan3D-2 on my machine (GPU: report from nvidia-smi). First read the Hunyuan3D 2.0 technical report, the repo README for Hunyuan3D-2 and 2.1, the Hugging Face model cards for tencent/Hunyuan3D-2 and tencent/Hunyuan3D-2.1, and the LICENSE; summarize variants, VRAM claims, and any territory or user-count restrictions. Clone the repo, create a Python 3.10 venv, install the CUDA-matched PyTorch, build custom_rasterizer and differentiable_renderer, and download pinned weight revisions. Write run_batch.py that, for each image in refs/: removes the background with hy3dgen.rembg, centers and pads it, generates shape with the chosen variant and seed, cleans it with FloaterRemover, DegenerateFaceRemover and FaceReducer, paints it if VRAM allows, exports GLB, and logs seconds per stage, peak VRAM, face count, watertightness, and silhouette IoU against the input mask. Run Turbo, standard, and mini (and 2.1 if it fits) on 10-20 of my images with fixed seeds. Validate every GLB with Khronos gltf_validator and a headless Blender import plus 4-view turntable render. Test the multiview variant on three objects with 2-4 views versus single view and compare back-side renders. Return results.csv, the turntable contact sheet, a variant recommendation for my GPU, the license verdict for my use, and a list of guide claims that did not hold.
+</code></pre></div>
+<h3 id="2-one-shot-prompt">2 · One-shot prompt</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">ROLE AND STANCE
+You are a technical artist and 3D ML engineer turning Tencent's Hunyuan3D-2 into a measured, reproducible image-to-3D asset pipeline on this machine. You benchmark instead of eyeballing, you pin every version, and you validate every mesh with tools other than the model that produced it.
+
+CONTEXT
+- Code: github.com/Tencent-Hunyuan/Hunyuan3D-2 and github.com/Tencent-Hunyuan/Hunyuan3D-2.1. Weights: Hugging Face tencent/Hunyuan3D-2 and tencent/Hunyuan3D-2.1 (~50 GB for 2.1).
+- Two stages: shape (Hunyuan3D-DiT, flow-matching DiT over a 3D latent, VAE decodes an SDF, marched to a mesh) and texture (Hunyuan3D-Paint, multiview diffusion baked to UV; 2.1 adds albedo, metallic-roughness, normal).
+- Variants from the guide: DiT-v2-0 (1.1B), -Fast (guidance-distilled), -Turbo (step-distilled, 6-8 steps vs 50), v2-mini (0.6B), v2-mv (2-4 views), v2-1 (3.0B); Paint-v2-0 (1.3B), -Turbo, 2.1 Paint PBR.
+- API: Hunyuan3DDiTFlowMatchingPipeline.from_pretrained('tencent/Hunyuan3D-2'); Hunyuan3DPaintPipeline.from_pretrained('tencent/Hunyuan3D-2'); outputs trimesh.Trimesh; export GLB.
+- Claims to TEST: VRAM 6 GB shape-only mini, ~10 GB DiT-v2-0, 16 GB shape+texture for 2.0; 10 / 21 / 29 GB for 2.1 shape / texture / both; ~30 s per Flux image to mesh on a 4090; outputs 'watertight'; multiview is 'the single biggest quality unlock'; macOS texture is effectively unusable; Turbo at 6 steps is close to standard quality.
+- Downstream chain from the guide: text -&gt; Flux/SDXL image -&gt; Hunyuan3D-2 -&gt; auto-rig (Mixamo, Rigify) -&gt; HY-Motion SMPL-X motion -&gt; Blender retarget -&gt; render. Auto-rigging is the weak link; Hunyuan3D outputs no rig.
+
+HARD CONSTRAINTS
+- Read the LICENSE first and state whether the user's territory and intended use are permitted. If not, stop before generating assets for that use.
+- Pin the repo commit, the weight revisions, PyTorch and CUDA versions in env.lock.md.
+- Fixed seeds; same preprocessed image for every variant comparison.
+- Do not exceed available VRAM by guesswork: measure with torch, and use the mini or GP fork if the full pipeline OOMs.
+- Store weights on fast local disk; do not commit weights or generated assets to git.
+
+ORDERED DELIVERABLES
+1. ground-truth.md: GPU and driver, variant table from model cards, VRAM claims, license verdict with quoted clauses, the report's evaluation metrics and datasets.
+2. env.lock.md and a working venv with custom_rasterizer and differentiable_renderer built; minimal_demo.py runs.
+3. run_batch.py with preprocessing (BackgroundRemover, center, pad to square), per-variant shape generation, cleanup (FloaterRemover, DegenerateFaceRemover, FaceReducer to a target face count), optional paint, GLB export, and per-stage logging of seconds and peak VRAM.
+4. metrics.py: trimesh is_watertight, face/vertex counts, euler number, bounding box; silhouette IoU between the input alpha mask and a front orthographic render; gltf_validator error and warning counts.
+5. blender_check.py run via `blender -b --python`: import each GLB, confirm materials and images resolve, render a 4-view turntable to PNG.
+6. results.csv over 10-20 reference images x variants that fit; contact_sheet.png of turntables.
+7. mv_test/: three objects with single-view versus 2-4 view runs, back-side renders, and a blind preference record.
+8. chain_demo/: one text prompt -&gt; image (any local or API image model) -&gt; mesh -&gt; Rigify or Mixamo attempt, documenting where it breaks.
+
+BUILT-IN GAP ANALYSIS
+Before finishing, write gaps.md: variants you could not run and why (VRAM, build failure); VRAM claims that did not match your measurements; meshes that failed validation and the failure type; whether 'watertight' held before and after cleanup; textures with seams or baked lighting; anything in the chain demo that needed manual work. Fix what is fixable now (for example tune FaceReducer targets, retry with better background removal), and leave the rest documented.
+
+SELF-QUESTIONS BEFORE FINISHING
+- Did I read the license's territory and scale clauses, and does the user's use fit?
+- Are all variant comparisons using the same seed and the same preprocessed image?
+- Did I measure peak VRAM with the torch counters reset before each stage?
+- Is the silhouette IoU computed from a camera that matches the input framing?
+- Did cleanup remove real geometry along with floaters on thin parts?
+- Do textured GLBs load in Blender with images embedded, not linked to temp paths?
+- Is the multiview comparison blind, and does it include the back side?
+
+STOP CONDITIONS
+Stop and ask if the license excludes the user's territory or use, if the CUDA toolchain cannot build the rasterizer after two attempts with exact errors, or if no variant fits VRAM even with the GP fork. Otherwise stop when results.csv, contact sheet, mv_test, and gaps.md exist.
+
+RETURN FORMAT
+One message: GPU and env summary; license verdict; results table aggregated per variant (mean seconds, peak VRAM, watertight rate, mean IoU, validator errors); multiview verdict; recommended variant; gaps.md contents; paths to all outputs.
+</code></pre></div>
+<h3 id="3-step-by-step-prompts">3 · Step-by-step prompts</h3>
 <h4>Step 1 — Ground truth: report, model cards, license, hardware</h4>
-<p>Goal: Know exactly what the model family claims, what this machine can run, and what the license allows.</p>
-<p>Run nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv and nvcc --version; record both. Read the Hunyuan3D 2.0 technical report on arXiv (find it from the repo README) and note: architecture of the shape DiT and Paint model, evaluation metrics and datasets, and any numbers for speed and VRAM. Read the README of github.com/Tencent-Hunyuan/Hunyuan3D-2 and Hunyuan3D-2.1 and list every variant with parameter count and Hugging Face subfolder by browsing the file listings of tencent/Hunyuan3D-2 and tencent/Hunyuan3D-2.1. Copy the guide's VRAM table and mark each value 'claimed'. Read the LICENSE file and quote the clauses on territory, monthly-active-user thresholds, and output use; state whether the user's location and intended use are covered. Write ground-truth.md with sections: Hardware, Variants, Claimed VRAM and speed, License verdict, Evaluation metrics from the report.</p>
-<p>Expect: ground-truth.md of one to two pages with a variant table, quoted license clauses, and a yes/no/unclear license verdict.</p>
-<p>Audit before moving on: Every variant must map to an actual Hugging Face path you saw; drop or flag any the guide lists that do not exist. If the license verdict is 'no' or 'unclear' for the user's use, stop and report before downloading weights.</p>
+<p><em>Goal:</em> Know exactly what the model family claims, what this machine can run, and what the license allows.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Run `nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv` and `nvcc --version`; record both. Read the Hunyuan3D 2.0 technical report on arXiv (find it from the repo README) and note: architecture of the shape DiT and Paint model, evaluation metrics and datasets, and any numbers for speed and VRAM. Read the README of github.com/Tencent-Hunyuan/Hunyuan3D-2 and Hunyuan3D-2.1 and list every variant with parameter count and Hugging Face subfolder by browsing the file listings of tencent/Hunyuan3D-2 and tencent/Hunyuan3D-2.1. Copy the guide's VRAM table and mark each value 'claimed'. Read the LICENSE file and quote the clauses on territory, monthly-active-user thresholds, and output use; state whether the user's location and intended use are covered. Write ground-truth.md with sections: Hardware, Variants, Claimed VRAM and speed, License verdict, Evaluation metrics from the report.
+</code></pre></div>
+<p><strong>Expect:</strong> ground-truth.md of one to two pages with a variant table, quoted license clauses, and a yes/no/unclear license verdict.</p>
+<p><strong>Audit before moving on:</strong> Every variant must map to an actual Hugging Face path you saw; drop or flag any the guide lists that do not exist. If the license verdict is 'no' or 'unclear' for the user's use, stop and report before downloading weights.</p>
 <h4>Step 2 — Build a pinned, working environment</h4>
-<p>Goal: Get minimal_demo.py running with locked versions and compiled renderers.</p>
-<p>Clone github.com/Tencent-Hunyuan/Hunyuan3D-2 into repos/ and record the commit hash. Create a Python 3.10 venv. Install the PyTorch build whose CUDA version matches the driver from step 1 (choose the index URL accordingly rather than copying the guide's cu121 blindly). pip install -r requirements.txt &amp;&amp; pip install -e .. Build hy3dgen/texgen/custom_rasterizer and hy3dgen/texgen/differentiable_renderer with python setup.py install; capture full logs. Download weights with huggingface-cli download tencent/Hunyuan3D-2 --revision for the shape and paint subfolders you will test, onto NVMe; record revisions and disk size. Run the repo's minimal demo on its sample image and save the GLB. Also run python -c 'import torch;print(torch.cuda.is_available(), torch.version.cuda)' to confirm the GPU is visible. Write env.lock.md with Python, torch, CUDA, repo commit, weight revisions, and build outcomes.</p>
-<p>Expect: env.lock.md, a demo GLB, and build logs; python -c 'import custom_rasterizer' succeeds.</p>
-<p>Audit before moving on: If either extension fails to build, read the error, fix toolchain mismatches (gcc version, CUDA_HOME, TORCH_CUDA_ARCH_LIST) and retry once; on a second failure, record the exact error and continue shape-only. Confirm the demo GLB opens with trimesh and has more than 1,000 faces.</p>
+<p><em>Goal:</em> Get minimal_demo.py running with locked versions and compiled renderers.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Clone github.com/Tencent-Hunyuan/Hunyuan3D-2 into repos/ and record the commit hash. Create a Python 3.10 venv. Install the PyTorch build whose CUDA version matches the driver from step 1 (choose the index URL accordingly rather than copying the guide's cu121 blindly). `pip install -r requirements.txt &amp;&amp; pip install -e .`. Build hy3dgen/texgen/custom_rasterizer and hy3dgen/texgen/differentiable_renderer with `python setup.py install`; capture full logs. Download weights with `huggingface-cli download tencent/Hunyuan3D-2 --revision &lt;commit&gt;` for the shape and paint subfolders you will test, onto NVMe; record revisions and disk size. Run the repo's minimal demo on its sample image and save the GLB. Also run `python -c 'import torch;print(torch.cuda.is_available(), torch.version.cuda)'` to confirm the GPU is visible. Write env.lock.md with Python, torch, CUDA, repo commit, weight revisions, and build outcomes.
+</code></pre></div>
+<p><strong>Expect:</strong> env.lock.md, a demo GLB, and build logs; <code>python -c 'import custom_rasterizer'</code> succeeds.</p>
+<p><strong>Audit before moving on:</strong> If either extension fails to build, read the error, fix toolchain mismatches (gcc version, CUDA_HOME, TORCH_CUDA_ARCH_LIST) and retry once; on a second failure, record the exact error and continue shape-only. Confirm the demo GLB opens with trimesh and has more than 1,000 faces.</p>
 <h4>Step 3 — Write the batch runner with preprocessing and cleanup</h4>
-<p>Goal: One script turns a folder of references into cleaned GLBs with timing and VRAM logs.</p>
-<p>Write run_batch.py --refs refs/ --variant {standard,turbo,fast,mini,mv,v21} --seed 1234 --paint {none,v20,v20turbo,v21} --out out/. For each image: remove background with hy3dgen.rembg.BackgroundRemover if no alpha exists; crop to the alpha bounding box, pad to square with 10 percent margin, resize to the size the pipeline expects; save the preprocessed image and its mask. Load the shape pipeline once per variant (subfolder per the variant table) and set steps per model card (Turbo around 5-8, standard per default). Before each stage call torch.cuda.reset_peak_memory_stats(); after it record torch.cuda.max_memory_allocated() and wall seconds. Clean the mesh with FloaterRemover, DegenerateFaceRemover, then FaceReducer to a configurable target (default 40,000 faces); keep both raw and cleaned GLBs. If painting, run the paint pipeline on the cleaned mesh with the same image. Append a row per image and variant to results.csv: image, variant, paint, seed, shape_s, paint_s, shape_peak_gb, paint_peak_gb, faces_raw, faces_clean. Catch CUDA OOM per item, log it, and continue.</p>
-<p>Expect: run_batch.py under 250 lines; a smoke run on 2 images producing 4 GLBs and a 2-row results.csv.</p>
-<p>Audit before moving on: Re-run the smoke test with the same seed and confirm identical face counts (determinism). Check that peak VRAM is non-zero and below total VRAM. If cleanup reduces faces by more than 80 percent on a simple object, inspect for removed real geometry.</p>
+<p><em>Goal:</em> One script turns a folder of references into cleaned GLBs with timing and VRAM logs.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write run_batch.py --refs refs/ --variant {standard,turbo,fast,mini,mv,v21} --seed 1234 --paint {none,v20,v20turbo,v21} --out out/. For each image: remove background with hy3dgen.rembg.BackgroundRemover if no alpha exists; crop to the alpha bounding box, pad to square with 10 percent margin, resize to the size the pipeline expects; save the preprocessed image and its mask. Load the shape pipeline once per variant (subfolder per the variant table) and set steps per model card (Turbo around 5-8, standard per default). Before each stage call torch.cuda.reset_peak_memory_stats(); after it record torch.cuda.max_memory_allocated() and wall seconds. Clean the mesh with FloaterRemover, DegenerateFaceRemover, then FaceReducer to a configurable target (default 40,000 faces); keep both raw and cleaned GLBs. If painting, run the paint pipeline on the cleaned mesh with the same image. Append a row per image and variant to results.csv: image, variant, paint, seed, shape_s, paint_s, shape_peak_gb, paint_peak_gb, faces_raw, faces_clean. Catch CUDA OOM per item, log it, and continue.
+</code></pre></div>
+<p><strong>Expect:</strong> run_batch.py under 250 lines; a smoke run on 2 images producing 4 GLBs and a 2-row results.csv.</p>
+<p><strong>Audit before moving on:</strong> Re-run the smoke test with the same seed and confirm identical face counts (determinism). Check that peak VRAM is non-zero and below total VRAM. If cleanup reduces faces by more than 80 percent on a simple object, inspect for removed real geometry.</p>
 <h4>Step 4 — Add independent quality metrics and Blender validation</h4>
-<p>Goal: Score every GLB with tools other than the generator.</p>
-<p>Write metrics.py that, for each cleaned GLB, loads it with trimesh and records is_watertight, euler_number, face and vertex counts, and bounding-box aspect ratios; renders a front orthographic silhouette with pyrender or Blender at the same framing as the preprocessed input, then computes IoU against the saved input mask; and runs the Khronos gltf_validator CLI, recording error and warning counts. Write blender_check.py for blender -b --python blender_check.py -- : clear the scene, import the GLB, assert every material's image textures have pixel data, normalize scale, add a three-point light and camera, render front, right, back, and top at 512 px with Eevee, and write a JSON status. Run both over all outputs and merge columns into results.csv: watertight, iou, gltf_errors, gltf_warnings, blender_ok. Build contact_sheet.png from the turntables with Pillow, one row per image and variant.</p>
-<p>Expect: Extended results.csv, a contact sheet, and a JSON status per GLB.</p>
-<p>Audit before moving on: Validate metrics.py on a known-good mesh (a Blender default cube exported to GLB): IoU near 1.0 for a matching mask, watertight true, zero validator errors. If the known-good case fails, the metric is wrong; fix it before trusting any score.</p>
+<p><em>Goal:</em> Score every GLB with tools other than the generator.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write metrics.py that, for each cleaned GLB, loads it with trimesh and records is_watertight, euler_number, face and vertex counts, and bounding-box aspect ratios; renders a front orthographic silhouette with pyrender or Blender at the same framing as the preprocessed input, then computes IoU against the saved input mask; and runs the Khronos `gltf_validator` CLI, recording error and warning counts. Write blender_check.py for `blender -b --python blender_check.py -- &lt;glb&gt; &lt;outdir&gt;`: clear the scene, import the GLB, assert every material's image textures have pixel data, normalize scale, add a three-point light and camera, render front, right, back, and top at 512 px with Eevee, and write a JSON status. Run both over all outputs and merge columns into results.csv: watertight, iou, gltf_errors, gltf_warnings, blender_ok. Build contact_sheet.png from the turntables with Pillow, one row per image and variant.
+</code></pre></div>
+<p><strong>Expect:</strong> Extended results.csv, a contact sheet, and a JSON status per GLB.</p>
+<p><strong>Audit before moving on:</strong> Validate metrics.py on a known-good mesh (a Blender default cube exported to GLB): IoU near 1.0 for a matching mask, watertight true, zero validator errors. If the known-good case fails, the metric is wrong; fix it before trusting any score.</p>
 <h4>Step 5 — Run the variant benchmark on your references</h4>
-<p>Goal: Produce the numbers that decide which variant to use on this GPU.</p>
-<p>Assemble refs/ with 10-20 of your own images spanning: hard-surface objects (mug, tool), organic (plant, animal), a stylized character, thin structures (chair, bicycle), and a flat object (coin, leaf). Run run_batch.py for every variant that fits VRAM per step 1: standard, turbo, fast, mini, and v21 if 24 GB or more; paint with v20 and v20turbo, and v21 PBR if VRAM allows. Then run metrics.py and blender_check.py. Aggregate per variant: mean and p90 shape seconds, mean paint seconds, max peak VRAM, watertight rate, mean IoU, GLBs with validator errors, Blender failures. Compare measured VRAM and time against the guide's table and note each difference. Pick the five worst outputs by IoU and describe the failure type from the turntables (thin parts lost, back hallucinated, texture seams, baked lighting).</p>
-<p>Expect: results.csv with all rows, an aggregate table per variant, and a five-item failure gallery with descriptions.</p>
-<p>Audit before moving on: Confirm every image ran under every fitting variant with the same seed; missing rows must be explained (OOM or error logged). If the guide's VRAM number is exceeded by more than 20 percent, re-measure once with nothing else on the GPU before recording.</p>
+<p><em>Goal:</em> Produce the numbers that decide which variant to use on this GPU.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Assemble refs/ with 10-20 of your own images spanning: hard-surface objects (mug, tool), organic (plant, animal), a stylized character, thin structures (chair, bicycle), and a flat object (coin, leaf). Run run_batch.py for every variant that fits VRAM per step 1: standard, turbo, fast, mini, and v21 if 24 GB or more; paint with v20 and v20turbo, and v21 PBR if VRAM allows. Then run metrics.py and blender_check.py. Aggregate per variant: mean and p90 shape seconds, mean paint seconds, max peak VRAM, watertight rate, mean IoU, GLBs with validator errors, Blender failures. Compare measured VRAM and time against the guide's table and note each difference. Pick the five worst outputs by IoU and describe the failure type from the turntables (thin parts lost, back hallucinated, texture seams, baked lighting).
+</code></pre></div>
+<p><strong>Expect:</strong> results.csv with all rows, an aggregate table per variant, and a five-item failure gallery with descriptions.</p>
+<p><strong>Audit before moving on:</strong> Confirm every image ran under every fitting variant with the same seed; missing rows must be explained (OOM or error logged). If the guide's VRAM number is exceeded by more than 20 percent, re-measure once with nothing else on the GPU before recording.</p>
 <h4>Step 6 — Test the multiview claim and the text-to-character chain</h4>
-<p>Goal: Check the 'biggest quality unlock' claim and find where the full pipeline breaks.</p>
-<p>For three objects, capture or generate 2-4 orthogonal views (front, left, back, right) with consistent lighting and scale. Run the mv variant with all views and the standard variant with the front view only, same seed. Render back views of both with blender_check.py. Shuffle the pairs and ask the user or a grader subagent shown only the four reference photos and two unlabelled back renders which is closer; record preferences and the IoU of side views against the side photos. Next, run the chain once: a text prompt to an image model available to you (local Flux or SDXL via ComfyUI, or an API), producing a front-facing A-pose character on a plain background; mesh it with the best variant; import into Blender and try Rigify's auto-generation or upload to Mixamo; if HY-Motion is cloned at ~/projects/ai3-resources/repos/HY-Motion-1.0/, generate one motion and attempt a retarget. Log each handoff and what required manual fixes.</p>
-<p>Expect: mv_test/ with renders and a preference table; chain_demo/ with the image, GLB, rig attempt, and a handoff log.</p>
-<p>Audit before moving on: If the grader could tell which render came from mv by filename or order, redo the shuffle. For the chain, a step that silently produced an unusable result (rig with inverted bones, motion on the wrong skeleton) counts as a break, not a pass.</p>
+<p><em>Goal:</em> Check the 'biggest quality unlock' claim and find where the full pipeline breaks.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">For three objects, capture or generate 2-4 orthogonal views (front, left, back, right) with consistent lighting and scale. Run the mv variant with all views and the standard variant with the front view only, same seed. Render back views of both with blender_check.py. Shuffle the pairs and ask the user or a grader subagent shown only the four reference photos and two unlabelled back renders which is closer; record preferences and the IoU of side views against the side photos. Next, run the chain once: a text prompt to an image model available to you (local Flux or SDXL via ComfyUI, or an API), producing a front-facing A-pose character on a plain background; mesh it with the best variant; import into Blender and try Rigify's auto-generation or upload to Mixamo; if HY-Motion is cloned at ./repos/HY-Motion-1.0/, generate one motion and attempt a retarget. Log each handoff and what required manual fixes.
+</code></pre></div>
+<p><strong>Expect:</strong> mv_test/ with renders and a preference table; chain_demo/ with the image, GLB, rig attempt, and a handoff log.</p>
+<p><strong>Audit before moving on:</strong> If the grader could tell which render came from mv by filename or order, redo the shuffle. For the chain, a step that silently produced an unusable result (rig with inverted bones, motion on the wrong skeleton) counts as a break, not a pass.</p>
 <h4>Step 7 — Validate against oracles and write the gap report</h4>
-<p>Goal: Lock the recommendation with external checks and document every remaining gap.</p>
-<p>Confirm the oracle set: all recommended-variant GLBs pass gltf_validator with zero errors; Blender headless import succeeds for each; watertight rate after cleanup; mean IoU above the threshold you set in advance (default 0.85); measured VRAM versus the guide. Write recommendation.md: the variant and paint model for this GPU with the evidence rows, expected seconds per asset, and the preprocessing settings to use. Write gaps.md with: guide claims and verdicts (VRAM table, 30 s on 4090, watertight, multiview unlock, Turbo quality), variants not run and why, failure categories with counts, chain breakpoints, license constraints on outputs. Fix the top fixable item now (for example raise padding if thin parts are clipped) and re-run the affected images. Record the final env.lock.md and the exact command that reproduces the recommended run.</p>
-<p>Expect: recommendation.md, gaps.md, and a final results.csv; every claim has a verdict.</p>
-<p>Audit before moving on: Every recommendation sentence must point to rows in results.csv or mv_test. If the threshold for IoU was changed after seeing results, say so explicitly. Re-run one recommended-variant item from a fresh shell to confirm reproducibility.</p>
-<h3>4 · Gap analysis and audit</h3>
+<p><em>Goal:</em> Lock the recommendation with external checks and document every remaining gap.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Confirm the oracle set: all recommended-variant GLBs pass gltf_validator with zero errors; Blender headless import succeeds for each; watertight rate after cleanup; mean IoU above the threshold you set in advance (default 0.85); measured VRAM versus the guide. Write recommendation.md: the variant and paint model for this GPU with the evidence rows, expected seconds per asset, and the preprocessing settings to use. Write gaps.md with: guide claims and verdicts (VRAM table, 30 s on 4090, watertight, multiview unlock, Turbo quality), variants not run and why, failure categories with counts, chain breakpoints, license constraints on outputs. Fix the top fixable item now (for example raise padding if thin parts are clipped) and re-run the affected images. Record the final env.lock.md and the exact command that reproduces the recommended run.
+</code></pre></div>
+<p><strong>Expect:</strong> recommendation.md, gaps.md, and a final results.csv; every claim has a verdict.</p>
+<p><strong>Audit before moving on:</strong> Every recommendation sentence must point to rows in results.csv or mv_test. If the threshold for IoU was changed after seeing results, say so explicitly. Re-run one recommended-variant item from a fresh shell to confirm reproducibility.</p>
+<h3 id="4-gap-analysis-and-audit">4 · Gap analysis and audit</h3>
 <p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
-<p>You are auditing a Hunyuan3D-2 pipeline and benchmark built by someone else: run_batch.py, metrics.py, blender_check.py, results.csv, mv_test/, chain_demo/, recommendation.md, gaps.md. Do not trust recommendation.md. (1) List every claim: variant speeds and VRAM, watertight rates, IoU scores, multiview preference, license verdict, reproducibility. (2) Verify each by re-running three random items from a fresh shell with the recorded seed and comparing face counts, peak VRAM, and IoU; re-running gltf_validator and Blender import on five GLBs; re-reading the license clauses quoted. Mark verified, unverified, or false. (3) Check the metrics themselves: does the IoU render match the input framing; does the known-good cube test exist and pass; are watertight checks done on cleaned or raw meshes and is that stated. (4) Look for silent failures: OOM items missing from results.csv without a log line, textures that reference temp paths, Blender renders that show empty scenes. (5) Check the multiview test for blinding and sample size. (6) Rank gaps by impact (license risk, unusable assets, wrong recommendation, slow runs), fix the top three now, and report the rest with the reproduction command.</p>
-<p>Questions the agent must ask itself before it says done:</p>
-<p>Does the license permit my territory and my intended use of the outputs?</p>
-<p>Did I pin the repo commit and weight revisions, and could someone reproduce my numbers?</p>
-<p>Did I reset the CUDA peak-memory counter before each stage, and is anything else using the GPU?</p>
-<p>Is the IoU camera framing identical to the preprocessed input crop?</p>
-<p>Are watertight results reported for raw or cleaned meshes, and does cleanup destroy thin parts?</p>
-<p>Do textured GLBs embed images, and do they look right under neutral lighting in Blender?</p>
-<p>Which guide numbers came from a 4090 and do not apply to my GPU?</p>
-<p>Was the multiview comparison blind, and did it judge the back, where single view hallucinates?</p>
-<h3>5 · What proves it right</h3>
-<p>Khronos glTF-Validator CLI reports zero errors on every GLB from the recommended variant.</p>
-<p>Blender 4.x headless imports each GLB, resolves all textures, and renders a 4-view turntable without errors.</p>
-<p>trimesh is_watertight and degenerate-face checks on cleaned meshes, with rates reported per variant.</p>
-<p>Silhouette IoU between the input alpha mask and a matched front orthographic render, against a threshold set before the run.</p>
-<h3>6 · Failure modes</h3>
-<p>Rasterizer build fails. Tell: ImportError for custom_rasterizer or nvcc errors. Fix: match torch CUDA to nvcc, set CUDA_HOME and TORCH_CUDA_ARCH_LIST, use a matching gcc.</p>
-<p>Out of memory in paint stage. Tell: CUDA OOM after shape succeeds. Fix: run shape and paint in separate processes, use Paint Turbo or mini shape, or the Hunyuan3D-2GP fork.</p>
-<p>Bad preprocessing. Tell: meshes include background slabs or clipped edges. Fix: proper alpha via BackgroundRemover, center crop, 10 percent padding.</p>
-<p>Hallucinated back side. Tell: back renders look generic or melted. Fix: use the mv variant with 2-4 views.</p>
-<h3>7 · Agent direction (unattended runs)</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">You are auditing a Hunyuan3D-2 pipeline and benchmark built by someone else: run_batch.py, metrics.py, blender_check.py, results.csv, mv_test/, chain_demo/, recommendation.md, gaps.md. Do not trust recommendation.md. (1) List every claim: variant speeds and VRAM, watertight rates, IoU scores, multiview preference, license verdict, reproducibility. (2) Verify each by re-running three random items from a fresh shell with the recorded seed and comparing face counts, peak VRAM, and IoU; re-running gltf_validator and Blender import on five GLBs; re-reading the license clauses quoted. Mark verified, unverified, or false. (3) Check the metrics themselves: does the IoU render match the input framing; does the known-good cube test exist and pass; are watertight checks done on cleaned or raw meshes and is that stated. (4) Look for silent failures: OOM items missing from results.csv without a log line, textures that reference temp paths, Blender renders that show empty scenes. (5) Check the multiview test for blinding and sample size. (6) Rank gaps by impact (license risk, unusable assets, wrong recommendation, slow runs), fix the top three now, and report the rest with the reproduction command.
+</code></pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p>
+<ul>
+<li>Does the license permit my territory and my intended use of the outputs?</li>
+<li>Did I pin the repo commit and weight revisions, and could someone reproduce my numbers?</li>
+<li>Did I reset the CUDA peak-memory counter before each stage, and is anything else using the GPU?</li>
+<li>Is the IoU camera framing identical to the preprocessed input crop?</li>
+<li>Are watertight results reported for raw or cleaned meshes, and does cleanup destroy thin parts?</li>
+<li>Do textured GLBs embed images, and do they look right under neutral lighting in Blender?</li>
+<li>Which guide numbers came from a 4090 and do not apply to my GPU?</li>
+<li>Was the multiview comparison blind, and did it judge the back, where single view hallucinates?</li>
+</ul>
+<h3 id="5-what-proves-it-right">5 · What proves it right</h3>
+<ul>
+<li>Khronos glTF-Validator CLI reports zero errors on every GLB from the recommended variant.</li>
+<li>Blender 4.x headless imports each GLB, resolves all textures, and renders a 4-view turntable without errors.</li>
+<li>trimesh is_watertight and degenerate-face checks on cleaned meshes, with rates reported per variant.</li>
+<li>Silhouette IoU between the input alpha mask and a matched front orthographic render, against a threshold set before the run.</li>
+</ul>
+<h3 id="6-failure-modes">6 · Failure modes</h3>
+<ul>
+<li>Rasterizer build fails. Tell: ImportError for custom_rasterizer or nvcc errors. Fix: match torch CUDA to nvcc, set CUDA_HOME and TORCH_CUDA_ARCH_LIST, use a matching gcc.</li>
+<li>Out of memory in paint stage. Tell: CUDA OOM after shape succeeds. Fix: run shape and paint in separate processes, use Paint Turbo or mini shape, or the Hunyuan3D-2GP fork.</li>
+<li>Bad preprocessing. Tell: meshes include background slabs or clipped edges. Fix: proper alpha via BackgroundRemover, center crop, 10 percent padding.</li>
+<li>Hallucinated back side. Tell: back renders look generic or melted. Fix: use the mv variant with 2-4 views.</li>
+</ul>
+<h3 id="7-agent-direction-unattended-runs">7 · Agent direction (unattended runs)</h3>
 <p>Start with nvidia-smi, the license, and the model cards; do not download 50 GB of weights until the license verdict is yes and the GPU fits at least one variant. Cache weights on NVMe and record revisions; never re-download. Load each pipeline once per variant and loop over images to avoid reload cost. Spawn a subagent for blind grading in the multiview test only, giving it unlabelled renders. Run Blender headless, never interactively. Stop and ask on a license 'no' or 'unclear', on two failed extension builds, or if no variant fits VRAM. Keep generated assets out of git. Return in chat the license verdict, per-variant aggregate table, multiview verdict, recommendation, and gaps; files: ground-truth.md, env.lock.md, run_batch.py, metrics.py, blender_check.py, results.csv, contact_sheet.png, mv_test/, chain_demo/, recommendation.md, gaps.md.</p>
-<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
-</div><!--pagefind:end-->
+<p><em>Prompt system updated 2026-10-22 · <a href="/prompts">all prompt systems</a> · <a href="/api/prompts.json">JSON</a></em></p>
+<!-- body:end --></div>
+</article>
+<footer class="site"><div class="wrap"><a href="/catalog#post-DIcw6N6snq1">← Back to DejaViewed</a> · <a href="/e/DIcw6N6snq1">Entry page</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
 <script id="md" type="text/markdown"># Hunyuan3D-2 — Tencent's Open Image-to-3D Mesh Generator
 
 <!-- answer:start -->
@@ -276,13 +356,13 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 **GitHub:** https://github.com/Tencent-Hunyuan/Hunyuan3D-2
 **Latest:** Hunyuan3D-2.1 (PBR, production-ready materials) — https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1
 **License:** Tencent Hunyuan Community License (open weights, some commercial restrictions for very large companies)
-**Repo status:** Not cloned locally — the code is small (a few hundred MB) but model weights are 50 GB+ and are best pulled on demand from Hugging Face (`tencent/Hunyuan3D-2` and `tencent/Hunyuan3D-2.1`). Clone only when you're ready to run it.
+**Size:** the code is small (a few hundred MB) but model weights are 50 GB+ and are best pulled on demand from Hugging Face (`tencent/Hunyuan3D-2` and `tencent/Hunyuan3D-2.1`). Clone only when you're ready to run it.
 
 ---
 
 ## What it is
 
-Hunyuan3D-2 is Tencent's open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR) surface, ready to drop into Blender, Unity, Unreal, or any standard DCC pipeline. It is the largest and most capable openly released image-to-3D model as of this writing, and it's the missing piece that has a companion: **HY-Motion** (Tencent's text-to-motion model), available at `~/projects/ai3-resources/repos/HY-Motion-1.0/`. Together they form a near-complete text → 3D character → animation pipeline (more on this below).
+Hunyuan3D-2 is Tencent's open-source two-stage 3D asset generator. Feed it a single image and it returns a watertight 3D mesh with a textured (optionally PBR) surface, ready to drop into Blender, Unity, Unreal, or any standard DCC pipeline. It is the largest and most capable openly released image-to-3D model as of this writing, and it's the missing piece that has a companion: **HY-Motion** (Tencent's text-to-motion model), available at `./repos/HY-Motion-1.0/`. Together they form a near-complete text → 3D character → animation pipeline (more on this below).
 
 The release is actually a family of models, not a single checkpoint. There's a shape generator that hallucinates geometry from the image, a texture generator that paints the bare mesh, "Turbo" and "Fast" distilled variants for speed, a 600M "mini" variant for low-VRAM setups, and a multiview variant that takes 2–4 views of the same object for much better back/side reconstruction. Version 2.1 adds a full PBR texture stack (albedo / metallic-roughness / normal) so the outputs drop straight into a modern render engine without manual material fixup.
 
@@ -336,7 +416,7 @@ Be honest with yourself about VRAM. This is a big model.
 
 ```bash
 # clone code (small)
-cd ~/projects/ai-catalogs/repos/
+cd ./repos/
 git clone https://github.com/Tencent-Hunyuan/Hunyuan3D-2.git
 cd Hunyuan3D-2
 
@@ -392,7 +472,7 @@ Concretely with Hunyuan3D-2:
 
 ## Integration with HY-Motion — the full pipeline
 
-If you have HY-Motion cloned at `~/projects/ai3-resources/repos/HY-Motion-1.0/`. HY-Motion generates SMPL-X skeletal motion from text ("a character doing a backflip"). Hunyuan3D-2 generates a static character mesh from an image. Chained, you get:
+If you have HY-Motion cloned at `./repos/HY-Motion-1.0/`. HY-Motion generates SMPL-X skeletal motion from text ("a character doing a backflip"). Hunyuan3D-2 generates a static character mesh from an image. Chained, you get:
 
 1. **Text prompt** → Flux/SDXL → character reference image
 2. **Character image** → Hunyuan3D-2 (mv variant for quality) → textured GLB
@@ -422,10 +502,10 @@ This is a genuinely powerful pipeline for indie game devs, VTuber creators, and 
 
 ## Related resources in the AI3 hub
 
-- **HY-Motion (Tencent text-to-motion):** `~/projects/ai3-resources/repos/HY-Motion-1.0/` — direct companion
+- **HY-Motion (Tencent text-to-motion):** `./repos/HY-Motion-1.0/` — direct companion
 - **Blender MCP pipeline:** `guides/blender-mcp-tripo-pipeline.md` — how to drive Hunyuan3D-2 from Claude through Blender
-- **TouchDesigner creative coding guide:** `~/projects/ai3-resources/guides/touchdesigner-creative-coding.md` — for real-time visual pipelines once you've generated meshes
-- **Creative coding projection mapping:** `~/projects/ai3-resources/guides/creative-coding-projection-mapping.md` — use generated meshes as projection targets
+- **TouchDesigner creative coding guide:** `./guides/touchdesigner-creative-coding.md` — for real-time visual pipelines once you've generated meshes
+- **Creative coding projection mapping:** `./guides/creative-coding-projection-mapping.md` — use generated meshes as projection targets
 
 ## Sources
 
@@ -577,7 +657,7 @@ Assemble refs/ with 10-20 of your own images spanning: hard-surface objects (mug
 *Goal:* Check the 'biggest quality unlock' claim and find where the full pipeline breaks.
 
 ```text
-For three objects, capture or generate 2-4 orthogonal views (front, left, back, right) with consistent lighting and scale. Run the mv variant with all views and the standard variant with the front view only, same seed. Render back views of both with blender_check.py. Shuffle the pairs and ask the user or a grader subagent shown only the four reference photos and two unlabelled back renders which is closer; record preferences and the IoU of side views against the side photos. Next, run the chain once: a text prompt to an image model available to you (local Flux or SDXL via ComfyUI, or an API), producing a front-facing A-pose character on a plain background; mesh it with the best variant; import into Blender and try Rigify's auto-generation or upload to Mixamo; if HY-Motion is cloned at ~/projects/ai3-resources/repos/HY-Motion-1.0/, generate one motion and attempt a retarget. Log each handoff and what required manual fixes.
+For three objects, capture or generate 2-4 orthogonal views (front, left, back, right) with consistent lighting and scale. Run the mv variant with all views and the standard variant with the front view only, same seed. Render back views of both with blender_check.py. Shuffle the pairs and ask the user or a grader subagent shown only the four reference photos and two unlabelled back renders which is closer; record preferences and the IoU of side views against the side photos. Next, run the chain once: a text prompt to an image model available to you (local Flux or SDXL via ComfyUI, or an API), producing a front-facing A-pose character on a plain background; mesh it with the best variant; import into Blender and try Rigify's auto-generation or upload to Mixamo; if HY-Motion is cloned at ./repos/HY-Motion-1.0/, generate one motion and attempt a retarget. Log each handoff and what required manual fixes.
 ```
 
 **Expect:** mv_test/ with renders and a preference table; chain_demo/ with the image, GLB, rig attempt, and a handoff log.
@@ -633,16 +713,9 @@ You are auditing a Hunyuan3D-2 pipeline and benchmark built by someone else: run
 
 Start with nvidia-smi, the license, and the model cards; do not download 50 GB of weights until the license verdict is yes and the GPU fits at least one variant. Cache weights on NVMe and record revisions; never re-download. Load each pipeline once per variant and loop over images to avoid reload cost. Spawn a subagent for blind grading in the multiview test only, giving it unlabelled renders. Run Blender headless, never interactively. Stop and ask on a license 'no' or 'unclear', on two failed extension builds, or if no variant fits VRAM. Keep generated assets out of git. Return in chat the license verdict, per-variant aggregate table, multiview verdict, recommendation, and gaps; files: ground-truth.md, env.lock.md, run_batch.py, metrics.py, blender_check.py, results.csv, contact_sheet.png, mv_test/, chain_demo/, recommendation.md, gaps.md.
 
-*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+*Prompt system updated 2026-10-22 · [all prompt systems](/prompts) · [JSON](/api/prompts.json)*
 
 <!-- prompt-system:end -->
-</script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script>
-const raw=document.getElementById('md').textContent;
-const html=DOMPurify.sanitize(marked.parse(raw));
-document.getElementById('guide-body').innerHTML=html;
 </script><!-- ps-tail --><style>
 .ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
 .ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
@@ -659,11 +732,8 @@ document.getElementById('guide-body').innerHTML=html;
 .ps-copy:hover{color:#fff;border-color:var(--border-hi)}
 .ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
 </style><script>
-document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
-document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
-p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
-</script><script>
 document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
 const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
-</script><!-- /ps-tail --><!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
+</script><!-- /ps-tail --><!-- sitenav:start --><nav class="sitenav" aria-label="Site" data-pagefind-ignore><style>.sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}.sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}.sitenav a:hover{color:var(--accent,#a78bfa)}</style><a href="/">Home</a><a href="/start-here">Start here</a><a href="/catalog">Catalog</a><a href="/guides/">Guides</a><a href="/prompts">Prompts</a><a href="/e/">All entries</a><a href="/collections/">Collections</a><a href="/search">Search</a><a href="/graph">Graph</a><a href="/graph-cosmos">Cosmos</a><a href="/board">Board</a><a href="/links/">Links</a><a href="/method">How it works</a><a href="/feed.xml">RSS</a><a href="/llms.txt">llms.txt</a></nav><!-- sitenav:end -->
+<!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
 </body></html>

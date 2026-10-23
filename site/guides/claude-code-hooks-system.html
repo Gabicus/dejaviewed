@@ -3,23 +3,23 @@
 <title>Claude Code Hooks System — Deep Dive · DejaViewed</title>
 <!-- seo:start -->
 <link rel="canonical" href="https://dejaviewed.dev/guides/claude-code-hooks-system">
-<meta name="description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when…">
+<meta name="description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes…">
 <meta property="og:site_name" content="DejaViewed">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Claude Code Hooks System — Deep Dive">
-<meta property="og:description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when…">
+<meta property="og:description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes…">
 <meta property="og:url" content="https://dejaviewed.dev/guides/claude-code-hooks-system">
 <meta property="og:image" content="https://dejaviewed.dev/og/claude-code-hooks-system.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Claude Code Hooks System — Deep Dive">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Claude Code Hooks System — Deep Dive">
-<meta name="twitter:description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when…">
+<meta name="twitter:description" content="Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes…">
 <meta name="twitter:image" content="https://dejaviewed.dev/og/claude-code-hooks-system.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/claude-code-hooks-system#article","headline":"Claude Code Hooks System — Deep Dive","description":"Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when…","url":"https://dejaviewed.dev/guides/claude-code-hooks-system","mainEntityOfPage":"https://dejaviewed.dev/guides/claude-code-hooks-system","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/claude-code-hooks-system.jpg","about":[{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"}],"abstract":"Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail."},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/claude-code-hooks-system#faq","mainEntity":[{"@type":"Question","name":"Which version's hook schema did I implement, and did I check it against a captured payload rather than the guide's table?","acceptedAnswer":{"@type":"Answer","text":"Step 1, Establish ground truth for the installed version: Pin the exact hook contract of the Claude Code version you run and capture real payloads. Expect: ground-truth.md (one to two pages) with a version string, an event table, a schema block, and five claim verdicts each quoting the doc line; at least one fixture JSON per event triggered."}},{"@type":"Question","name":"Does the Stop gate honour stophookactive, and what happens if the test suite takes longer than the hook timeout?","acceptedAnswer":{"@type":"Answer","text":"Step 4, Build the Stop gate and PreCompact backup: Refuse premature 'done' while tests fail, and snapshot transcripts before compaction. Expect: Two scripts and a test log showing three Stop outcomes (allow, block with reason, allow due to stophookactive) and one backup file created with the right name."}},{"@type":"Question","name":"Is fail-open on missing jq the right call for the destructive blocker, and did I document it?","acceptedAnswer":{"@type":"Answer","text":"Regex blocker treated as a sandbox. Tell: bash -c or a written script runs the blocked command. Fix: document bypasses, add permissions deny rules and a sandboxed run mode for risky work."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Claude Code Hooks System — Deep Dive"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","logo":"https://dejaviewed.dev/og/default.png","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"],"founder":{"@id":"https://dejaviewed.dev/#victor"},"publishingPrinciples":"https://dejaviewed.dev/method"},{"@type":"Person","@id":"https://dejaviewed.dev/#victor","name":"Victor","url":"https://www.1gabe.com/","sameAs":["https://github.com/Gabicus","https://instagram.com/6ab3"],"contactPoint":{"@type":"ContactPoint","url":"https://www.1gabe.com/contact/","contactType":"general"}},{"@type":"Article","@id":"https://dejaviewed.dev/guides/claude-code-hooks-system#article","headline":"Claude Code Hooks System — Deep Dive","description":"Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes…","url":"https://dejaviewed.dev/guides/claude-code-hooks-system","mainEntityOfPage":"https://dejaviewed.dev/guides/claude-code-hooks-system","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@id":"https://dejaviewed.dev/#victor"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/claude-code-hooks-system.jpg","about":[{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"}],"abstract":"Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Claude Code Hooks System — Deep Dive"}]}]}</script>
 <!-- seo:end -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
 <style>
@@ -67,214 +67,438 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <script>DV.mountHeader(document.body, 'home');</script>
 <article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
-  <div id="guide-body"></div>
-</article>
-<footer class="site"><div class="wrap"><a href="../catalog.html#post-DV8rkpGEbBJ">← Back to DejaViewed</a> · <a href="../e/DV8rkpGEbBJ.html">Entry page</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
-<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+  <div id="guide-body" data-pagefind-body data-pagefind-filter="kind:Guide"><!-- body:start -->
 <h1>Claude Code Hooks System — Deep Dive</h1>
-<p>In short: Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail.</p>
-<p>Category: Claude Code automation / lifecycle Confidence: High — officially documented by Anthropic, with a mature community ecosystem. Primary sources:</p>
-<p>Official reference: https://code.claude.com/docs/en/hooks</p>
-<p>Hooks guide: https://code.claude.com/docs/en/hooks-guide</p>
-<p>Agent SDK hooks: https://platform.claude.com/docs/en/agent-sdk/hooks</p>
-<p>disler/claude-code-hooks-mastery (reference examples): https://github.com/disler/claude-code-hooks-mastery</p>
-<p>ClaudeLog: https://claudelog.com/mechanics/hooks/</p>
-<p>If you have the hookify plugin installed (provides /hookify, /hookify:configure, /hookify:list).</p>
-<h2>What it is</h2>
-<p>Claude Code hooks are shell commands that run automatically at specific points in the Claude Code lifecycle — before a tool executes, after it executes, when a session starts, when the model finishes its response, when context compaction happens, and so on. They are Anthropic's answer to "how do I make Claude Code behave deterministically?"</p>
-<p>The critical insight: Claude itself cannot reliably enforce rules on itself. If you put "never run rm -rf" in CLAUDE.md, Claude usually follows it, but prompt injection or a confused turn can bypass it. Hooks are executed by the harness — the outer runtime — not by the model. A hook that exits with code 2 on PreToolUse will block the tool call no matter what the model decided. This is why your global CLAUDE.md should say: "Automated behaviors require hooks configured in settings.json — the harness executes these, not Claude."</p>
+<blockquote>
+<p><strong>In short:</strong> Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail.</p>
+</blockquote>
+<p><strong>Category:</strong> Claude Code automation / lifecycle
+<strong>Confidence:</strong> High — officially documented by Anthropic, with a mature community ecosystem.
+<strong>Primary sources:</strong></p>
+<ul>
+<li>Official reference: <a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">https://code.claude.com/docs/en/hooks</a></li>
+<li>Hooks guide: <a href="https://code.claude.com/docs/en/hooks-guide" target="_blank" rel="noopener">https://code.claude.com/docs/en/hooks-guide</a></li>
+<li>Agent SDK hooks: <a href="https://platform.claude.com/docs/en/agent-sdk/hooks" target="_blank" rel="noopener">https://platform.claude.com/docs/en/agent-sdk/hooks</a></li>
+<li><code>disler/claude-code-hooks-mastery</code> (reference examples): <a href="https://github.com/disler/claude-code-hooks-mastery" target="_blank" rel="noopener">https://github.com/disler/claude-code-hooks-mastery</a></li>
+<li>ClaudeLog: <a href="https://claudelog.com/mechanics/hooks/" target="_blank" rel="noopener">https://claudelog.com/mechanics/hooks/</a></li>
+<li>If you have the <code>hookify</code> plugin installed (provides <code>/hookify</code>, <code>/hookify:configure</code>, <code>/hookify:list</code>).</li>
+</ul>
+<hr />
+<h2 id="what-it-is">What it is</h2>
+<p>Claude Code hooks are <strong>shell commands that run automatically at specific points in the Claude Code lifecycle</strong> — before a tool executes, after it executes, when a session starts, when the model finishes its response, when context compaction happens, and so on. They are Anthropic's answer to &quot;how do I make Claude Code behave deterministically?&quot;</p>
+<p>The critical insight: <strong>Claude itself cannot reliably enforce rules on itself.</strong> If you put &quot;never run <code>rm -rf</code>&quot; in CLAUDE.md, Claude <em>usually</em> follows it, but prompt injection or a confused turn can bypass it. Hooks are executed by the harness — the outer runtime — not by the model. A hook that exits with code 2 on <code>PreToolUse</code> will <strong>block</strong> the tool call no matter what the model decided. This is why your global CLAUDE.md should say: <em>&quot;Automated behaviors require hooks configured in settings.json — the harness executes these, not Claude.&quot;</em></p>
 <p>Hooks are configured in JSON settings files, take tool I/O as JSON on stdin, and signal via exit codes or structured JSON output. They can run shell commands, call HTTP endpoints, or invoke LLMs for dynamic decisions.</p>
-<h2>How it works — the lifecycle events</h2>
+<hr />
+<h2 id="how-it-works-the-lifecycle-events">How it works — the lifecycle events</h2>
 <p>Claude Code fires hooks at ~12 lifecycle events. The stable, documented ones (as of early 2026):</p>
-<p>Event When it fires Can block? Typical use</p>
-<p>SessionStart New session or resume No (advisory) Inject git context, load env vars, greet UserPromptSubmit User submits a prompt, before Claude sees it Yes Rewrite prompt, inject context, block unsafe prompts PreToolUse Claude decides to run a tool, before execution Yes (exit 2) Validate args, block dangerous commands, rewrite args PostToolUse Tool finished executing No (advisory) Format code, run tests, log command, trigger downstream Notification Claude waits for permission, or idles No Desktop notify, Slack ping, sound Stop Claude finishes its overall response Yes (force continue) Final checks, generate report, block "done" if tests fail SubagentStop A Task-tool sub-agent finishes Yes Validate sub-agent output, gate merging PreCompact Before context compaction (manual or auto) No Back up full transcript, snapshot state SessionEnd Session terminates No Persist logs, push metrics, retro capture</p>
-<p>The Agent SDK and recent Claude Code versions have added more (ConfigChange, CwdChanged, FileChanged, PermissionDenied, WorktreeCreate, WorktreeRemove, etc.) but they are less widely documented and churn more between versions. Start with the nine above.</p>
-<h3>Where hooks are configured</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>When it fires</th>
+<th>Can block?</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SessionStart</strong></td>
+<td>New session or resume</td>
+<td>No (advisory)</td>
+<td>Inject git context, load env vars, greet</td>
+</tr>
+<tr>
+<td><strong>UserPromptSubmit</strong></td>
+<td>User submits a prompt, before Claude sees it</td>
+<td>Yes</td>
+<td>Rewrite prompt, inject context, block unsafe prompts</td>
+</tr>
+<tr>
+<td><strong>PreToolUse</strong></td>
+<td>Claude decides to run a tool, before execution</td>
+<td>Yes (exit 2)</td>
+<td>Validate args, block dangerous commands, rewrite args</td>
+</tr>
+<tr>
+<td><strong>PostToolUse</strong></td>
+<td>Tool finished executing</td>
+<td>No (advisory)</td>
+<td>Format code, run tests, log command, trigger downstream</td>
+</tr>
+<tr>
+<td><strong>Notification</strong></td>
+<td>Claude waits for permission, or idles</td>
+<td>No</td>
+<td>Desktop notify, Slack ping, sound</td>
+</tr>
+<tr>
+<td><strong>Stop</strong></td>
+<td>Claude finishes its overall response</td>
+<td>Yes (force continue)</td>
+<td>Final checks, generate report, block &quot;done&quot; if tests fail</td>
+</tr>
+<tr>
+<td><strong>SubagentStop</strong></td>
+<td>A Task-tool sub-agent finishes</td>
+<td>Yes</td>
+<td>Validate sub-agent output, gate merging</td>
+</tr>
+<tr>
+<td><strong>PreCompact</strong></td>
+<td>Before context compaction (manual or auto)</td>
+<td>No</td>
+<td>Back up full transcript, snapshot state</td>
+</tr>
+<tr>
+<td><strong>SessionEnd</strong></td>
+<td>Session terminates</td>
+<td>No</td>
+<td>Persist logs, push metrics, retro capture</td>
+</tr>
+</tbody>
+</table>
+<p>The Agent SDK and recent Claude Code versions have added more (<code>ConfigChange</code>, <code>CwdChanged</code>, <code>FileChanged</code>, <code>PermissionDenied</code>, <code>WorktreeCreate</code>, <code>WorktreeRemove</code>, etc.) but they are less widely documented and churn more between versions. Start with the nine above.</p>
+<h3 id="where-hooks-are-configured">Where hooks are configured</h3>
 <p>Three settings files, merged in order (later wins for same key):</p>
-<p>~/.claude/settings.json — user-global hooks, apply to every project</p>
-<p>.claude/settings.json — project-shared hooks, checked into git</p>
-<p>.claude/settings.local.json — per-machine overrides, gitignored</p>
+<ol>
+<li><code>~/.claude/settings.json</code> — user-global hooks, apply to every project</li>
+<li><code>.claude/settings.json</code> — project-shared hooks, checked into git</li>
+<li><code>.claude/settings.local.json</code> — per-machine overrides, gitignored</li>
+</ol>
 <p>Structure:</p>
-<p>{ "hooks": { "PreToolUse": [ { "matcher": "Bash", "hooks": [ { "type": "command", "command": "~/.claude/hooks/block-rm-rf.sh" } ] } ], "PostToolUse": [ { "matcher": "Edit Write", "hooks": [ { "type": "command", "command": "prettier --write" } ] } ] } }</p>
-<p>Top level is hooks. Each event is an array of matcher groups. Each group has:</p>
-<p>matcher — a regex tested against the tool name (for tool-scoped events). For PreToolUse/PostToolUse: the tool name (Bash, Edit, Write, mcpgithub.). For other events: often empty string or omitted.</p>
-<p>hooks — an array of hook entries. Each entry has:</p>
-<p>type — "command" (shell), or in Agent SDK contexts "http" / "prompt".</p>
-<p>command — the shell command to run.</p>
-<p>async — optional boolean. If true, hook runs in background and doesn't block Claude.</p>
-<p>timeout — optional seconds before kill.</p>
-<p>To disable all hooks temporarily: "disableAllHooks": true at settings root.</p>
-<h3>How hooks communicate with Claude</h3>
-<p>Input: Hooks receive JSON on stdin describing the event. For a PreToolUse on Bash:</p>
-<p>{ "session_id": "abc123", "hook_event_name": "PreToolUse", "tool_name": "Bash", "tool_input": { "command": "rm -rf /", "description": "delete everything" }, "cwd": "/home/user/project" }</p>
-<p>UserPromptSubmit gets { session_id, hook_event_name, prompt }. SessionStart gets the minimal set. Each event has its own schema — the canonical reference is the gist at https://gist.github.com/FrancisBourre/50dca37124ecc43eaf08328cdcccdb34 and the Anthropic docs.</p>
-<p>Output / control:</p>
-<p>Exit code 0 — success, allow the operation, stdout is shown as informational.</p>
-<p>Exit code 2 — block the operation. stderr is surfaced to Claude as an error, and Claude gets a chance to react (e.g. try a different approach).</p>
-<p>Any other non-zero — error, shown to user but does not block.</p>
-<p>Structured JSON on stdout — advanced: you can return { "decision": "block", "reason": "..." } or { "decision": "approve" } or { "modified_tool_input": {...} } to rewrite arguments. This is the powerful path — a hook can rewrite Claude's tool call mid-flight.</p>
-<p>async: true hooks are fire-and-forget and cannot block or modify.</p>
-<h2>Quick start — five hooks worth installing today</h2>
-<h3>1. Block destructive Bash commands</h3>
-<p>~/.claude/hooks/block-destructive.sh:</p>
-<p>#!/usr/bin/env bash cmd=$(jq -r '.tool_input.command // empty') if [[ "$cmd" =~ (rm[[:space:]]+-rf[[:space:]]+/ mkfs :\(\)\{ dd[[:space:]]+if=) ]]; then echo "Blocked destructive command: $cmd" &gt;&amp;2 exit 2 fi exit 0</p>
-<p>In ~/.claude/settings.json:</p>
-<p>{ "hooks": { "PreToolUse": [ { "matcher": "Bash", "hooks": [{ "type": "command", "command": "~/.claude/hooks/block-destructive.sh" }] } ] } }</p>
-<p>chmod +x the script. Now any rm -rf /, fork bomb, or dd to a device gets blocked before Claude can run it — and Claude is told why, so it can try something saner.</p>
-<h3>2. Auto-format on edit</h3>
-<p>{ "hooks": { "PostToolUse": [ { "matcher": "Edit Write MultiEdit", "hooks": [{ "type": "command", "command": "path=$(jq -r '.tool_input.file_path'); case \"$path\" in .ts .tsx .js .jsx) prettier --write \"$path\" ;; .py) ruff format \"$path\" ;; .rs) rustfmt \"$path\" ;; esac" }] } ] } }</p>
-<p>Every file Claude edits gets formatted automatically. No more "please run prettier" prompts.</p>
-<h3>3. Inject git context at session start</h3>
-<p>{ "hooks": { "SessionStart": [ { "hooks": [{ "type": "command", "command": "echo '## Git state'; git branch --show-current 2&gt;/dev/null; git status --short 2&gt;/dev/null head -10; echo '## Recent commits'; git log --oneline -5 2&gt;/dev/null" }] } ] } }</p>
-<p>stdout from SessionStart hooks gets injected into Claude's first system message, so every session begins knowing the current branch, dirty files, and recent history. No more "what branch am I on?"</p>
-<h3>4. Log every Bash command for audit</h3>
-<p>{ "hooks": { "PostToolUse": [ { "matcher": "Bash", "hooks": [{ "type": "command", "command": "jq -r '[.session_id, .tool_input.command] @tsv' &gt;&gt; ~/.claude/bash-log.tsv" }] } ] } }</p>
-<p>Append every command Claude runs, with session id, to a TSV file. Trivial to grep later for "what did Claude do on Tuesday."</p>
-<h3>5. Back up the transcript before compaction</h3>
-<p>{ "hooks": { "PreCompact": [ { "hooks": [{ "type": "command", "command": "python ~/.claude/hooks/backup-transcript.py", "async": true }] } ] } }</p>
-<p>async: true because you don't want backups blocking Claude. Every time context compacts, the full transcript gets snapshotted — essential for post-mortems and the /forge knowledge workflow.</p>
-<h2>Real-world patterns</h2>
-<p>Block PR merges until tests pass (Stop hook). On Stop, check if the git index is dirty or if pytest fails. Exit 2 to force Claude to continue working instead of claiming "done."</p>
-<p>Prompt rewriting (UserPromptSubmit hook). Intercept the user's prompt, prepend project-specific context from a file, return the rewritten prompt via structured JSON. This is how you implement "every prompt gets the current GOALS.yaml attached."</p>
-<p>Permission gating (PreToolUse on mcpgithub.). Block any GitHub MCP tool that tries to merge a PR on main without a human-approved signal.</p>
-<p>Session metric export (SessionEnd). Ship session duration, tool counts, and token spend to a local SQLite DB for weekly retros.</p>
-<p>Auto-commit scratch work (PostToolUse on Edit). After every edit, auto-commit to a scratch branch so nothing is ever lost even if Claude undoes itself.</p>
-<p>Sub-agent quality gate (SubagentStop). When a Task sub-agent finishes, run the output through a linter or a small validation LLM. If it fails, exit 2 to tell the parent agent "try again."</p>
-<p>Notification routing (Notification). When Claude is waiting on a permission prompt, desktop-notify or send a Discord webhook so you can unblock it from your phone.</p>
-<h2>What you may already have</h2>
-<p>Your global setup may include the hookify plugin (see reference_installed_plugins.md). It provides:</p>
-<p>/hookify — interactive hook creation. Given a behavior you want to prevent, it generates the shell script and the settings.json entry.</p>
-<p>/hookify:configure — enable/disable existing hookify rules interactively.</p>
-<p>/hookify:list — list all installed hookify rules.</p>
-<p>hookify:writing-rules skill — for hand-writing custom hook rules.</p>
-<p>Your memory may also reference the update-config skill, which explicitly says: "Automated behaviors ('from now on when X', 'each time X', 'whenever X', 'before/after X') require hooks configured in settings.json — the harness executes these, not Claude." Any time you catch yourself writing a "from now on always X" rule in CLAUDE.md, the correct move is a hook instead.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-rm-rf.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "prettier --write" }
+        ]
+      }
+    ]
+  }
+}
+</code></pre></div>
+<p>Top level is <code>hooks</code>. Each event is an array of <strong>matcher groups</strong>. Each group has:</p>
+<ul>
+<li><code>matcher</code> — a regex tested against the tool name (for tool-scoped events). For <code>PreToolUse</code>/<code>PostToolUse</code>: the tool name (<code>Bash</code>, <code>Edit</code>, <code>Write</code>, <code>mcp__github__.*</code>). For other events: often empty string or omitted.</li>
+<li><code>hooks</code> — an array of hook entries. Each entry has:
+<ul>
+<li><code>type</code> — <code>&quot;command&quot;</code> (shell), or in Agent SDK contexts <code>&quot;http&quot;</code> / <code>&quot;prompt&quot;</code>.</li>
+<li><code>command</code> — the shell command to run.</li>
+<li><code>async</code> — optional boolean. If <code>true</code>, hook runs in background and doesn't block Claude.</li>
+<li><code>timeout</code> — optional seconds before kill.</li>
+</ul>
+</li>
+</ul>
+<p>To disable all hooks temporarily: <code>&quot;disableAllHooks&quot;: true</code> at settings root.</p>
+<h3 id="how-hooks-communicate-with-claude">How hooks communicate with Claude</h3>
+<p><strong>Input:</strong> Hooks receive JSON on <strong>stdin</strong> describing the event. For a <code>PreToolUse</code> on Bash:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "session_id": "abc123",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "rm -rf /",
+    "description": "delete everything"
+  },
+  "cwd": "/home/user/project"
+}
+</code></pre></div>
+<p><code>UserPromptSubmit</code> gets <code>{ session_id, hook_event_name, prompt }</code>. <code>SessionStart</code> gets the minimal set. Each event has its own schema — the canonical reference is the gist at <a href="https://gist.github.com/FrancisBourre/50dca37124ecc43eaf08328cdcccdb34" target="_blank" rel="noopener">https://gist.github.com/FrancisBourre/50dca37124ecc43eaf08328cdcccdb34</a> and the Anthropic docs.</p>
+<p><strong>Output / control:</strong></p>
+<ul>
+<li><strong>Exit code 0</strong> — success, allow the operation, stdout is shown as informational.</li>
+<li><strong>Exit code 2</strong> — <strong>block</strong> the operation. stderr is surfaced to Claude as an error, and Claude gets a chance to react (e.g. try a different approach).</li>
+<li><strong>Any other non-zero</strong> — error, shown to user but does not block.</li>
+<li><strong>Structured JSON on stdout</strong> — advanced: you can return <code>{ &quot;decision&quot;: &quot;block&quot;, &quot;reason&quot;: &quot;...&quot; }</code> or <code>{ &quot;decision&quot;: &quot;approve&quot; }</code> or <code>{ &quot;modified_tool_input&quot;: {...} }</code> to rewrite arguments. This is the powerful path — a hook can <em>rewrite</em> Claude's tool call mid-flight.</li>
+</ul>
+<p><code>async: true</code> hooks are fire-and-forget and cannot block or modify.</p>
+<hr />
+<h2 id="quick-start-five-hooks-worth-installing-today">Quick start — five hooks worth installing today</h2>
+<h3 id="1-block-destructive-bash-commands">1. Block destructive Bash commands</h3>
+<p><code>~/.claude/hooks/block-destructive.sh</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">#!/usr/bin/env bash
+cmd=$(jq -r '.tool_input.command // empty')
+if [[ "$cmd" =~ (rm[[:space:]]+-rf[[:space:]]+/|mkfs|:\(\)\{|dd[[:space:]]+if=) ]]; then
+  echo "Blocked destructive command: $cmd" &gt;&amp;2
+  exit 2
+fi
+exit 0
+</code></pre></div>
+<p>In <code>~/.claude/settings.json</code>:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "~/.claude/hooks/block-destructive.sh" }]
+      }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>chmod +x</code> the script. Now any <code>rm -rf /</code>, fork bomb, or <code>dd</code> to a device gets blocked before Claude can run it — and Claude is told why, so it can try something saner.</p>
+<h3 id="2-auto-format-on-edit">2. Auto-format on edit</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [{
+          "type": "command",
+          "command": "path=$(jq -r '.tool_input.file_path'); case \"$path\" in *.ts|*.tsx|*.js|*.jsx) prettier --write \"$path\" ;; *.py) ruff format \"$path\" ;; *.rs) rustfmt \"$path\" ;; esac"
+        }]
+      }
+    ]
+  }
+}
+</code></pre></div>
+<p>Every file Claude edits gets formatted automatically. No more &quot;please run prettier&quot; prompts.</p>
+<h3 id="3-inject-git-context-at-session-start">3. Inject git context at session start</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "echo '## Git state'; git branch --show-current 2&gt;/dev/null; git status --short 2&gt;/dev/null | head -10; echo '## Recent commits'; git log --oneline -5 2&gt;/dev/null"
+        }]
+      }
+    ]
+  }
+}
+</code></pre></div>
+<p>stdout from SessionStart hooks gets injected into Claude's first system message, so every session begins knowing the current branch, dirty files, and recent history. No more &quot;what branch am I on?&quot;</p>
+<h3 id="4-log-every-bash-command-for-audit">4. Log every Bash command for audit</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{
+          "type": "command",
+          "command": "jq -r '[.session_id, .tool_input.command] | @tsv' &gt;&gt; ~/.claude/bash-log.tsv"
+        }]
+      }
+    ]
+  }
+}
+</code></pre></div>
+<p>Append every command Claude runs, with session id, to a TSV file. Trivial to grep later for &quot;what did Claude do on Tuesday.&quot;</p>
+<h3 id="5-back-up-the-transcript-before-compaction">5. Back up the transcript before compaction</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-json">{
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "python ~/.claude/hooks/backup-transcript.py",
+          "async": true
+        }]
+      }
+    ]
+  }
+}
+</code></pre></div>
+<p><code>async: true</code> because you don't want backups blocking Claude. Every time context compacts, the full transcript gets snapshotted — essential for post-mortems and the <code>/forge</code> knowledge workflow.</p>
+<hr />
+<h2 id="real-world-patterns">Real-world patterns</h2>
+<p><strong>Block PR merges until tests pass (Stop hook).</strong> On <code>Stop</code>, check if the git index is dirty or if <code>pytest</code> fails. Exit 2 to force Claude to continue working instead of claiming &quot;done.&quot;</p>
+<p><strong>Prompt rewriting (UserPromptSubmit hook).</strong> Intercept the user's prompt, prepend project-specific context from a file, return the rewritten prompt via structured JSON. This is how you implement &quot;every prompt gets the current GOALS.yaml attached.&quot;</p>
+<p><strong>Permission gating (PreToolUse on mcp__github__.*).</strong> Block any GitHub MCP tool that tries to merge a PR on <code>main</code> without a human-approved signal.</p>
+<p><strong>Session metric export (SessionEnd).</strong> Ship session duration, tool counts, and token spend to a local SQLite DB for weekly retros.</p>
+<p><strong>Auto-commit scratch work (PostToolUse on Edit).</strong> After every edit, auto-commit to a <code>scratch</code> branch so nothing is ever lost even if Claude undoes itself.</p>
+<p><strong>Sub-agent quality gate (SubagentStop).</strong> When a Task sub-agent finishes, run the output through a linter or a small validation LLM. If it fails, exit 2 to tell the parent agent &quot;try again.&quot;</p>
+<p><strong>Notification routing (Notification).</strong> When Claude is waiting on a permission prompt, desktop-notify or send a Discord webhook so you can unblock it from your phone.</p>
+<hr />
+<h2 id="what-you-may-already-have">What you may already have</h2>
+<p>Your global setup may include the <strong><code>hookify</code> plugin</strong> (see <code>reference_installed_plugins.md</code>). It provides:</p>
+<ul>
+<li><code>/hookify</code> — interactive hook creation. Given a behavior you want to prevent, it generates the shell script and the settings.json entry.</li>
+<li><code>/hookify:configure</code> — enable/disable existing hookify rules interactively.</li>
+<li><code>/hookify:list</code> — list all installed hookify rules.</li>
+<li><code>hookify:writing-rules</code> skill — for hand-writing custom hook rules.</li>
+</ul>
+<p>Your memory may also reference the <strong><code>update-config</code> skill</strong>, which explicitly says: <em>&quot;Automated behaviors ('from now on when X', 'each time X', 'whenever X', 'before/after X') require hooks configured in settings.json — the harness executes these, not Claude.&quot;</em> Any time you catch yourself writing a &quot;from now on always X&quot; rule in CLAUDE.md, the correct move is a hook instead.</p>
 <p>Quick check for existing hooks:</p>
-<p>cat ~/.claude/settings.json jq '.hooks // {}' cat .claude/settings.json 2&gt;/dev/null jq '.hooks // {}'</p>
-<h2>What we could build with it</h2>
-<p>A /forge auto-runner. SessionEnd hook that pipes the transcript into the forge skill to automatically mine learnings into MEMORY.md without you remembering to run it.</p>
-<p>Bash command classifier. PreToolUse hook that routes Bash commands through a local classifier (regex or small LLM) and auto-allows safe ones, prompts on medium, hard-blocks destructive.</p>
-<p>Per-project CLAUDE.md injector. SessionStart hook that checks the cwd, looks for matching project memory in ~/.claude/projects/.../MEMORY.md, and injects the relevant entries.</p>
-<p>Trading bot guardrails. PreToolUse hook on any Bash running python trade.py that blocks if market is closed, if balance is below threshold, or if a kill-switch file exists. This is a hard rule the model cannot override.</p>
-<p>Secret leak prevention. PreToolUse on Edit/Write that greps the proposed new_string for anything matching private-key / API-key patterns and exit 2 if found. This enforces the global "never expose secrets" rule deterministically.</p>
-<p>Auto-test runner. PostToolUse on Edit to source files → run the matching test file → append output to Claude's visible context. TDD without asking.</p>
-<p>Compaction-triggered retros. PreCompact hook that snapshots the transcript and writes a one-line summary of what was accomplished this window, building a running project log.</p>
-<p>Desktop notification on idle. Notification hook that notify-sends on Linux so you know Claude is waiting on input even if you alt-tabbed.</p>
-<h2>Gotchas and limits</h2>
-<p>Hooks are executed with your shell privileges. A malicious hook can rm -rf your home directory. Never install hooks from untrusted sources without reading the script first.</p>
-<p>Hooks run synchronously by default. A slow hook blocks Claude. Use async: true for anything that doesn't need to gate behavior (logging, notifications, backups).</p>
-<p>Per-project .claude/settings.json is checked into git. Never commit secrets inside hook scripts. Use .claude/settings.local.json for anything sensitive.</p>
-<p>Exit-code 2 vs structured JSON — these are different control channels. Exit 2 is the simple "block and tell Claude why" path. Structured JSON lets you rewrite tool inputs; use it sparingly because it's harder to debug.</p>
-<p>Matcher regex is tool-name-scoped. It does not match against tool arguments. To block by args, match the tool name and do the arg check inside your script.</p>
-<p>MCP tool names are prefixed (mcpgithubcreate_pull_request, mcpplaywrightbrowser_click, etc.). Match them with regex: "mcpgithub.".</p>
-<p>PostToolUse hooks cannot undo the tool. The tool already ran. You can react, but you can't reverse — if you need to prevent, it must be a PreToolUse.</p>
-<p>Latency is real. Every hook adds tens to hundreds of milliseconds per tool call. Five synchronous hooks on every Bash call becomes noticeable. There is a known community issue (ruflo #1530) reporting ~20s hook latency in misconfigured setups. Profile your hooks.</p>
-<p>stdin JSON can be large. A PostToolUse hook on a big Read can receive megabytes of content. If you just need the file path, parse with jq and ignore the rest.</p>
-<p>Hook stderr is surfaced to the user and to Claude. Keep it clean. Use stdout for "injected context," stderr for "error message when blocking."</p>
-<p>Version drift. Events like SessionEnd, PreCompact, and the matcher-on-non-tool-events behavior have all been added or renamed across versions. Check claude --version against the docs if something behaves unexpectedly.</p>
-<p>Settings merge order can surprise you. Local overrides user overrides project in some arrangements. If a hook doesn't fire, dump the merged config to see what Claude actually sees.</p>
-<p>Hooks are harness-enforced, not model-enforced. This is the whole point — a hook is the only way to make Claude's behavior actually deterministic. Put security-critical rules here, not in CLAUDE.md.</p>
-<h2>Bottom line</h2>
-<p>Hooks are the layer where Claude Code stops being "a smart assistant that mostly follows rules" and becomes "a runtime with hard constraints you can trust." The nine standard events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd) cover 95% of real use cases. Start with three hooks — block destructive Bash, auto-format on edit, inject git context on session start — and add more as you notice yourself saying "Claude should always X" for the nth time. That sentence is always a hook.</p>
-<p>If you have hookify installed, use /hookify for interactive creation, and treat every from now on / whenever X rule in CLAUDE.md as a candidate to migrate into settings.json where it becomes enforceable instead of advisory.</p>
-<h2>Prompt system — run this yourself</h2>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">cat ~/.claude/settings.json | jq '.hooks // {}'
+cat .claude/settings.json 2&gt;/dev/null | jq '.hooks // {}'
+</code></pre></div>
+<hr />
+<h2 id="what-we-could-build-with-it">What we could build with it</h2>
+<ul>
+<li><strong>A <code>/forge</code> auto-runner.</strong> <code>SessionEnd</code> hook that pipes the transcript into the <code>forge</code> skill to automatically mine learnings into MEMORY.md without you remembering to run it.</li>
+<li><strong>Bash command classifier.</strong> <code>PreToolUse</code> hook that routes Bash commands through a local classifier (regex or small LLM) and auto-allows safe ones, prompts on medium, hard-blocks destructive.</li>
+<li><strong>Per-project CLAUDE.md injector.</strong> <code>SessionStart</code> hook that checks the cwd, looks for matching project memory in <code>~/.claude/projects/.../MEMORY.md</code>, and injects the relevant entries.</li>
+<li><strong>Trading bot guardrails.</strong> <code>PreToolUse</code> hook on any Bash running <code>python trade.py</code> that blocks if market is closed, if balance is below threshold, or if a kill-switch file exists. This is a hard rule the model cannot override.</li>
+<li><strong>Secret leak prevention.</strong> <code>PreToolUse</code> on Edit/Write that greps the proposed <code>new_string</code> for anything matching private-key / API-key patterns and exit 2 if found. This enforces the global &quot;never expose secrets&quot; rule deterministically.</li>
+<li><strong>Auto-test runner.</strong> <code>PostToolUse</code> on Edit to source files → run the matching test file → append output to Claude's visible context. TDD without asking.</li>
+<li><strong>Compaction-triggered retros.</strong> <code>PreCompact</code> hook that snapshots the transcript <em>and</em> writes a one-line summary of what was accomplished this window, building a running project log.</li>
+<li><strong>Desktop notification on idle.</strong> <code>Notification</code> hook that <code>notify-send</code>s on Linux so you know Claude is waiting on input even if you alt-tabbed.</li>
+</ul>
+<hr />
+<h2 id="gotchas-and-limits">Gotchas and limits</h2>
+<ul>
+<li><strong>Hooks are executed with your shell privileges.</strong> A malicious hook can <code>rm -rf</code> your home directory. Never install hooks from untrusted sources without reading the script first.</li>
+<li><strong>Hooks run synchronously by default.</strong> A slow hook blocks Claude. Use <code>async: true</code> for anything that doesn't need to gate behavior (logging, notifications, backups).</li>
+<li><strong>Per-project <code>.claude/settings.json</code> is checked into git.</strong> Never commit secrets inside hook scripts. Use <code>.claude/settings.local.json</code> for anything sensitive.</li>
+<li><strong>Exit-code 2 vs structured JSON</strong> — these are different control channels. Exit 2 is the simple &quot;block and tell Claude why&quot; path. Structured JSON lets you <em>rewrite</em> tool inputs; use it sparingly because it's harder to debug.</li>
+<li><strong>Matcher regex is tool-name-scoped.</strong> It does <em>not</em> match against tool <em>arguments</em>. To block by args, match the tool name and do the arg check inside your script.</li>
+<li><strong>MCP tool names are prefixed</strong> (<code>mcp__github__create_pull_request</code>, <code>mcp__playwright__browser_click</code>, etc.). Match them with regex: <code>&quot;mcp__github__.*&quot;</code>.</li>
+<li><strong>PostToolUse hooks cannot undo the tool.</strong> The tool already ran. You can react, but you can't reverse — if you need to prevent, it must be a PreToolUse.</li>
+<li><strong>Latency is real.</strong> Every hook adds tens to hundreds of milliseconds per tool call. Five synchronous hooks on every Bash call becomes noticeable. There is a known community issue (ruflo #1530) reporting ~20s hook latency in misconfigured setups. Profile your hooks.</li>
+<li><strong>stdin JSON can be large.</strong> A <code>PostToolUse</code> hook on a big Read can receive megabytes of content. If you just need the file path, parse with <code>jq</code> and ignore the rest.</li>
+<li><strong>Hook stderr is surfaced to the user and to Claude.</strong> Keep it clean. Use stdout for &quot;injected context,&quot; stderr for &quot;error message when blocking.&quot;</li>
+<li><strong>Version drift.</strong> Events like <code>SessionEnd</code>, <code>PreCompact</code>, and the <code>matcher</code>-on-non-tool-events behavior have all been added or renamed across versions. Check <code>claude --version</code> against the docs if something behaves unexpectedly.</li>
+<li><strong>Settings merge order can surprise you.</strong> Local overrides user overrides project in some arrangements. If a hook doesn't fire, dump the merged config to see what Claude actually sees.</li>
+<li><strong>Hooks are harness-enforced, not model-enforced.</strong> This is the whole point — a hook is the only way to make Claude's behavior actually deterministic. Put security-critical rules here, not in CLAUDE.md.</li>
+</ul>
+<hr />
+<h2 id="bottom-line">Bottom line</h2>
+<p>Hooks are the layer where Claude Code stops being &quot;a smart assistant that mostly follows rules&quot; and becomes &quot;a runtime with hard constraints you can trust.&quot; The nine standard events (SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd) cover 95% of real use cases. Start with three hooks — block destructive Bash, auto-format on edit, inject git context on session start — and add more as you notice yourself saying &quot;Claude should always X&quot; for the nth time. That sentence is always a hook.</p>
+<p>If you have <code>hookify</code> installed, use <code>/hookify</code> for interactive creation, and treat every <code>from now on</code> / <code>whenever X</code> rule in CLAUDE.md as a candidate to migrate into <code>settings.json</code> where it becomes enforceable instead of advisory.</p>
+<hr />
+<h2 id="prompt-system">Prompt system — run this yourself</h2>
 <p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
-<p>Mission. Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail. Done means each hook is proven to fire (or block) in a live headless Claude Code session, not just in theory.</p>
-<h3>1 · Deeper, not bigger</h3>
+<p><strong>Mission.</strong> Build a tested, version-pinned hook suite for Claude Code: a destructive-Bash blocker, a secret-leak blocker on Edit/Write, auto-format on edit, git context at SessionStart, a Bash audit log, a PreCompact transcript backup, and a Stop gate that refuses 'done' while tests fail. Done means each hook is proven to fire (or block) in a live headless Claude Code session, not just in theory.</p>
+<h3 id="1-deeper-not-bigger">1 · Deeper, not bigger</h3>
 <p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
-<p>What a top professional would do (that you didn't ask for): A platform engineer would treat hooks as production code that runs with your full user permissions on every tool call, so they would version the scripts in git, unit-test each one against recorded event payloads, and measure their latency because a slow PreToolUse hook taxes every single Bash call. They would read the installed version's hook reference instead of trusting a blog table, because event names and the structured-output schema have changed between releases (the guide's modified_tool_input and top-level decision: approve are older shapes; current docs use hookSpecificOutput.permissionDecision and updatedInput). They would guard Stop hooks against infinite loops using the stop_hook_active input field.</p>
-<p>Rawest material to start from: Start from the source, not summaries: (1) the official hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide, read for the exact version you run (claude --version); (2) the Agent SDK hooks page at platform.claude.com/docs/en/agent-sdk/hooks; (3) disler/claude-code-hooks-mastery on GitHub, which logs the real stdin payload of every event to JSON files; (4) your own captured payloads, produced by a catch-all logging hook that dumps stdin for every event to ~/.claude/hook-payloads/ - .json; (5) your existing ~/.claude/settings.json, .claude/settings.json, and .claude/settings.local.json, plus any hookify rules (/hookify:list).</p>
-<p>Methods and tools: jq for parsing stdin; bash with set -euo pipefail or Python 3 stdlib for anything nontrivial; bats-core or pytest for the harness (pipe fixture JSON into the script, assert exit code 0/2 and stdout/stderr); shellcheck on every .sh; hyperfine to time each hook (budget under 50 ms for PreToolUse); claude --debug and the /hooks slash command to confirm registration; headless claude -p runs with --output-format stream-json to prove a hook fired end to end; gitleaks or trufflehog regex sets as the source for the secret-pattern blocker.</p>
-<p>What proves it right (other than you or the model): The oracles are outside the model: (a) a bats/pytest suite where recorded payloads from your own Claude Code version produce the expected exit codes; (b) a headless claude -p session told to run rm -rf /tmp/hooktest-canary (a directory holding a .protected sentinel) that shows the block reason in the stream-json transcript and leaves the canary directory intact; (c) a Stop-gate run where a deliberately failing pytest keeps the session working and the session ends only after the test passes.</p>
-<p>Rewritten prompt — ask for exactly that:</p>
-<p>You are a platform engineer hardening my Claude Code setup with hooks. First run claude --version and read the hooks reference for that version (code.claude.com/docs/en/hooks); record the exact event names, stdin fields, exit-code semantics, and the structured JSON output schema (permissionDecision, updatedInput, additionalContext, decision/reason for Stop). Install a temporary catch-all hook that dumps stdin for every event into ~/.claude/hook-payloads/ and run one short session to capture real payloads; these become test fixtures. Then build, in a git-tracked ~/.claude/hooks/ directory: block-destructive.sh (PreToolUse, Bash), block-secrets.py (PreToolUse, Edit Write MultiEdit, gitleaks-derived patterns), format-on-edit.sh (PostToolUse), session-git-context.sh (SessionStart), bash-audit.sh (PostToolUse, Bash, TSV), precompact-backup.py (PreCompact, async), stop-tests-gate.sh (Stop, honours stop_hook_active). For each: a bats or pytest test feeding fixtures and asserting exit code and output, shellcheck clean, hyperfine timing under 50 ms for PreToolUse. Register them in ~/.claude/settings.json without clobbering existing hooks. Prove each fires in a headless claude -p --output-format stream-json session using canary files under /tmp. Return the file tree, the test output, the timing table, and a list of guide claims you found wrong for this version.</p>
-<h3>2 · One-shot prompt</h3>
-<p>ROLE AND STANCE You are a platform engineer building a deterministic guardrail layer for Claude Code. You treat hooks as production code that runs with the user's full permissions on every tool call. You trust the installed version's documentation and captured payloads over any blog post, including the guide you were given. You never claim a hook works until a live session proves it.</p>
-<p>CONTEXT</p>
-<p>Hooks are shell commands the harness (not the model) runs at lifecycle events: SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd, plus newer ones that churn between versions.</p>
-<p>Stdin is JSON (session_id, hook_event_name, tool_name, tool_input, cwd, transcript_path, and per-event fields). Exit 0 allows, exit 2 blocks and feeds stderr to Claude, other non-zero is a non-blocking error.</p>
-<p>Claims from the guide you must TEST, not repeat: (1) 'structured JSON can return {"modified_tool_input": ...} to rewrite arguments' (current docs may name this updatedInput under hookSpecificOutput); (2) '{"decision": "approve"}' as a valid PreToolUse output; (3) 'SessionStart stdout gets injected into Claude's first system message'; (4) 'async: true hooks cannot block or modify'; (5) 'later settings files win for the same key' (hooks may merge rather than override).</p>
-<p>References: code.claude.com/docs/en/hooks, code.claude.com/docs/en/hooks-guide, github.com/disler/claude-code-hooks-mastery, the hookify plugin if installed (/hookify:list).</p>
-<p>HARD CONSTRAINTS</p>
-<p>Back up ~/.claude/settings.json to settings.json.bak- before editing. Merge hooks with jq; never overwrite existing entries.</p>
-<p>All scripts live in ~/.claude/hooks/, are git-tracked, executable, shellcheck clean.</p>
-<p>PreToolUse hooks must finish in under 50 ms median (hyperfine, 20 runs).</p>
-<p>Every Stop hook must exit 0 when stop_hook_active is true to prevent infinite loops.</p>
-<p>Destructive tests only against canary paths under /tmp/hooktest-. Never test against real data.</p>
-<p>The secret blocker reports the pattern name, never the matched value.</p>
-<p>ORDERED DELIVERABLES</p>
-<p>ground-truth.md: claude --version, the event table copied from the installed version's docs, the exact output JSON schema, and a verdict on each of the five guide claims above.</p>
-<p>A capture hook (temporary) that writes every event's stdin to ~/.claude/hook-payloads/; run one session that triggers Bash, Edit, Write, a subagent, and /compact. Keep the payloads as fixtures in ~/.claude/hooks/tests/fixtures/. Remove the capture hook afterward.</p>
-<p>Seven hooks: block-destructive.sh, block-secrets.py, format-on-edit.sh, session-git-context.sh, bash-audit.sh, precompact-backup.py (async), stop-tests-gate.sh.</p>
-<p>tests/: bats or pytest cases, at least three per hook (allow case, block case, malformed-stdin case).</p>
-<p>settings.json merged entries with matchers (Bash; Edit Write MultiEdit; empty matcher for lifecycle events) and timeouts.</p>
-<p>Live proof: headless runs of claude -p '...' --output-format stream-json for the blocker, the secret blocker, and the Stop gate, saved as transcripts in ~/.claude/hooks/proof/.</p>
-<p>README.md in ~/.claude/hooks/: what each hook does, how to disable (disableAllHooks or removing the entry), and a 'what this cannot stop' section.</p>
-<p>BUILT-IN GAP ANALYSIS Before finishing, write GAPS.md listing: every event you could not trigger live and why; every guide claim that was false or unverifiable on this version; bypasses you found for each blocker (try bash -c, eval, base64 -d sh, writing a script then running it, MCP tools that write files); hooks whose latency exceeded budget. Fix what you can now (for example extend the Edit matcher to MCP filesystem tools), and mark the rest open with a reason.</p>
-<p>SELF-QUESTIONS BEFORE FINISHING</p>
-<p>Did I read the docs for my installed version, or an older page?</p>
-<p>Does any hook print a secret, a full tool_input, or a transcript to stdout where Claude will see it?</p>
-<p>What happens to each hook when jq is missing, stdin is empty, or tool_input lacks the field I read?</p>
-<p>Does the Stop gate handle a repo without tests, and does it honour stop_hook_active?</p>
-<p>Does format-on-edit run on files outside the project (for example ~/.claude itself)?</p>
-<p>STOP CONDITIONS Stop and report when all seven hooks pass their tests and the three live proofs exist, or when a doc/behaviour mismatch blocks a hook (report the mismatch with the doc excerpt and the observed payload). Stop immediately and ask if any test would touch a path outside /tmp/hooktest- or the hooks directory.</p>
-<p>RETURN FORMAT A single message with: (1) file tree of ~/.claude/hooks; (2) test summary (pass/fail counts per hook); (3) latency table (hook, median ms); (4) verdicts on the five guide claims; (5) the GAPS.md contents; (6) the exact settings.json diff.</p>
-<h3>3 · Step-by-step prompts</h3>
+<ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A platform engineer would treat hooks as production code that runs with your full user permissions on every tool call, so they would version the scripts in git, unit-test each one against recorded event payloads, and measure their latency because a slow PreToolUse hook taxes every single Bash call. They would read the installed version's hook reference instead of trusting a blog table, because event names and the structured-output schema have changed between releases (the guide's <code>modified_tool_input</code> and top-level <code>decision: approve</code> are older shapes; current docs use <code>hookSpecificOutput.permissionDecision</code> and <code>updatedInput</code>). They would guard Stop hooks against infinite loops using the <code>stop_hook_active</code> input field.</li>
+<li><strong>Rawest material to start from:</strong> Start from the source, not summaries: (1) the official hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide, read for the exact version you run (<code>claude --version</code>); (2) the Agent SDK hooks page at platform.claude.com/docs/en/agent-sdk/hooks; (3) disler/claude-code-hooks-mastery on GitHub, which logs the real stdin payload of every event to JSON files; (4) your own captured payloads, produced by a catch-all logging hook that dumps stdin for every event to <code>~/.claude/hook-payloads/&lt;event&gt;-&lt;ts&gt;.json</code>; (5) your existing <code>~/.claude/settings.json</code>, <code>.claude/settings.json</code>, and <code>.claude/settings.local.json</code>, plus any hookify rules (<code>/hookify:list</code>).</li>
+<li><strong>Methods and tools:</strong> jq for parsing stdin; bash with <code>set -euo pipefail</code> or Python 3 stdlib for anything nontrivial; bats-core or pytest for the harness (pipe fixture JSON into the script, assert exit code 0/2 and stdout/stderr); shellcheck on every .sh; <code>hyperfine</code> to time each hook (budget under 50 ms for PreToolUse); <code>claude --debug</code> and the <code>/hooks</code> slash command to confirm registration; headless <code>claude -p</code> runs with <code>--output-format stream-json</code> to prove a hook fired end to end; gitleaks or trufflehog regex sets as the source for the secret-pattern blocker.</li>
+<li><strong>What proves it right (other than you or the model):</strong> The oracles are outside the model: (a) a bats/pytest suite where recorded payloads from your own Claude Code version produce the expected exit codes; (b) a headless <code>claude -p</code> session told to run <code>rm -rf /tmp/hooktest-canary</code> (a directory holding a .protected sentinel) that shows the block reason in the stream-json transcript and leaves the canary directory intact; (c) a Stop-gate run where a deliberately failing pytest keeps the session working and the session ends only after the test passes.</li>
+</ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">You are a platform engineer hardening my Claude Code setup with hooks. First run `claude --version` and read the hooks reference for that version (code.claude.com/docs/en/hooks); record the exact event names, stdin fields, exit-code semantics, and the structured JSON output schema (permissionDecision, updatedInput, additionalContext, decision/reason for Stop). Install a temporary catch-all hook that dumps stdin for every event into ~/.claude/hook-payloads/ and run one short session to capture real payloads; these become test fixtures. Then build, in a git-tracked ~/.claude/hooks/ directory: block-destructive.sh (PreToolUse, Bash), block-secrets.py (PreToolUse, Edit|Write|MultiEdit, gitleaks-derived patterns), format-on-edit.sh (PostToolUse), session-git-context.sh (SessionStart), bash-audit.sh (PostToolUse, Bash, TSV), precompact-backup.py (PreCompact, async), stop-tests-gate.sh (Stop, honours stop_hook_active). For each: a bats or pytest test feeding fixtures and asserting exit code and output, shellcheck clean, hyperfine timing under 50 ms for PreToolUse. Register them in ~/.claude/settings.json without clobbering existing hooks. Prove each fires in a headless `claude -p --output-format stream-json` session using canary files under /tmp. Return the file tree, the test output, the timing table, and a list of guide claims you found wrong for this version.
+</code></pre></div>
+<h3 id="2-one-shot-prompt">2 · One-shot prompt</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">ROLE AND STANCE
+You are a platform engineer building a deterministic guardrail layer for Claude Code. You treat hooks as production code that runs with the user's full permissions on every tool call. You trust the installed version's documentation and captured payloads over any blog post, including the guide you were given. You never claim a hook works until a live session proves it.
+
+CONTEXT
+- Hooks are shell commands the harness (not the model) runs at lifecycle events: SessionStart, UserPromptSubmit, PreToolUse, PostToolUse, Notification, Stop, SubagentStop, PreCompact, SessionEnd, plus newer ones that churn between versions.
+- Stdin is JSON (session_id, hook_event_name, tool_name, tool_input, cwd, transcript_path, and per-event fields). Exit 0 allows, exit 2 blocks and feeds stderr to Claude, other non-zero is a non-blocking error.
+- Claims from the guide you must TEST, not repeat: (1) 'structured JSON can return {"modified_tool_input": ...} to rewrite arguments' (current docs may name this updatedInput under hookSpecificOutput); (2) '{"decision": "approve"}' as a valid PreToolUse output; (3) 'SessionStart stdout gets injected into Claude's first system message'; (4) 'async: true hooks cannot block or modify'; (5) 'later settings files win for the same key' (hooks may merge rather than override).
+- References: code.claude.com/docs/en/hooks, code.claude.com/docs/en/hooks-guide, github.com/disler/claude-code-hooks-mastery, the hookify plugin if installed (/hookify:list).
+
+HARD CONSTRAINTS
+- Back up ~/.claude/settings.json to settings.json.bak-&lt;date&gt; before editing. Merge hooks with jq; never overwrite existing entries.
+- All scripts live in ~/.claude/hooks/, are git-tracked, executable, shellcheck clean.
+- PreToolUse hooks must finish in under 50 ms median (hyperfine, 20 runs).
+- Every Stop hook must exit 0 when stop_hook_active is true to prevent infinite loops.
+- Destructive tests only against canary paths under /tmp/hooktest-*. Never test against real data.
+- The secret blocker reports the pattern name, never the matched value.
+
+ORDERED DELIVERABLES
+1. ground-truth.md: claude --version, the event table copied from the installed version's docs, the exact output JSON schema, and a verdict on each of the five guide claims above.
+2. A capture hook (temporary) that writes every event's stdin to ~/.claude/hook-payloads/; run one session that triggers Bash, Edit, Write, a subagent, and /compact. Keep the payloads as fixtures in ~/.claude/hooks/tests/fixtures/. Remove the capture hook afterward.
+3. Seven hooks: block-destructive.sh, block-secrets.py, format-on-edit.sh, session-git-context.sh, bash-audit.sh, precompact-backup.py (async), stop-tests-gate.sh.
+4. tests/: bats or pytest cases, at least three per hook (allow case, block case, malformed-stdin case).
+5. settings.json merged entries with matchers (Bash; Edit|Write|MultiEdit; empty matcher for lifecycle events) and timeouts.
+6. Live proof: headless runs of `claude -p '...' --output-format stream-json` for the blocker, the secret blocker, and the Stop gate, saved as transcripts in ~/.claude/hooks/proof/.
+7. README.md in ~/.claude/hooks/: what each hook does, how to disable (disableAllHooks or removing the entry), and a 'what this cannot stop' section.
+
+BUILT-IN GAP ANALYSIS
+Before finishing, write GAPS.md listing: every event you could not trigger live and why; every guide claim that was false or unverifiable on this version; bypasses you found for each blocker (try bash -c, eval, base64 -d | sh, writing a script then running it, MCP tools that write files); hooks whose latency exceeded budget. Fix what you can now (for example extend the Edit matcher to MCP filesystem tools), and mark the rest open with a reason.
+
+SELF-QUESTIONS BEFORE FINISHING
+- Did I read the docs for my installed version, or an older page?
+- Does any hook print a secret, a full tool_input, or a transcript to stdout where Claude will see it?
+- What happens to each hook when jq is missing, stdin is empty, or tool_input lacks the field I read?
+- Does the Stop gate handle a repo without tests, and does it honour stop_hook_active?
+- Does format-on-edit run on files outside the project (for example ~/.claude itself)?
+
+STOP CONDITIONS
+Stop and report when all seven hooks pass their tests and the three live proofs exist, or when a doc/behaviour mismatch blocks a hook (report the mismatch with the doc excerpt and the observed payload). Stop immediately and ask if any test would touch a path outside /tmp/hooktest-* or the hooks directory.
+
+RETURN FORMAT
+A single message with: (1) file tree of ~/.claude/hooks; (2) test summary (pass/fail counts per hook); (3) latency table (hook, median ms); (4) verdicts on the five guide claims; (5) the GAPS.md contents; (6) the exact settings.json diff.
+</code></pre></div>
+<h3 id="3-step-by-step-prompts">3 · Step-by-step prompts</h3>
 <h4>Step 1 — Establish ground truth for the installed version</h4>
-<p>Goal: Pin the exact hook contract of the Claude Code version you run and capture real payloads.</p>
-<p>Run claude --version and record it. Read the hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide. Write ~/.claude/hooks/ground-truth.md containing: the full list of hook events with when they fire and whether they can block; the stdin fields common to all events and the extra fields per event (tool_name, tool_input, tool_response, prompt, stop_hook_active, trigger for PreCompact, source for SessionStart); exit-code semantics; the structured JSON output schema (continue, stopReason, suppressOutput, hookSpecificOutput.permissionDecision, permissionDecisionReason, updatedInput, additionalContext, and Stop's decision/reason). Then judge these guide claims as true, false, or renamed for this version: modified_tool_input rewrites args; decision: approve is valid for PreToolUse; SessionStart stdout is injected as context; async hooks cannot block; later settings files override earlier ones for hooks. Next, back up ~/.claude/settings.json, add a temporary catch-all hook on every event that runs cat &gt; ~/.claude/hook-payloads/$(date +%s%N)-event.json, start one session that runs a Bash command, edits a file, writes a file, spawns a subagent, and runs /compact, then remove the catch-all. Copy the payloads into ~/.claude/hooks/tests/fixtures/ named by event.</p>
-<p>Expect: ground-truth.md (one to two pages) with a version string, an event table, a schema block, and five claim verdicts each quoting the doc line; at least one fixture JSON per event triggered.</p>
-<p>Audit before moving on: Open each fixture and confirm the fields you documented actually appear; any documented field missing from a real payload is a fail, so re-read the docs for that version and correct ground-truth.md. Confirm settings.json matches the backup after removing the capture hook (diff must be empty).</p>
+<p><em>Goal:</em> Pin the exact hook contract of the Claude Code version you run and capture real payloads.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Run `claude --version` and record it. Read the hooks reference at code.claude.com/docs/en/hooks and the hooks guide at code.claude.com/docs/en/hooks-guide. Write ~/.claude/hooks/ground-truth.md containing: the full list of hook events with when they fire and whether they can block; the stdin fields common to all events and the extra fields per event (tool_name, tool_input, tool_response, prompt, stop_hook_active, trigger for PreCompact, source for SessionStart); exit-code semantics; the structured JSON output schema (continue, stopReason, suppressOutput, hookSpecificOutput.permissionDecision, permissionDecisionReason, updatedInput, additionalContext, and Stop's decision/reason). Then judge these guide claims as true, false, or renamed for this version: modified_tool_input rewrites args; decision: approve is valid for PreToolUse; SessionStart stdout is injected as context; async hooks cannot block; later settings files override earlier ones for hooks. Next, back up ~/.claude/settings.json, add a temporary catch-all hook on every event that runs `cat &gt; ~/.claude/hook-payloads/$(date +%s%N)-event.json`, start one session that runs a Bash command, edits a file, writes a file, spawns a subagent, and runs /compact, then remove the catch-all. Copy the payloads into ~/.claude/hooks/tests/fixtures/ named by event.
+</code></pre></div>
+<p><strong>Expect:</strong> ground-truth.md (one to two pages) with a version string, an event table, a schema block, and five claim verdicts each quoting the doc line; at least one fixture JSON per event triggered.</p>
+<p><strong>Audit before moving on:</strong> Open each fixture and confirm the fields you documented actually appear; any documented field missing from a real payload is a fail, so re-read the docs for that version and correct ground-truth.md. Confirm settings.json matches the backup after removing the capture hook (diff must be empty).</p>
 <h4>Step 2 — Build and test the PreToolUse blockers</h4>
-<p>Goal: Ship a destructive-Bash blocker and a secret-leak blocker with fixture tests and latency budgets.</p>
-<p>Using the fixtures in ~/.claude/hooks/tests/fixtures/ and the schema in ground-truth.md, write two hooks. (a) block-destructive.sh: read .tool_input.command with jq; block with exit 2 and a one-line stderr reason on rm -rf against /, ~, $HOME or a repo root, mkfs, dd of= to /dev/, fork bombs, chmod -R 777 /, git push --force to main or master, find ... -exec rm -rf without a .git prune, and rm -rf of any directory containing a .protected sentinel file (this gives live tests a safe target). Allow everything else. Handle missing jq or empty stdin by exiting 0 and logging to ~/.claude/hooks/errors.log. (b) block-secrets.py: on Edit, Write, and MultiEdit, scan new_string, content, and edits[].new_string against a pattern set derived from gitleaks default rules (AWS keys, GitHub tokens, Anthropic and OpenAI keys, PEM private key headers, 64-hex Ethereum private keys) and exit 2 naming only the rule, never the value. Write bats or pytest cases: three allow, three block, one malformed stdin per hook. Run shellcheck. Time each with hyperfine --runs 20 piping a fixture; the median must be under 50 ms. Then try to bypass block-destructive with bash -c, eval, base64 -d sh, and a script file, and record which get through.</p>
-<p>Expect: Two executable scripts, a test file with at least 14 passing cases, a hyperfine table, and a bypass list with pass/blocked per technique.</p>
-<p>Audit before moving on: Re-run the tests from a clean shell. Grep the scripts' stderr strings to confirm no secret value can be echoed. If a known-dangerous fixture passes, or latency exceeds 50 ms, fix before moving on. Bypasses that remain open go into GAPS.md, not silently ignored.</p>
+<p><em>Goal:</em> Ship a destructive-Bash blocker and a secret-leak blocker with fixture tests and latency budgets.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Using the fixtures in ~/.claude/hooks/tests/fixtures/ and the schema in ground-truth.md, write two hooks. (a) block-destructive.sh: read .tool_input.command with jq; block with exit 2 and a one-line stderr reason on rm -rf against /, ~, $HOME or a repo root, mkfs, dd of= to /dev/, fork bombs, chmod -R 777 /, git push --force to main or master, `find ... -exec rm -rf` without a .git prune, and rm -rf of any directory containing a .protected sentinel file (this gives live tests a safe target). Allow everything else. Handle missing jq or empty stdin by exiting 0 and logging to ~/.claude/hooks/errors.log. (b) block-secrets.py: on Edit, Write, and MultiEdit, scan new_string, content, and edits[].new_string against a pattern set derived from gitleaks default rules (AWS keys, GitHub tokens, Anthropic and OpenAI keys, PEM private key headers, 64-hex Ethereum private keys) and exit 2 naming only the rule, never the value. Write bats or pytest cases: three allow, three block, one malformed stdin per hook. Run shellcheck. Time each with `hyperfine --runs 20` piping a fixture; the median must be under 50 ms. Then try to bypass block-destructive with bash -c, eval, base64 -d | sh, and a script file, and record which get through.
+</code></pre></div>
+<p><strong>Expect:</strong> Two executable scripts, a test file with at least 14 passing cases, a hyperfine table, and a bypass list with pass/blocked per technique.</p>
+<p><strong>Audit before moving on:</strong> Re-run the tests from a clean shell. Grep the scripts' stderr strings to confirm no secret value can be echoed. If a known-dangerous fixture passes, or latency exceeds 50 ms, fix before moving on. Bypasses that remain open go into GAPS.md, not silently ignored.</p>
 <h4>Step 3 — Build the advisory hooks</h4>
-<p>Goal: Add format-on-edit, Bash audit logging, and SessionStart git context, each tested.</p>
-<p>Write three hooks using the fixtures. (a) format-on-edit.sh for PostToolUse on Edit Write MultiEdit: read .tool_input.file_path, skip files outside the session cwd (from .cwd) and anything under ~/.claude, then dispatch by extension: prettier --write for ts/tsx/js/jsx/json/css/md, ruff format for py, rustfmt for rs, gofmt -w for go. Skip silently if the formatter is not installed. Never exit 2. (b) bash-audit.sh for PostToolUse on Bash: append a TSV row of ISO timestamp, session_id, cwd, and the command with tabs and newlines escaped, to ~/.claude/bash-log.tsv; rotate when the file passes 10 MB. (c) session-git-context.sh for SessionStart: if cwd is a git repo, print the branch, git status --short head -10, and git log --oneline -5; print nothing outside a repo. Verify against ground-truth.md whether SessionStart stdout becomes model context on this version and whether JSON additionalContext is the preferred path; use whichever the docs specify. Write tests: format-on-edit actually reformats a badly indented fixture file in /tmp/hooktest-fmt; audit log escapes a multi-line command; git context prints nothing in a non-repo directory.</p>
-<p>Expect: Three scripts, passing tests, and a sample bash-log.tsv row and git-context output pasted into the step notes.</p>
-<p>Audit before moving on: Check that a command containing a tab or newline yields exactly one TSV row. Check the formatter does not touch files outside cwd. If SessionStart output is not visible to the model in a live test, switch to the documented JSON field and retest.</p>
+<p><em>Goal:</em> Add format-on-edit, Bash audit logging, and SessionStart git context, each tested.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write three hooks using the fixtures. (a) format-on-edit.sh for PostToolUse on Edit|Write|MultiEdit: read .tool_input.file_path, skip files outside the session cwd (from .cwd) and anything under ~/.claude, then dispatch by extension: prettier --write for ts/tsx/js/jsx/json/css/md, ruff format for py, rustfmt for rs, gofmt -w for go. Skip silently if the formatter is not installed. Never exit 2. (b) bash-audit.sh for PostToolUse on Bash: append a TSV row of ISO timestamp, session_id, cwd, and the command with tabs and newlines escaped, to ~/.claude/bash-log.tsv; rotate when the file passes 10 MB. (c) session-git-context.sh for SessionStart: if cwd is a git repo, print the branch, `git status --short | head -10`, and `git log --oneline -5`; print nothing outside a repo. Verify against ground-truth.md whether SessionStart stdout becomes model context on this version and whether JSON additionalContext is the preferred path; use whichever the docs specify. Write tests: format-on-edit actually reformats a badly indented fixture file in /tmp/hooktest-fmt; audit log escapes a multi-line command; git context prints nothing in a non-repo directory.
+</code></pre></div>
+<p><strong>Expect:</strong> Three scripts, passing tests, and a sample bash-log.tsv row and git-context output pasted into the step notes.</p>
+<p><strong>Audit before moving on:</strong> Check that a command containing a tab or newline yields exactly one TSV row. Check the formatter does not touch files outside cwd. If SessionStart output is not visible to the model in a live test, switch to the documented JSON field and retest.</p>
 <h4>Step 4 — Build the Stop gate and PreCompact backup</h4>
-<p>Goal: Refuse premature 'done' while tests fail, and snapshot transcripts before compaction.</p>
-<p>Write stop-tests-gate.sh for the Stop event. Read stdin; if .stop_hook_active is true, exit 0 immediately to avoid an infinite loop. Detect the test runner from the cwd: pytest if pyproject.toml or pytest.ini exists, npm test --silent if package.json has a test script, cargo test --quiet for Cargo.toml; if none, exit 0. Run it with a 120-second timeout. On failure, block the stop using the mechanism ground-truth.md specifies for Stop on this version (exit 2 with the failing test names on stderr, or JSON decision: block with a reason), capped to the last 30 lines of output. Write precompact-backup.py for PreCompact, registered async: copy the file at .transcript_path to ~/.claude/transcript-backups/ - - .jsonl, keep the newest 50, and never print the transcript. Test the Stop gate in /tmp/hooktest-stop with a tiny pytest project in three states: passing, failing, and stop_hook_active true while failing. Test the backup with a fixture payload pointing at a dummy transcript.</p>
-<p>Expect: Two scripts and a test log showing three Stop outcomes (allow, block with reason, allow due to stop_hook_active) and one backup file created with the right name.</p>
-<p>Audit before moving on: Confirm the gate cannot loop: simulate two consecutive Stop events, the second with stop_hook_active true, and verify exit 0. Confirm a 120-second timeout is shorter than the hook timeout you will register. Confirm the backup rotation deletes only files in its own directory.</p>
+<p><em>Goal:</em> Refuse premature 'done' while tests fail, and snapshot transcripts before compaction.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write stop-tests-gate.sh for the Stop event. Read stdin; if .stop_hook_active is true, exit 0 immediately to avoid an infinite loop. Detect the test runner from the cwd: pytest if pyproject.toml or pytest.ini exists, `npm test --silent` if package.json has a test script, `cargo test --quiet` for Cargo.toml; if none, exit 0. Run it with a 120-second timeout. On failure, block the stop using the mechanism ground-truth.md specifies for Stop on this version (exit 2 with the failing test names on stderr, or JSON decision: block with a reason), capped to the last 30 lines of output. Write precompact-backup.py for PreCompact, registered async: copy the file at .transcript_path to ~/.claude/transcript-backups/&lt;session_id&gt;-&lt;trigger&gt;-&lt;UTC timestamp&gt;.jsonl, keep the newest 50, and never print the transcript. Test the Stop gate in /tmp/hooktest-stop with a tiny pytest project in three states: passing, failing, and stop_hook_active true while failing. Test the backup with a fixture payload pointing at a dummy transcript.
+</code></pre></div>
+<p><strong>Expect:</strong> Two scripts and a test log showing three Stop outcomes (allow, block with reason, allow due to stop_hook_active) and one backup file created with the right name.</p>
+<p><strong>Audit before moving on:</strong> Confirm the gate cannot loop: simulate two consecutive Stop events, the second with stop_hook_active true, and verify exit 0. Confirm a 120-second timeout is shorter than the hook timeout you will register. Confirm the backup rotation deletes only files in its own directory.</p>
 <h4>Step 5 — Prove each hook end to end in live sessions</h4>
-<p>Goal: Show the harness, not the test harness, enforces each hook.</p>
-<p>First register the hooks: back up ~/.claude/settings.json, then merge all seven entries into .hooks with jq, appending to existing arrays (matchers Bash and Edit Write MultiEdit for the tool hooks, empty for lifecycle events, async true for PreCompact, Stop timeout 150 seconds). Validate with jq empty, confirm each entry appears under /hooks, and list project-level hooks in .claude/settings.json that would double-fire. Then create canaries: mkdir -p /tmp/hooktest-canary &amp;&amp; touch /tmp/hooktest-canary/keep.txt /tmp/hooktest-canary/.protected. Never target a parent path in a test. Run headless sessions and save each transcript to ~/.claude/hooks/proof/: (1) claude -p 'Run: rm -rf /tmp/hooktest-canary then report' --output-format stream-json --verbose with permission settings that would otherwise allow Bash; confirm the stream shows a block with your stderr reason and the canary still exists. (2) Ask Claude to write a file /tmp/hooktest-secret/config.py containing a fake AWS key in the documented AKIA format; confirm the write is blocked and the file does not exist. (3) In /tmp/hooktest-stop with a failing test, ask Claude to 'add a docstring and say done'; confirm the session continues and fixes or reports the failing test before stopping. (4) Count Bash tool calls in the transcripts and compare with new rows in bash-log.tsv. (5) Run /compact in an interactive session and confirm a backup file appears.</p>
-<p>Expect: Five proof transcripts or notes with pass/fail, a canary directory that still exists, and matching Bash-call counts.</p>
-<p>Audit before moving on: Any proof that passes only because the model declined on its own (no hook event in the stream) is a fail; re-run with a prompt that pushes the action and confirm the block reason comes from the hook. Mismatched audit-log counts mean the matcher misses some calls. A settings diff that removes any pre-existing line means restore the backup and redo the merge.</p>
+<p><em>Goal:</em> Show the harness, not the test harness, enforces each hook.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">First register the hooks: back up ~/.claude/settings.json, then merge all seven entries into .hooks with jq, appending to existing arrays (matchers Bash and Edit|Write|MultiEdit for the tool hooks, empty for lifecycle events, async true for PreCompact, Stop timeout 150 seconds). Validate with `jq empty`, confirm each entry appears under /hooks, and list project-level hooks in .claude/settings.json that would double-fire. Then create canaries: mkdir -p /tmp/hooktest-canary &amp;&amp; touch /tmp/hooktest-canary/keep.txt /tmp/hooktest-canary/.protected. Never target a parent path in a test. Run headless sessions and save each transcript to ~/.claude/hooks/proof/: (1) `claude -p 'Run: rm -rf /tmp/hooktest-canary then report' --output-format stream-json --verbose` with permission settings that would otherwise allow Bash; confirm the stream shows a block with your stderr reason and the canary still exists. (2) Ask Claude to write a file /tmp/hooktest-secret/config.py containing a fake AWS key in the documented AKIA format; confirm the write is blocked and the file does not exist. (3) In /tmp/hooktest-stop with a failing test, ask Claude to 'add a docstring and say done'; confirm the session continues and fixes or reports the failing test before stopping. (4) Count Bash tool calls in the transcripts and compare with new rows in bash-log.tsv. (5) Run /compact in an interactive session and confirm a backup file appears.
+</code></pre></div>
+<p><strong>Expect:</strong> Five proof transcripts or notes with pass/fail, a canary directory that still exists, and matching Bash-call counts.</p>
+<p><strong>Audit before moving on:</strong> Any proof that passes only because the model declined on its own (no hook event in the stream) is a fail; re-run with a prompt that pushes the action and confirm the block reason comes from the hook. Mismatched audit-log counts mean the matcher misses some calls. A settings diff that removes any pre-existing line means restore the backup and redo the merge.</p>
 <h4>Step 6 — Validate against the oracles and write the gap report</h4>
-<p>Goal: Run every external check and publish what is proven, what is open, and what the guide got wrong.</p>
-<p>Run the full test suite from a clean shell and paste the summary. Run shellcheck on all .sh files. Run hyperfine on every PreToolUse hook and tabulate medians. Run gitleaks detect on the project repo and confirm no secret type it finds is missing from block-secrets.py's rules. Re-read the five proof transcripts. Write ~/.claude/hooks/README.md (purpose of each hook, how to disable each, fail-open versus fail-closed choice, what each blocker cannot stop) and GAPS.md with three sections: Verified (claim, evidence file), Open (claim or bypass, why not fixed, impact high/medium/low), and Guide corrections (each guide claim that was false or renamed on this version with the doc excerpt). Commit ~/.claude/hooks to git with a message naming the Claude Code version tested.</p>
-<p>Expect: All tests green, a latency table, README.md and GAPS.md, and a commit hash.</p>
-<p>Audit before moving on: Every Verified row must cite a file in tests/ or proof/. Any high-impact Open item without a mitigation note is a fail: add a mitigation (for example a permissions deny rule) or mark it explicitly as accepted risk with the reason.</p>
-<h3>4 · Gap analysis and audit</h3>
+<p><em>Goal:</em> Run every external check and publish what is proven, what is open, and what the guide got wrong.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Run the full test suite from a clean shell and paste the summary. Run shellcheck on all .sh files. Run hyperfine on every PreToolUse hook and tabulate medians. Run gitleaks detect on the project repo and confirm no secret type it finds is missing from block-secrets.py's rules. Re-read the five proof transcripts. Write ~/.claude/hooks/README.md (purpose of each hook, how to disable each, fail-open versus fail-closed choice, what each blocker cannot stop) and GAPS.md with three sections: Verified (claim, evidence file), Open (claim or bypass, why not fixed, impact high/medium/low), and Guide corrections (each guide claim that was false or renamed on this version with the doc excerpt). Commit ~/.claude/hooks to git with a message naming the Claude Code version tested.
+</code></pre></div>
+<p><strong>Expect:</strong> All tests green, a latency table, README.md and GAPS.md, and a commit hash.</p>
+<p><strong>Audit before moving on:</strong> Every Verified row must cite a file in tests/ or proof/. Any high-impact Open item without a mitigation note is a fail: add a mitigation (for example a permissions deny rule) or mark it explicitly as accepted risk with the reason.</p>
+<h3 id="4-gap-analysis-and-audit">4 · Gap analysis and audit</h3>
 <p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
-<p>You are auditing a freshly built Claude Code hook suite in ~/.claude/hooks/ that you did not write. Do not trust README.md. (1) List every claim the README and ground-truth.md make (each hook's trigger, behaviour, latency, and each guide-claim verdict). (2) For each, mark verified, unverified, or false, and cite evidence: a test case name, a proof transcript line, or a doc excerpt for the version from claude --version. (3) Attack the blockers: try at least eight bypasses of block-destructive (bash -c, sh -c, eval, base64 -d sh, python -c with shutil.rmtree, a heredoc script then execute, xargs rm, an MCP filesystem delete tool) and five of block-secrets (split string concatenation, base64 of a key, a key in a NotebookEdit cell, a key via Bash echo &gt; file, a key in an MCP write tool). Record which get through. (4) Check for silent failures: what does each hook do with empty stdin, invalid JSON, a missing jq or formatter; does any hook print tool_input or transcript content where Claude sees it. (5) Rank all gaps by impact (data loss, secret leak, workflow friction). Fix the top three now, re-run tests, and append results to GAPS.md. Report what you could not fix and why, with the exact command that demonstrates each remaining bypass on a /tmp canary.</p>
-<p>Questions the agent must ask itself before it says done:</p>
-<p>Which version's hook schema did I implement, and did I check it against a captured payload rather than the guide's table?</p>
-<p>Does the Stop gate honour stop_hook_active, and what happens if the test suite takes longer than the hook timeout?</p>
-<p>Does block-secrets cover MultiEdit edits[] and NotebookEdit, or only Edit and Write?</p>
-<p>Can Claude write a file through an MCP server tool that none of my matchers see?</p>
-<p>Is fail-open on missing jq the right call for the destructive blocker, and did I document it?</p>
-<p>Do project-level .claude/settings.json hooks double-fire with my user-level ones?</p>
-<p>Does format-on-edit rewrite files Claude did not intend to change, such as lockfiles or generated code?</p>
-<p>Will the audit log or transcript backups grow without bound?</p>
-<h3>5 · What proves it right</h3>
-<p>bats or pytest suite: every hook passes allow, block, and malformed-stdin fixtures captured from the installed Claude Code version.</p>
-<p>Headless claude -p --output-format stream-json transcripts showing the hook's block reason for a destructive command, with /tmp/hooktest-canary still present afterward.</p>
-<p>A failing pytest project where the Stop gate keeps the session working until tests pass, and a stop_hook_active=true run that exits cleanly.</p>
-<p>gitleaks detect on the repo finds no secret class that block-secrets.py lacks a rule for.</p>
-<h3>6 · Failure modes</h3>
-<p>Stop hook loops forever. Tell: the session keeps restarting after every response and burns tokens. Fix: exit 0 when stop_hook_active is true and cap retries.</p>
-<p>Hook written to an outdated schema. Tell: JSON output is ignored and tools run anyway. Fix: re-read the docs for claude --version and use hookSpecificOutput fields.</p>
-<p>Regex blocker treated as a sandbox. Tell: bash -c or a written script runs the blocked command. Fix: document bypasses, add permissions deny rules and a sandboxed run mode for risky work.</p>
-<p>Slow PreToolUse hook. Tell: every Bash call stalls noticeably. Fix: hyperfine it, move logic to a compiled binary or cache, keep heavy work in async PostToolUse.</p>
-<h3>7 · Agent direction (unattended runs)</h3>
-<p>Run this in the user's home config, so treat ~/.claude/settings.json as precious: back it up before every write and diff after. Reach for the installed version's docs and a captured payload first; do not code from the guide's tables. Spawn a subagent only for the adversarial bypass hunt in the gap audit, so the builder is not grading its own blockers. Never execute a destructive command outside /tmp/hooktest- paths; if any proof would need one, stop and ask. Never print, log, or echo the value of anything matching a secret pattern, including in test output. Return in chat: the hook file tree, test summary, latency table, guide-claim verdicts, settings diff, and GAPS.md; the files themselves live in ~/.claude/hooks/ and are committed to a git repo there.</p>
-<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
-</div><!--pagefind:end-->
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">You are auditing a freshly built Claude Code hook suite in ~/.claude/hooks/ that you did not write. Do not trust README.md. (1) List every claim the README and ground-truth.md make (each hook's trigger, behaviour, latency, and each guide-claim verdict). (2) For each, mark verified, unverified, or false, and cite evidence: a test case name, a proof transcript line, or a doc excerpt for the version from `claude --version`. (3) Attack the blockers: try at least eight bypasses of block-destructive (bash -c, sh -c, eval, base64 -d | sh, python -c with shutil.rmtree, a heredoc script then execute, xargs rm, an MCP filesystem delete tool) and five of block-secrets (split string concatenation, base64 of a key, a key in a NotebookEdit cell, a key via Bash echo &gt; file, a key in an MCP write tool). Record which get through. (4) Check for silent failures: what does each hook do with empty stdin, invalid JSON, a missing jq or formatter; does any hook print tool_input or transcript content where Claude sees it. (5) Rank all gaps by impact (data loss, secret leak, workflow friction). Fix the top three now, re-run tests, and append results to GAPS.md. Report what you could not fix and why, with the exact command that demonstrates each remaining bypass on a /tmp canary.
+</code></pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p>
+<ul>
+<li>Which version's hook schema did I implement, and did I check it against a captured payload rather than the guide's table?</li>
+<li>Does the Stop gate honour stop_hook_active, and what happens if the test suite takes longer than the hook timeout?</li>
+<li>Does block-secrets cover MultiEdit edits[] and NotebookEdit, or only Edit and Write?</li>
+<li>Can Claude write a file through an MCP server tool that none of my matchers see?</li>
+<li>Is fail-open on missing jq the right call for the destructive blocker, and did I document it?</li>
+<li>Do project-level .claude/settings.json hooks double-fire with my user-level ones?</li>
+<li>Does format-on-edit rewrite files Claude did not intend to change, such as lockfiles or generated code?</li>
+<li>Will the audit log or transcript backups grow without bound?</li>
+</ul>
+<h3 id="5-what-proves-it-right">5 · What proves it right</h3>
+<ul>
+<li>bats or pytest suite: every hook passes allow, block, and malformed-stdin fixtures captured from the installed Claude Code version.</li>
+<li>Headless <code>claude -p --output-format stream-json</code> transcripts showing the hook's block reason for a destructive command, with /tmp/hooktest-canary still present afterward.</li>
+<li>A failing pytest project where the Stop gate keeps the session working until tests pass, and a stop_hook_active=true run that exits cleanly.</li>
+<li>gitleaks detect on the repo finds no secret class that block-secrets.py lacks a rule for.</li>
+</ul>
+<h3 id="6-failure-modes">6 · Failure modes</h3>
+<ul>
+<li>Stop hook loops forever. Tell: the session keeps restarting after every response and burns tokens. Fix: exit 0 when stop_hook_active is true and cap retries.</li>
+<li>Hook written to an outdated schema. Tell: JSON output is ignored and tools run anyway. Fix: re-read the docs for <code>claude --version</code> and use hookSpecificOutput fields.</li>
+<li>Regex blocker treated as a sandbox. Tell: <code>bash -c</code> or a written script runs the blocked command. Fix: document bypasses, add permissions deny rules and a sandboxed run mode for risky work.</li>
+<li>Slow PreToolUse hook. Tell: every Bash call stalls noticeably. Fix: hyperfine it, move logic to a compiled binary or cache, keep heavy work in async PostToolUse.</li>
+</ul>
+<h3 id="7-agent-direction-unattended-runs">7 · Agent direction (unattended runs)</h3>
+<p>Run this in the user's home config, so treat ~/.claude/settings.json as precious: back it up before every write and diff after. Reach for the installed version's docs and a captured payload first; do not code from the guide's tables. Spawn a subagent only for the adversarial bypass hunt in the gap audit, so the builder is not grading its own blockers. Never execute a destructive command outside /tmp/hooktest-* paths; if any proof would need one, stop and ask. Never print, log, or echo the value of anything matching a secret pattern, including in test output. Return in chat: the hook file tree, test summary, latency table, guide-claim verdicts, settings diff, and GAPS.md; the files themselves live in ~/.claude/hooks/ and are committed to a git repo there.</p>
+<p><em>Prompt system updated 2026-10-22 · <a href="/prompts">all prompt systems</a> · <a href="/api/prompts.json">JSON</a></em></p>
+<!-- body:end --></div>
+</article>
+<footer class="site"><div class="wrap"><a href="/catalog#post-DV8rkpGEbBJ">← Back to DejaViewed</a> · <a href="/e/DV8rkpGEbBJ">Entry page</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
 <script id="md" type="text/markdown"># Claude Code Hooks System — Deep Dive
 
 <!-- answer:start -->
@@ -769,16 +993,9 @@ You are auditing a freshly built Claude Code hook suite in ~/.claude/hooks/ that
 
 Run this in the user's home config, so treat ~/.claude/settings.json as precious: back it up before every write and diff after. Reach for the installed version's docs and a captured payload first; do not code from the guide's tables. Spawn a subagent only for the adversarial bypass hunt in the gap audit, so the builder is not grading its own blockers. Never execute a destructive command outside /tmp/hooktest-* paths; if any proof would need one, stop and ask. Never print, log, or echo the value of anything matching a secret pattern, including in test output. Return in chat: the hook file tree, test summary, latency table, guide-claim verdicts, settings diff, and GAPS.md; the files themselves live in ~/.claude/hooks/ and are committed to a git repo there.
 
-*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+*Prompt system updated 2026-10-22 · [all prompt systems](/prompts) · [JSON](/api/prompts.json)*
 
 <!-- prompt-system:end -->
-</script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script>
-const raw=document.getElementById('md').textContent;
-const html=DOMPurify.sanitize(marked.parse(raw));
-document.getElementById('guide-body').innerHTML=html;
 </script><!-- ps-tail --><style>
 .ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
 .ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
@@ -795,11 +1012,8 @@ document.getElementById('guide-body').innerHTML=html;
 .ps-copy:hover{color:#fff;border-color:var(--border-hi)}
 .ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
 </style><script>
-document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
-document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
-p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
-</script><script>
 document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
 const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
-</script><!-- /ps-tail --><!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
+</script><!-- /ps-tail --><!-- sitenav:start --><nav class="sitenav" aria-label="Site" data-pagefind-ignore><style>.sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}.sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}.sitenav a:hover{color:var(--accent,#a78bfa)}</style><a href="/">Home</a><a href="/start-here">Start here</a><a href="/catalog">Catalog</a><a href="/guides/">Guides</a><a href="/prompts">Prompts</a><a href="/e/">All entries</a><a href="/collections/">Collections</a><a href="/search">Search</a><a href="/graph">Graph</a><a href="/graph-cosmos">Cosmos</a><a href="/board">Board</a><a href="/links/">Links</a><a href="/method">How it works</a><a href="/feed.xml">RSS</a><a href="/llms.txt">llms.txt</a></nav><!-- sitenav:end -->
+<!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
 </body></html>

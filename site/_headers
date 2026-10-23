@@ -1,0 +1,45 @@
+# Cloudflare Pages response headers. Hand-maintained (scripts/ don't generate this).
+# Rules that match the same request are merged; a header set twice is comma-joined,
+# so no two rules below set Cache-Control on the same path.
+# No Content-Security-Policy yet: every page has inline scripts; needs hashes/nonces first.
+# /go/* are 302s from _redirects, and redirects skip _headers, so X-Robots-Tag can't go on them.
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: interest-cohort=()
+
+# Fonts never change under the same name
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+# Thumbs (re-downloads) and OG cards (regenerated) are replaced under the same filename: 7 days
+/og/*
+  Cache-Control: public, max-age=604800
+/thumb/*
+  Cache-Control: public, max-age=604800
+
+# Pagefind: only the content-hashed chunks are immutable
+/pagefind/fragment/*
+  Cache-Control: public, max-age=31536000, immutable
+/pagefind/index/*
+  Cache-Control: public, max-age=31536000, immutable
+/pagefind/filter/*
+  Cache-Control: public, max-age=31536000, immutable
+/pagefind/*.pf_meta
+  Cache-Control: public, max-age=31536000, immutable
+
+# Unhashed, rewritten on every deploy: 1 day
+/*.js
+  Cache-Control: public, max-age=86400
+/*.css
+  Cache-Control: public, max-age=86400
+/*.json
+  Cache-Control: public, max-age=86400
+
+# Pagefind's entry points name the current hashed chunks; a stale copy breaks search after a
+# rebuild, so drop the 1-day rule and fall back to Cloudflare's revalidate-every-time default.
+/pagefind/pagefind-entry.json
+  ! Cache-Control
+/pagefind/pagefind.js
+  ! Cache-Control

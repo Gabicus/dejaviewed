@@ -17,6 +17,11 @@ Usage:
   python3 scripts/check_links.py --internal    # internal only (fast, offline)
   python3 scripts/check_links.py --external
   python3 scripts/check_links.py --e-sample 0  # check ALL e/*.html (default 50)
+  python3 scripts/check_links.py --internal --max-depth   # + click-depth BFS from site/index.html;
+                                                          #   exit 1 if any sitemap page is > 3 clicks deep
+
+Internal links may be relative (`../catalog.html`) or root-absolute clean URLs (`/catalog`,
+`/e/<id>`, `/guides/`): `/x` -> site/x.html or site/x/index.html, `/go/<slug>` -> a site/_redirects rule.
 """
 from __future__ import annotations
 
@@ -137,6 +142,7 @@ def internal_pages(e_sample: int) -> list[Path]:
     pages += sorted(SITE.glob("*.html"))  # index, catalog, search, board, graph*, admin, ...
     pages += sorted((SITE / "guides").glob("*.html"))
     pages += sorted((SITE / "deeper").glob("*.html"))
+    pages += sorted((SITE / "collections").glob("*.html"))
     for sub in ("about/index.html", "links/index.html"):
         if (SITE / sub).is_file():
             pages.append(SITE / sub)
@@ -196,6 +202,109 @@ def check_internal(e_sample: int) -> dict:
             "links_checked": n_links,
             "broken_count": sum(len(v) for v in broken.values()),
             "broken": dict(broken)}
+
+
+# ---------------------------------------------------------------- click depth
+class AnchorParser(HTMLParser):
+    """Static <a href>s only (what a no-JS crawler follows). Script bodies are CDATA to
+    HTMLParser, so client-rendered links (catalog cards, markdown guides) are not seen."""
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.hrefs: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "a":
+            for k, v in attrs:
+                if k == "href" and v:
+                    self.hrefs.append(v.strip())
+
+    handle_startendtag = handle_starttag
+
+
+def page_file(src: Path | None, url: str) -> Path | None:
+    """HTML file a link lands on (Cloudflare Pages clean-URL rules), or None."""
+    low = url.lower()
+    if low.startswith(SKIP_SCHEMES) or low.startswith("#") or is_templated(url):
+        return None
+    sp = urlsplit(url)
+    if sp.scheme in ("http", "https") or url.startswith("//"):
+        if sp.netloc.lower().removeprefix("www.") != SITE_HOST:
+            return None
+    path = unquote(sp.path)
+    if not path:
+        return None
+    if path.startswith("/") or src is None:
+        t = SITE / path.lstrip("/")
+    else:
+        t = src.parent / path
+    try:
+        t = t.resolve()
+        t.relative_to(SITE.resolve())
+    except ValueError:
+        return None
+    if path.endswith("/") or t.is_dir():
+        c = t / "index.html"
+        return c if c.is_file() else None
+    if t.suffix == ".html":
+        return t if t.is_file() else None
+    c = t.with_name(t.name + ".html")
+    return c if c.is_file() else None
+
+
+def click_depth(limit: int = 3) -> dict:
+    site = SITE.resolve()
+    start = (SITE / "index.html").resolve()
+    depth = {start: 0}
+    frontier = [start]
+    while frontier:
+        nxt = []
+        for page in frontier:
+            p = AnchorParser()
+            try:
+                p.feed(page.read_text(encoding="utf-8", errors="replace"))
+            except Exception:
+                continue
+            for href in p.hrefs:
+                f = page_file(page, href)
+                if f and f not in depth:
+                    depth[f] = depth[page] + 1
+                    nxt.append(f)
+        frontier = nxt
+    sm_pages: list[Path] = []
+    sm = SITE / "sitemap.xml"
+    if sm.is_file():
+        for loc in re.findall(r"<loc>([^<]+)</loc>", sm.read_text(encoding="utf-8")):
+            path = urlsplit(loc.replace("&amp;", "&")).path or "/"
+            f = page_file(None, path)
+            if f:
+                sm_pages.append(f)
+    dist = defaultdict(int)
+    offenders = []
+    for f in sm_pages:
+        d = depth.get(f)
+        dist["unreachable" if d is None else d] += 1
+        if d is None or d > limit:
+            offenders.append({"page": str(f.relative_to(site)), "depth": d})
+    all_dist = defaultdict(int)
+    for d in depth.values():
+        all_dist[d] += 1
+    return {"limit": limit, "sitemap_html_pages": len(sm_pages),
+            "sitemap_depth": {str(k): v for k, v in sorted(dist.items(), key=lambda kv: str(kv[0]))},
+            "reachable_depth": {str(k): v for k, v in sorted(all_dist.items())},
+            "offenders": offenders}
+
+
+def count_html_hrefs() -> dict:
+    """Static internal <a href>s that still end in .html (each one is a 308 hop on Cloudflare)."""
+    n, files = 0, defaultdict(int)
+    for page in internal_pages(0):
+        p = AnchorParser()
+        p.feed(page.read_text(encoding="utf-8", errors="replace"))
+        for h in p.hrefs:
+            if page_file(page, h) and urlsplit(h).path.endswith(".html"):
+                n += 1
+                files[str(page.relative_to(SITE))] += 1
+    return {"count": n, "top": sorted(files.items(), key=lambda kv: -kv[1])[:10]}
 
 
 # ---------------------------------------------------------------- external
@@ -341,6 +450,9 @@ def main() -> int:
     ap.add_argument("--internal", action="store_true")
     ap.add_argument("--external", action="store_true")
     ap.add_argument("--e-sample", type=int, default=50, help="0 = all e/*.html")
+    ap.add_argument("--max-depth", nargs="?", type=int, const=3, default=None,
+                    help="BFS click depth from site/index.html over static <a href>s; "
+                         "fail if any sitemap HTML page is deeper than N (default 3)")
     a = ap.parse_args()
     do_int = a.internal or not a.external
     do_ext = a.external or not a.internal
@@ -374,10 +486,33 @@ def main() -> int:
         for r in x["dead"]:
             print(f"  DEAD {r['code'] or r['error']:<22} {r['url']}")
             print(f"       in: {', '.join(r['appears_in'][:4])}")
+    rc = 0
+    if do_int:
+        hh = count_html_hrefs()
+        report["internal"]["html_hrefs"] = hh
+        print(f"\n.html internal <a href>s remaining (all pages): {hh['count']}"
+              + (f"  top: {hh['top'][:5]}" if hh["count"] else ""))
+        if report["internal"]["broken_count"]:
+            rc = 1
+    if a.max_depth is not None:
+        cd = click_depth(a.max_depth)
+        report["click_depth"] = cd
+        print(f"\nCLICK DEPTH from / (static <a href> only): {cd['sitemap_html_pages']} sitemap HTML pages")
+        print(f"  sitemap pages by depth:   {cd['sitemap_depth']}")
+        print(f"  all reachable by depth:   {cd['reachable_depth']}")
+        if cd["offenders"]:
+            rc = 1
+            print(f"  FAIL: {len(cd['offenders'])} sitemap page(s) deeper than {a.max_depth} or unreachable:")
+            for o in cd["offenders"][:25]:
+                print(f"    depth {o['depth']}: {o['page']}")
+            if len(cd["offenders"]) > 25:
+                print(f"    ... +{len(cd['offenders']) - 25} more")
+        else:
+            print(f"  ok: every sitemap page within {a.max_depth} clicks")
     report["runtime_s"] = round(time.time() - t0, 1)
     REPORT.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\nruntime {report['runtime_s']}s -> {REPORT.relative_to(ROOT)}")
-    return 0
+    return rc
 
 
 if __name__ == "__main__":

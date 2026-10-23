@@ -120,7 +120,7 @@ def render_html(deeper: dict) -> str:
         entry_slug = "".join(c if c.isalnum() or c in "-_" else "_" for c in e["id"])  # render_entries.safe_slug
         has_entry_page = (DEEPER_DIR.parent / "e" / f"{entry_slug}.html").is_file()
         if has_entry_page:
-            title_html = f'<a href="../e/{entry_slug}.html" class="dd-entry-title">{_esc(e.get("title", e["id"]))}</a>'
+            title_html = f'<a href="/e/{entry_slug}" class="dd-entry-title">{_esc(e.get("title", e["id"]))}</a>'
             if post_url:
                 title_html += f' <a href="{_esc(post_url)}" target="_blank" rel="noopener" class="dd-entry-src">original post ↗</a>'
         elif post_url:
@@ -133,7 +133,7 @@ def render_html(deeper: dict) -> str:
     {title_html}
     <div class="dd-entry-meta"><span class="tier-badge {tier_cls}">{e.get("tier","C")}</span> {_esc(e.get("type",""))} · @{_esc(e.get("creator",""))}</div>
     <div class="dd-entry-summary">{_esc(e.get("summary", ""))}</div>
-    {f'<a href="../guides/{e["deep_dive_slug"]}.html" class="dd-entry-guide">Read Guide →</a>' if e.get("has_guide") and e.get("deep_dive_slug") else ""}
+    {f'<a href="/guides/{e["deep_dive_slug"]}" class="dd-entry-guide">Read Guide →</a>' if e.get("has_guide") and e.get("deep_dive_slug") else ""}
   </div>
 </div>\n'''
 
@@ -186,7 +186,7 @@ a.dd-entry-title:hover{{text-decoration:underline;color:var(--accent)}}
 </style>
 </head><body>
 <main class="deeper-wrap">
-<a href="../" class="back-link">← Back to DejaViewed</a>
+<a href="/" class="back-link">← Back to DejaViewed</a>
 <div class="deeper-hero">
   <div class="type-label">{_esc(deeper.get("dive_type", "insight"))}</div>
   <h1>{_esc(title)}</h1>

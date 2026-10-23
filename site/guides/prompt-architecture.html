@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Beyond Prompting: Prompt Architecture as Engineering Discipline · DejaViewed</title>
+<title>Beyond Prompting: Prompt Architecture as Engineering Discipline</title>
 <!-- seo:start -->
 <link rel="canonical" href="https://dejaviewed.dev/guides/prompt-architecture">
 <meta name="description" content="Prompt engineering is dead. What&#x27;s replacing it is prompt architecture — the systematic design of context windows, memory layers, retrieval systems, and…">
@@ -12,14 +12,14 @@
 <meta property="og:image" content="https://dejaviewed.dev/og/prompt-architecture.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Beyond Prompting: Prompt Architecture as Engineering Discipline">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Beyond Prompting: Prompt Architecture as Engineering Discipline">
 <meta name="twitter:description" content="Prompt engineering is dead. What&#x27;s replacing it is prompt architecture — the systematic design of context windows, memory layers, retrieval systems, and…">
 <meta name="twitter:image" content="https://dejaviewed.dev/og/prompt-architecture.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/prompt-architecture#article","headline":"Beyond Prompting: Prompt Architecture as Engineering Discipline","description":"Prompt engineering is dead. What's replacing it is prompt architecture — the systematic design of context windows, memory layers, retrieval systems, and…","url":"https://dejaviewed.dev/guides/prompt-architecture","mainEntityOfPage":"https://dejaviewed.dev/guides/prompt-architecture","datePublished":"2026-07-07","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/prompt-architecture.jpg","about":[{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"},{"@type":"Thing","name":"Qwen"},{"@type":"Thing","name":"Docker"},{"@type":"Thing","name":"Notion"},{"@type":"Thing","name":"Anthropic"},{"@type":"Thing","name":"Claude Agent SDK"},{"@type":"Thing","name":"Ollama"},{"@type":"Thing","name":"OpenClaw"},{"@type":"Thing","name":"OpenCode"}],"abstract":"Turn a working LLM feature from prompt-tinkering into measured prompt architecture: an eval set over real tasks, a context pipeline (what enters the window and from where), a persisted memory layer, retrieval where it earns its place, and a self-correction loop - each component kept only if it moves the eval."},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/prompt-architecture#faq","mainEntity":[{"@type":"Question","name":"Are my eval pass/fail criteria objective enough that two people grade them the same?","acceptedAnswer":{"@type":"Answer","text":"Step 1, Build the eval (the oracle): Author a held-out eval of real tasks before any architecture. Expect: A committed eval set of 30-50 tasks, each with input and an objective pass/fail criterion, plus a runner that scores a system against it."}},{"@type":"Question","name":"Is any component's reported gain inside the run-to-run noise band?","acceptedAnswer":{"@type":"Answer","text":"Step 6, Ablation, noise re-check, gap report: Prove each retained component earns its place; report honestly. Expect: An ablation table, a full-system vs baseline comparison with cost per correct answer, a passing noise re-check, a claim ledger, and a committed system with hash."}},{"@type":"Question","name":"Did I default to structured memory, or reach for a vector DB on hype?","acceptedAnswer":{"@type":"Answer","text":"Vector memory by default: embeddings where structured recall was needed. Tell: memory 'lies', factual recall wrong. Fix: structured storage first, vector only where justified."}},{"@type":"Question","name":"Does the memory layer actually persist across separate runs?","acceptedAnswer":{"@type":"Answer","text":"Step 4, Memory layer (structured first): Persist what the system must recall, structured over vector. Expect: A persisted memory layer (structured by default), wired into context, with an eval score + delta and a stated structured-vs-vector decision."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Beyond Prompting: Prompt Architecture as Engineering Discipline"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","logo":"https://dejaviewed.dev/og/default.png","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"],"founder":{"@id":"https://dejaviewed.dev/#victor"},"publishingPrinciples":"https://dejaviewed.dev/method"},{"@type":"Person","@id":"https://dejaviewed.dev/#victor","name":"Victor","url":"https://www.1gabe.com/","sameAs":["https://github.com/Gabicus","https://instagram.com/6ab3"],"contactPoint":{"@type":"ContactPoint","url":"https://www.1gabe.com/contact/","contactType":"general"}},{"@type":"Article","@id":"https://dejaviewed.dev/guides/prompt-architecture#article","headline":"Beyond Prompting: Prompt Architecture as Engineering Discipline","description":"Prompt engineering is dead. What's replacing it is prompt architecture — the systematic design of context windows, memory layers, retrieval systems, and…","url":"https://dejaviewed.dev/guides/prompt-architecture","mainEntityOfPage":"https://dejaviewed.dev/guides/prompt-architecture","datePublished":"2026-07-07","dateModified":"2026-10-22","author":{"@id":"https://dejaviewed.dev/#victor"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/prompt-architecture.jpg","about":[{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"},{"@type":"Thing","name":"Qwen"}],"mentions":[{"@type":"Thing","name":"Docker"},{"@type":"SoftwareApplication","name":"Notion","url":"https://www.notion.com","sameAs":"https://www.notion.com"},{"@type":"Thing","name":"Anthropic"},{"@type":"Thing","name":"Claude Agent SDK"},{"@type":"Thing","name":"Ollama"},{"@type":"Thing","name":"OpenClaw"},{"@type":"Thing","name":"OpenCode"}],"abstract":"Turn a working LLM feature from prompt-tinkering into measured prompt architecture: an eval set over real tasks, a context pipeline (what enters the window and from where), a persisted memory layer, retrieval where it earns its place, and a self-correction loop - each component kept only if it moves the eval."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Beyond Prompting: Prompt Architecture as Engineering Discipline"}]}]}</script>
 <!-- seo:end -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
 <style>
@@ -59,211 +59,289 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <script>DV.mountHeader(document.body, 'home');</script>
 <article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
-  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-prompt-architecture.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Beyond Prompting: Prompt Architecture as Engineering Discipline →</a></div>
-  <div id="guide-body"></div>
-  <nav class="guide-entries" aria-label="Entries in this guide" style="margin:40px 0 0;padding-top:18px;border-top:1px solid var(--border);font-size:14px"><h2 style="font-size:16px;margin:0 0 8px;border:none">Entries in this guide</h2><ul style="margin:0;padding-left:20px"><li><a href="../e/DV84iOPgE5f.html">DIY Claude Code remote — self-hosted web access to vibe code from phone</a></li><li><a href="../e/DXeZ7C5kcl8.html">Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...</a></li><li><a href="../e/DYP-TkppmPM.html">Claude Code architecture map — visual bug tracker for vibe-coded apps</a></li><li><a href="../e/DYakjE8JDcX.html">Claude — Markdowns and folders wrapped in a harness</a></li><li><a href="../e/DYiiwmzpRM7.html">Gemini Omni — Google&#x27;s unified multimodal model family for video</a></li><li><a href="../e/DZ5R-8OxvUQ.html">Oh and if you want my (theoretical) guide on how to set this</a></li><li><a href="../e/DZGC7HXtr1f.html">PostHog as agent observability — sponsored pitch for a self-learning company</a></li><li><a href="../e/DaLT2hFRrFZ.html">Project-management loop for agents — tasks, context checks, skill mining</a></li><li><a href="../e/DZLBMRjRzMW.html">Comment “skill” and I’ll send you the prompts — my_body_my_joyce</a></li><li><a href="../e/DZpveoMRy0b.html">If you are also tryna rip a few influencer deals comment “in</a></li><li><a href="../e/DXx6KhJshmv.html">Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</a></li><li><a href="../e/DWUy57jDulU.html">Docker — Off topic, and with all due respect, are we watching an AI avatar?</a></li><li><a href="../e/DYXWNTERFhZ.html">Claude -p and Agent SDK billing split — what the June 15 change means</a></li></ul></nav>
-</article>
-<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
-<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="/deeper/deeper-insight-prompt-architecture" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Beyond Prompting: Prompt Architecture as Engineering Discipline →</a></div>
+  <div id="guide-body" data-pagefind-body data-pagefind-filter="kind:Guide"><!-- body:start -->
 <h1>Beyond Prompting: Prompt Architecture as Engineering Discipline</h1>
-<p>Insight class: Emergent Capability · Difficulty: Medium · Quality: 5/5 Connected entries: 13 · Tools: Anthropic, Claude, Claude Agent SDK, Claude Code, Docker, Gemini, Kling, Notion, Ollama, OpenClaw, OpenCode, Pika, PostHog, Qwen, Runway, Sora, TouchDesigner, Veo</p>
-<p>In short: Turn a working LLM feature from prompt-tinkering into measured prompt architecture: an eval set over real tasks, a context pipeline (what enters the window and from where), a persisted memory layer, retrieval where it earns its place, and a self-correction loop - each component kept only if it moves the eval.</p>
-<h2>Thesis</h2>
+<p><strong>Insight class:</strong> Emergent Capability · <strong>Difficulty:</strong> Medium · <strong>Quality:</strong> 5/5
+<strong>Connected entries:</strong> 13 · <strong>Tools:</strong> Anthropic, Claude, Claude Agent SDK, Claude Code, Docker, Gemini, <a href="/go/kling" class="go" rel="noopener">Kling</a>, <a href="/go/notion" class="go" rel="noopener">Notion</a>, Ollama, OpenClaw, OpenCode, Pika, PostHog, Qwen, <a href="/go/runway" class="go" rel="noopener">Runway</a>, Sora, TouchDesigner, Veo</p>
+<blockquote>
+<p><strong>In short:</strong> Turn a working LLM feature from prompt-tinkering into measured prompt architecture: an eval set over real tasks, a context pipeline (what enters the window and from where), a persisted memory layer, retrieval where it earns its place, and a self-correction loop - each component kept only if it moves the eval.</p>
+</blockquote>
+<hr />
+<h2 id="thesis">Thesis</h2>
 <p>Prompt engineering is dead. What's replacing it is prompt architecture — the systematic design of context windows, memory layers, retrieval systems, and cognitive scaffolds. The shift from 'write a better prompt' to 'build a better system around the model' is the biggest unlock in practical AI right now.</p>
-<h2>Why it matters</h2>
+<hr />
+<h2 id="why-it-matters">Why it matters</h2>
 <p>Most people are still optimizing individual prompts. The practitioners in these entries have moved past that entirely — they're building systems where the prompt is just one component of a larger architecture. Context management, memory persistence, tool orchestration, and self-correction loops matter more than any single prompt.</p>
-<h2>The evidence — connected entries</h2>
-<h3>DIY Claude Code remote — self-hosted web access to vibe code from phone</h3>
-<p>Creator: @olivia.inthecity · Tier: B Tools: Claude Code, Qwen</p>
+<hr />
+<h2 id="the-evidence-connected-entries">The evidence — connected entries</h2>
+<h3 id="diy-claude-code-remote-self-hosted-web-access-to-vibe-code-from-phone"><a href="/e/DV84iOPgE5f">DIY Claude Code remote — self-hosted web access to vibe code from phone</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/olivia.inthecity" target="_blank" rel="noopener">@olivia.inthecity</a> · <strong>Tier:</strong> B
+<strong>Tools:</strong> Claude Code, Qwen</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>A creator found Claude Code's built-in remote control buggy, so they had Claude Code build its own password-protected web front end to drive sessions from a phone. The setup prompt is shared off-screen; remember to stop sessions afterward.</p>
-<p>View original post</p>
-<h3>Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...</h3>
-<p>Creator: @fionaylin · Tier: A Tools: Claude, Notion</p>
+<p><a href="https://www.instagram.com/p/DV84iOPgE5f/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="claude-to-do-every-morning-8am-scans-gmail-surfaces-what-needs-a"><a href="/e/DXeZ7C5kcl8">Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/fionaylin" target="_blank" rel="noopener">@fionaylin</a> · <strong>Tier:</strong> A
+<strong>Tools:</strong> Claude, <a href="/go/notion" class="go" rel="noopener">Notion</a></p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>Comment Prompt 1, 2, 3, 4, 5 or 6 and I’ll DM you my prompt! Here are the 6 @claudeai cowork agents I have running my... — @fionaylin; uses Claude, Notion; demonstrates AI agents.</p>
-<p>View original post</p>
-<h3>Claude Code architecture map — visual bug tracker for vibe-coded apps</h3>
-<p>Creator: @constructionbearai · Tier: B Tools: Claude, Claude Code</p>
+<p><a href="https://www.instagram.com/p/DXeZ7C5kcl8/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="claude-code-architecture-map-visual-bug-tracker-for-vibe-coded-apps"><a href="/e/DYP-TkppmPM">Claude Code architecture map — visual bug tracker for vibe-coded apps</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/constructionbearai" target="_blank" rel="noopener">@constructionbearai</a> · <strong>Tier:</strong> B
+<strong>Tools:</strong> Claude, Claude Code</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>A non-coder has Claude Code generate a clickable plain-English architecture map of their whole app, with every flow wired up and nodes colored red for active bugs and green for planned fixes or features. Clicking a node opens a sidebar with the bug and the proposed fix. The actual prompt is gated behind a comment.</p>
-<p>View original post</p>
-<h3>Claude — Markdowns and folders wrapped in a harness</h3>
-<p>Creator: @gigaqian · Tier: B Tools: Claude, Claude Code</p>
+<p><a href="https://www.instagram.com/p/DYP-TkppmPM/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="claude-markdowns-and-folders-wrapped-in-a-harness"><a href="/e/DYakjE8JDcX">Claude — Markdowns and folders wrapped in a harness</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/gigaqian" target="_blank" rel="noopener">@gigaqian</a> · <strong>Tier:</strong> B
+<strong>Tools:</strong> Claude, Claude Code</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>Companies are marketing ordinary chatbots and simple API tools as “AI Agents.” It’s time we discuss what that actuall... — @gigaqian; uses Claude, Claude Code; demonstrates AI agents, API integration.</p>
-<p>View original post</p>
-<h3>Gemini Omni — Google's unified multimodal model family for video</h3>
-<p>Creator: @gigaqian · Tier: B Tools: Gemini, Kling, Pika, Runway, Sora, TouchDesigner, Veo</p>
+<p><a href="https://www.instagram.com/p/DYakjE8JDcX/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="gemini-omni-googles-unified-multimodal-model-family-for-video"><a href="/e/DYiiwmzpRM7">Gemini Omni — Google's unified multimodal model family for video</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/gigaqian" target="_blank" rel="noopener">@gigaqian</a> · <strong>Tier:</strong> B
+<strong>Tools:</strong> Gemini, <a href="/go/kling" class="go" rel="noopener">Kling</a>, Pika, <a href="/go/runway" class="go" rel="noopener">Runway</a>, Sora, TouchDesigner, Veo</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. It's a single model that converses across text, image, video and audio, unlike diffusion-only video tools such as Veo, Sora, Runway or Kling. Early testers report that two 10-second generations used about 86% of a Pro plan's daily quota. There's also an aside about Kling's 'Omni' naming.</p>
-<p>View original post</p>
-<h3>Oh and if you want my (theoretical) guide on how to set this</h3>
-<p>Creator: @angus.sewell · Tier: B</p>
+<p><a href="https://www.instagram.com/p/DYiiwmzpRM7/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="oh-and-if-you-want-my-theoretical-guide-on-how-to-set-this"><a href="/e/DZ5R-8OxvUQ">Oh and if you want my (theoretical) guide on how to set this</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/angus.sewell" target="_blank" rel="noopener">@angus.sewell</a> · <strong>Tier:</strong> B</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>Oh and if you want my (theoretical) guide on how to set this up comment “app” and I’ll send it your way — @angus.sewell; demonstrates AI agents.</p>
-<p>View original post</p>
-<h3>PostHog as agent observability — sponsored pitch for a self-learning company</h3>
-<p>Creator: @angus.sewell · Tier: C Tools: PostHog</p>
+<p><a href="https://www.instagram.com/p/DZ5R-8OxvUQ/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="posthog-as-agent-observability-sponsored-pitch-for-a-self-learning-company"><a href="/e/DZGC7HXtr1f">PostHog as agent observability — sponsored pitch for a self-learning company</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/angus.sewell" target="_blank" rel="noopener">@angus.sewell</a> · <strong>Tier:</strong> C
+<strong>Tools:</strong> PostHog</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>This is a sponsored PostHog video. It pitches putting all company data in one place, pointing an AI agent at it to find what's broken, and installing PostHog on your agents to watch their outputs and failures. The one useful line is to let AI measure while humans make the judgment calls.</p>
-<p>View original post</p>
-<h3>Project-management loop for agents — tasks, context checks, skill mining</h3>
-<p>Creator: @angus.sewell · Tier: B Tools: Claude</p>
+<p><a href="https://www.instagram.com/p/DZGC7HXtr1f/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="project-management-loop-for-agents-tasks-context-checks-skill-mining"><a href="/e/DaLT2hFRrFZ">Project-management loop for agents — tasks, context checks, skill mining</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/angus.sewell" target="_blank" rel="noopener">@angus.sewell</a> · <strong>Tier:</strong> B
+<strong>Tools:</strong> Claude</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>An anti-hands-off workflow. Connect your agent to a project management tool, whether off the shelf or vibe-coded. A skill checks each new task for missing context and asks clarifying questions inside the tool before executing. Then mine the task paper trail for new skills, keeping humans on anything that needs nuance.</p>
-<p>View original post</p>
-<h3>Comment “skill” and I’ll send you the prompts — my_body_my_joyce</h3>
-<p>Creator: @angus.sewell · Tier: A</p>
+<p><a href="https://www.instagram.com/p/DaLT2hFRrFZ/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="comment-skill-and-ill-send-you-the-prompts-my-body-my-joyce"><a href="/e/DZLBMRjRzMW">Comment “skill” and I’ll send you the prompts — my_body_my_joyce</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/angus.sewell" target="_blank" rel="noopener">@angus.sewell</a> · <strong>Tier:</strong> A</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>Comment “skill” and I’ll send you the prompts — @angus.sewell; demonstrates AI agents.</p>
-<p>View original post</p>
-<h3>If you are also tryna rip a few influencer deals comment “in</h3>
-<p>Creator: @angus.sewell · Tier: A</p>
+<p><a href="https://www.instagram.com/p/DZLBMRjRzMW/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="if-you-are-also-tryna-rip-a-few-influencer-deals-comment-in"><a href="/e/DZpveoMRy0b">If you are also tryna rip a few influencer deals comment “in</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/angus.sewell" target="_blank" rel="noopener">@angus.sewell</a> · <strong>Tier:</strong> A</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>If you are also tryna rip a few influencer deals comment “influencer” and I’ll send you this whole system — @angus.sewell; demonstrates AI agents.</p>
-<p>View original post</p>
-<h3>Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</h3>
-<p>Creator: @lindavivah · Tier: S</p>
+<p><a href="https://www.instagram.com/p/DZpveoMRy0b/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="context-vs-memory-vs-harness-engineering-explained-in-40-sec-these-3-disciplines-are-core-to-building-agents-that"><a href="/e/DXx6KhJshmv">Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/lindavivah" target="_blank" rel="noopener">@lindavivah</a> · <strong>Tier:</strong> S</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Alake ⚡️ — @lindavivah; demonstrates AI agents.</p>
-<p>View original post</p>
-<h3>Docker — Off topic, and with all due respect, are we watching an AI avatar?</h3>
-<p>Creator: @gigaqian · Tier: A Tools: Docker</p>
+<p><a href="https://www.instagram.com/p/DXx6KhJshmv/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="docker-off-topic-and-with-all-due-respect-are-we-watching-an-ai-avatar"><a href="/e/DWUy57jDulU">Docker — Off topic, and with all due respect, are we watching an AI avatar?</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/gigaqian" target="_blank" rel="noopener">@gigaqian</a> · <strong>Tier:</strong> A
+<strong>Tools:</strong> Docker</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
+</blockquote>
 <p>DeerFlow 2.0 is a “super agent harness.” Think OpenClaw but way more robust - and the only thing bigger than that in ... — @gigaqian; uses Docker; demonstrates AI agents, code generation.</p>
-<p>View original post</p>
-<h3>Claude -p and Agent SDK billing split — what the June 15 change means</h3>
-<p>Creator: @lostandlucky · Tier: B Tools: Anthropic, Claude, Claude Agent SDK, Claude Code, Ollama, OpenClaw, OpenCode</p>
+<p><a href="https://www.instagram.com/p/DWUy57jDulU/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="claude-p-and-agent-sdk-billing-split-what-the-june-15-change-means"><a href="/e/DYXWNTERFhZ">Claude -p and Agent SDK billing split — what the June 15 change means</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/lostandlucky" target="_blank" rel="noopener">@lostandlucky</a> · <strong>Tier:</strong> B
+<strong>Tools:</strong> Anthropic, Claude, Claude Agent SDK, Claude Code, Ollama, OpenClaw, OpenCode</p>
+<blockquote>
 <p>Demonstrates prompt architecture vs. prompt engineering</p>
-<p>From June 15, programmatic Claude usage through claude -p and the Agent SDK no longer counts against Pro/Max plan limits and is billed per token instead. That hits third-party harnesses like OpenClaw and OpenCode that ran on subscription quota. The creator argues good context and folder structure lets one interactive agent do the same work.</p>
-<p>View original post</p>
-<h2>Action sketch — how to implement this</h2>
-<p>Stop optimizing prompts in isolation — map the full context flow</p>
-<p>Implement RAG with hybrid search + reranking for internal docs</p>
-<p>Build a memory layer: what the model needs to remember across sessions</p>
-<p>Add retrieval-augmented generation for domain-specific knowledge</p>
-<p>Design self-correction: let the model audit its own output</p>
-<p>Measure: track which context components actually improve output quality</p>
-<h2>Prerequisites</h2>
-<p>Experience with at least one LLM API</p>
-<p>Understanding of RAG concepts</p>
-<p>Familiarity with agent frameworks</p>
-<h2>Key tools and resources</h2>
-<p>Anthropic</p>
-<p>Claude</p>
-<p>Claude Agent SDK</p>
-<p>Claude Code</p>
-<p>Docker</p>
-<p>Gemini</p>
-<p>Kling</p>
-<p>Notion</p>
-<p>Ollama</p>
-<p>OpenClaw</p>
-<p>OpenCode</p>
-<p>Pika</p>
-<p>PostHog</p>
-<p>Qwen</p>
-<p>Runway</p>
-<p>Sora</p>
-<p>TouchDesigner</p>
-<p>Veo</p>
-<h2>Creators to follow</h2>
-<p>@angus.sewell</p>
-<p>@constructionbearai</p>
-<p>@fionaylin</p>
-<p>@gigaqian</p>
-<p>@lindavivah</p>
-<p>@lostandlucky</p>
-<p>@olivia.inthecity</p>
-<h2>Prompt system — run this yourself</h2>
+</blockquote>
+<p>From June 15, programmatic Claude usage through <code>claude -p</code> and the Agent SDK no longer counts against Pro/Max plan limits and is billed per token instead. That hits third-party harnesses like OpenClaw and OpenCode that ran on subscription quota. The creator argues good context and folder structure lets one interactive agent do the same work.</p>
+<p><a href="https://www.instagram.com/p/DYXWNTERFhZ/" target="_blank" rel="noopener">View original post</a></p>
+<hr />
+<h2 id="action-sketch-how-to-implement-this">Action sketch — how to implement this</h2>
+<ol>
+<li>Stop optimizing prompts in isolation — map the full context flow</li>
+<li>Implement RAG with hybrid search + reranking for internal docs</li>
+<li>Build a memory layer: what the model needs to remember across sessions</li>
+<li>Add retrieval-augmented generation for domain-specific knowledge</li>
+<li>Design self-correction: let the model audit its own output</li>
+<li>Measure: track which context components actually improve output quality</li>
+</ol>
+<hr />
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Experience with at least one LLM API</li>
+<li>Understanding of RAG concepts</li>
+<li>Familiarity with agent frameworks</li>
+</ul>
+<hr />
+<h2 id="key-tools-and-resources">Key tools and resources</h2>
+<ul>
+<li><strong>Anthropic</strong></li>
+<li><strong>Claude</strong></li>
+<li><strong>Claude Agent SDK</strong></li>
+<li><strong>Claude Code</strong></li>
+<li><strong>Docker</strong></li>
+<li><strong>Gemini</strong></li>
+<li><strong><a href="/go/kling" class="go" rel="noopener">Kling</a></strong></li>
+<li><strong><a href="/go/notion" class="go" rel="noopener">Notion</a></strong></li>
+<li><strong>Ollama</strong></li>
+<li><strong>OpenClaw</strong></li>
+<li><strong>OpenCode</strong></li>
+<li><strong>Pika</strong></li>
+<li><strong>PostHog</strong></li>
+<li><strong>Qwen</strong></li>
+<li><strong><a href="/go/runway" class="go" rel="noopener">Runway</a></strong></li>
+<li><strong>Sora</strong></li>
+<li><strong>TouchDesigner</strong></li>
+<li><strong>Veo</strong></li>
+</ul>
+<h2 id="creators-to-follow">Creators to follow</h2>
+<ul>
+<li><a href="https://instagram.com/angus.sewell" target="_blank" rel="noopener">@angus.sewell</a></li>
+<li><a href="https://instagram.com/constructionbearai" target="_blank" rel="noopener">@constructionbearai</a></li>
+<li><a href="https://instagram.com/fionaylin" target="_blank" rel="noopener">@fionaylin</a></li>
+<li><a href="https://instagram.com/gigaqian" target="_blank" rel="noopener">@gigaqian</a></li>
+<li><a href="https://instagram.com/lindavivah" target="_blank" rel="noopener">@lindavivah</a></li>
+<li><a href="https://instagram.com/lostandlucky" target="_blank" rel="noopener">@lostandlucky</a></li>
+<li><a href="https://instagram.com/olivia.inthecity" target="_blank" rel="noopener">@olivia.inthecity</a></li>
+</ul>
+<hr />
+<hr />
+<h2 id="prompt-system">Prompt system — run this yourself</h2>
 <p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
-<p>Mission. Turn a working LLM feature from prompt-tinkering into measured prompt architecture: an eval set over real tasks, a context pipeline (what enters the window and from where), a persisted memory layer, retrieval where it earns its place, and a self-correction loop - each component kept only if it moves the eval. Done means a held-out eval shows the architected system beats the single-prompt baseline on a stated metric, and every component's contribution is measured, not assumed.</p>
-<h3>1 · Deeper, not bigger</h3>
+<p><strong>Mission.</strong> Turn a working LLM feature from prompt-tinkering into measured prompt architecture: an eval set over real tasks, a context pipeline (what enters the window and from where), a persisted memory layer, retrieval where it earns its place, and a self-correction loop - each component kept only if it moves the eval. Done means a held-out eval shows the architected system beats the single-prompt baseline on a stated metric, and every component's contribution is measured, not assumed.</p>
+<h3 id="1-deeper-not-bigger">1 · Deeper, not bigger</h3>
 <p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
-<p>What a top professional would do (that you didn't ask for): A practitioner past prompt engineering, as lindavivah/Richmond Alake frame it, does not keep editing one prompt. They instrument the system the way angus.sewell describes instrumenting a product: define an eval set over real tasks with pass/fail criteria, then treat context, memory, retrieval and self-correction as separable components each measured against that eval. They add a context-sufficiency check (the agent asks for missing context before acting, per angus.sewell's PM loop), they prefer structured storage over vector memory for factual business context (angus.sewell: 'most memory should be structured'), and they ablate: remove a component, re-run the eval, keep it only if removal hurts. They watch outputs like a product (the PostHog-as-observability idea) but keep fix decisions human.</p>
-<p>Rawest material to start from: Your own task logs and failure cases (the real distribution the feature serves); the Anthropic/your-provider API docs for the model in use; your internal docs/knowledge base if retrieval is in play; angus.sewell's context-sufficiency and project-management loop pattern; the structured-warehouse-as-memory argument; a held-out set of 30-50 representative tasks with explicit pass/fail criteria that you, not the model, author.</p>
-<p>Methods and tools: An eval harness (even a simple Python runner) scoring N held-out tasks with explicit criteria; a context pipeline with a sufficiency gate (agent must flag missing context before acting); a structured memory store (SQLite/Postgres or markdown files) over vector DB for factual recall, adding embeddings only where semantic search is needed; hybrid retrieval + reranking only if the eval shows retrieval helps; a generator-evaluator self-correction loop; ablation runs; optional agent-output logging (PostHog-style) with humans deciding fixes.</p>
-<p>What proves it right (other than you or the model): A held-out eval (tasks the system was not tuned on) where the architected system beats the single-prompt baseline on a stated metric (pass rate, groundedness, or cost per correct answer). An ablation table proving each retained component moves the metric. A noise check: variance between two identical runs is smaller than the gap between best and worst architecture, or the eval is too noisy to trust.</p>
-<p>Rewritten prompt — ask for exactly that:</p>
-<p>Act as an LLM systems engineer, not a prompt tuner. For my feature , stop optimising the prompt and architect the system, proving every piece. First, from my real task logs at , build a held-out eval of 30-50 tasks with explicit pass/fail criteria I can inspect - this is the oracle. Establish the single-prompt baseline score. Then add components one at a time, re-running the eval after each: (1) a context pipeline with a sufficiency gate that makes the agent flag missing context before acting; (2) a persisted memory layer - structured storage (SQLite/markdown), not a vector DB, unless the eval shows semantic recall is needed; (3) retrieval with reranking only if it improves the eval; (4) a generator-evaluator self-correction loop. After each addition, ablate it: remove it, re-run, keep only if removal drops the score. Run a noise check: compare variance of two identical runs to the best-vs-worst architecture gap; if noise dominates, tell me the eval is untrustworthy. Return the eval set, the baseline and per-component scores, the ablation table, the noise check, and which components earned their place.</p>
-<h3>2 · One-shot prompt</h3>
-<p>You are an LLM systems engineer. Your job is to replace prompt-tinkering with measured prompt architecture for one real feature. Stance: nothing is kept unless an eval says it earns its place; you instrument, you do not vibe. No marketing language.</p>
-<p>Context and method: the shift lindavivah/Richmond Alake name is from editing a prompt to building context (signal/noise in the window), memory (persist/retrieve/forget across sessions) and the surrounding harness. angus.sewell's rules apply: make the agent check it has sufficient context before acting; prefer STRUCTURED storage over vector memory for factual recall; log outputs like a product but keep fix decisions human. The eval is the oracle; without it, every change is a guess.</p>
-<p>Hard constraints: author a held-out eval of 30-50 real tasks with explicit pass/fail criteria BEFORE touching architecture; establish a single-prompt baseline; add components one at a time and re-run the eval; ablate every component; run a noise check. Name the real model, real data paths, real stores. Do not add a component the eval cannot measure. Do not claim an improvement without a held-out number.</p>
-<p>Ordered deliverables: (1) the held-out eval set (30-50 tasks, each with input and an explicit pass/fail criterion I can read). (2) the single-prompt baseline score. (3) a context pipeline with a sufficiency gate (agent flags missing context before acting) + its eval delta. (4) a persisted memory layer - structured first, vector only if justified - + its eval delta. (5) retrieval with reranking IF and only if it improves the eval, with the delta. (6) a generator-evaluator self-correction loop + its eval delta. (7) an ablation table (component, score with/without, keep/cut) and a noise check (variance of two identical runs vs best-worst gap).</p>
-<p>Built-in gap analysis: before finishing, list what is unverified - is the eval representative of real traffic; are pass/fail criteria objective; did I tune on the held-out set by accident; is any delta within noise. Fill what you can.</p>
-<p>Self-questions to answer in writing: Did I author the eval criteria, or let the model grade itself freely? Is the held-out set actually held out, or did I tune on it? Is any component's gain inside the noise band? Did I reach for a vector DB where structured storage would have been better and cheaper? Does the sufficiency gate actually fire on under-specified tasks? Is the generator-evaluator loop improving answers or just adding cost? What is my cost per correct answer, not just pass rate?</p>
-<p>Stop conditions: stop and ask only if there are no task logs to build an eval from. Otherwise proceed end to end.</p>
-<p>Return format: a markdown report with the eval description, a scores table (baseline + each component + full system), the ablation table, the noise check, cost-per-correct-answer, and an 'Unverified and missing' section. Commit the eval set, the runner, and the component code; print the commit hash. One more discipline: report cost and latency alongside every eval score, not pass rate alone. A component that lifts the pass rate but triples tokens or doubles latency is a trade-off the reader must see stated explicitly, so each row of your scores table carries pass rate, cost per correct answer, and median latency. And when you grade with a model rather than a human, spot-check at least five of its judgements by hand per run, because an LLM grader that drifts quietly turns your whole oracle into noise and every downstream decision inherits that error.</p>
-<h3>3 · Step-by-step prompts</h3>
+<ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> A practitioner past prompt engineering, as lindavivah/Richmond Alake frame it, does not keep editing one prompt. They instrument the system the way angus.sewell describes instrumenting a product: define an eval set over real tasks with pass/fail criteria, then treat context, memory, retrieval and self-correction as separable components each measured against that eval. They add a context-sufficiency check (the agent asks for missing context before acting, per angus.sewell's PM loop), they prefer structured storage over vector memory for factual business context (angus.sewell: 'most memory should be structured'), and they ablate: remove a component, re-run the eval, keep it only if removal hurts. They watch outputs like a product (the PostHog-as-observability idea) but keep fix decisions human.</li>
+<li><strong>Rawest material to start from:</strong> Your own task logs and failure cases (the real distribution the feature serves); the Anthropic/your-provider API docs for the model in use; your internal docs/knowledge base if retrieval is in play; angus.sewell's context-sufficiency and project-management loop pattern; the structured-warehouse-as-memory argument; a held-out set of 30-50 representative tasks with explicit pass/fail criteria that you, not the model, author.</li>
+<li><strong>Methods and tools:</strong> An eval harness (even a simple Python runner) scoring N held-out tasks with explicit criteria; a context pipeline with a sufficiency gate (agent must flag missing context before acting); a structured memory store (SQLite/Postgres or markdown files) over vector DB for factual recall, adding embeddings only where semantic search is needed; hybrid retrieval + reranking only if the eval shows retrieval helps; a generator-evaluator self-correction loop; ablation runs; optional agent-output logging (PostHog-style) with humans deciding fixes.</li>
+<li><strong>What proves it right (other than you or the model):</strong> A held-out eval (tasks the system was not tuned on) where the architected system beats the single-prompt baseline on a stated metric (pass rate, groundedness, or cost per correct answer). An ablation table proving each retained component moves the metric. A noise check: variance between two identical runs is smaller than the gap between best and worst architecture, or the eval is too noisy to trust.</li>
+</ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Act as an LLM systems engineer, not a prompt tuner. For my feature &lt;describe it&gt;, stop optimising the prompt and architect the system, proving every piece. First, from my real task logs at &lt;path&gt;, build a held-out eval of 30-50 tasks with explicit pass/fail criteria I can inspect - this is the oracle. Establish the single-prompt baseline score. Then add components one at a time, re-running the eval after each: (1) a context pipeline with a sufficiency gate that makes the agent flag missing context before acting; (2) a persisted memory layer - structured storage (SQLite/markdown), not a vector DB, unless the eval shows semantic recall is needed; (3) retrieval with reranking only if it improves the eval; (4) a generator-evaluator self-correction loop. After each addition, ablate it: remove it, re-run, keep only if removal drops the score. Run a noise check: compare variance of two identical runs to the best-vs-worst architecture gap; if noise dominates, tell me the eval is untrustworthy. Return the eval set, the baseline and per-component scores, the ablation table, the noise check, and which components earned their place.
+</code></pre></div>
+<h3 id="2-one-shot-prompt">2 · One-shot prompt</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">You are an LLM systems engineer. Your job is to replace prompt-tinkering with measured prompt architecture for one real feature. Stance: nothing is kept unless an eval says it earns its place; you instrument, you do not vibe. No marketing language.
+
+Context and method: the shift lindavivah/Richmond Alake name is from editing a prompt to building context (signal/noise in the window), memory (persist/retrieve/forget across sessions) and the surrounding harness. angus.sewell's rules apply: make the agent check it has sufficient context before acting; prefer STRUCTURED storage over vector memory for factual recall; log outputs like a product but keep fix decisions human. The eval is the oracle; without it, every change is a guess.
+
+Hard constraints: author a held-out eval of 30-50 real tasks with explicit pass/fail criteria BEFORE touching architecture; establish a single-prompt baseline; add components one at a time and re-run the eval; ablate every component; run a noise check. Name the real model, real data paths, real stores. Do not add a component the eval cannot measure. Do not claim an improvement without a held-out number.
+
+Ordered deliverables: (1) the held-out eval set (30-50 tasks, each with input and an explicit pass/fail criterion I can read). (2) the single-prompt baseline score. (3) a context pipeline with a sufficiency gate (agent flags missing context before acting) + its eval delta. (4) a persisted memory layer - structured first, vector only if justified - + its eval delta. (5) retrieval with reranking IF and only if it improves the eval, with the delta. (6) a generator-evaluator self-correction loop + its eval delta. (7) an ablation table (component, score with/without, keep/cut) and a noise check (variance of two identical runs vs best-worst gap).
+
+Built-in gap analysis: before finishing, list what is unverified - is the eval representative of real traffic; are pass/fail criteria objective; did I tune on the held-out set by accident; is any delta within noise. Fill what you can.
+
+Self-questions to answer in writing: Did I author the eval criteria, or let the model grade itself freely? Is the held-out set actually held out, or did I tune on it? Is any component's gain inside the noise band? Did I reach for a vector DB where structured storage would have been better and cheaper? Does the sufficiency gate actually fire on under-specified tasks? Is the generator-evaluator loop improving answers or just adding cost? What is my cost per correct answer, not just pass rate?
+
+Stop conditions: stop and ask only if there are no task logs to build an eval from. Otherwise proceed end to end.
+
+Return format: a markdown report with the eval description, a scores table (baseline + each component + full system), the ablation table, the noise check, cost-per-correct-answer, and an 'Unverified and missing' section. Commit the eval set, the runner, and the component code; print the commit hash. One more discipline: report cost and latency alongside every eval score, not pass rate alone. A component that lifts the pass rate but triples tokens or doubles latency is a trade-off the reader must see stated explicitly, so each row of your scores table carries pass rate, cost per correct answer, and median latency. And when you grade with a model rather than a human, spot-check at least five of its judgements by hand per run, because an LLM grader that drifts quietly turns your whole oracle into noise and every downstream decision inherits that error.
+</code></pre></div>
+<h3 id="3-step-by-step-prompts">3 · Step-by-step prompts</h3>
 <h4>Step 1 — Build the eval (the oracle)</h4>
-<p>Goal: Author a held-out eval of real tasks before any architecture.</p>
-<p>Establish ground truth: the eval. From my real task logs (at the path I give you), sample 30-50 representative tasks covering the real distribution, including the failure cases. For each, write the input and an EXPLICIT, objective pass/fail criterion a human could apply (not 'is it good' - e.g. 'answer cites the correct policy section', 'returns valid JSON with fields x,y,z', 'refuses when the record is missing'). Split: none of these will be used to tune prompts (held-out). Build a tiny runner that executes the current single-prompt system against all tasks and scores pass/fail. This eval is the oracle every later step is judged against; architecture changes that do not move it do not ship.</p>
-<p>Expect: A committed eval set of 30-50 tasks, each with input and an objective pass/fail criterion, plus a runner that scores a system against it.</p>
-<p>Audit before moving on: Hand 5 tasks' criteria to yourself and confirm two people would grade them identically (objective). Confirm the sample includes real failure cases, not just easy ones. Fail if criteria are subjective or the set is cherry-picked easy tasks. On fail, rewrite the criteria and resample.</p>
+<p><em>Goal:</em> Author a held-out eval of real tasks before any architecture.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Establish ground truth: the eval. From my real task logs (at the path I give you), sample 30-50 representative tasks covering the real distribution, including the failure cases. For each, write the input and an EXPLICIT, objective pass/fail criterion a human could apply (not 'is it good' - e.g. 'answer cites the correct policy section', 'returns valid JSON with fields x,y,z', 'refuses when the record is missing'). Split: none of these will be used to tune prompts (held-out). Build a tiny runner that executes the current single-prompt system against all tasks and scores pass/fail. This eval is the oracle every later step is judged against; architecture changes that do not move it do not ship.
+</code></pre></div>
+<p><strong>Expect:</strong> A committed eval set of 30-50 tasks, each with input and an objective pass/fail criterion, plus a runner that scores a system against it.</p>
+<p><strong>Audit before moving on:</strong> Hand 5 tasks' criteria to yourself and confirm two people would grade them identically (objective). Confirm the sample includes real failure cases, not just easy ones. Fail if criteria are subjective or the set is cherry-picked easy tasks. On fail, rewrite the criteria and resample.</p>
 <h4>Step 2 — Baseline + noise floor</h4>
-<p>Goal: Score the single prompt and measure how noisy the eval is.</p>
-<p>Establish the baseline and the noise floor. (1) Run the current single-prompt system against the full eval and record the score - this is the number everything must beat. (2) Run the SAME system against the eval twice more (identical config) and record the variance between the three runs. This is your noise floor: any later improvement smaller than this variance is noise, not signal. Report both the baseline score and the run-to-run variance. If the variance is large (e.g. comparable to the gaps you expect from architecture), flag that the eval is too noisy and must be enlarged or criteria tightened before trusting any result.</p>
-<p>Expect: A baseline eval score and a measured run-to-run variance (noise floor), with a flag if noise is too high to trust.</p>
-<p>Audit before moving on: Confirm the three runs used identical config (only sampling randomness differs). Fail if variance is high and you proceed anyway. On fail, enlarge the eval or tighten criteria until noise is below the improvement you need to detect.</p>
+<p><em>Goal:</em> Score the single prompt and measure how noisy the eval is.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Establish the baseline and the noise floor. (1) Run the current single-prompt system against the full eval and record the score - this is the number everything must beat. (2) Run the SAME system against the eval twice more (identical config) and record the variance between the three runs. This is your noise floor: any later improvement smaller than this variance is noise, not signal. Report both the baseline score and the run-to-run variance. If the variance is large (e.g. comparable to the gaps you expect from architecture), flag that the eval is too noisy and must be enlarged or criteria tightened before trusting any result.
+</code></pre></div>
+<p><strong>Expect:</strong> A baseline eval score and a measured run-to-run variance (noise floor), with a flag if noise is too high to trust.</p>
+<p><strong>Audit before moving on:</strong> Confirm the three runs used identical config (only sampling randomness differs). Fail if variance is high and you proceed anyway. On fail, enlarge the eval or tighten criteria until noise is below the improvement you need to detect.</p>
 <h4>Step 3 — Context pipeline + sufficiency gate</h4>
-<p>Goal: Engineer what enters the window and make the agent flag missing context.</p>
-<p>Add the context layer. Map what currently enters the context window for a task and from where. Then add a context-sufficiency gate following angus.sewell's PM loop: before acting, the agent checks whether it has enough context and, if not, flags exactly what is missing rather than guessing. Trim noise from the window (remove context that does not affect the eval). Re-run the full eval and record the new score and the delta vs baseline. Report how many tasks triggered the sufficiency gate and whether gating reduced wrong-but-confident answers. Keep this layer only if the delta exceeds the step-2 noise floor.</p>
-<p>Expect: A context pipeline with a working sufficiency gate, an eval score + delta vs baseline, and a count of gated tasks.</p>
-<p>Audit before moving on: Feed 3 deliberately under-specified tasks and confirm the gate fires and names the missing context. Confirm the delta exceeds the noise floor before keeping it. Fail if the gate never fires or the gain is within noise. On fail, fix the gate or drop the layer.</p>
+<p><em>Goal:</em> Engineer what enters the window and make the agent flag missing context.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Add the context layer. Map what currently enters the context window for a task and from where. Then add a context-sufficiency gate following angus.sewell's PM loop: before acting, the agent checks whether it has enough context and, if not, flags exactly what is missing rather than guessing. Trim noise from the window (remove context that does not affect the eval). Re-run the full eval and record the new score and the delta vs baseline. Report how many tasks triggered the sufficiency gate and whether gating reduced wrong-but-confident answers. Keep this layer only if the delta exceeds the step-2 noise floor.
+</code></pre></div>
+<p><strong>Expect:</strong> A context pipeline with a working sufficiency gate, an eval score + delta vs baseline, and a count of gated tasks.</p>
+<p><strong>Audit before moving on:</strong> Feed 3 deliberately under-specified tasks and confirm the gate fires and names the missing context. Confirm the delta exceeds the noise floor before keeping it. Fail if the gate never fires or the gain is within noise. On fail, fix the gate or drop the layer.</p>
 <h4>Step 4 — Memory layer (structured first)</h4>
-<p>Goal: Persist what the system must recall, structured over vector.</p>
-<p>Add the memory layer, defaulting to STRUCTURED storage per angus.sewell ('most memory should be structured'; vector memory 'mostly lies'). Decide what must persist across sessions/requests (facts, prior decisions, entities) and store it in SQLite/Postgres or markdown with clear keys - not a vector DB. Add embeddings/semantic search ONLY for the subset of recall that is genuinely fuzzy (free-text similarity), and justify it against the eval. Wire retrieval of this memory into the context pipeline. Re-run the eval, record score and delta. Keep structured vs vector per which moves the eval, not per hype.</p>
-<p>Expect: A persisted memory layer (structured by default), wired into context, with an eval score + delta and a stated structured-vs-vector decision.</p>
-<p>Audit before moving on: Verify the memory actually persists across two separate runs (write in one, read in the next). Confirm any vector component is justified by an eval delta over structured. Fail if memory does not persist or vector was added without evidence. On fail, fix persistence or revert to structured.</p>
+<p><em>Goal:</em> Persist what the system must recall, structured over vector.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Add the memory layer, defaulting to STRUCTURED storage per angus.sewell ('most memory should be structured'; vector memory 'mostly lies'). Decide what must persist across sessions/requests (facts, prior decisions, entities) and store it in SQLite/Postgres or markdown with clear keys - not a vector DB. Add embeddings/semantic search ONLY for the subset of recall that is genuinely fuzzy (free-text similarity), and justify it against the eval. Wire retrieval of this memory into the context pipeline. Re-run the eval, record score and delta. Keep structured vs vector per which moves the eval, not per hype.
+</code></pre></div>
+<p><strong>Expect:</strong> A persisted memory layer (structured by default), wired into context, with an eval score + delta and a stated structured-vs-vector decision.</p>
+<p><strong>Audit before moving on:</strong> Verify the memory actually persists across two separate runs (write in one, read in the next). Confirm any vector component is justified by an eval delta over structured. Fail if memory does not persist or vector was added without evidence. On fail, fix persistence or revert to structured.</p>
 <h4>Step 5 — Retrieval + self-correction, each gated</h4>
-<p>Goal: Add RAG and a generator-evaluator loop only if the eval improves.</p>
-<p>Add the last two components, each gated on the eval. (1) Retrieval: if the feature needs external/domain knowledge, add hybrid retrieval + reranking over your docs; re-run the eval; keep ONLY if the delta beats the noise floor, else cut it. (2) Self-correction: add a generator-evaluator loop where a second pass critiques the first against the task criteria and revises; re-run the eval; measure both the score delta AND the added cost/latency. Report each component's delta and cost. A component that improves pass rate but triples cost per correct answer is a trade-off to state explicitly, not a silent win.</p>
-<p>Expect: Retrieval and self-correction each with an eval delta and a cost/latency figure; components below the noise floor cut.</p>
-<p>Audit before moving on: Confirm each kept component's delta exceeds the noise floor. Compute cost per correct answer with and without each. Fail if a component is kept on a within-noise gain or if cost tripled unacknowledged. On fail, cut it or state the trade-off.</p>
+<p><em>Goal:</em> Add RAG and a generator-evaluator loop only if the eval improves.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Add the last two components, each gated on the eval. (1) Retrieval: if the feature needs external/domain knowledge, add hybrid retrieval + reranking over your docs; re-run the eval; keep ONLY if the delta beats the noise floor, else cut it. (2) Self-correction: add a generator-evaluator loop where a second pass critiques the first against the task criteria and revises; re-run the eval; measure both the score delta AND the added cost/latency. Report each component's delta and cost. A component that improves pass rate but triples cost per correct answer is a trade-off to state explicitly, not a silent win.
+</code></pre></div>
+<p><strong>Expect:</strong> Retrieval and self-correction each with an eval delta and a cost/latency figure; components below the noise floor cut.</p>
+<p><strong>Audit before moving on:</strong> Confirm each kept component's delta exceeds the noise floor. Compute cost per correct answer with and without each. Fail if a component is kept on a within-noise gain or if cost tripled unacknowledged. On fail, cut it or state the trade-off.</p>
 <h4>Step 6 — Ablation, noise re-check, gap report</h4>
-<p>Goal: Prove each retained component earns its place; report honestly.</p>
-<p>Final validation. (1) Ablation: remove each retained component one at a time, re-run the full eval, and record the score without it; keep only components whose removal drops the score beyond the noise floor. (2) Full-system run: score the complete architecture vs the baseline and report the delta and cost per correct answer. (3) Noise re-check: confirm the best-vs-worst architecture gap exceeds run-to-run variance; if not, state that the result is not trustworthy. (4) Enumerate claims, mark verified/unverified/false, list missing pieces ranked by impact, fix the top two. Commit the eval, runner and components; print the hash.</p>
-<p>Expect: An ablation table, a full-system vs baseline comparison with cost per correct answer, a passing noise re-check, a claim ledger, and a committed system with hash.</p>
-<p>Audit before moving on: Confirm the full system beats baseline by more than the noise floor. Confirm no component survives only on a within-noise gain. Fail if the architecture does not beat baseline, or beats it only inside noise. On fail, report that plainly - a null result is valid.</p>
-<h3>4 · Gap analysis and audit</h3>
+<p><em>Goal:</em> Prove each retained component earns its place; report honestly.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Final validation. (1) Ablation: remove each retained component one at a time, re-run the full eval, and record the score without it; keep only components whose removal drops the score beyond the noise floor. (2) Full-system run: score the complete architecture vs the baseline and report the delta and cost per correct answer. (3) Noise re-check: confirm the best-vs-worst architecture gap exceeds run-to-run variance; if not, state that the result is not trustworthy. (4) Enumerate claims, mark verified/unverified/false, list missing pieces ranked by impact, fix the top two. Commit the eval, runner and components; print the hash.
+</code></pre></div>
+<p><strong>Expect:</strong> An ablation table, a full-system vs baseline comparison with cost per correct answer, a passing noise re-check, a claim ledger, and a committed system with hash.</p>
+<p><strong>Audit before moving on:</strong> Confirm the full system beats baseline by more than the noise floor. Confirm no component survives only on a within-noise gain. Fail if the architecture does not beat baseline, or beats it only inside noise. On fail, report that plainly - a null result is valid.</p>
+<h3 id="4-gap-analysis-and-audit">4 · Gap analysis and audit</h3>
 <p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
-<p>Run after the architecture is built. Enumerate every claim as a numbered list: the eval's representativeness, each component's eval delta, the memory persistence, the retrieval and self-correction gains, the ablation decisions, and the noise check. Mark each VERIFIED (with the run numbers), UNVERIFIED, or FALSE. Specifically re-check: are the eval criteria objective and was the set truly held out (no tuning on it); is every reported delta larger than the run-to-run variance; did I default to structured memory and justify any vector use; does the sufficiency gate actually fire on under-specified inputs; is cost per correct answer reported, not just pass rate; does the full system beat baseline beyond noise. List missing pieces: unrepresentative eval, within-noise gains kept, vector memory added on hype, unmeasured cost. Rank by impact on whether the architecture is a real improvement. Fix the top three and re-verify. Report what you could not fix and why. Do not mark any improvement verified if it is within the noise floor.</p>
-<p>Questions the agent must ask itself before it says done:</p>
-<p>Are my eval pass/fail criteria objective enough that two people grade them the same?</p>
-<p>Is the eval set truly held out, or did I tune prompts on it?</p>
-<p>Does the eval cover real traffic including failure cases, or only easy tasks?</p>
-<p>Is any component's reported gain inside the run-to-run noise band?</p>
-<p>Did I default to structured memory, or reach for a vector DB on hype?</p>
-<p>Does the memory layer actually persist across separate runs?</p>
-<p>Does the context-sufficiency gate fire on under-specified tasks?</p>
-<p>Is the generator-evaluator loop improving answers or just adding cost?</p>
-<p>What is my cost per correct answer, not just pass rate, for each component?</p>
-<p>Does the full architecture beat baseline by more than the noise floor?</p>
-<p>Did I ablate every component, and did I cut the ones removal did not hurt?</p>
-<p>If the result is within noise, did I say so rather than claim a win?</p>
-<h3>5 · What proves it right</h3>
-<p>On the held-out eval, the full architecture beats the single-prompt baseline by more than the run-to-run variance, on a stated metric.</p>
-<p>The ablation table shows every retained component drops the eval score when removed (beyond the noise floor); cut components do not.</p>
-<p>The context-sufficiency gate fires on deliberately under-specified tasks and names the missing context.</p>
-<p>The memory layer persists across two separate runs (write in one, read in the next), and any vector use is justified by an eval delta over structured storage.</p>
-<p>Cost per correct answer is reported for the baseline and the full system, making any accuracy/cost trade-off explicit.</p>
-<h3>6 · Failure modes</h3>
-<p>No eval, just vibes: changes judged by eyeballing. Tell: 'it feels better'. Fix: author a held-out eval with objective criteria first.</p>
-<p>Tuning on the held-out set: prompts adjusted using eval feedback. Tell: great eval score, poor production. Fix: keep a sealed set never used for tuning.</p>
-<p>Chasing noise: a within-variance gain treated as real. Tell: improvements smaller than run-to-run variance. Fix: measure the noise floor; require gains above it.</p>
-<p>Vector memory by default: embeddings where structured recall was needed. Tell: memory 'lies', factual recall wrong. Fix: structured storage first, vector only where justified.</p>
-<p>Self-correction cost blindness: loop improves pass rate but triples cost. Tell: latency and spend balloon. Fix: report cost per correct answer; state the trade-off.</p>
-<p>Sufficiency gate that never fires: gate added but mis-wired. Tell: confident wrong answers on under-specified tasks. Fix: test with under-specified inputs, correct the trigger.</p>
-<p>Component kept untested: added but never ablated. Tell: ablation table missing rows. Fix: remove each component, re-run, decide on evidence.</p>
-<h3>7 · Agent direction (unattended runs)</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Run after the architecture is built. Enumerate every claim as a numbered list: the eval's representativeness, each component's eval delta, the memory persistence, the retrieval and self-correction gains, the ablation decisions, and the noise check. Mark each VERIFIED (with the run numbers), UNVERIFIED, or FALSE. Specifically re-check: are the eval criteria objective and was the set truly held out (no tuning on it); is every reported delta larger than the run-to-run variance; did I default to structured memory and justify any vector use; does the sufficiency gate actually fire on under-specified inputs; is cost per correct answer reported, not just pass rate; does the full system beat baseline beyond noise. List missing pieces: unrepresentative eval, within-noise gains kept, vector memory added on hype, unmeasured cost. Rank by impact on whether the architecture is a real improvement. Fix the top three and re-verify. Report what you could not fix and why. Do not mark any improvement verified if it is within the noise floor.
+</code></pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p>
+<ul>
+<li>Are my eval pass/fail criteria objective enough that two people grade them the same?</li>
+<li>Is the eval set truly held out, or did I tune prompts on it?</li>
+<li>Does the eval cover real traffic including failure cases, or only easy tasks?</li>
+<li>Is any component's reported gain inside the run-to-run noise band?</li>
+<li>Did I default to structured memory, or reach for a vector DB on hype?</li>
+<li>Does the memory layer actually persist across separate runs?</li>
+<li>Does the context-sufficiency gate fire on under-specified tasks?</li>
+<li>Is the generator-evaluator loop improving answers or just adding cost?</li>
+<li>What is my cost per correct answer, not just pass rate, for each component?</li>
+<li>Does the full architecture beat baseline by more than the noise floor?</li>
+<li>Did I ablate every component, and did I cut the ones removal did not hurt?</li>
+<li>If the result is within noise, did I say so rather than claim a win?</li>
+</ul>
+<h3 id="5-what-proves-it-right">5 · What proves it right</h3>
+<ul>
+<li>On the held-out eval, the full architecture beats the single-prompt baseline by more than the run-to-run variance, on a stated metric.</li>
+<li>The ablation table shows every retained component drops the eval score when removed (beyond the noise floor); cut components do not.</li>
+<li>The context-sufficiency gate fires on deliberately under-specified tasks and names the missing context.</li>
+<li>The memory layer persists across two separate runs (write in one, read in the next), and any vector use is justified by an eval delta over structured storage.</li>
+<li>Cost per correct answer is reported for the baseline and the full system, making any accuracy/cost trade-off explicit.</li>
+</ul>
+<h3 id="6-failure-modes">6 · Failure modes</h3>
+<ul>
+<li>No eval, just vibes: changes judged by eyeballing. Tell: 'it feels better'. Fix: author a held-out eval with objective criteria first.</li>
+<li>Tuning on the held-out set: prompts adjusted using eval feedback. Tell: great eval score, poor production. Fix: keep a sealed set never used for tuning.</li>
+<li>Chasing noise: a within-variance gain treated as real. Tell: improvements smaller than run-to-run variance. Fix: measure the noise floor; require gains above it.</li>
+<li>Vector memory by default: embeddings where structured recall was needed. Tell: memory 'lies', factual recall wrong. Fix: structured storage first, vector only where justified.</li>
+<li>Self-correction cost blindness: loop improves pass rate but triples cost. Tell: latency and spend balloon. Fix: report cost per correct answer; state the trade-off.</li>
+<li>Sufficiency gate that never fires: gate added but mis-wired. Tell: confident wrong answers on under-specified tasks. Fix: test with under-specified inputs, correct the trigger.</li>
+<li>Component kept untested: added but never ablated. Tell: ablation table missing rows. Fix: remove each component, re-run, decide on evidence.</li>
+</ul>
+<h3 id="7-agent-direction-unattended-runs">7 · Agent direction (unattended runs)</h3>
 <p>Reach first for the task logs to build the eval and the baseline; without the eval nothing else is measurable, so do not start adding components before it exists. Cache the eval set and the baseline + noise floor; every component step reads them. Add components one at a time and re-run the eval after each - never batch changes, or you cannot attribute the delta. Default memory to structured storage; only spawn the extra work of a vector/embedding layer when an eval delta justifies it. Compute cost per correct answer alongside pass rate on every run. Stop and ask the user only if there are no task logs to build an eval from. Return a markdown report (eval description, scores table, ablation table, noise check, cost per correct answer, 'Unverified and missing') plus the committed eval set, runner and component code; print the commit hash. If the architecture does not beat baseline beyond noise, report that as the finding - a null result is a valid, useful outcome.</p>
-<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
-<h2>Related deep dives</h2>
-<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
-<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
-</div><!--pagefind:end-->
+<p><em>Prompt system updated 2026-10-22 · <a href="/prompts">all prompt systems</a> · <a href="/api/prompts.json">JSON</a></em></p>
+<h2 id="related-deep-dives">Related deep dives</h2>
+<p>Browse more deep dives at <a href="/catalog">DejaViewed</a> — 846 entries across the full catalog.</p>
+<hr />
+<p><em>Generated 2026-10-22 · curated by <a href="https://instagram.com/6ab3" target="_blank" rel="noopener">@6ab3</a> for DejaViewed</em></p>
+<!-- body:end --></div>
+  <nav class="guide-entries" aria-label="Entries in this guide" style="margin:40px 0 0;padding-top:18px;border-top:1px solid var(--border);font-size:14px"><h2 style="font-size:16px;margin:0 0 8px;border:none">Entries in this guide</h2><ul style="margin:0;padding-left:20px"><li><a href="/e/DV84iOPgE5f">DIY Claude Code remote — self-hosted web access to vibe code from phone</a></li><li><a href="/e/DXeZ7C5kcl8">Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...</a></li><li><a href="/e/DYP-TkppmPM">Claude Code architecture map — visual bug tracker for vibe-coded apps</a></li><li><a href="/e/DYakjE8JDcX">Claude — Markdowns and folders wrapped in a harness</a></li><li><a href="/e/DYiiwmzpRM7">Gemini Omni — Google&#x27;s unified multimodal model family for video</a></li><li><a href="/e/DZ5R-8OxvUQ">Oh and if you want my (theoretical) guide on how to set this</a></li><li><a href="/e/DZGC7HXtr1f">PostHog as agent observability — sponsored pitch for a self-learning company</a></li><li><a href="/e/DaLT2hFRrFZ">Project-management loop for agents — tasks, context checks, skill mining</a></li><li><a href="/e/DZLBMRjRzMW">Comment “skill” and I’ll send you the prompts — my_body_my_joyce</a></li><li><a href="/e/DZpveoMRy0b">If you are also tryna rip a few influencer deals comment “in</a></li><li><a href="/e/DXx6KhJshmv">Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</a></li><li><a href="/e/DWUy57jDulU">Docker — Off topic, and with all due respect, are we watching an AI avatar?</a></li><li><a href="/e/DYXWNTERFhZ">Claude -p and Agent SDK billing split — what the June 15 change means</a></li></ul></nav>
+</article>
+<footer class="site"><div class="wrap"><a href="/">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
 <script id="md" type="text/markdown"># Beyond Prompting: Prompt Architecture as Engineering Discipline
 
 **Insight class:** Emergent Capability · **Difficulty:** Medium · **Quality:** 5/5
@@ -291,7 +369,7 @@ Most people are still optimizing individual prompts. The practitioners in these 
 
 ## The evidence — connected entries
 
-### [DIY Claude Code remote — self-hosted web access to vibe code from phone](../e/DV84iOPgE5f.html)
+### [DIY Claude Code remote — self-hosted web access to vibe code from phone](/e/DV84iOPgE5f)
 **Creator:** [@olivia.inthecity](https://instagram.com/olivia.inthecity) · **Tier:** B
 **Tools:** Claude Code, Qwen
 
@@ -300,7 +378,7 @@ Most people are still optimizing individual prompts. The practitioners in these 
 A creator found Claude Code's built-in remote control buggy, so they had Claude Code build its own password-protected web front end to drive sessions from a phone. The setup prompt is shared off-screen; remember to stop sessions afterward.
 
 [View original post](https://www.instagram.com/p/DV84iOPgE5f/)
-### [Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...](../e/DXeZ7C5kcl8.html)
+### [Claude — To Do — Every morning 8AM. Scans Gmail, surfaces what needs a...](/e/DXeZ7C5kcl8)
 **Creator:** [@fionaylin](https://instagram.com/fionaylin) · **Tier:** A
 **Tools:** Claude, <a class="go" href="/go/notion" rel="noopener">Notion</a>
 
@@ -309,7 +387,7 @@ A creator found Claude Code's built-in remote control buggy, so they had Claude 
 Comment Prompt 1, 2, 3, 4, 5 or 6 and I’ll DM you my prompt! Here are the 6 @claudeai cowork agents I have running my... — @fionaylin; uses Claude, Notion; demonstrates AI agents.
 
 [View original post](https://www.instagram.com/p/DXeZ7C5kcl8/)
-### [Claude Code architecture map — visual bug tracker for vibe-coded apps](../e/DYP-TkppmPM.html)
+### [Claude Code architecture map — visual bug tracker for vibe-coded apps](/e/DYP-TkppmPM)
 **Creator:** [@constructionbearai](https://instagram.com/constructionbearai) · **Tier:** B
 **Tools:** Claude, Claude Code
 
@@ -318,7 +396,7 @@ Comment Prompt 1, 2, 3, 4, 5 or 6 and I’ll DM you my prompt! Here are the 6 @c
 A non-coder has Claude Code generate a clickable plain-English architecture map of their whole app, with every flow wired up and nodes colored red for active bugs and green for planned fixes or features. Clicking a node opens a sidebar with the bug and the proposed fix. The actual prompt is gated behind a comment.
 
 [View original post](https://www.instagram.com/p/DYP-TkppmPM/)
-### [Claude — Markdowns and folders wrapped in a harness](../e/DYakjE8JDcX.html)
+### [Claude — Markdowns and folders wrapped in a harness](/e/DYakjE8JDcX)
 **Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** B
 **Tools:** Claude, Claude Code
 
@@ -327,7 +405,7 @@ A non-coder has Claude Code generate a clickable plain-English architecture map 
 Companies are marketing ordinary chatbots and simple API tools as “AI Agents.” It’s time we discuss what that actuall... — @gigaqian; uses Claude, Claude Code; demonstrates AI agents, API integration.
 
 [View original post](https://www.instagram.com/p/DYakjE8JDcX/)
-### [Gemini Omni — Google's unified multimodal model family for video](../e/DYiiwmzpRM7.html)
+### [Gemini Omni — Google's unified multimodal model family for video](/e/DYiiwmzpRM7)
 **Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** B
 **Tools:** Gemini, <a class="go" href="/go/kling" rel="noopener">Kling</a>, Pika, <a class="go" href="/go/runway" rel="noopener">Runway</a>, Sora, TouchDesigner, Veo
 
@@ -336,7 +414,7 @@ Companies are marketing ordinary chatbots and simple API tools as “AI Agents.�
 At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. It's a single model that converses across text, image, video and audio, unlike diffusion-only video tools such as Veo, Sora, Runway or Kling. Early testers report that two 10-second generations used about 86% of a Pro plan's daily quota. There's also an aside about Kling's 'Omni' naming.
 
 [View original post](https://www.instagram.com/p/DYiiwmzpRM7/)
-### [Oh and if you want my (theoretical) guide on how to set this](../e/DZ5R-8OxvUQ.html)
+### [Oh and if you want my (theoretical) guide on how to set this](/e/DZ5R-8OxvUQ)
 **Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** B
 
 > Demonstrates prompt architecture vs. prompt engineering
@@ -344,7 +422,7 @@ At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. 
 Oh and if you want my (theoretical) guide on how to set this up comment “app” and I’ll send it your way — @angus.sewell; demonstrates AI agents.
 
 [View original post](https://www.instagram.com/p/DZ5R-8OxvUQ/)
-### [PostHog as agent observability — sponsored pitch for a self-learning company](../e/DZGC7HXtr1f.html)
+### [PostHog as agent observability — sponsored pitch for a self-learning company](/e/DZGC7HXtr1f)
 **Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** C
 **Tools:** PostHog
 
@@ -353,7 +431,7 @@ Oh and if you want my (theoretical) guide on how to set this up comment “app�
 This is a sponsored PostHog video. It pitches putting all company data in one place, pointing an AI agent at it to find what's broken, and installing PostHog on your agents to watch their outputs and failures. The one useful line is to let AI measure while humans make the judgment calls.
 
 [View original post](https://www.instagram.com/p/DZGC7HXtr1f/)
-### [Project-management loop for agents — tasks, context checks, skill mining](../e/DaLT2hFRrFZ.html)
+### [Project-management loop for agents — tasks, context checks, skill mining](/e/DaLT2hFRrFZ)
 **Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** B
 **Tools:** Claude
 
@@ -362,7 +440,7 @@ This is a sponsored PostHog video. It pitches putting all company data in one pl
 An anti-hands-off workflow. Connect your agent to a project management tool, whether off the shelf or vibe-coded. A skill checks each new task for missing context and asks clarifying questions inside the tool before executing. Then mine the task paper trail for new skills, keeping humans on anything that needs nuance.
 
 [View original post](https://www.instagram.com/p/DaLT2hFRrFZ/)
-### [Comment “skill” and I’ll send you the prompts — my_body_my_joyce](../e/DZLBMRjRzMW.html)
+### [Comment “skill” and I’ll send you the prompts — my_body_my_joyce](/e/DZLBMRjRzMW)
 **Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** A
 
 > Demonstrates prompt architecture vs. prompt engineering
@@ -370,7 +448,7 @@ An anti-hands-off workflow. Connect your agent to a project management tool, whe
 Comment “skill” and I’ll send you the prompts — @angus.sewell; demonstrates AI agents.
 
 [View original post](https://www.instagram.com/p/DZLBMRjRzMW/)
-### [If you are also tryna rip a few influencer deals comment “in](../e/DZpveoMRy0b.html)
+### [If you are also tryna rip a few influencer deals comment “in](/e/DZpveoMRy0b)
 **Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** A
 
 > Demonstrates prompt architecture vs. prompt engineering
@@ -378,7 +456,7 @@ Comment “skill” and I’ll send you the prompts — @angus.sewell; demonstra
 If you are also tryna rip a few influencer deals comment “influencer” and I’ll send you this whole system — @angus.sewell; demonstrates AI agents.
 
 [View original post](https://www.instagram.com/p/DZpveoMRy0b/)
-### [Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...](../e/DXx6KhJshmv.html)
+### [Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...](/e/DXx6KhJshmv)
 **Creator:** [@lindavivah](https://instagram.com/lindavivah) · **Tier:** S
 
 > Demonstrates prompt architecture vs. prompt engineering
@@ -386,7 +464,7 @@ If you are also tryna rip a few influencer deals comment “influencer” and I�
 Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Alake ⚡️ — @lindavivah; demonstrates AI agents.
 
 [View original post](https://www.instagram.com/p/DXx6KhJshmv/)
-### [Docker — Off topic, and with all due respect, are we watching an AI avatar?](../e/DWUy57jDulU.html)
+### [Docker — Off topic, and with all due respect, are we watching an AI avatar?](/e/DWUy57jDulU)
 **Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** A
 **Tools:** Docker
 
@@ -395,7 +473,7 @@ Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Ala
 DeerFlow 2.0 is a “super agent harness.” Think OpenClaw but way more robust - and the only thing bigger than that in ... — @gigaqian; uses Docker; demonstrates AI agents, code generation.
 
 [View original post](https://www.instagram.com/p/DWUy57jDulU/)
-### [Claude -p and Agent SDK billing split — what the June 15 change means](../e/DYXWNTERFhZ.html)
+### [Claude -p and Agent SDK billing split — what the June 15 change means](/e/DYXWNTERFhZ)
 **Creator:** [@lostandlucky](https://instagram.com/lostandlucky) · **Tier:** B
 **Tools:** Anthropic, Claude, Claude Agent SDK, Claude Code, Ollama, OpenClaw, OpenCode
 
@@ -622,24 +700,18 @@ Run after the architecture is built. Enumerate every claim as a numbered list: t
 
 Reach first for the task logs to build the eval and the baseline; without the eval nothing else is measurable, so do not start adding components before it exists. Cache the eval set and the baseline + noise floor; every component step reads them. Add components one at a time and re-run the eval after each - never batch changes, or you cannot attribute the delta. Default memory to structured storage; only spawn the extra work of a vector/embedding layer when an eval delta justifies it. Compute cost per correct answer alongside pass rate on every run. Stop and ask the user only if there are no task logs to build an eval from. Return a markdown report (eval description, scores table, ablation table, noise check, cost per correct answer, 'Unverified and missing') plus the committed eval set, runner and component code; print the commit hash. If the architecture does not beat baseline beyond noise, report that as the finding - a null result is a valid, useful outcome.
 
-*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+*Prompt system updated 2026-10-22 · [all prompt systems](/prompts) · [JSON](/api/prompts.json)*
 
 
 ## Related deep dives
 
-Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+Browse more deep dives at [DejaViewed](/catalog) — 846 entries across the full catalog.
 
 ---
 
 *Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
 </script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script>
-const raw=document.getElementById('md').textContent;
-const html=DOMPurify.sanitize(marked.parse(raw));
-document.getElementById('guide-body').innerHTML=html;
-</script><style>
+<style>
 .ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
 .ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
 .ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
@@ -655,11 +727,8 @@ document.getElementById('guide-body').innerHTML=html;
 .ps-copy:hover{color:#fff;border-color:var(--border-hi)}
 .ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
 </style><script>
-document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
-document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
-p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
-</script><script>
 document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
 const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
-</script><!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
+</script><!-- sitenav:start --><nav class="sitenav" aria-label="Site" data-pagefind-ignore><style>.sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}.sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}.sitenav a:hover{color:var(--accent,#a78bfa)}</style><a href="/">Home</a><a href="/start-here">Start here</a><a href="/catalog">Catalog</a><a href="/guides/">Guides</a><a href="/prompts">Prompts</a><a href="/e/">All entries</a><a href="/collections/">Collections</a><a href="/search">Search</a><a href="/graph">Graph</a><a href="/graph-cosmos">Cosmos</a><a href="/board">Board</a><a href="/links/">Links</a><a href="/method">How it works</a><a href="/feed.xml">RSS</a><a href="/llms.txt">llms.txt</a></nav><!-- sitenav:end -->
+<!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
 </body></html>

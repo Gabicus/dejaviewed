@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Why Your Agent Sucks: Architecture Patterns That Actually Work · DejaViewed</title>
+<title>Why Your Agent Sucks: Architecture Patterns That Actually Work</title>
 <!-- seo:start -->
 <link rel="canonical" href="https://dejaviewed.dev/guides/agent-architecture">
 <meta name="description" content="Better models won&#x27;t fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness…">
@@ -12,14 +12,14 @@
 <meta property="og:image" content="https://dejaviewed.dev/og/agent-architecture.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Why Your Agent Sucks: Architecture Patterns That Actually Work">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Why Your Agent Sucks: Architecture Patterns That Actually Work">
 <meta name="twitter:description" content="Better models won&#x27;t fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness…">
 <meta name="twitter:image" content="https://dejaviewed.dev/og/agent-architecture.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/agent-architecture#article","headline":"Why Your Agent Sucks: Architecture Patterns That Actually Work","description":"Better models won't fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness…","url":"https://dejaviewed.dev/guides/agent-architecture","mainEntityOfPage":"https://dejaviewed.dev/guides/agent-architecture","datePublished":"2026-05-06","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/agent-architecture.jpg","about":[{"@type":"Thing","name":"Onyx"},{"@type":"Thing","name":"RAG"},{"@type":"Thing","name":"onyx-dot-app/onyx"},{"@type":"Thing","name":"Kimi"},{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"},{"@type":"Thing","name":"Google Workspace"},{"@type":"Thing","name":"Obsidian"}],"abstract":"Take one real agent you own and rebuild it around a clean split of context (what the model sees this turn), memory (what persists and how it is retrieved, updated and forgotten) and harness (the code that runs the loop, tools and guardrails), then prove the change with a task-completion eval at a fixed model."},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/agent-architecture#faq","mainEntity":[{"@type":"Question","name":"Did compacting tool outputs remove a field the model needed on any task?","acceptedAnswer":{"@type":"Answer","text":"Step 4, Rebuild the context layer: Give the model the right information in a budget, in a readable form. Expect: context/ code, RETRIEVAL.md comparing Onyx vs baseline, eval results for +context."}},{"@type":"Question","name":"Does memory ever return a stale fact over a newer one, and is there a test for it?","acceptedAnswer":{"@type":"Answer","text":"Step 5, Rebuild the memory layer: Persistent memory with explicit operations and a schema. Expect: memory/ code with tests for each operation, eval results for both variants."}},{"@type":"Question","name":"What is the per-task token budget, and which section blows it most often?","acceptedAnswer":{"@type":"Answer","text":"Step 1, Ground truth: instrument and collect real traces: See exactly what the agent sees and does on real work. Expect: traces/ with 50+ runs and token accounting by section, sources/NOTES.md."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Why Your Agent Sucks: Architecture Patterns That Actually Work"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","logo":"https://dejaviewed.dev/og/default.png","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"],"founder":{"@id":"https://dejaviewed.dev/#victor"},"publishingPrinciples":"https://dejaviewed.dev/method"},{"@type":"Person","@id":"https://dejaviewed.dev/#victor","name":"Victor","url":"https://www.1gabe.com/","sameAs":["https://github.com/Gabicus","https://instagram.com/6ab3"],"contactPoint":{"@type":"ContactPoint","url":"https://www.1gabe.com/contact/","contactType":"general"}},{"@type":"Article","@id":"https://dejaviewed.dev/guides/agent-architecture#article","headline":"Why Your Agent Sucks: Architecture Patterns That Actually Work","description":"Better models won't fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness…","url":"https://dejaviewed.dev/guides/agent-architecture","mainEntityOfPage":"https://dejaviewed.dev/guides/agent-architecture","datePublished":"2026-05-06","dateModified":"2026-10-22","author":{"@id":"https://dejaviewed.dev/#victor"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/agent-architecture.jpg","about":[{"@type":"Thing","name":"Onyx"},{"@type":"Thing","name":"RAG"},{"@type":"Thing","name":"onyx-dot-app/onyx"}],"mentions":[{"@type":"Thing","name":"Kimi"},{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"},{"@type":"Thing","name":"Google Workspace"},{"@type":"Thing","name":"Obsidian"}],"abstract":"Take one real agent you own and rebuild it around a clean split of context (what the model sees this turn), memory (what persists and how it is retrieved, updated and forgotten) and harness (the code that runs the loop, tools and guardrails), then prove the change with a task-completion eval at a fixed model."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Why Your Agent Sucks: Architecture Patterns That Actually Work"}]}]}</script>
 <!-- seo:end -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
 <style>
@@ -59,171 +59,227 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <script>DV.mountHeader(document.body, 'home');</script>
 <article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
-  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-agent-architecture.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Why Your Agent Sucks: Architecture Patterns That Actually Work →</a></div>
-  <div id="guide-body"></div>
-  <nav class="guide-entries" aria-label="Entries in this guide" style="margin:40px 0 0;padding-top:18px;border-top:1px solid var(--border);font-size:14px"><h2 style="font-size:16px;margin:0 0 8px;border:none">Entries in this guide</h2><ul style="margin:0;padding-left:20px"><li><a href="../e/DXStFLkkphz.html">Better models won’t fix your agent</a></li><li><a href="../e/DXx6KhJshmv.html">Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</a></li><li><a href="../e/DXYSxNLpIAY.html">Agentic OS — Claude Code as engine with Obsidian memory and skill packs</a></li><li><a href="../e/DWtgbzLDgwm.html">Onyx — open-source self-hosted agentic RAG platform</a></li><li><a href="../e/DXKAbR8ETEo.html">AI-first software design — build data layers agents can actually read</a></li><li><a href="../e/MoonshotAI_Kimi-K2_5.html">Kimi K2.5 — Moonshot&#x27;s open multimodal agentic model</a></li></ul></nav>
-</article>
-<footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
-<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+  <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="/deeper/deeper-insight-agent-architecture" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Why Your Agent Sucks: Architecture Patterns That Actually Work →</a></div>
+  <div id="guide-body" data-pagefind-body data-pagefind-filter="kind:Guide"><!-- body:start -->
 <h1>Why Your Agent Sucks: Architecture Patterns That Actually Work</h1>
-<p>Insight class: Emergent Capability · Difficulty: Hard · Quality: 5/5 Connected entries: 6 · Tools: Claude, Claude Code, Google Workspace, Kimi, Obsidian, Onyx, RAG, onyx-dot-app/onyx</p>
-<p>In short: Take one real agent you own and rebuild it around a clean split of context (what the model sees this turn), memory (what persists and how it is retrieved, updated and forgotten) and harness (the code that runs the loop, tools and guardrails), then prove the change with a task-completion eval at a fixed model.</p>
-<h2>Thesis</h2>
+<p><strong>Insight class:</strong> Emergent Capability · <strong>Difficulty:</strong> Hard · <strong>Quality:</strong> 5/5
+<strong>Connected entries:</strong> 6 · <strong>Tools:</strong> Claude, Claude Code, Google Workspace, Kimi, Obsidian, Onyx, RAG, onyx-dot-app/onyx</p>
+<blockquote>
+<p><strong>In short:</strong> Take one real agent you own and rebuild it around a clean split of context (what the model sees this turn), memory (what persists and how it is retrieved, updated and forgotten) and harness (the code that runs the loop, tools and guardrails), then prove the change with a task-completion eval at a fixed model.</p>
+</blockquote>
+<hr />
+<h2 id="thesis">Thesis</h2>
 <p>Better models won't fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness engineering — not model capability.</p>
-<h2>Why it matters</h2>
-<p>Everyone's building agents. Almost nobody's building agents that work past the demo. The 103 new entries from this session surfaced a pattern: the posts that actually teach agent building focus on architecture — context management, memory hierarchies, harness engineering — not on which model to use. The context vs memory vs harness framework is the clearest mental model we've seen for why most agents fail: they dump everything into context, have no persistent memory, and lack structural guardrails. This dive connects the theory (architecture patterns) with the infrastructure (Onyx, MCP, Kimi) needed to implement it.</p>
-<h2>The evidence — connected entries</h2>
-<h3>Better models won’t fix your agent</h3>
-<p>Creator: @howard.mov · Tier: S</p>
+<hr />
+<h2 id="why-it-matters">Why it matters</h2>
+<p>Everyone's building agents. Almost nobody's building agents that work past the demo. The saved posts on agent building show a pattern: the posts that actually teach agent building focus on architecture — context management, memory hierarchies, harness engineering — not on which model to use. The context vs memory vs harness framework is the clearest mental model we've seen for why most agents fail: they dump everything into context, have no persistent memory, and lack structural guardrails. This dive connects the theory (architecture patterns) with the infrastructure (Onyx, MCP, Kimi) needed to implement it.</p>
+<hr />
+<h2 id="the-evidence-connected-entries">The evidence — connected entries</h2>
+<h3 id="better-models-wont-fix-your-agent"><a href="/e/DXStFLkkphz">Better models won’t fix your agent</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/howard.mov" target="_blank" rel="noopener">@howard.mov</a> · <strong>Tier:</strong> S</p>
+<blockquote>
 <p>The thesis: model upgrades mask architecture debt. Fix the scaffold, not the brain.</p>
+</blockquote>
 <p>Better models won’t fix your agent. — @howard.mov; demonstrates AI agents.</p>
-<p>View original post</p>
-<h3>Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</h3>
-<p>Creator: @lindavivah · Tier: S</p>
+<p><a href="https://www.instagram.com/p/DXStFLkkphz/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="context-vs-memory-vs-harness-engineering-explained-in-40-sec-these-3-disciplines-are-core-to-building-agents-that"><a href="/e/DXx6KhJshmv">Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/lindavivah" target="_blank" rel="noopener">@lindavivah</a> · <strong>Tier:</strong> S</p>
+<blockquote>
 <p>Three disciplines — context, memory, harness — that separate toy agents from real ones</p>
+</blockquote>
 <p>Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Alake ⚡️ — @lindavivah; demonstrates AI agents.</p>
-<p>View original post</p>
-<h3>Agentic OS — Claude Code as engine with Obsidian memory and skill packs</h3>
-<p>Creator: @chase.h.ai · Tier: B Tools: Claude Code, Google Workspace, Obsidian</p>
+<p><a href="https://www.instagram.com/p/DXx6KhJshmv/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="agentic-os-claude-code-as-engine-with-obsidian-memory-and-skill-packs"><a href="/e/DXYSxNLpIAY">Agentic OS — Claude Code as engine with Obsidian memory and skill packs</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/chase.h.ai" target="_blank" rel="noopener">@chase.h.ai</a> · <strong>Tier:</strong> B
+<strong>Tools:</strong> Claude Code, Google Workspace, Obsidian</p>
+<blockquote>
 <p>Building an agentic OS: the orchestration layer above individual agents</p>
+</blockquote>
 <p>Blueprint for a Claude Code-powered 'agentic OS': Obsidian as memory, Google Workspace connected, skill packs for research and content, plus a dashboard command center you can hand to a team or sell to agency clients.</p>
-<p>View original post</p>
-<h3>Onyx — open-source self-hosted agentic RAG platform</h3>
-<p>Creator: @marc.kaz · Tier: A Tools: Onyx, RAG, onyx-dot-app/onyx</p>
+<p><a href="https://www.instagram.com/p/DXYSxNLpIAY/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="onyx-open-source-self-hosted-agentic-rag-platform"><a href="/e/DWtgbzLDgwm">Onyx — open-source self-hosted agentic RAG platform</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/marc.kaz" target="_blank" rel="noopener">@marc.kaz</a> · <strong>Tier:</strong> A
+<strong>Tools:</strong> Onyx, RAG, onyx-dot-app/onyx</p>
+<blockquote>
 <p>Onyx: production-grade self-hosted RAG — the retrieval layer agents actually need</p>
+</blockquote>
 <p>@marc.kaz flags onyx-dot-app/onyx hitting #1 GitHub trending: self-hostable AI platform with agentic RAG, deep research mode, custom agents, web+code execution, voice/image gen, 50+ connectors. Strong self-hosted AI stack option.</p>
-<p>View original post</p>
-<h3>AI-first software design — build data layers agents can actually read</h3>
-<p>Creator: @angus.sewell · Tier: A Tools: Claude</p>
+<p><a href="https://www.instagram.com/p/DWtgbzLDgwm/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="ai-first-software-design-build-data-layers-agents-can-actually-read"><a href="/e/DXKAbR8ETEo">AI-first software design — build data layers agents can actually read</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/angus.sewell" target="_blank" rel="noopener">@angus.sewell</a> · <strong>Tier:</strong> A
+<strong>Tools:</strong> Claude</p>
+<blockquote>
 <p>Giving agents perception: MCP as the sensory bridge to external tools</p>
+</blockquote>
 <p>Dashboards and navbars are built for human eyes; agents only see tool-call text, which is why giving Claude raw database access goes wrong. The fix shown: store raw data plus workflow-generated summaries in separate tables and expose tools that return summary-level context first, pulling full transcripts only when needed.</p>
-<p>View original post</p>
-<h3>Kimi K2.5 — Moonshot's open multimodal agentic model</h3>
-<p>Creator: @6ab3 · Tier: A Tools: Kimi</p>
+<p><a href="https://www.instagram.com/p/DXKAbR8ETEo/" target="_blank" rel="noopener">View original post</a></p>
+<h3 id="kimi-k25-moonshots-open-multimodal-agentic-model"><a href="/e/MoonshotAI_Kimi-K2_5">Kimi K2.5 — Moonshot's open multimodal agentic model</a></h3>
+<p><strong>Creator:</strong> <a href="https://instagram.com/6ab3" target="_blank" rel="noopener">@6ab3</a> · <strong>Tier:</strong> A
+<strong>Tools:</strong> Kimi</p>
+<blockquote>
 <p>Kimi K2.5: open multimodal agentic model — when the model IS the agent</p>
-<p>by Moonshot AI Open-source native multimodal agentic model. Strong coding and reasoning benchmarks. Modified MIT License. Available on HuggingFace for self-hosting as an alternative LLM backend. Modified MIT HuggingFace Self-hostable</p>
-<p>View original post</p>
-<h2>Action sketch — how to implement this</h2>
+</blockquote>
+<p>by Moonshot AI | Open-source native multimodal agentic model. Strong coding and reasoning benchmarks. Modified MIT License. Available on HuggingFace for self-hosting as an alternative LLM backend. | Modified MIT HuggingFace Self-hostable</p>
+<p><a href="https://github.com/MoonshotAI/Kimi-K2.5" target="_blank" rel="noopener">View original post</a></p>
+<hr />
+<h2 id="action-sketch-how-to-implement-this">Action sketch — how to implement this</h2>
 <p>Audit your agent's context window usage → separate context (ephemeral) from memory (persistent) from harness (structural) → implement retrieval layer (Onyx or similar) → add tool-use via MCP → test with Claude Code as the orchestrator → measure task completion, not conversation quality.</p>
-<h2>Prerequisites</h2>
+<hr />
+<h2 id="prerequisites">Prerequisites</h2>
 <p>Familiarity with LLM APIs, basic understanding of RAG. Claude Code or similar agent framework.</p>
-<h2>Key tools and resources</h2>
-<p>Claude</p>
-<p>Claude Code</p>
-<p>Google Workspace</p>
-<p>Kimi</p>
-<p>Obsidian</p>
-<p>Onyx</p>
-<p>RAG</p>
-<p>onyx-dot-app/onyx</p>
-<h2>Creators to follow</h2>
-<p>@6ab3</p>
-<p>@angus.sewell</p>
-<p>@chase.h.ai</p>
-<p>@howard.mov</p>
-<p>@lindavivah</p>
-<p>@marc.kaz</p>
-<h2>Prompt system — run this yourself</h2>
+<hr />
+<h2 id="key-tools-and-resources">Key tools and resources</h2>
+<ul>
+<li><strong>Claude</strong></li>
+<li><strong>Claude Code</strong></li>
+<li><strong>Google Workspace</strong></li>
+<li><strong>Kimi</strong></li>
+<li><strong>Obsidian</strong></li>
+<li><strong>Onyx</strong></li>
+<li><strong>RAG</strong></li>
+<li><strong>onyx-dot-app/onyx</strong></li>
+</ul>
+<h2 id="creators-to-follow">Creators to follow</h2>
+<ul>
+<li><a href="https://instagram.com/6ab3" target="_blank" rel="noopener">@6ab3</a></li>
+<li><a href="https://instagram.com/angus.sewell" target="_blank" rel="noopener">@angus.sewell</a></li>
+<li><a href="https://instagram.com/chase.h.ai" target="_blank" rel="noopener">@chase.h.ai</a></li>
+<li><a href="https://instagram.com/howard.mov" target="_blank" rel="noopener">@howard.mov</a></li>
+<li><a href="https://instagram.com/lindavivah" target="_blank" rel="noopener">@lindavivah</a></li>
+<li><a href="https://instagram.com/marc.kaz" target="_blank" rel="noopener">@marc.kaz</a></li>
+</ul>
+<hr />
+<hr />
+<h2 id="prompt-system">Prompt system — run this yourself</h2>
 <p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
-<p>Mission. Take one real agent you own and rebuild it around a clean split of context (what the model sees this turn), memory (what persists and how it is retrieved, updated and forgotten) and harness (the code that runs the loop, tools and guardrails), then prove the change with a task-completion eval at a fixed model. For engineers whose agent works in demos and fails in use. Done means: a held-out task suite shows a measured completion gain over the original agent at the same model, with ablations showing which layer caused it.</p>
-<h3>1 · Deeper, not bigger</h3>
+<p><strong>Mission.</strong> Take one real agent you own and rebuild it around a clean split of context (what the model sees this turn), memory (what persists and how it is retrieved, updated and forgotten) and harness (the code that runs the loop, tools and guardrails), then prove the change with a task-completion eval at a fixed model. For engineers whose agent works in demos and fails in use. Done means: a held-out task suite shows a measured completion gain over the original agent at the same model, with ablations showing which layer caused it.</p>
+<h3 id="1-deeper-not-bigger">1 · Deeper, not bigger</h3>
 <p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
-<p>What a top professional would do (that you didn't ask for): An agent engineer would not swap models first. They would instrument the current agent, collect failing traces, and classify each failure as context (wrong or missing information in the window), memory (lost or stale across sessions), harness (bad loop, tool errors, no recovery) or model (genuinely beyond capability). They would build an eval set from those failures before changing anything. They would change one layer at a time and keep the model fixed so gains are attributable. They would design tool outputs for the model, not for humans - the angus.sewell point that agents see text from tool calls, not dashboards.</p>
-<p>Rawest material to start from: 1) Your agent's own traces: full prompts, tool calls, tool outputs and final results for at least 50 real runs. 2) The Meta-Harness paper and code (the harness-optimizing system howard.mov cites; find the preprint and repo and check the 'up to 6x' figure against its tables). 3) Richmond Alake's agent memory material (the DeepLearning.AI course on agent memory) for memory operations: store, retrieve, update, forget. 4) Anthropic's engineering posts on building effective agents and context engineering. 5) onyx-dot-app/onyx source for its retrieval and connector design. 6) Kimi K2.5 model card on Hugging Face (moonshotai) if you test an open-weights backend. 7) Public agent benchmarks for calibration: SWE-bench Verified, tau-bench, Terminal-Bench.</p>
-<p>Methods and tools: Tracing with OpenTelemetry or Langfuse; a failure taxonomy spreadsheet; an eval harness (Inspect AI, promptfoo, or a pytest suite) with pass/fail graders and pass@k; context accounting per turn (tokens by source: system, tools schema, history, retrieved, tool output); memory store with explicit schema (episodic events, semantic facts, procedural skills) and retrieval scoring; MCP servers for tools with typed, compact outputs; Onyx or a minimal pgvector or SQLite-FTS retriever as the baseline; ablation runs flipping one layer at a time.</p>
-<p>What proves it right (other than you or the model): A held-out task suite drawn from real failures, graded by deterministic checks (tests pass, file matches, API state correct), run with the same model across original vs rebuilt agent, at least 3 seeds per task. Optional calibration on a public benchmark subset (tau-bench or SWE-bench Verified sample). A user who runs the rebuilt agent on their own work for a week and reports completion vs before.</p>
-<p>Rewritten prompt — ask for exactly that:</p>
-<p>You are an agent engineer. Do not change the model. Take my agent at and: 1) instrument it to log full traces (prompt by section, tool calls, tool outputs, tokens per section); 2) collect 50 real runs and classify every failure as context, memory, harness or model; 3) build a held-out eval of 30 tasks from those failures with deterministic graders; 4) baseline the current agent at 3 seeds per task; 5) rebuild in three separable layers - context (per-turn budget by section, compact tool outputs designed for the model, retrieval instead of dumping), memory (explicit store/retrieve/update/forget with a schema, persistent across sessions), harness (loop with step limits, error recovery, verification step, guardrails); 6) run ablations adding one layer at a time; 7) report completion rate, cost and latency per variant with confidence intervals. Test Onyx as the retrieval layer against a simple baseline. Check the Meta-Harness 'up to 6x' claim against the paper's own tables and say what conditions it holds under.</p>
-<h3>2 · One-shot prompt</h3>
-<p>ROLE: You are an agent engineer. Stance: model upgrades are the last lever; most failures are context, memory or harness, and you prove which with traces and ablations.</p>
-<p>CONTEXT: Source posts: howard.mov - 'better models won't fix your agent'; the harness controls what the model sees, remembers and does, and Meta-Harness, a harness for improving harnesses, stores full source code and execution logs instead of compressed summaries and lets an agent rewrite the harness, claiming performance changes 'up to 6x' and beating hand-designed systems on coding benchmarks. lindavivah with Richmond Alake: context engineering optimizes signal to noise in the window; memory engineering is how agents store, retrieve, forget and evolve information; harness engineering is the code and scaffolding around the model. chase.h.ai: an agentic OS with Claude Code as engine, Obsidian memory, Google Workspace connected, skill packs, a dashboard. marc.kaz: onyx-dot-app/onyx - self-hostable agentic RAG, deep research, custom agents, 50+ connectors. angus.sewell: agents see tool text, not dashboards; build AI-first data layers that pre-summarize raw tables. 6ab3: Kimi K2.5, open multimodal agentic model, modified MIT license.</p>
-<p>HARD CONSTRAINTS: The model stays fixed across all compared variants. Every change is measured on the held-out suite. Graders are deterministic where possible; LLM graders only with a rubric and spot-checked by a human. No production data leaves your environment; secrets never enter prompts or logs. Destructive tools (delete, send, pay) require a confirmation step in the harness.</p>
-<p>DELIVERABLES:</p>
-<p>traces/: 50+ real runs with per-section token accounting.</p>
-<p>FAILURES.md: taxonomy table (context, memory, harness, model) with counts and example trace ids.</p>
-<p>eval/: 30 held-out tasks with graders, runnable with one command, 3 seeds each.</p>
-<p>BASELINE.md: original agent completion, cost, latency with intervals.</p>
-<p>The rebuilt agent: context/ (budgeter, tool-output compactors, retrieval), memory/ (schema, store, retrieve, update, forget), harness/ (loop, step cap, retries, verification, guardrails), tools exposed via MCP.</p>
-<p>ABLATION.md: original, +context, +memory, +harness, all three - completion, cost, latency.</p>
-<p>RETRIEVAL.md: Onyx vs a simple baseline retriever on retrieval questions from the eval.</p>
-<p>CLAIMS.md: Meta-Harness 6x claim checked against the paper; Kimi K2.5 as backend tested only if time allows and only as a separate arm.</p>
-<p>BUILT-IN GAP ANALYSIS: Maintain GAPS.md: failure classes not addressed, tasks still failing after rebuild and why, layers with no measurable effect, grader weaknesses, claims not verified. Fill the top items before finishing.</p>
-<p>SELF-QUESTIONS: What share of failures were truly model-limited? Did I hold the model and temperature fixed? Are my graders checking the outcome, or the transcript's claims? Does memory retrieve the right item, and does it ever retrieve a stale one? Did compact tool outputs drop information the model needed? Did the harness's verification step catch real errors or only add cost? Would the gains survive a different task distribution?</p>
-<p>STOP CONDITIONS: Stop when ABLATION.md has all five variants at 3 seeds and GAPS.md is written. Stop and ask if the baseline completion is already above 90% (the eval is too easy) or below 10% (likely a harness bug).</p>
-<p>RETURN FORMAT: Failure taxonomy table, ablation table with intervals, retrieval comparison, the Meta-Harness claim verdict, and GAPS.md.</p>
-<h3>3 · Step-by-step prompts</h3>
+<ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> An agent engineer would not swap models first. They would instrument the current agent, collect failing traces, and classify each failure as context (wrong or missing information in the window), memory (lost or stale across sessions), harness (bad loop, tool errors, no recovery) or model (genuinely beyond capability). They would build an eval set from those failures before changing anything. They would change one layer at a time and keep the model fixed so gains are attributable. They would design tool outputs for the model, not for humans - the angus.sewell point that agents see text from tool calls, not dashboards.</li>
+<li><strong>Rawest material to start from:</strong> 1) Your agent's own traces: full prompts, tool calls, tool outputs and final results for at least 50 real runs. 2) The Meta-Harness paper and code (the harness-optimizing system howard.mov cites; find the preprint and repo and check the 'up to 6x' figure against its tables). 3) Richmond Alake's agent memory material (the DeepLearning.AI course on agent memory) for memory operations: store, retrieve, update, forget. 4) Anthropic's engineering posts on building effective agents and context engineering. 5) onyx-dot-app/onyx source for its retrieval and connector design. 6) Kimi K2.5 model card on Hugging Face (moonshotai) if you test an open-weights backend. 7) Public agent benchmarks for calibration: SWE-bench Verified, tau-bench, Terminal-Bench.</li>
+<li><strong>Methods and tools:</strong> Tracing with OpenTelemetry or Langfuse; a failure taxonomy spreadsheet; an eval harness (Inspect AI, promptfoo, or a pytest suite) with pass/fail graders and pass@k; context accounting per turn (tokens by source: system, tools schema, history, retrieved, tool output); memory store with explicit schema (episodic events, semantic facts, procedural skills) and retrieval scoring; MCP servers for tools with typed, compact outputs; Onyx or a minimal pgvector or SQLite-FTS retriever as the baseline; ablation runs flipping one layer at a time.</li>
+<li><strong>What proves it right (other than you or the model):</strong> A held-out task suite drawn from real failures, graded by deterministic checks (tests pass, file matches, API state correct), run with the same model across original vs rebuilt agent, at least 3 seeds per task. Optional calibration on a public benchmark subset (tau-bench or SWE-bench Verified sample). A user who runs the rebuilt agent on their own work for a week and reports completion vs before.</li>
+</ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">You are an agent engineer. Do not change the model. Take my agent at &lt;repo path&gt; and: 1) instrument it to log full traces (prompt by section, tool calls, tool outputs, tokens per section); 2) collect 50 real runs and classify every failure as context, memory, harness or model; 3) build a held-out eval of 30 tasks from those failures with deterministic graders; 4) baseline the current agent at 3 seeds per task; 5) rebuild in three separable layers - context (per-turn budget by section, compact tool outputs designed for the model, retrieval instead of dumping), memory (explicit store/retrieve/update/forget with a schema, persistent across sessions), harness (loop with step limits, error recovery, verification step, guardrails); 6) run ablations adding one layer at a time; 7) report completion rate, cost and latency per variant with confidence intervals. Test Onyx as the retrieval layer against a simple baseline. Check the Meta-Harness 'up to 6x' claim against the paper's own tables and say what conditions it holds under.
+</code></pre></div>
+<h3 id="2-one-shot-prompt">2 · One-shot prompt</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">ROLE: You are an agent engineer. Stance: model upgrades are the last lever; most failures are context, memory or harness, and you prove which with traces and ablations.
+
+CONTEXT: Source posts: howard.mov - 'better models won't fix your agent'; the harness controls what the model sees, remembers and does, and Meta-Harness, a harness for improving harnesses, stores full source code and execution logs instead of compressed summaries and lets an agent rewrite the harness, claiming performance changes 'up to 6x' and beating hand-designed systems on coding benchmarks. lindavivah with Richmond Alake: context engineering optimizes signal to noise in the window; memory engineering is how agents store, retrieve, forget and evolve information; harness engineering is the code and scaffolding around the model. chase.h.ai: an agentic OS with Claude Code as engine, Obsidian memory, Google Workspace connected, skill packs, a dashboard. marc.kaz: onyx-dot-app/onyx - self-hostable agentic RAG, deep research, custom agents, 50+ connectors. angus.sewell: agents see tool text, not dashboards; build AI-first data layers that pre-summarize raw tables. 6ab3: Kimi K2.5, open multimodal agentic model, modified MIT license.
+
+HARD CONSTRAINTS: The model stays fixed across all compared variants. Every change is measured on the held-out suite. Graders are deterministic where possible; LLM graders only with a rubric and spot-checked by a human. No production data leaves your environment; secrets never enter prompts or logs. Destructive tools (delete, send, pay) require a confirmation step in the harness.
+
+DELIVERABLES:
+1. traces/: 50+ real runs with per-section token accounting.
+2. FAILURES.md: taxonomy table (context, memory, harness, model) with counts and example trace ids.
+3. eval/: 30 held-out tasks with graders, runnable with one command, 3 seeds each.
+4. BASELINE.md: original agent completion, cost, latency with intervals.
+5. The rebuilt agent: context/ (budgeter, tool-output compactors, retrieval), memory/ (schema, store, retrieve, update, forget), harness/ (loop, step cap, retries, verification, guardrails), tools exposed via MCP.
+6. ABLATION.md: original, +context, +memory, +harness, all three - completion, cost, latency.
+7. RETRIEVAL.md: Onyx vs a simple baseline retriever on retrieval questions from the eval.
+8. CLAIMS.md: Meta-Harness 6x claim checked against the paper; Kimi K2.5 as backend tested only if time allows and only as a separate arm.
+
+BUILT-IN GAP ANALYSIS: Maintain GAPS.md: failure classes not addressed, tasks still failing after rebuild and why, layers with no measurable effect, grader weaknesses, claims not verified. Fill the top items before finishing.
+
+SELF-QUESTIONS: What share of failures were truly model-limited? Did I hold the model and temperature fixed? Are my graders checking the outcome, or the transcript's claims? Does memory retrieve the right item, and does it ever retrieve a stale one? Did compact tool outputs drop information the model needed? Did the harness's verification step catch real errors or only add cost? Would the gains survive a different task distribution?
+
+STOP CONDITIONS: Stop when ABLATION.md has all five variants at 3 seeds and GAPS.md is written. Stop and ask if the baseline completion is already above 90% (the eval is too easy) or below 10% (likely a harness bug).
+
+RETURN FORMAT: Failure taxonomy table, ablation table with intervals, retrieval comparison, the Meta-Harness claim verdict, and GAPS.md.
+</code></pre></div>
+<h3 id="3-step-by-step-prompts">3 · Step-by-step prompts</h3>
 <h4>Step 1 — Ground truth: instrument and collect real traces</h4>
-<p>Goal: See exactly what the agent sees and does on real work.</p>
-<p>Pick one agent you own (a Claude Code workflow, an Agent SDK app, or a custom loop). Add tracing with OpenTelemetry or Langfuse so each run records: system prompt, tool schema size, history, retrieved content, tool outputs - each with its token count - plus tool calls, errors, retries, final output and wall time. Run it on 50 real tasks from your actual use (not synthetic). Save traces/ as JSONL. Also read the raw sources: the Meta-Harness paper and repo (record the benchmark, baseline and conditions behind the 'up to 6x' figure), Richmond Alake's memory material for the memory operations taxonomy, Anthropic's posts on building effective agents and context engineering, and the onyx-dot-app/onyx README and retrieval code. Write sources/NOTES.md with the claims each source makes and the evidence it gives.</p>
-<p>Expect: traces/ with 50+ runs and token accounting by section, sources/NOTES.md.</p>
-<p>Audit before moving on: Check that token sections sum to the provider-reported input tokens within 5%; fix accounting if not. Confirm no secrets in traces (grep for key patterns).</p>
+<p><em>Goal:</em> See exactly what the agent sees and does on real work.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Pick one agent you own (a Claude Code workflow, an Agent SDK app, or a custom loop). Add tracing with OpenTelemetry or Langfuse so each run records: system prompt, tool schema size, history, retrieved content, tool outputs - each with its token count - plus tool calls, errors, retries, final output and wall time. Run it on 50 real tasks from your actual use (not synthetic). Save traces/ as JSONL. Also read the raw sources: the Meta-Harness paper and repo (record the benchmark, baseline and conditions behind the 'up to 6x' figure), Richmond Alake's memory material for the memory operations taxonomy, Anthropic's posts on building effective agents and context engineering, and the onyx-dot-app/onyx README and retrieval code. Write sources/NOTES.md with the claims each source makes and the evidence it gives.
+</code></pre></div>
+<p><strong>Expect:</strong> traces/ with 50+ runs and token accounting by section, sources/NOTES.md.</p>
+<p><strong>Audit before moving on:</strong> Check that token sections sum to the provider-reported input tokens within 5%; fix accounting if not. Confirm no secrets in traces (grep for key patterns).</p>
 <h4>Step 2 — Classify failures and build the held-out eval</h4>
-<p>Goal: Turn failures into a task suite before changing anything.</p>
-<p>Read every failed or degraded run in traces/. Classify each into one primary cause: context (needed info missing, buried, or crowded out; tool output too large or unreadable), memory (lost facts from an earlier session, stale or contradicting memory), harness (loop stuck, no retry on tool error, no verification, wrong stopping, unsafe action), or model (reasoning genuinely beyond capability with perfect inputs). Write FAILURES.md with counts and 2 trace ids per class. Then build eval/: 30 tasks, at least 5 per class, each with a deterministic grader (unit test, file diff, API state check, exact field match). Hold out 10 tasks you will not look at while building. Make it runnable with python -m eval.run --variant --seeds 3. Store the held-out 10 in a separate file.</p>
-<p>Expect: FAILURES.md with a 4-class table and eval/ with 30 graded tasks, 10 held out.</p>
-<p>Audit before moving on: Run each grader against a known-good and known-bad output; both must grade correctly. Any task whose grader cannot be made deterministic gets a rubric and a human spot-check flag.</p>
+<p><em>Goal:</em> Turn failures into a task suite before changing anything.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Read every failed or degraded run in traces/. Classify each into one primary cause: context (needed info missing, buried, or crowded out; tool output too large or unreadable), memory (lost facts from an earlier session, stale or contradicting memory), harness (loop stuck, no retry on tool error, no verification, wrong stopping, unsafe action), or model (reasoning genuinely beyond capability with perfect inputs). Write FAILURES.md with counts and 2 trace ids per class. Then build eval/: 30 tasks, at least 5 per class, each with a deterministic grader (unit test, file diff, API state check, exact field match). Hold out 10 tasks you will not look at while building. Make it runnable with `python -m eval.run --variant &lt;name&gt; --seeds 3`. Store the held-out 10 in a separate file.
+</code></pre></div>
+<p><strong>Expect:</strong> FAILURES.md with a 4-class table and eval/ with 30 graded tasks, 10 held out.</p>
+<p><strong>Audit before moving on:</strong> Run each grader against a known-good and known-bad output; both must grade correctly. Any task whose grader cannot be made deterministic gets a rubric and a human spot-check flag.</p>
 <h4>Step 3 — Baseline at fixed model</h4>
-<p>Goal: Measure the original agent honestly.</p>
-<p>Pin model id, temperature and max tokens in eval/config. Run the original agent on all 30 tasks at 3 seeds. Record per task: pass/fail, tokens in and out, cost, wall time, number of tool calls, and the failure class if it failed. Compute completion rate with a 95% interval (Wilson), median cost and latency. Write BASELINE.md. If completion is above 90% the suite is too easy - add harder tasks from traces; if below 10% check for a harness bug before proceeding. Break failures down by class from FAILURES.md so later layers can be judged on the classes they target: a context fix should move context-class tasks, a memory fix should move the cross-session tasks. Also record how many failures were silent, meaning the agent declared success but the grader failed it; that number is the harness's honesty baseline and the verification step in step 6 must reduce it. Save raw per-run records to eval/results/baseline/.</p>
-<p>Expect: BASELINE.md with completion, interval, cost and latency, and per-class failure counts.</p>
-<p>Audit before moving on: Re-run 5 random tasks and confirm the pass/fail matches within seed variance. Confirm model id in every result record.</p>
+<p><em>Goal:</em> Measure the original agent honestly.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Pin model id, temperature and max tokens in eval/config. Run the original agent on all 30 tasks at 3 seeds. Record per task: pass/fail, tokens in and out, cost, wall time, number of tool calls, and the failure class if it failed. Compute completion rate with a 95% interval (Wilson), median cost and latency. Write BASELINE.md. If completion is above 90% the suite is too easy - add harder tasks from traces; if below 10% check for a harness bug before proceeding. Break failures down by class from FAILURES.md so later layers can be judged on the classes they target: a context fix should move context-class tasks, a memory fix should move the cross-session tasks. Also record how many failures were silent, meaning the agent declared success but the grader failed it; that number is the harness's honesty baseline and the verification step in step 6 must reduce it. Save raw per-run records to eval/results/baseline/.
+</code></pre></div>
+<p><strong>Expect:</strong> BASELINE.md with completion, interval, cost and latency, and per-class failure counts.</p>
+<p><strong>Audit before moving on:</strong> Re-run 5 random tasks and confirm the pass/fail matches within seed variance. Confirm model id in every result record.</p>
 <h4>Step 4 — Rebuild the context layer</h4>
-<p>Goal: Give the model the right information in a budget, in a readable form.</p>
-<p>Write context/budget.py that allocates a per-turn token budget by section (system, tools, memory, retrieval, history, tool output) and trims by priority. Replace raw tool outputs with compactors designed for the model: structured summaries with the fields the next step needs, pagination handles for detail, error messages that say what to try next - the angus.sewell AI-first data layer idea. Replace 'dump everything' with retrieval: implement a simple baseline (SQLite FTS5 or pgvector) and, separately, deploy Onyx (docker compose from onyx-dot-app/onyx) with your docs connected; compare both on the eval's retrieval-dependent tasks and write RETRIEVAL.md (recall at 5, answer accuracy, latency, ops cost). Reduce the tool schema to tools actually used in traces. Run the eval as variant +context and log tokens by section.</p>
-<p>Expect: context/ code, RETRIEVAL.md comparing Onyx vs baseline, eval results for +context.</p>
-<p>Audit before moving on: For 5 tasks that passed before, confirm compaction did not drop needed facts (they still pass). Compare tokens per task to baseline; flag if cost rose without completion gain.</p>
+<p><em>Goal:</em> Give the model the right information in a budget, in a readable form.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write context/budget.py that allocates a per-turn token budget by section (system, tools, memory, retrieval, history, tool output) and trims by priority. Replace raw tool outputs with compactors designed for the model: structured summaries with the fields the next step needs, pagination handles for detail, error messages that say what to try next - the angus.sewell AI-first data layer idea. Replace 'dump everything' with retrieval: implement a simple baseline (SQLite FTS5 or pgvector) and, separately, deploy Onyx (docker compose from onyx-dot-app/onyx) with your docs connected; compare both on the eval's retrieval-dependent tasks and write RETRIEVAL.md (recall at 5, answer accuracy, latency, ops cost). Reduce the tool schema to tools actually used in traces. Run the eval as variant +context and log tokens by section.
+</code></pre></div>
+<p><strong>Expect:</strong> context/ code, RETRIEVAL.md comparing Onyx vs baseline, eval results for +context.</p>
+<p><strong>Audit before moving on:</strong> For 5 tasks that passed before, confirm compaction did not drop needed facts (they still pass). Compare tokens per task to baseline; flag if cost rose without completion gain.</p>
 <h4>Step 5 — Rebuild the memory layer</h4>
-<p>Goal: Persistent memory with explicit operations and a schema.</p>
-<p>Write memory/ with three stores: episodic (what happened, with timestamps and task ids), semantic (facts about the user, project and environment, each with source and last-verified date), procedural (skills or playbooks that worked, with success counts). Implement operations: store (after task end, extract candidate memories, deduplicate), retrieve (by query with recency and relevance scoring, max N items into the context budget), update (on contradiction, keep newer with source, keep a history), forget (expire unverified facts after a set age; delete on user request). Persist to SQLite or Obsidian markdown files if you follow chase.h.ai's pattern. Run the eval as +memory alone and then +context+memory, including the memory-class tasks that span two sessions. Cap memory items injected per turn and log which were retrieved.</p>
-<p>Expect: memory/ code with tests for each operation, eval results for both variants.</p>
-<p>Audit before moving on: Write a test where a fact changes between sessions; the agent must use the new fact. Write a test with a planted wrong memory; record whether the agent catches it. Fail the step if stale facts win.</p>
+<p><em>Goal:</em> Persistent memory with explicit operations and a schema.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write memory/ with three stores: episodic (what happened, with timestamps and task ids), semantic (facts about the user, project and environment, each with source and last-verified date), procedural (skills or playbooks that worked, with success counts). Implement operations: store (after task end, extract candidate memories, deduplicate), retrieve (by query with recency and relevance scoring, max N items into the context budget), update (on contradiction, keep newer with source, keep a history), forget (expire unverified facts after a set age; delete on user request). Persist to SQLite or Obsidian markdown files if you follow chase.h.ai's pattern. Run the eval as +memory alone and then +context+memory, including the memory-class tasks that span two sessions. Cap memory items injected per turn and log which were retrieved.
+</code></pre></div>
+<p><strong>Expect:</strong> memory/ code with tests for each operation, eval results for both variants.</p>
+<p><strong>Audit before moving on:</strong> Write a test where a fact changes between sessions; the agent must use the new fact. Write a test with a planted wrong memory; record whether the agent catches it. Fail the step if stale facts win.</p>
 <h4>Step 6 — Rebuild the harness layer</h4>
-<p>Goal: A loop that recovers, verifies and stays safe.</p>
-<p>Write harness/: a loop with a step cap and token cap per task; retry with backoff on transient tool errors and a different approach on repeated errors; a planning step for tasks over N tool calls; a verification step that runs the task's own checks (tests, a read-back of the changed state) before declaring done; confirmation gates on destructive tools; structured final output. Expose tools through MCP servers with typed inputs and compact outputs. Read the Meta-Harness repo and, if feasible, run its approach for a few iterations on your harness using your traces and eval (full code plus logs as input, not summaries); otherwise record why not. Run the eval as +harness and as all three layers, then compare silent-failure counts to baseline.</p>
-<p>Expect: harness/ code, MCP tool servers, eval results for +harness and all-three, a Meta-Harness feasibility note.</p>
-<p>Audit before moving on: Inject tool failures (timeouts, malformed responses) in 5 tasks and confirm recovery. Confirm destructive tools cannot run without confirmation by trying.</p>
+<p><em>Goal:</em> A loop that recovers, verifies and stays safe.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write harness/: a loop with a step cap and token cap per task; retry with backoff on transient tool errors and a different approach on repeated errors; a planning step for tasks over N tool calls; a verification step that runs the task's own checks (tests, a read-back of the changed state) before declaring done; confirmation gates on destructive tools; structured final output. Expose tools through MCP servers with typed inputs and compact outputs. Read the Meta-Harness repo and, if feasible, run its approach for a few iterations on your harness using your traces and eval (full code plus logs as input, not summaries); otherwise record why not. Run the eval as +harness and as all three layers, then compare silent-failure counts to baseline.
+</code></pre></div>
+<p><strong>Expect:</strong> harness/ code, MCP tool servers, eval results for +harness and all-three, a Meta-Harness feasibility note.</p>
+<p><strong>Audit before moving on:</strong> Inject tool failures (timeouts, malformed responses) in 5 tasks and confirm recovery. Confirm destructive tools cannot run without confirmation by trying.</p>
 <h4>Step 7 — Validate against oracles and write the gap report</h4>
-<p>Goal: Attribute the gain and list what is still broken.</p>
-<p>Run the 10 held-out tasks for the first time on baseline and all-three variants, 3 seeds each. Build ABLATION.md: original, +context, +memory, +harness, all three - completion with Wilson intervals, cost, latency, per failure class. If time allows, run a 20-task sample of a public benchmark (tau-bench or SWE-bench Verified) on original vs rebuilt for calibration. Write CLAIMS.md: the Meta-Harness 'up to 6x' figure - what benchmark, what baseline, and whether your result is consistent; whether a model swap (e.g. Kimi K2.5 as a separate arm) would have closed the same gap. Write GAPS.md: failure classes still open, tasks still failing with reasons, grader weaknesses, layers with no effect. Rank and fix the top two, then re-run only the affected tasks.</p>
-<p>Expect: ABLATION.md, CLAIMS.md, GAPS.md with two fixes.</p>
-<p>Audit before moving on: Held-out results must not have been seen during building; confirm by git log of eval runs. Unrun oracles are FAIL-UNRUN. Delete any claim of improvement whose interval overlaps baseline - call it not significant.</p>
-<h3>4 · Gap analysis and audit</h3>
+<p><em>Goal:</em> Attribute the gain and list what is still broken.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Run the 10 held-out tasks for the first time on baseline and all-three variants, 3 seeds each. Build ABLATION.md: original, +context, +memory, +harness, all three - completion with Wilson intervals, cost, latency, per failure class. If time allows, run a 20-task sample of a public benchmark (tau-bench or SWE-bench Verified) on original vs rebuilt for calibration. Write CLAIMS.md: the Meta-Harness 'up to 6x' figure - what benchmark, what baseline, and whether your result is consistent; whether a model swap (e.g. Kimi K2.5 as a separate arm) would have closed the same gap. Write GAPS.md: failure classes still open, tasks still failing with reasons, grader weaknesses, layers with no effect. Rank and fix the top two, then re-run only the affected tasks.
+</code></pre></div>
+<p><strong>Expect:</strong> ABLATION.md, CLAIMS.md, GAPS.md with two fixes.</p>
+<p><strong>Audit before moving on:</strong> Held-out results must not have been seen during building; confirm by git log of eval runs. Unrun oracles are FAIL-UNRUN. Delete any claim of improvement whose interval overlaps baseline - call it not significant.</p>
+<h3 id="4-gap-analysis-and-audit">4 · Gap analysis and audit</h3>
 <p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
-<p>You did not build this agent. Audit it. Read FAILURES.md, BASELINE.md, RETRIEVAL.md, ABLATION.md, CLAIMS.md, GAPS.md and the eval/ code. Enumerate every claim: failure class counts, completion rates, intervals, cost changes, retrieval metrics, the Meta-Harness verdict. Mark each VERIFIED (re-ran and matched within seed variance), UNVERIFIED (could not re-run; why), or FALSE (different result; show both). Re-run the held-out 10 tasks on the all-three variant at 3 seeds. Check the model id is identical across variants in result files. Test graders against a deliberately wrong output for 5 tasks. Plant a stale memory and see if it wins. Try a destructive tool without confirmation. Check traces and memory stores for secrets or personal data. List missing pieces (no eval in CI, no memory size cap, no cost alarm, retrieval index not refreshed, no human-in-loop path), rank by how likely each is to cause a production failure, fix the top three now, and report what you could not fix and why.</p>
-<p>Questions the agent must ask itself before it says done:</p>
-<p>What share of real failures were model-limited after I fixed inputs, and how did I decide?</p>
-<p>Did I keep model id, temperature and max tokens identical across every variant?</p>
-<p>Do my graders check the actual end state, or the agent's own claim of success?</p>
-<p>Did compacting tool outputs remove a field the model needed on any task?</p>
-<p>Does memory ever return a stale fact over a newer one, and is there a test for it?</p>
-<p>What is the per-task token budget, and which section blows it most often?</p>
-<p>Did Onyx beat a simple FTS baseline enough to justify running it?</p>
-<p>Did the verification step catch real errors, and what did it cost in tokens?</p>
-<p>Are the held-out tasks truly unseen during building?</p>
-<p>Is the Meta-Harness 6x figure from a comparable setting, or a different benchmark and baseline?</p>
-<p>Which destructive tools exist, and can any run without confirmation?</p>
-<p>Would the gains survive a different user's task distribution?</p>
-<h3>5 · What proves it right</h3>
-<p>Held-out 10-task suite with deterministic graders, 3 seeds, same model: rebuilt agent completion interval above the original's.</p>
-<p>Ablation table where each layer's contribution is measured separately on the same suite.</p>
-<p>Fault injection: 5 tasks with forced tool timeouts and malformed outputs recover without human help.</p>
-<p>Optional public calibration: 20-task sample of tau-bench or SWE-bench Verified, original vs rebuilt.</p>
-<p>A real user runs the rebuilt agent on their own work for a week and logs completed vs abandoned tasks against the prior week.</p>
-<h3>6 · Failure modes</h3>
-<p>Model swap masks harness bugs. Tell: gains vanish on a cheaper model. Fix: fixed-model ablations.</p>
-<p>Context stuffing. Tell: tokens per turn near the window limit, key facts buried mid-context. Fix: budgeter and retrieval with priorities.</p>
-<p>Stale memory wins. Tell: agent uses last month's config. Fix: last-verified dates, update on contradiction, expiry.</p>
-<p>Graders that trust the transcript. Tell: pass rate high, user still unhappy. Fix: end-state checks.</p>
-<p>Over-compacted tool output. Tell: agent re-calls the same tool repeatedly. Fix: pagination handles and fields needed by the next step.</p>
-<p>Retrieval stack bigger than the problem. Tell: Onyx deployed, recall equal to FTS. Fix: keep the simple baseline when metrics tie.</p>
-<p>Benchmark claims transplanted. Tell: quoting '6x' without the benchmark. Fix: CLAIMS.md with the paper's setting.</p>
-<h3>7 · Agent direction (unattended runs)</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">You did not build this agent. Audit it. Read FAILURES.md, BASELINE.md, RETRIEVAL.md, ABLATION.md, CLAIMS.md, GAPS.md and the eval/ code. Enumerate every claim: failure class counts, completion rates, intervals, cost changes, retrieval metrics, the Meta-Harness verdict. Mark each VERIFIED (re-ran and matched within seed variance), UNVERIFIED (could not re-run; why), or FALSE (different result; show both). Re-run the held-out 10 tasks on the all-three variant at 3 seeds. Check the model id is identical across variants in result files. Test graders against a deliberately wrong output for 5 tasks. Plant a stale memory and see if it wins. Try a destructive tool without confirmation. Check traces and memory stores for secrets or personal data. List missing pieces (no eval in CI, no memory size cap, no cost alarm, retrieval index not refreshed, no human-in-loop path), rank by how likely each is to cause a production failure, fix the top three now, and report what you could not fix and why.
+</code></pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p>
+<ul>
+<li>What share of real failures were model-limited after I fixed inputs, and how did I decide?</li>
+<li>Did I keep model id, temperature and max tokens identical across every variant?</li>
+<li>Do my graders check the actual end state, or the agent's own claim of success?</li>
+<li>Did compacting tool outputs remove a field the model needed on any task?</li>
+<li>Does memory ever return a stale fact over a newer one, and is there a test for it?</li>
+<li>What is the per-task token budget, and which section blows it most often?</li>
+<li>Did Onyx beat a simple FTS baseline enough to justify running it?</li>
+<li>Did the verification step catch real errors, and what did it cost in tokens?</li>
+<li>Are the held-out tasks truly unseen during building?</li>
+<li>Is the Meta-Harness 6x figure from a comparable setting, or a different benchmark and baseline?</li>
+<li>Which destructive tools exist, and can any run without confirmation?</li>
+<li>Would the gains survive a different user's task distribution?</li>
+</ul>
+<h3 id="5-what-proves-it-right">5 · What proves it right</h3>
+<ul>
+<li>Held-out 10-task suite with deterministic graders, 3 seeds, same model: rebuilt agent completion interval above the original's.</li>
+<li>Ablation table where each layer's contribution is measured separately on the same suite.</li>
+<li>Fault injection: 5 tasks with forced tool timeouts and malformed outputs recover without human help.</li>
+<li>Optional public calibration: 20-task sample of tau-bench or SWE-bench Verified, original vs rebuilt.</li>
+<li>A real user runs the rebuilt agent on their own work for a week and logs completed vs abandoned tasks against the prior week.</li>
+</ul>
+<h3 id="6-failure-modes">6 · Failure modes</h3>
+<ul>
+<li>Model swap masks harness bugs. Tell: gains vanish on a cheaper model. Fix: fixed-model ablations.</li>
+<li>Context stuffing. Tell: tokens per turn near the window limit, key facts buried mid-context. Fix: budgeter and retrieval with priorities.</li>
+<li>Stale memory wins. Tell: agent uses last month's config. Fix: last-verified dates, update on contradiction, expiry.</li>
+<li>Graders that trust the transcript. Tell: pass rate high, user still unhappy. Fix: end-state checks.</li>
+<li>Over-compacted tool output. Tell: agent re-calls the same tool repeatedly. Fix: pagination handles and fields needed by the next step.</li>
+<li>Retrieval stack bigger than the problem. Tell: Onyx deployed, recall equal to FTS. Fix: keep the simple baseline when metrics tie.</li>
+<li>Benchmark claims transplanted. Tell: quoting '6x' without the benchmark. Fix: CLAIMS.md with the paper's setting.</li>
+</ul>
+<h3 id="7-agent-direction-unattended-runs">7 · Agent direction (unattended runs)</h3>
 <p>Start by instrumenting, not rewriting: traces first, taxonomy second, eval third. Cache traces and eval results by variant and seed in eval/results/. Spawn sub-agents per layer rebuild (context, memory, harness) only after the eval exists; they touch separate directories. Keep the held-out 10 tasks in a file sub-agents cannot read until step 7. Run the eval yourself and review sub-agent code for grader tampering. Stop and ask before: sending any production data to a third-party retriever, enabling destructive tools, changing the pinned model, or deploying Onyx on a shared server. Never log secrets. If a sub-agent's layer fails its eval twice, take that layer over directly. Return ABLATION.md, FAILURES.md, CLAIMS.md and GAPS.md plus a one-paragraph verdict on which layer moved completion most.</p>
-<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
-<h2>Related deep dives</h2>
-<p>Browse more deep dives at DejaViewed — 846 entries across the full catalog.</p>
-<p>Generated 2026-10-22 · curated by @6ab3 for DejaViewed</p>
-</div><!--pagefind:end-->
+<p><em>Prompt system updated 2026-10-22 · <a href="/prompts">all prompt systems</a> · <a href="/api/prompts.json">JSON</a></em></p>
+<h2 id="related-deep-dives">Related deep dives</h2>
+<p>Browse more deep dives at <a href="/catalog">DejaViewed</a> — 846 entries across the full catalog.</p>
+<hr />
+<p><em>Generated 2026-10-22 · curated by <a href="https://instagram.com/6ab3" target="_blank" rel="noopener">@6ab3</a> for DejaViewed</em></p>
+<!-- body:end --></div>
+  <nav class="guide-entries" aria-label="Entries in this guide" style="margin:40px 0 0;padding-top:18px;border-top:1px solid var(--border);font-size:14px"><h2 style="font-size:16px;margin:0 0 8px;border:none">Entries in this guide</h2><ul style="margin:0;padding-left:20px"><li><a href="/e/DXStFLkkphz">Better models won’t fix your agent</a></li><li><a href="/e/DXx6KhJshmv">Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</a></li><li><a href="/e/DXYSxNLpIAY">Agentic OS — Claude Code as engine with Obsidian memory and skill packs</a></li><li><a href="/e/DWtgbzLDgwm">Onyx — open-source self-hosted agentic RAG platform</a></li><li><a href="/e/DXKAbR8ETEo">AI-first software design — build data layers agents can actually read</a></li><li><a href="/e/MoonshotAI_Kimi-K2_5">Kimi K2.5 — Moonshot&#x27;s open multimodal agentic model</a></li></ul></nav>
+</article>
+<footer class="site"><div class="wrap"><a href="/">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
 <script id="md" type="text/markdown"># Why Your Agent Sucks: Architecture Patterns That Actually Work
 
 **Insight class:** Emergent Capability · **Difficulty:** Hard · **Quality:** 5/5
@@ -245,13 +301,13 @@ Better models won't fix broken agent architecture. The gap between demo agents a
 
 ## Why it matters
 
-Everyone's building agents. Almost nobody's building agents that work past the demo. The 103 new entries from this session surfaced a pattern: the posts that actually teach agent building focus on architecture — context management, memory hierarchies, harness engineering — not on which model to use. The context vs memory vs harness framework is the clearest mental model we've seen for why most agents fail: they dump everything into context, have no persistent memory, and lack structural guardrails. This dive connects the theory (architecture patterns) with the infrastructure (Onyx, MCP, Kimi) needed to implement it.
+Everyone's building agents. Almost nobody's building agents that work past the demo. The saved posts on agent building show a pattern: the posts that actually teach agent building focus on architecture — context management, memory hierarchies, harness engineering — not on which model to use. The context vs memory vs harness framework is the clearest mental model we've seen for why most agents fail: they dump everything into context, have no persistent memory, and lack structural guardrails. This dive connects the theory (architecture patterns) with the infrastructure (Onyx, MCP, Kimi) needed to implement it.
 
 ---
 
 ## The evidence — connected entries
 
-### [Better models won’t fix your agent](../e/DXStFLkkphz.html)
+### [Better models won’t fix your agent](/e/DXStFLkkphz)
 **Creator:** [@howard.mov](https://instagram.com/howard.mov) · **Tier:** S
 
 > The thesis: model upgrades mask architecture debt. Fix the scaffold, not the brain.
@@ -259,7 +315,7 @@ Everyone's building agents. Almost nobody's building agents that work past the d
 Better models won’t fix your agent. — @howard.mov; demonstrates AI agents.
 
 [View original post](https://www.instagram.com/p/DXStFLkkphz/)
-### [Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...](../e/DXx6KhJshmv.html)
+### [Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...](/e/DXx6KhJshmv)
 **Creator:** [@lindavivah](https://instagram.com/lindavivah) · **Tier:** S
 
 > Three disciplines — context, memory, harness — that separate toy agents from real ones
@@ -267,7 +323,7 @@ Better models won’t fix your agent. — @howard.mov; demonstrates AI agents.
 Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Alake ⚡️ — @lindavivah; demonstrates AI agents.
 
 [View original post](https://www.instagram.com/p/DXx6KhJshmv/)
-### [Agentic OS — Claude Code as engine with Obsidian memory and skill packs](../e/DXYSxNLpIAY.html)
+### [Agentic OS — Claude Code as engine with Obsidian memory and skill packs](/e/DXYSxNLpIAY)
 **Creator:** [@chase.h.ai](https://instagram.com/chase.h.ai) · **Tier:** B
 **Tools:** Claude Code, Google Workspace, Obsidian
 
@@ -276,7 +332,7 @@ Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Ala
 Blueprint for a Claude Code-powered 'agentic OS': Obsidian as memory, Google Workspace connected, skill packs for research and content, plus a dashboard command center you can hand to a team or sell to agency clients.
 
 [View original post](https://www.instagram.com/p/DXYSxNLpIAY/)
-### [Onyx — open-source self-hosted agentic RAG platform](../e/DWtgbzLDgwm.html)
+### [Onyx — open-source self-hosted agentic RAG platform](/e/DWtgbzLDgwm)
 **Creator:** [@marc.kaz](https://instagram.com/marc.kaz) · **Tier:** A
 **Tools:** Onyx, RAG, onyx-dot-app/onyx
 
@@ -285,7 +341,7 @@ Blueprint for a Claude Code-powered 'agentic OS': Obsidian as memory, Google Wor
 @marc.kaz flags onyx-dot-app/onyx hitting #1 GitHub trending: self-hostable AI platform with agentic RAG, deep research mode, custom agents, web+code execution, voice/image gen, 50+ connectors. Strong self-hosted AI stack option.
 
 [View original post](https://www.instagram.com/p/DWtgbzLDgwm/)
-### [AI-first software design — build data layers agents can actually read](../e/DXKAbR8ETEo.html)
+### [AI-first software design — build data layers agents can actually read](/e/DXKAbR8ETEo)
 **Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** A
 **Tools:** Claude
 
@@ -294,7 +350,7 @@ Blueprint for a Claude Code-powered 'agentic OS': Obsidian as memory, Google Wor
 Dashboards and navbars are built for human eyes; agents only see tool-call text, which is why giving Claude raw database access goes wrong. The fix shown: store raw data plus workflow-generated summaries in separate tables and expose tools that return summary-level context first, pulling full transcripts only when needed.
 
 [View original post](https://www.instagram.com/p/DXKAbR8ETEo/)
-### [Kimi K2.5 — Moonshot's open multimodal agentic model](../e/MoonshotAI_Kimi-K2_5.html)
+### [Kimi K2.5 — Moonshot's open multimodal agentic model](/e/MoonshotAI_Kimi-K2_5)
 **Creator:** [@6ab3](https://instagram.com/6ab3) · **Tier:** A
 **Tools:** Kimi
 
@@ -523,24 +579,18 @@ You did not build this agent. Audit it. Read FAILURES.md, BASELINE.md, RETRIEVAL
 
 Start by instrumenting, not rewriting: traces first, taxonomy second, eval third. Cache traces and eval results by variant and seed in eval/results/. Spawn sub-agents per layer rebuild (context, memory, harness) only after the eval exists; they touch separate directories. Keep the held-out 10 tasks in a file sub-agents cannot read until step 7. Run the eval yourself and review sub-agent code for grader tampering. Stop and ask before: sending any production data to a third-party retriever, enabling destructive tools, changing the pinned model, or deploying Onyx on a shared server. Never log secrets. If a sub-agent's layer fails its eval twice, take that layer over directly. Return ABLATION.md, FAILURES.md, CLAIMS.md and GAPS.md plus a one-paragraph verdict on which layer moved completion most.
 
-*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+*Prompt system updated 2026-10-22 · [all prompt systems](/prompts) · [JSON](/api/prompts.json)*
 
 
 ## Related deep dives
 
-Browse more deep dives at [DejaViewed](../catalog.html) — 846 entries across the full catalog.
+Browse more deep dives at [DejaViewed](/catalog) — 846 entries across the full catalog.
 
 ---
 
 *Generated 2026-10-22 · curated by [@6ab3](https://instagram.com/6ab3) for DejaViewed*
 </script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script>
-const raw=document.getElementById('md').textContent;
-const html=DOMPurify.sanitize(marked.parse(raw));
-document.getElementById('guide-body').innerHTML=html;
-</script><style>
+<style>
 .ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
 .ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
 .ps h3{font-size:16px;font-weight:800;color:#fff;margin:26px 0 8px}
@@ -556,11 +606,8 @@ document.getElementById('guide-body').innerHTML=html;
 .ps-copy:hover{color:#fff;border-color:var(--border-hi)}
 .ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
 </style><script>
-document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
-document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
-p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
-</script><script>
 document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
 const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
-</script><!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
+</script><!-- sitenav:start --><nav class="sitenav" aria-label="Site" data-pagefind-ignore><style>.sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}.sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}.sitenav a:hover{color:var(--accent,#a78bfa)}</style><a href="/">Home</a><a href="/start-here">Start here</a><a href="/catalog">Catalog</a><a href="/guides/">Guides</a><a href="/prompts">Prompts</a><a href="/e/">All entries</a><a href="/collections/">Collections</a><a href="/search">Search</a><a href="/graph">Graph</a><a href="/graph-cosmos">Cosmos</a><a href="/board">Board</a><a href="/links/">Links</a><a href="/method">How it works</a><a href="/feed.xml">RSS</a><a href="/llms.txt">llms.txt</a></nav><!-- sitenav:end -->
+<!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
 </body></html>

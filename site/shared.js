@@ -54,24 +54,39 @@
   };
 
   // ── Nav builder — every page uses this for consistency ──
+  // Over http(s) every link is a root-absolute clean URL (/catalog, /guides/) — what
+  // Cloudflare Pages serves without a 308 hop. Clean URLs can't resolve on file://, so
+  // local file previews keep relative .html links (or run scripts/serve.py instead).
+  const IS_FILE = location.protocol === 'file:';
   const BASE = (function(){
+    if (!IS_FILE) return '/';
     const p = location.pathname;
     const dir = p.substring(0, p.lastIndexOf('/') + 1);
-    if (dir.endsWith('/guides/') || dir.endsWith('/e/')) return '../';
+    if (/\/(guides|e|deeper|collections|links)\/$/.test(dir)) return '../';
     return '';
   })();
+  DV.BASE = BASE;
+  // page URL: DV.url('catalog') -> '/catalog' (http) | 'catalog.html' (file://);
+  // DV.url('guides/') -> '/guides/' | 'guides/index.html'
+  DV.url = function url(page){
+    if (!IS_FILE) return BASE + page;
+    if (page === '') return BASE + 'index.html';
+    return BASE + (page.endsWith('/') ? page + 'index.html' : page + '.html');
+  };
 
   DV.nav = function nav(active){
     const items = [
-      { id:'catalog',  href:BASE+'catalog.html',      label:'Catalog' },
-      { id:'start',    href:BASE+'start-here.html',   label:'Start here' },
-      { id:'guides',   href:BASE+'guides/',           label:'Guides'  },
-      { id:'prompts',  href:BASE+'prompts.html',      label:'Prompts' },
-      { id:'search',   href:BASE+'search.html',       label:'Search'  },
-      { id:'graph',    href:BASE+'graph.html',        label:'Graph · Force'  },
-      { id:'cosmos',   href:BASE+'graph-cosmos.html', label:'Graph · Cosmos' },
-      { id:'board',    href:BASE+'board.html',        label:'Board'   },
-      { id:'about',    href:BASE+'about/',            label:'About'   },
+      { id:'catalog',  href:DV.url('catalog'),      label:'Catalog' },
+      { id:'start',    href:DV.url('start-here'),   label:'Start here' },
+      { id:'guides',   href:DV.url('guides/'),      label:'Guides'  },
+      { id:'prompts',  href:DV.url('prompts'),      label:'Prompts' },
+      { id:'search',   href:DV.url('search'),       label:'Search'  },
+      { id:'graph',    href:DV.url('graph'),        label:'Graph · Force'  },
+      { id:'cosmos',   href:DV.url('graph-cosmos'), label:'Graph · Cosmos' },
+      { id:'board',    href:DV.url('board'),        label:'Board'   },
+      { id:'about',    href:DV.url('about/'),       label:'About'   },
+      // Entries (/e/) and Collections (/collections/) live in the static footer nav
+      // (scripts/normalize_links.py) — this bar is already 9 items wide.
       // Admin is intentionally not in the public nav — still reachable at admin.html
     ];
     return DV.el('div', { class:'nav' }, items.map(it =>
@@ -80,16 +95,32 @@
   };
 
   // ── Header builder — mount with DV.mountHeader(document.body, 'catalog') ──
-  //   The wordmark links to index.html (the showcase landing); the catalog
-  //   lives at catalog.html. There is no separate Home nav item.
+  //   The wordmark links to / (the showcase landing); the catalog
+  //   lives at /catalog. There is no separate Home nav item.
+  // The wordmark is a <div class="brand">, not an <h1>: every page owns its single <h1>, and a
+  // JS-injected second one confuses crawlers that render scripts. shared.css styles
+  // `header.site h1`, so the same look is injected once here for `.brand`.
+  function brandStyle(){
+    if (document.getElementById('dv-brand-css')) return;
+    const st = document.createElement('style');
+    st.id = 'dv-brand-css';
+    st.textContent = "header.site .brand{margin:0;padding:0;font-weight:900;font-size:22px;line-height:1;"
+      + "letter-spacing:-0.03em;background:linear-gradient(135deg,#fff 0%,var(--accent) 45%,var(--accent-2) 100%);"
+      + "-webkit-background-clip:text;background-clip:text;color:transparent;font-family:inherit}"
+      + "header.site .brand a{color:inherit;text-decoration:none}"
+      + "@media(max-width:640px){header.site .brand{font-size:18px}}";
+    document.head.appendChild(st);
+  }
+
   DV.mountHeader = function mountHeader(root, activeId){
+    brandStyle();
     const nav = DV.nav(activeId);
     const burger = DV.el('button', { class:'hamburger', 'aria-label':'Menu', onclick: function(){
       nav.classList.toggle('open');
       this.textContent = nav.classList.contains('open') ? '✕' : '☰';
     }}, '☰');
     const h = DV.el('header', { class:'site' }, [
-      DV.el('h1', null, [DV.el('a', { href:BASE+'index.html' }, 'DejaViewed')]),
+      DV.el('div', { class:'brand' }, [DV.el('a', { href:DV.url('') }, 'DejaViewed')]),
       burger,
       nav,
     ]);
@@ -155,8 +186,8 @@
   };
 
   // ── Guide URL from CMS slug ──
-  DV.guideUrl = function guideUrl(slug){ return slug ? BASE+'guides/'+encodeURIComponent(slug)+'.html' : null; };
+  DV.guideUrl = function guideUrl(slug){ return slug ? DV.url('guides/'+encodeURIComponent(slug)) : null; };
 
   // ── Entry internal URL — anchors into the catalog home page ──
-  DV.entryUrl = function entryUrl(id){ return BASE+'catalog.html#post-'+encodeURIComponent(id); };
+  DV.entryUrl = function entryUrl(id){ return DV.url('catalog')+'#post-'+encodeURIComponent(id); };
 })();

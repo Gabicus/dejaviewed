@@ -11,15 +11,53 @@ Gates (hard):
   - S-tier share < 15% per collection (collections with >= 10 entries)
   - every IG video entry has transcript OR a logged reason in user_notes
   - every IG entry has a thumbnail on disk
+  - 0 internal agent/process notes in published pages (site/guides, site/deeper, site/e, site/*.html):
+    DENYLIST below; private-machine paths (~/projects/..., agents:repos/) are a warning only
 """
 import argparse
 import os
+import re
 import sys
 from pathlib import Path
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# Agent/process notes that must never ship (SEO-15). Patterns are narrowed so legitimate prose
+# ("deploy as an AI agent", a prompt saying "what I could not measure") does not trip them.
+DENYLIST = [
+    r"\b(?:new entries|entries|blocked|declined|cloned?)\b[^.<\n]{0,40}\b(?:in|from|during) this session\b",
+    r"sandbox(?:ed)? (?:blocked|environment declined)",
+    r"\bclone pending\b",
+    r"\bRepo path:",
+    r"\bNot cloned locally\b",
+    r"\bas an AI (?:language model|assistant)\b",
+    r"\bI could not (?:access|clone|fetch|browse|verify|find|load|run)\b",
+    r"\bTODO\b",
+    r"\blorem ipsum\b",
+]
+WARNLIST = [r"~/projects/(?:ai-catalogs|ai3-resources)/", r"\bagents:repos/"]
+
+
+def lint_agent_notes() -> tuple[dict, dict]:
+    """{pattern: [page, ...]} for DENYLIST hits (fail) and WARNLIST hits (warn)."""
+    site = ROOT / "site"
+    pages = [p for d in ("guides", "deeper", "e") for p in sorted((site / d).glob("*.html"))]
+    pages += sorted(site.glob("*.html"))
+    deny = [(pat, re.compile(pat, re.I if pat not in (r"\bTODO\b",) else 0)) for pat in DENYLIST]
+    warn = [(pat, re.compile(pat)) for pat in WARNLIST]
+    hits, warns = {}, {}
+    for p in pages:
+        text = p.read_text(encoding="utf-8", errors="replace")
+        rel = str(p.relative_to(site))
+        for pat, rx in deny:
+            if rx.search(text):
+                hits.setdefault(pat, []).append(rel)
+        for pat, rx in warn:
+            if rx.search(text):
+                warns.setdefault(pat, []).append(rel)
+    return hits, warns
 
 
 def main():
@@ -59,6 +97,12 @@ def main():
     no_th = df[ig & ~gone & ~df.post_id.apply(lambda x: os.path.exists(ROOT / "site" / "thumb" / f"{x}.jpg"))]
     if len(no_th):
         fails.append(f"IG entries without thumbnail: {len(no_th)} e.g. {no_th.post_id.head(8).tolist()}")
+
+    note_hits, note_warns = lint_agent_notes()
+    for pat, pages in note_hits.items():
+        fails.append(f"agent note /{pat}/ in {len(pages)} page(s): {pages[:8]}")
+    for pat, pages in note_warns.items():
+        warns.append(f"private path /{pat}/ in {len(pages)} page(s): {pages[:8]}")
 
     # coverage table
     sub = df[df.last_scraped_at.fillna("") >= a.since] if a.since else df

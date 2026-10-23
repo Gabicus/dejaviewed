@@ -36,6 +36,62 @@ def _thumb_rel(e: dict) -> str:
     rel = f"thumb/{pid.replace('/', '_')}.jpg"
     return rel if (SITE / rel).is_file() else ""
 
+# Sitemap = canonical, indexable HTML only (SEO-08). feed.xml, llms*.txt and api/*.json stay
+# discoverable through robots.txt and llms.txt; graph/board/search/about/links are left out.
+SITEMAP_TOP = [("index.html", "1.0", "weekly"), ("start-here.html", "0.9", "monthly"),
+               ("method.html", "0.8", "monthly"), ("catalog.html", "0.9", "weekly"),
+               ("prompts.html", "0.8", "weekly")]
+SITEMAP_DIRS = [("collections", "0.7", "weekly"), ("guides", "0.9", "weekly"), ("deeper", "0.8", "monthly")]
+
+
+def sitemap_rels() -> list[tuple[str, str, str]]:
+    rels = [(r, p, f) for r, p, f in SITEMAP_TOP if (SITE / r).is_file()]
+    for sub, pri, freq in SITEMAP_DIRS:
+        d = SITE / sub
+        if not d.is_dir():
+            continue
+        if (d / "index.html").is_file():
+            rels.append((f"{sub}/index.html", pri, freq))
+        for page in sorted(d.glob("*.html")):
+            if page.name == "index.html" or page.name.startswith("_") or page.stem == "404":
+                continue
+            rels.append((f"{sub}/{page.name}", pri, freq))
+    if (SITE / "e" / "index.html").is_file():
+        rels.append(("e/index.html", "0.7", "weekly"))
+    cat = json.loads((SITE / "catalog.json").read_text(encoding="utf-8"))
+    for e in cat.get("entries", []):
+        eid = e.get("id", "")
+        # entry pages are written under render_entries.safe_slug(id) — ids with '/' or '.'
+        # (e.g. "MoonshotAI/Kimi-K2.5") live at e/MoonshotAI_Kimi-K2_5.html
+        rel = f"e/{_safe_slug(eid)}.html" if eid else ""
+        if rel and (SITE / rel).is_file():
+            rels.append((rel, "0.5", "monthly"))
+    return rels
+
+
+def sitemap_xml(fresh=None) -> str:
+    """<lastmod> = last real content change (build_seo.Freshness, data/seo/content_hashes.json).
+    Saves the freshness store only when it created it (build_seo saves its own)."""
+    from xml.sax.saxutils import escape as _esc
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from build_seo import Freshness, canonical_url
+    own = fresh is None
+    fresh = fresh or Freshness()
+    out = ['<?xml version="1.0" encoding="UTF-8"?>',
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for rel, pri, freq in sitemap_rels():
+        url = canonical_url(rel)
+        if url not in fresh.seen:
+            fresh.observe(rel, (SITE / rel).read_text(encoding="utf-8", errors="replace"))
+        lm = fresh.dates(rel)[1].isoformat()
+        out.append(f"  <url><loc>{_esc(url)}</loc><lastmod>{lm}</lastmod>"
+                   f"<changefreq>{freq}</changefreq><priority>{pri}</priority></url>")
+    out.append("</urlset>")
+    if own:
+        fresh.save()
+    return "\n".join(out) + "\n"
+
+
 def main():
     data = json.loads((SITE / "catalog.json").read_text(encoding="utf-8"))
     entries = data["entries"]
@@ -121,68 +177,45 @@ def main():
         except (json.JSONDecodeError, KeyError) as e:
             print(f"  Warning: deep_dives.json parse failed: {e}")
 
-    # Sitemap — clean URLs (Cloudflare Pages serves /x.html at /x; must match each page's
-    # <link rel=canonical> from build_seo.py), <lastmod> = last git commit touching the file
-    # (falls back to file mtime for uncommitted files; generators rewrite pages every rebuild,
-    # so raw mtime would stamp everything "today"), plus <changefreq>.
-    from xml.sax.saxutils import escape as _esc
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from build_seo import canonical_url, file_dates
+    # Render per-entry detail pages first, so the sitemap sees every page on disk
+    render_script = ROOT / "scripts" / "render_entries.py"
+    if render_script.exists():
+        r = subprocess.run(
+            [sys.executable, str(render_script)],
+            capture_output=True, text=True
+        )
+        if r.returncode != 0:
+            print(f"[build_api] WARNING: render_entries.py failed:\n{r.stderr}", file=sys.stderr)
+        elif r.stdout.strip():
+            print(r.stdout.strip())
 
-    def _url(rel: str, pri: str, freq: str) -> str:
-        p = SITE / rel
-        lm = f"<lastmod>{file_dates(p)[1].isoformat()}</lastmod>" if p.exists() else ""
-        return (f"  <url><loc>{_esc(canonical_url(rel))}</loc>{lm}"
-                f"<changefreq>{freq}</changefreq><priority>{pri}</priority></url>")
+    sitemap = sitemap_xml()
+    (SITE / "sitemap.xml").write_text(sitemap, encoding="utf-8")
 
-    sitemap = ['<?xml version="1.0" encoding="UTF-8"?>',
-               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-               _url("index.html", "1.0", "weekly")]
-    for rel, pri in (("graph.html", "0.8"), ("graph-cosmos.html", "0.8"), ("board.html", "0.7")):
-        sitemap.append(_url(rel, pri, "weekly"))
-    # admin.html is NOT listed: robots.txt disallows it (a listed-but-blocked URL is a crawl error)
-    for name, pri in (("catalog.json", "0.9"), ("creators.json", "0.7"), ("tools.json", "0.7"),
-                      ("collections.json", "0.7"), ("deep_dives.json", "0.8"), ("prompts.json", "0.8")):
-        sitemap.append(_url(f"api/{name}", pri, "weekly"))
-    # every real top-level page, guide and deeper-dive page that exists on disk
-    for page in sorted(SITE.glob("*.html")):
-        if page.name in ("index.html", "graph.html", "graph-cosmos.html", "board.html", "admin.html", "rate.html",
-                         "404.html"):  # 404 is the Cloudflare Pages not-found page (noindex)
-            continue
-        pri = "0.9" if page.name == "start-here.html" else "0.7"
-        sitemap.append(_url(page.name, pri, "weekly"))
-    for sub, pri, freq in (("guides", "0.9", "weekly"), ("deeper", "0.8", "weekly"),
-                           ("about", "0.5", "monthly"), ("links", "0.4", "monthly")):
-        d = SITE / sub
-        if not d.is_dir():
-            continue
-        if (d / "index.html").exists():
-            sitemap.append(_url(f"{sub}/index.html", pri, freq))
-        for page in sorted(d.glob("*.html")):
-            # skip the index (listed above) and framework error pages (about/_not-found, 404)
-            if page.name == "index.html" or page.name.startswith("_") or page.stem == "404":
-                continue
-            sitemap.append(_url(f"{sub}/{page.name}", pri, freq))
-    sitemap.append(_url("llms.txt", "0.6", "weekly"))
-    sitemap.append(_url("llms-full.txt", "0.6", "weekly"))
-    sitemap.append(_url("feed.xml", "0.5", "daily"))
-    for e in entries:
-        eid = e.get("id", "")
-        if eid:
-            # entry pages are written under render_entries.safe_slug(id) — ids with '/' or '.'
-            # (e.g. "MoonshotAI/Kimi-K2.5") live at e/MoonshotAI_Kimi-K2_5.html
-            sitemap.append(_url(f"e/{_safe_slug(eid)}.html", "0.5", "monthly"))
-    sitemap.append('</urlset>')
-    (SITE / "sitemap.xml").write_text("\n".join(sitemap), encoding="utf-8")
-
-    # llms-full.txt — complete catalog dump for LLM agents
+    # llms-full.txt — complete catalog dump for LLM agents (clean URLs; guides first)
+    from build_seo import BASE, guide_index
     n_colls = len({e.get("collection", "") for e in entries} - {""})
-    lines = [f"# DejaViewed — Full Catalog ({len(entries)} entries, {n_colls} collections)",
-             f"Updated: {datetime.now().strftime('%Y-%m-%d')}", ""]
+    guides = guide_index()
+    lines = [f"# DejaViewed — Full Catalog ({len(entries)} entries, {n_colls} collections, "
+             f"{len(guides['guides'])} guides, {len(guides['deeper'])} deeper dives)",
+             f"Updated: {datetime.now().strftime('%Y-%m-%d')}",
+             f"Site map for agents: {BASE}/llms.txt · How it is built: {BASE}/method · JSON: {BASE}/api/catalog.json",
+             "Usage: captions and transcripts belong to their creators (each entry links its source post); "
+             f"titles, summaries, tiers and tags are DejaViewed's own curation. Terms: {BASE}/method#terms", ""]
+    lines += ["# Guides", ""]
+    for g in guides["guides"]:
+        lines.append(f"## {g['title']}")
+        lines.append(f"- URL: {g['url']}")
+        if g["answer"]:
+            lines.append(f"- In short: {g['answer']}")
+        lines.append("")
+    lines += ["# Entries", ""]
     for e in entries:
         lines.append(f"## {e.get('title', 'Untitled')}")
         lines.append(f"- Creator: @{e.get('creator', '')} | Type: {e.get('type', '')} | Tier: {e.get('tier', '')} | Collection: {e.get('collection', '')}")
-        if e.get("url"): lines.append(f"- URL: {e['url']}")
+        if e.get("id") and (SITE / "e" / f"{_safe_slug(e['id'])}.html").is_file():
+            lines.append(f"- Page: {BASE}/e/{_safe_slug(e['id'])}")
+        if e.get("url"): lines.append(f"- Source: {e['url']}")
         parts = []
         if e.get("tools"): parts.append(f"Tools: {', '.join(e['tools'])}")
         if e.get("techniques"): parts.append(f"Techniques: {', '.join(e['techniques'])}")
@@ -192,6 +225,7 @@ def main():
         if e.get("summary"): lines.append(f"- {e['summary']}")
         lines.append("")
     # Append deep dives to llms-full.txt
+    dd_data = {}
     if dd_path.exists():
         try:
             dd_data = json.loads(dd_path.read_text(encoding="utf-8"))
@@ -207,7 +241,12 @@ def main():
             rating = d.get("quality_rating", "")
             difficulty = d.get("execution_difficulty", "")
             entry_ids = d.get("entry_ids", [])
+            slug = str(d.get("id", "")).replace("dd-insight-", "", 1)
             lines.append(f"## {title}")
+            if slug and (SITE / "guides" / f"{slug}.html").is_file():
+                lines.append(f"- Guide: {BASE}/guides/{slug}")
+            if slug and (SITE / "deeper" / f"deeper-insight-{slug}.html").is_file():
+                lines.append(f"- Deeper dive: {BASE}/deeper/deeper-insight-{slug}")
             if cls: lines.append(f"- Class: {cls}")
             if rating: lines.append(f"- Quality: {rating}/5")
             if difficulty: lines.append(f"- Difficulty: {difficulty}")
@@ -219,23 +258,11 @@ def main():
 
     (SITE / "llms-full.txt").write_text("\n".join(lines), encoding="utf-8")
 
-    dd_count = len(dd_data.get("deep_dives", [])) if dd_path.exists() else 0
+    dd_count = len(dd_data.get("deep_dives", []))
     print(f"API: {len(entries)} entries, {len(creators_out)} creators, "
           f"{sum(len(v) for v in tools_out.values())} tool/tech/domain entries, {dd_count} deep dives")
-    print(f"Sitemap: {len(sitemap) - 3} URLs")
+    print(f"Sitemap: {sitemap.count('<url>')} URLs (indexable HTML only)")
     print(f"llms-full.txt: {len(lines)} lines")
-
-    # Render per-entry detail pages
-    render_script = ROOT / "scripts" / "render_entries.py"
-    if render_script.exists():
-        r = subprocess.run(
-            [sys.executable, str(render_script)],
-            capture_output=True, text=True
-        )
-        if r.returncode != 0:
-            print(f"[build_api] WARNING: render_entries.py failed:\n{r.stderr}", file=sys.stderr)
-        elif r.stdout.strip():
-            print(r.stdout.strip())
 
 
 if __name__ == "__main__":

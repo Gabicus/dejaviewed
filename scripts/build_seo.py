@@ -37,6 +37,10 @@ BASE = "https://dejaviewed.dev"
 SITE_NAME = "DejaViewed"
 REPO_URL = "https://github.com/Gabicus/dejaviewed"
 AUTHOR_URL = "https://instagram.com/6ab3"
+OWNER_NAME = "Victor"
+OWNER_URL = "https://www.1gabe.com/"
+OWNER_GITHUB = "https://github.com/Gabicus"
+CONTACT_URL = "https://www.1gabe.com/contact/"
 FEED_TITLE = "DejaViewed: new entries, guides and deeper dives"
 
 START, END = "<!-- seo:start -->", "<!-- seo:end -->"
@@ -44,15 +48,18 @@ BLOCK_RE = re.compile(r"<!-- seo:start -->.*?<!-- seo:end -->\n?", re.S)
 
 # top-level pages processed (everything else at site root is skipped:
 # admin, rate, board, graph*, legacy/, pagefind/, about/, links/, ai_presentation/)
-TOP_PAGES = ["index.html", "catalog.html", "prompts.html", "search.html", "start-here.html"]
-SUB_DIRS = ["guides", "deeper", "e"]
+TOP_PAGES = ["index.html", "catalog.html", "prompts.html", "start-here.html", "method.html"]
+SUB_DIRS = ["guides", "deeper", "e"]  # collections/ writes its own seo block (build_collections.py)
 
 # private / superseded pages: get a seo block holding only robots noindex,follow
 # (plus every page Disallowed in site/robots.txt). Never part of the public set.
-NOINDEX_PAGES = ["admin.html", "rate.html", "404.html"]
+NOINDEX_PAGES = ["admin.html", "rate.html", "404.html", "search.html"]  # search: empty without a query
 NOINDEX_DIRS = ["legacy"]
 
 OG_W, OG_H = 1200, 630
+TITLE_MAX = 65                      # <title> budget (Google cuts at ~580-600 px)
+TITLE_SUFFIX = " · " + SITE_NAME
+HASHES_PATH = DATA / "seo" / "content_hashes.json"
 
 
 # ─────────────────────────── shared helpers (imported by sibling scripts) ──
@@ -152,7 +159,8 @@ def clean_text(s: str) -> str:
     s = re.sub(r"<[^>]+>", " ", s)
     s = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", s)    # md links
     s = re.sub(r"[*_`#>]+", "", s)
-    return re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"\s+", " ", s).strip()
+    return re.sub(r"\s+([,.;:!?])", r"\1", s)      # "in parallel , each" -> "in parallel, each"
 
 
 def clip(s: str, n: int = 160) -> str:
@@ -192,11 +200,318 @@ def strip_title_suffix(t: str) -> str:
     return t.strip() or SITE_NAME
 
 
+# ─────────────────────────────────────── content freshness (SEO-07) ──
+# Sitemap <lastmod> and Article dateModified come from data/seo/content_hashes.json:
+#   {canonical url: {hash, first_seen, last_changed}}
+# hash = the page's main content: entry pages -> their catalog record (ENTRY_FIELDS); guides -> the
+# markdown source; other pages -> visible text with generated chrome removed (seo / monetize /
+# sitenav blocks, all of <head>, <script>/<style>/<nav>/<footer>, date stamps, markup).
+# A rebuild that only re-stamps dates, rewrites hrefs or restyles templates leaves the hash alone.
+# New urls are seeded from git history (entries: site/catalog.json history; pages: the file's own):
+# first_seen = first commit containing it, last_changed = oldest committed version with today's hash.
+GEN_BLOCK_RE = re.compile(r"<!-- (seo|monetize|monetize-prompts|sitenav|answer-meta):start -->.*?<!-- \1:end -->", re.S)
+DATE_RE = re.compile(r"\b20\d\d-\d\d-\d\d(?:[T ][0-9:.]+(?:Z|[+-]\d\d:?\d\d)?)?\b|"
+                     r"\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2}, 20\d\d\b")
+
+
+def content_text(page: str) -> str:
+    # <title> is left out on purpose: build_seo trims it, generators re-emit the long form, and
+    # that round trip must not count as a content change
+    s = GEN_BLOCK_RE.sub(" ", page)
+    bi = s.lower().find("<body")
+    s = s[bi:] if bi >= 0 else s
+    s = re.sub(r"<(script|style|nav|footer|template|noscript)\b.*?</\1\s*>", " ", s, flags=re.S | re.I)
+    s = re.sub(r"<!--.*?-->", " ", s, flags=re.S)
+    s = re.sub(r"<[^>]+>", " ", s)
+    s = html.unescape(s)
+    s = DATE_RE.sub(" ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def content_hash(page: str) -> str:
+    import hashlib
+    return hashlib.sha1(content_text(page).encode("utf-8")).hexdigest()[:16]
+
+
+HASH_V = 3   # bump when the hash definition changes: records are re-hashed without moving last_changed
+ENTRY_FIELDS = ("title", "summary", "transcript", "caption", "tags", "tools", "techniques", "domains",
+                "takeaways", "tier", "type")
+MD_RE = re.compile(r'<script[^>]*id="md"[^>]*>(.*?)</script>', re.S)
+
+
+def entry_hash(e: dict) -> str:
+    """An entry page's main content is its catalog record (template/link churn does not count)."""
+    import hashlib
+    payload = json.dumps([e.get(k) or "" for k in ENTRY_FIELDS], ensure_ascii=False, sort_keys=True)
+    return hashlib.sha1(DATE_RE.sub(" ", payload).encode("utf-8")).hexdigest()[:16]
+
+
+def page_key_hash(rel: str, page: str) -> str:
+    """Guides: the markdown source (the visible body is rendered from it); everything else: visible text."""
+    if rel.startswith("guides/") and not rel.endswith("index.html"):
+        m = MD_RE.search(page)
+        if m:
+            import hashlib
+            md = DATE_RE.sub(" ", html.unescape(m.group(1)))
+            return hashlib.sha1(re.sub(r"\s+", " ", md).strip().encode("utf-8")).hexdigest()[:16]
+    return content_hash(page)
+
+
+class Freshness:
+    """first_seen / last_changed per canonical url, persisted in HASHES_PATH."""
+
+    def __init__(self, today: date | None = None):
+        self.today = (today or date.today()).isoformat()
+        self.data: dict = load_json(HASHES_PATH, {}) or {}
+        self.dirty = False
+        self.seen: set[str] = set()          # urls observed this run
+        self._hist: dict | None = None
+        self._entries: dict | None = None    # slug -> current record hash
+        self._cat_hist: list | None = None   # [(date, {slug: record hash})] newest first
+
+    def _history(self) -> dict[str, list[tuple[str, str]]]:
+        """{'site/x.html': [(commit, YYYY-MM-DD author date), ... newest first]} — one git call."""
+        if self._hist is not None:
+            return self._hist
+        out: dict[str, list[tuple[str, str]]] = {}
+        try:
+            log = subprocess.run(["git", "-C", str(ROOT), "log", "--format=%x00%H %as", "--name-only",
+                                  "--diff-filter=AMR", "--", "site/"],
+                                 capture_output=True, text=True, check=True).stdout
+        except Exception:
+            log = ""
+        cur = None
+        for line in log.splitlines():
+            if line.startswith("\x00"):
+                cur = tuple(line[1:].split(" ", 1))
+                continue
+            line = line.strip()
+            if line.endswith(".html") and cur:
+                out.setdefault(line, []).append(cur)
+        self._hist = out
+        return out
+
+    def _git_blobs(self, specs: list[str]) -> list[str | None]:
+        """Contents of '<commit>:<path>' specs via one `git cat-file --batch` call."""
+        proc = subprocess.run(["git", "-C", str(ROOT), "cat-file", "--batch"],
+                              input="".join(s + "\n" for s in specs).encode(), capture_output=True, check=True)
+        blobs, buf = [], proc.stdout
+        while buf:
+            nl = buf.index(b"\n")
+            hdr = buf[:nl].split()
+            if len(hdr) < 3 or hdr[1] != b"blob":
+                blobs.append(None)
+                buf = buf[nl + 1:]
+                continue
+            n = int(hdr[2])
+            blobs.append(buf[nl + 1: nl + 1 + n].decode("utf-8", "replace"))
+            buf = buf[nl + 1 + n + 1:]
+        return blobs
+
+    def entries(self) -> dict[str, str]:
+        if self._entries is None:
+            cat = load_json(SITE / "catalog.json", {}) or {}
+            self._entries = {safe_slug(e["id"]): entry_hash(e) for e in cat.get("entries", []) if e.get("id")}
+        return self._entries
+
+    def key_hash(self, rel: str, page: str) -> str:
+        if rel.startswith("e/") and not rel.endswith("index.html"):
+            h = self.entries().get(Path(rel).stem)
+            if h:
+                return h
+        return page_key_hash(rel, page)
+
+    def _catalog_history(self) -> list:
+        if self._cat_hist is not None:
+            return self._cat_hist
+        self._cat_hist = []
+        try:
+            log = subprocess.run(["git", "-C", str(ROOT), "log", "--format=%H %as", "--", "site/catalog.json"],
+                                 capture_output=True, text=True, check=True).stdout.split("\n")
+            commits = [tuple(x.split(" ", 1)) for x in log if x.strip()]
+            for (c, d), blob in zip(commits, self._git_blobs([f"{c}:site/catalog.json" for c, _ in commits])):
+                try:
+                    es = json.loads(blob or "{}").get("entries", [])
+                except Exception:
+                    es = []
+                self._cat_hist.append((d, {safe_slug(e["id"]): entry_hash(e) for e in es if e.get("id")}))
+        except Exception:
+            pass
+        return self._cat_hist
+
+    def _seed_entry(self, rel: str, h: str) -> dict:
+        slug = Path(rel).stem
+        hist = self._catalog_history()
+        seen_in = [d for d, m in hist if slug in m]
+        first = min(seen_in) if seen_in else self.today
+        last = None
+        for d, m in hist:                    # newest first
+            if m.get(slug) != h:
+                break
+            last = d
+        return {"hash": h, "first_seen": first, "last_changed": last or self.today, "v": HASH_V}
+
+    def _seed(self, rel: str, h: str) -> dict:
+        if rel.startswith("e/") and not rel.endswith("index.html") and Path(rel).stem in self.entries():
+            return self._seed_entry(rel, h)
+        path = "site/" + rel
+        hist = self._history().get(path) or []
+        if not hist:
+            return {"hash": h, "first_seen": self.today, "last_changed": self.today, "v": HASH_V}
+        first = hist[-1][1]
+        last = None
+        try:
+            for (c, d), b in zip(hist, self._git_blobs([f"{c}:{path}" for c, _ in hist])):   # newest first
+                if b is None or page_key_hash(rel, b) != h:
+                    break
+                last = d                             # oldest committed version with today's content
+        except Exception:
+            pass
+        return {"hash": h, "first_seen": first, "last_changed": last or self.today, "v": HASH_V}
+
+    def observe(self, rel: str, page: str) -> dict:
+        url = canonical_url(rel)
+        h = self.key_hash(rel, page)
+        self.seen.add(url)
+        rec = self.data.get(url)
+        if rec is None:
+            rec = self._seed(rel, h)
+            self.data[url] = rec
+            self.dirty = True
+        elif rec.get("v") != HASH_V:          # hash definition changed: re-key, keep the dates
+            rec.update(hash=h, v=HASH_V)
+            self.dirty = True
+        elif rec.get("hash") != h:
+            rec.update(hash=h, last_changed=self.today)
+            self.dirty = True
+        return rec
+
+    def observe_key(self, key: str, payload: str) -> dict:
+        """Freshness for a non-page resource (e.g. the dataset): hash of the raw payload."""
+        import hashlib
+        h = hashlib.sha1(payload.encode("utf-8")).hexdigest()[:16]
+        rec = self.data.get(key)
+        if rec is None:
+            rec = {"hash": h, "first_seen": self.today, "last_changed": self.today}
+            self.data[key] = rec
+            self.dirty = True
+        elif rec.get("hash") != h:
+            rec.update(hash=h, last_changed=self.today)
+            self.dirty = True
+        return rec
+
+    def dates(self, rel: str) -> tuple[date, date]:
+        rec = self.data.get(canonical_url(rel)) or {}
+        a = parse_date(rec.get("first_seen")) or date.today()
+        b = parse_date(rec.get("last_changed")) or a
+        return a, max(a, b)
+
+    def save(self) -> bool:
+        if not self.dirty:
+            return False
+        return write_if_changed(HASHES_PATH, json.dumps(self.data, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
+
+
+# ─────────────────────────────────────────────── title policy (SEO-10) ──
+_TITLE_TAIL_STOP = {"and", "or", "with", "the", "a", "an", "for", "of", "to", "in", "on", "at", "by", "vs", "from", "&", "+"}
+
+
+def fit_title(t: str, limit: int = TITLE_MAX) -> str:
+    """<title> <= limit chars: subject first; ' · DejaViewed' only when it fits; long titles cut at a
+    separator (' — ', ': ', ' | ') when that keeps >= 40 chars, else at a word boundary."""
+    base = re.sub(r"\s+", " ", strip_title_suffix(t)).strip()
+    if base == SITE_NAME:
+        return base
+    if len(base) + len(TITLE_SUFFIX) <= limit:
+        return base + TITLE_SUFFIX
+    if len(base) <= limit:
+        return base
+    cut = ""
+    for sep in (" — ", " – ", ": ", " | ", " · ", " - "):
+        i = base.rfind(sep, 0, limit + 1)
+        while i >= 40:
+            cand = base[:i].rstrip(" ,;:—–-·|")
+            if len(cand) <= limit:
+                cut = cand
+                break
+            i = base.rfind(sep, 0, i)
+        if cut:
+            break
+    if not cut:
+        words = base[: limit + 1].split(" ")
+        if len(words) > 1:
+            words = words[:-1]
+        else:
+            words = [base[:limit]]
+        while len(words) > 3 and words[-1].lower().strip(",;:—–-·|(") in _TITLE_TAIL_STOP:
+            words.pop()
+        cut = " ".join(words).rstrip(" ,;:—–-·|(")
+    cut = re.sub(r"\s*[(\[][^)\]]*$", "", cut).strip() or cut   # no dangling "(..."
+    return cut + TITLE_SUFFIX if len(cut) + len(TITLE_SUFFIX) <= limit else cut
+
+
+def clip_sentence(s: str, n: int = 155) -> str:
+    """Whole sentences up to n chars; falls back to clip() when the first sentence is longer."""
+    s = clean_text(s)
+    if len(s) <= n:
+        return s
+    out = ""
+    for m in re.finditer(r".+?[.!?](?=\s+[A-Z0-9\"“(]|\s*$)", s):
+        cand = s[: m.end()].strip()
+        if len(cand) > n:
+            break
+        out = cand
+    return out if len(out) >= 60 else clip(s, n)
+
+
+# ───────────────────────────────────────────── guide index (llms.txt) ──
+ANSWER_RE = re.compile(r"(?m)^> \*\*In short:\*\* (.+)$")
+
+
+def page_heading(text: str) -> str:
+    """Full (untruncated) page heading: md '# ' line, else first <h1>, else <title>."""
+    m = re.search(r'<script[^>]*id="md"[^>]*>(.*?)</script>', text, re.S)
+    if m:
+        h = re.search(r"(?m)^# (.+)$", m.group(1))
+        if h:
+            return clean_text(h.group(1))
+    h = re.search(r"<h1\b[^>]*>(.*?)</h1>", text, re.S | re.I)
+    if h and clean_text(h.group(1)):
+        return clean_text(h.group(1))
+    tm = re.search(r"<title>(.*?)</title>", text, re.S | re.I)
+    return strip_title_suffix(html.unescape(tm.group(1))) if tm else ""
+
+
+def guide_index() -> dict[str, list[dict]]:
+    """{'guides': [{slug, title, url, answer}], 'deeper': [{slug, title, url}]} from the pages on disk."""
+    out: dict[str, list[dict]] = {"guides": [], "deeper": []}
+    for p in sorted((SITE / "guides").glob("*.html")):
+        if p.name == "index.html":
+            continue
+        text = p.read_text(encoding="utf-8", errors="replace")
+        a = ANSWER_RE.search(text)
+        out["guides"].append({"slug": p.stem, "title": page_heading(text) or p.stem,
+                              "url": canonical_url(f"guides/{p.name}"),
+                              "answer": clean_text(html.unescape(a.group(1))) if a else ""})
+    for p in sorted((SITE / "deeper").glob("*.html")):
+        if p.name == "index.html":
+            continue
+        text = p.read_text(encoding="utf-8", errors="replace")
+        out["deeper"].append({"slug": p.stem, "title": page_heading(text) or p.stem,
+                              "url": canonical_url(f"deeper/{p.name}")})
+    return out
+
+
 # ─────────────────────────────────────────────────────────── site context ──
+DATASET_KEY = "dataset:catalog"
+VOLATILE = {"is_new", "transcript_at", "user_notes", "favorited", "thumb_path", "media_url"}
+
+
 class Ctx:
-    def __init__(self):
+    def __init__(self, fresh: "Freshness | None" = None):
         cat = load_json(SITE / "catalog.json", {}) or {}
         self.catalog = cat
+        self.fresh = fresh
         self.entries = cat.get("entries", [])
         self.by_slug = {safe_slug(e["id"]): e for e in self.entries if e.get("id")}
         self.manual = {d["id"].replace("dd-insight-", ""): d
@@ -220,6 +535,54 @@ class Ctx:
         ds = sorted(d for d in (parse_date(e.get("date")) for e in self.entries) if d)
         self.date_span = (ds[0], ds[-1]) if ds else (None, None)
 
+    def entry_title_overrides(self) -> dict[str, str]:
+        """slug -> disambiguated <title> for entries whose fitted titles collide (same caption twice)."""
+        if hasattr(self, "_eto"):
+            return self._eto
+        groups: dict[str, list[dict]] = defaultdict(list)
+        for e in self.entries:
+            if e.get("id"):
+                groups[fit_title(e.get("title") or "").lower()].append(e)
+        out: dict[str, str] = {}
+        for _, es in groups.items():
+            if len(es) < 2:
+                continue
+            for e in es:
+                base = strip_title_suffix(fit_title(e.get("title") or ""))
+                d = parse_date(e.get("date"))
+                for tag in (f"@{e.get('creator')}" if e.get("creator") else "",
+                            f"@{e.get('creator')}, {d:%b %Y}" if e.get("creator") and d else "",
+                            e.get("post_id") or e.get("id")):
+                    if not tag:
+                        continue
+                    words = base.split(" ")
+                    while words and len(" ".join(words)) + len(tag) + 3 > TITLE_MAX:
+                        words.pop()
+                    cand = " ".join(words).rstrip(" ,;:—–-·|") + f" · {tag}"
+                    if sum(1 for x in es if x is not e and out.get(safe_slug(x["id"])) == cand) == 0 and \
+                            not any(out.get(safe_slug(x["id"])) == cand for x in es):
+                        out[safe_slug(e["id"])] = cand
+                        break
+        # still colliding (same creator + month): fall back to the id tag
+        seen: dict[str, str] = {}
+        for slug, cand in sorted(out.items()):
+            if cand in seen.values():
+                e = self.by_slug.get(slug) or {}
+                tag = e.get("post_id") or slug
+                base = cand.rsplit(" · ", 1)[0]
+                out[slug] = base[: TITLE_MAX - len(tag) - 3].rstrip() + f" · {tag}"
+            seen[slug] = out[slug]
+        self._eto = out
+        return out
+
+    def dataset_modified(self) -> date:
+        if not self.fresh:
+            return self.generated
+        payload = json.dumps([{k: v for k, v in e.items() if k not in VOLATILE} for e in self.entries],
+                             sort_keys=True, ensure_ascii=False)
+        rec = self.fresh.observe_key(DATASET_KEY, payload)
+        return parse_date(rec.get("last_changed")) or self.generated
+
     def guide_entries(self, slug: str) -> list[dict]:
         ids = set((self.manual.get(slug) or {}).get("entry_ids") or [])
         out = [e for e in self.entries
@@ -231,9 +594,110 @@ class Ctx:
         return [t for t, _ in c.most_common(k)]
 
 
+PERSON = {"@type": "Person", "@id": BASE + "/#victor", "name": OWNER_NAME, "url": OWNER_URL,
+          "sameAs": [OWNER_GITHUB, AUTHOR_URL], "contactPoint": {"@type": "ContactPoint", "url": CONTACT_URL,
+                                                               "contactType": "general"}}
 ORG = {"@type": "Organization", "@id": BASE + "/#org", "name": SITE_NAME, "url": BASE + "/",
-       "sameAs": [REPO_URL, AUTHOR_URL]}
+       "logo": BASE + "/og/default.png", "sameAs": [REPO_URL, AUTHOR_URL],
+       "founder": {"@id": PERSON["@id"]}, "publishingPrinciples": BASE + "/method"}
+AUTHOR_REF = {"@id": PERSON["@id"]}
 WEBSITE_REF = {"@id": BASE + "/#website"}
+
+
+def load_official_urls() -> dict[str, str]:
+    """lowercased tool name/alias -> official site (data/monetize/affiliates.json official_url)."""
+    out: dict[str, str] = {}
+    aff = load_json(DATA / "monetize" / "affiliates.json", {}) or {}
+    for rec in (aff.values() if isinstance(aff, dict) else aff):
+        if not isinstance(rec, dict):
+            continue
+        u = (rec.get("official_url") or "").strip()
+        if not u:
+            continue
+        for name in [rec.get("tool")] + list(rec.get("aliases") or []):
+            if name:
+                out.setdefault(str(name).lower(), u)
+    return out
+
+
+OFFICIAL = load_official_urls()
+
+
+def tool_nodes(tools: list[str]) -> list[dict]:
+    out = []
+    for name in tools:
+        u = OFFICIAL.get(name.lower())
+        out.append({"@type": "SoftwareApplication", "name": name, "url": u, "sameAs": u} if u
+                   else {"@type": "Thing", "name": name})
+    return out
+
+
+_DIM_CACHE: dict[str, tuple[int, int] | None] = {}
+
+
+def image_dims(rel: str) -> tuple[int, int] | None:
+    if rel.startswith("og/"):
+        return OG_W, OG_H
+    if rel not in _DIM_CACHE:
+        try:
+            from PIL import Image
+            with Image.open(SITE / rel) as im:
+                _DIM_CACHE[rel] = im.size
+        except Exception:
+            _DIM_CACHE[rel] = None
+    return _DIM_CACHE[rel]
+
+
+def creator_person(e: dict) -> dict | None:
+    h = (e.get("creator") or "").strip().lstrip("@")
+    if not h:
+        return None
+    u = e.get("url") or ""
+    node = {"@type": "Person", "name": "@" + h, "alternateName": h}
+    if "instagram.com" in u:
+        node["url"] = f"https://www.instagram.com/{h}/"
+    elif "github.com" in u:
+        node["url"] = f"https://github.com/{h}"
+    elif "tiktok.com" in u:
+        node["url"] = f"https://www.tiktok.com/@{h}"
+    elif "x.com" in u or "twitter.com" in u:
+        node["url"] = f"https://x.com/{h}"
+    return node
+
+
+def entry_node(e: dict, url: str, desc: str, image: str, title: str) -> dict:
+    """Primary entity of an /e/ page: VideoObject when it is a video with a transcript, else CreativeWork."""
+    is_video = (e.get("media_type") == "video") and bool((e.get("transcript") or "").strip())
+    kw = []
+    for k in list(e.get("tags") or []) + list(e.get("tools") or []):
+        if k and k.lower() not in {x.lower() for x in kw}:
+            kw.append(k)
+    node = {"@type": "VideoObject" if is_video else "CreativeWork", "@id": url + "#entry",
+            "name": title, "description": desc or title, "url": url, "mainEntityOfPage": url,
+            "isPartOf": {"@id": BASE + "/#dataset"}}
+    au = creator_person(e)
+    if au:
+        node["author"] = au
+        node["creator"] = au
+    d = parse_date(e.get("date"))
+    if d:
+        node["uploadDate" if is_video else "datePublished"] = d.isoformat()
+        if is_video:
+            node["datePublished"] = d.isoformat()
+    if kw:
+        node["keywords"] = ", ".join(kw[:20])
+    if e.get("url"):
+        node["isBasedOn"] = e["url"]
+        node["sameAs"] = e["url"]
+    th = thumb_rel(e)
+    if is_video:
+        node["thumbnailUrl"] = BASE + "/" + (th or image)
+        node["transcript"] = clip(e.get("transcript") or "", 500)
+    if image:
+        node["image"] = BASE + "/" + image
+    if e.get("tools"):
+        node["about"] = tool_nodes((e.get("tools") or [])[:6])
+    return node
 
 
 def top_descriptions(c: Ctx) -> dict[str, str]:
@@ -244,8 +708,8 @@ def top_descriptions(c: Ctx) -> dict[str, str]:
                          f"{c.n_transcripts} have transcripts; JSON at /api/catalog.json."),
         "prompts.html": (f"{c.n_packs} pasteable prompt systems, one per DejaViewed guide: a one-shot prompt, "
                          f"{c.n_steps} step prompts with audits, gap audits and validation oracles."),
-        "search.html": (f"Full-text search across {c.n_entries} DejaViewed entries, transcript excerpts, "
-                        f"{len(c.guides)} guides and {len(c.deepers)} deeper dives. Static, runs in your browser."),
+        "method.html": (f"How DejaViewed works: saved posts are captioned, transcribed, enriched and tiered S to C, "
+                        f"then curated into {len(c.guides)} guides. Who runs it, update cadence, affiliate policy."),
         "start-here.html": (f"What DejaViewed is, who it is for, how humans and agents use it, how to cite it, "
                             f"and what is inside its {c.n_entries} entries and {c.n_colls} collections."),
         "guides/index.html": (f"{len(c.guides)} DejaViewed guides that connect saved posts into one build plan, "
@@ -256,64 +720,64 @@ def top_descriptions(c: Ctx) -> dict[str, str]:
 
 
 def sr_first_paragraph(text: str) -> str:
-    """First paragraph after the first <h2> in the hidden pagefind block (hand-written guides)."""
-    m = re.search(r'class="sr-index".*?</div>', text, re.S)
-    blob = m.group(0) if m else text
-    h = blob.find("<h2")
-    if h < 0:
+    """First real paragraph of the server-rendered guide body (<!-- body:start --> … <!-- body:end -->),
+    preferring the text after the first <h2>; falls back to the legacy sr-index prerender."""
+    m = re.search(r"<!-- body:start -->(.*?)<!-- body:end -->", text, re.S) \
+        or re.search(r'class="sr-index".*?</div>', text, re.S)
+    if not m:
         return ""
-    for p in re.findall(r"<p>(.*?)</p>", blob[h:], re.S):
+    blob = m.group(1) if m.lastindex else m.group(0)
+    h = blob.find("<h2")
+    paras = re.findall(r"<p\b[^>]*>(.*?)</p>", blob[h:] if h >= 0 else blob, re.S)
+    if h >= 0 and not paras:
+        paras = re.findall(r"<p\b[^>]*>(.*?)</p>", blob, re.S)
+    for p in paras:
         t = clean_text(p)
         if len(t) >= 60 and not re.match(r"^(GitHub|Creator|Insight class|Stars|Source)\b", t):
             return t
     return ""
 
 
-WORD = re.compile(r"[a-z0-9][a-z0-9.\-]{3,}")
-STOP = set("that this with from your have does what when which into than then they them were will would "
-           "should could about after before every each more most just only also over under while there "
-           "their still being doing done make made used using real".split())
+def as_list(v) -> list:
+    """deeper_dives.json stores some lists as their Python repr string."""
+    if isinstance(v, list):
+        return v
+    if isinstance(v, str) and v.strip().startswith("["):
+        import ast
+        try:
+            r = ast.literal_eval(v)
+            return r if isinstance(r, list) else []
+        except Exception:
+            return []
+    return []
 
 
-def _words(s: str) -> set[str]:
-    return {w for w in WORD.findall(s.lower()) if w not in STOP}
-
-
-FAQ_MIN_SCORE = 5.5
-
-
-def faq_pairs(pack: dict, k: int = 6) -> list[tuple[str, str]]:
-    """Pair each self-question with the best-matching validation oracle, failure mode or step
-    (IDF-weighted word overlap, each answer used once). Below FAQ_MIN_SCORE the
-    question is dropped (FAQ answers must actually answer)."""
-    import math
-    qs = [q for q in (pack.get("self_questions") or []) if isinstance(q, str)][:k]
-    oracles = [clean_text(o) for o in (pack.get("validation_oracles") or []) if isinstance(o, str)]
-    cands: list[tuple[str, str]] = [(o, o) for o in oracles]          # (match text, answer text)
-    cands += [(clean_text(f), clean_text(f)) for f in (pack.get("failure_modes") or []) if isinstance(f, str)]
-    for st in pack.get("steps") or []:
-        ans = f"Step {st.get('n')}, {st.get('title', '')}: {st.get('goal', '')} Expect: {st.get('expect', '')}"
-        cands.append((clean_text(" ".join(str(st.get(x, "")) for x in ("title", "goal", "expect", "audit"))),
-                      clip(ans, 400)))
-    cw = [_words(m) for m, _ in cands]
-    df = Counter(w for ws in cw for w in ws)
-    idf = {w: math.log((1 + len(cands)) / (1 + n)) + 1 for w, n in df.items()}
-    used: set[int] = set()
-    out = []
-    for i, q in enumerate(qs):
-        qw = _words(q)
-        best, score = None, 0.0
-        for j, ws in enumerate(cw):
-            if j in used:
-                continue
-            sc = sum(idf[w] for w in qw & ws)
-            if sc > score:
-                best, score = j, sc
-        if best is None or score < FAQ_MIN_SCORE:
-            continue   # no candidate answers this question: leave it out rather than mis-pair
-        used.add(best)
-        out.append((clean_text(q), cands[best][1]))
-    return out
+def deeper_description(dd: dict, text: str) -> str:
+    """A deeper page's own snippet (not the guide's thesis): how many posts, from whom, which tools,
+    and the first action step. Keeps guide/deeper twins from sharing one description (SEO-11)."""
+    n = dd.get("entry_count") or len(as_list(dd.get("entries")))
+    try:
+        n = int(n)
+    except (TypeError, ValueError):
+        n = 0
+    if not n:
+        n = len(re.findall(r'class="dd-entry"', text))
+    creators = ["@" + str(x).lstrip("@") for x in as_list(dd.get("creators"))][:3]
+    tools = [str(x) for x in as_list(dd.get("tools"))][:3]
+    if not n:
+        return ""
+    s = f"The evidence behind this idea: {n} connected saved post{'s' if n != 1 else ''}"
+    if creators:
+        s += " from " + (", ".join(creators[:-1]) + " and " + creators[-1] if len(creators) > 1 else creators[0])
+    if tools:
+        s += ", covering " + ", ".join(tools)
+    s += "."
+    act = clean_text(str(dd.get("action_sketch") or ""))
+    act = re.sub(r"^\s*1[.)]\s*", "", act)
+    first = re.split(r"(?:\s+\d[.)]\s+|\s*→\s*|(?<=[.!?])\s+)", act)[0].strip(" .") if act else ""
+    if first and len(s) + len(first) + 20 <= 158:
+        s += f" First step: {first}."
+    return clip(s, 158)
 
 
 def breadcrumbs(items: list[tuple[str, str | None]]) -> dict:
@@ -337,11 +801,13 @@ def dataset_node(c: Ctx) -> dict:
                         f"and domains; {c.n_transcripts} include a speech transcript. Original posts remain "
                         f"the property of their creators; entries link to the source."),
         "url": BASE + "/catalog",
-        "creator": {"@id": ORG["@id"]},
+        "creator": AUTHOR_REF,
         "publisher": {"@id": ORG["@id"]},
-        "license": "https://opensource.org/licenses/MIT",
+        # curation fields are ours; captions/transcripts stay with their creators (see /method#terms)
+        "license": BASE + "/method#terms",
+        "usageInfo": BASE + "/method#terms",
         "isAccessibleForFree": True,
-        "dateModified": c.generated.isoformat(),
+        "dateModified": c.dataset_modified().isoformat(),
         "keywords": c.top_tools,
         "distribution": [
             {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": BASE + "/api/catalog.json",
@@ -369,7 +835,7 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
     url = canonical_url(rel)
     ttl = strip_title_suffix(title)
     tops = top_descriptions(c)
-    graph: list[dict] = [ORG]
+    graph: list[dict] = [ORG, PERSON]
     og_type = "website"
     image = og_image_rel("default")
     desc = ""
@@ -378,11 +844,11 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
     if rel in tops:
         desc = tops[rel]
         name = {"index.html": "default", "catalog.html": "catalog", "prompts.html": "prompts",
-                "start-here.html": "start-here"}.get(rel)
+                "start-here.html": "start-here", "method.html": "method"}.get(rel)
         image = (og_image_rel(name) if name else None) or image
         if rel == "index.html":
             graph.append({"@type": "WebSite", "@id": WEBSITE_REF["@id"], "url": BASE + "/", "name": SITE_NAME,
-                          "description": desc, "publisher": {"@id": ORG["@id"]},
+                          "description": desc, "publisher": {"@id": ORG["@id"]}, "author": AUTHOR_REF,
                           "potentialAction": {"@type": "SearchAction",
                                               "target": {"@type": "EntryPoint",
                                                          "urlTemplate": BASE + "/search?q={search_term_string}"},
@@ -409,7 +875,14 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
                           "description": desc, "isPartOf": WEBSITE_REF,
                           "mainEntity": {"@type": "ItemList", "numberOfItems": c.n_entries}})
             graph.append(breadcrumbs([("Home", BASE + "/"), ("All entries", None)]))
-        else:  # search, start-here
+        elif rel == "method.html":
+            pub, mod = c.fresh.dates(rel) if c.fresh else file_dates(SITE / rel)
+            graph.append({"@type": "AboutPage", "@id": url + "#page", "url": url, "name": ttl,
+                          "description": desc, "isPartOf": WEBSITE_REF, "author": AUTHOR_REF,
+                          "publisher": {"@id": ORG["@id"]}, "about": {"@id": ORG["@id"]},
+                          "datePublished": pub.isoformat(), "dateModified": mod.isoformat()})
+            graph.append(breadcrumbs([("Home", BASE + "/"), ("How it works", None)]))
+        else:  # start-here
             graph.append({"@type": "WebPage", "@id": url + "#page", "url": url, "name": ttl,
                           "description": desc, "isPartOf": WEBSITE_REF})
 
@@ -419,30 +892,27 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
         md = c.manual.get(slug) or {}
         pack = c.packs.get(slug) or {}
         desc = md.get("thesis") or sr_first_paragraph(text) or pack.get("mission", "")
-        desc = clip(desc)
+        desc = clip_sentence(desc)
         if desc and len(desc) < 110 and pack.get("steps"):
-            desc = clip(f"{desc} Includes a {len(pack['steps'])}-step prompt system.")
+            desc = clip_sentence(f"{desc.rstrip('.…')}. Includes a {len(pack['steps'])}-step prompt system.")
         image = og_image_rel(slug) or image
-        pub, mod = file_dates(SITE / rel)
-        upd = parse_date(pack.get("updated_at"))
-        if upd and upd > mod:
-            mod = upd
+        pub, mod = c.fresh.dates(rel) if c.fresh else file_dates(SITE / rel)
+        tools = c.guide_tools(slug)
         art = {"@type": "Article", "@id": url + "#article", "headline": ttl[:110], "description": desc,
                "url": url, "mainEntityOfPage": url, "datePublished": pub.isoformat(),
-               "dateModified": max(pub, mod).isoformat(),
-               "author": {"@type": "Organization", "name": SITE_NAME, "url": BASE + "/"},
+               "dateModified": mod.isoformat(), "author": AUTHOR_REF,
                "publisher": {"@id": ORG["@id"]}, "isPartOf": WEBSITE_REF,
-               "image": BASE + "/" + (image or "og/default.png"),
-               "about": [{"@type": "Thing", "name": t} for t in c.guide_tools(slug)]}
+               "image": BASE + "/" + (image or "og/default.png")}
+        if tools:
+            art["about"] = tool_nodes(tools[:3])
+            if tools[3:]:
+                art["mentions"] = tool_nodes(tools[3:])
         ans = re.search(r"(?m)^> \*\*In short:\*\* (.+)$", text)
         if ans:   # the "In two sentences" answer block build_guides.py puts at the top of every guide
             art["abstract"] = html.unescape(ans.group(1)).strip()
+        # no FAQPage: Google shows FAQ rich results only for gov/health sites since 2023, and the
+        # self_questions are already visible in the prompt system (SEO-13)
         graph.append(art)
-        faqs = faq_pairs(pack)
-        if faqs:
-            graph.append({"@type": "FAQPage", "@id": url + "#faq",
-                          "mainEntity": [{"@type": "Question", "name": q,
-                                          "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]})
         graph.append(breadcrumbs([("Home", BASE + "/"), ("Guides", BASE + "/guides/"), (ttl, None)]))
 
     elif parts[0] == "deeper":
@@ -450,20 +920,20 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
         slug = stem.replace("deeper-insight-", "", 1)
         og_type = "article"
         dd = c.deeper.get(stem) or {}
-        desc = clip(dd.get("thesis") or (c.manual.get(slug) or {}).get("thesis") or "")
+        desc = deeper_description(dd, text) or clip_sentence(dd.get("thesis") or (c.manual.get(slug) or {}).get("thesis") or "")
         image = og_image_rel(stem) or image
-        pub, mod = file_dates(SITE / rel)
-        gen = parse_date(dd.get("generated_at"))
-        if gen and gen > mod:
-            mod = gen
-        tools = (dd.get("tools") or [])[:10]
-        graph.append({"@type": "Article", "@id": url + "#article", "headline": ttl[:110], "description": desc,
-                      "url": url, "mainEntityOfPage": url, "datePublished": pub.isoformat(),
-                      "dateModified": max(pub, mod).isoformat(),
-                      "author": {"@type": "Organization", "name": SITE_NAME, "url": BASE + "/"},
-                      "publisher": {"@id": ORG["@id"]}, "isPartOf": WEBSITE_REF,
-                      "image": BASE + "/" + (image or "og/default.png"),
-                      "about": [{"@type": "Thing", "name": t} for t in tools]})
+        pub, mod = c.fresh.dates(rel) if c.fresh else file_dates(SITE / rel)
+        tools = as_list(dd.get("tools"))[:10]
+        art = {"@type": "Article", "@id": url + "#article", "headline": ttl[:110], "description": desc,
+               "url": url, "mainEntityOfPage": url, "datePublished": pub.isoformat(),
+               "dateModified": mod.isoformat(), "author": AUTHOR_REF,
+               "publisher": {"@id": ORG["@id"]}, "isPartOf": WEBSITE_REF,
+               "image": BASE + "/" + (image or "og/default.png")}
+        if tools:
+            art["about"] = tool_nodes(tools[:3])
+            if tools[3:]:
+                art["mentions"] = tool_nodes(tools[3:])
+        graph.append(art)
         crumbs = [("Home", BASE + "/"), ("Guides", BASE + "/guides/")]
         if (SITE / "guides" / f"{slug}.html").exists():
             gt = re.search(r"<title>(.*?)</title>", (SITE / "guides" / f"{slug}.html").read_text(errors="replace"), re.S)
@@ -493,13 +963,25 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
             base = desc or clean_text(e.get("title") or "")
             desc = clip(f"{base.rstrip('. ')}. {extra}")
         th = thumb_rel(e) if e else ""
-        image = th or image
-        # mirrors the visible breadcrumb render_entries writes (Home › Catalog › <collection> › title);
-        # the collection has no URL of its own, so it is left out of the structured list
-        graph.append(breadcrumbs([("Home", BASE + "/"), ("Catalog", canonical_url("catalog.html")), (ttl, None)]))
+        image = og_image_rel("e/" + Path(rel).stem) or th or image
+        if e:
+            graph.append(entry_node(e, url, desc, image, ttl))
+        # mirrors the visible breadcrumb render_entries writes: Home › Catalog › <collection> › title
+        crumbs = [("Home", BASE + "/"), ("Catalog", canonical_url("catalog.html"))]
+        coll = (e.get("collection") or e.get("source_collection") or "") if e else ""
+        if coll:
+            try:
+                from build_collections import collection_name, collection_url
+                if (SITE / (collection_url(coll).lstrip("/") + ".html")).is_file():
+                    crumbs.append((collection_name(coll), BASE + collection_url(coll)))
+            except Exception:
+                pass
+        crumbs.append((ttl, None))
+        graph.append(breadcrumbs(crumbs))
 
-    return {"desc": desc, "og_type": og_type, "image": image or "og/default.png",
-            "image_is_og": bool(image and image.startswith("og/")), "graph": graph, "url": url, "og_title": ttl}
+    image = image or "og/default.png"
+    return {"desc": desc, "og_type": og_type, "image": image, "image_dims": image_dims(image),
+            "image_is_og": image.startswith("og/"), "graph": graph, "url": url, "og_title": ttl}
 
 
 def build_block(m: dict) -> str:
@@ -514,9 +996,11 @@ def build_block(m: dict) -> str:
              f'<meta property="og:description" content="{a(m["desc"])}">',
              f'<meta property="og:url" content="{a(m["url"])}">',
              f'<meta property="og:image" content="{a(img)}">']
-    if m["image_is_og"]:
-        lines += [f'<meta property="og:image:width" content="{OG_W}">',
-                  f'<meta property="og:image:height" content="{OG_H}">']
+    if m.get("image_dims"):
+        w, h = m["image_dims"]
+        lines += [f'<meta property="og:image:width" content="{w}">',
+                  f'<meta property="og:image:height" content="{h}">']
+    lines.append(f'<meta property="og:image:alt" content="{a(m["og_title"])}">')
     lines += ['<meta name="twitter:card" content="summary_large_image">',
               f'<meta name="twitter:title" content="{a(m["og_title"])}">',
               f'<meta name="twitter:description" content="{a(m["desc"])}">',
@@ -569,6 +1053,21 @@ def process(rel: str, c: Ctx, qmap: dict, title_log: dict) -> tuple[str, str, di
         head = head[: tm.start()] + f"<title>{html.escape(new_title, quote=False)}</title>" + head[tm.end():]
         title = new_title
         tm = re.search(r"<title>(.*?)</title>", head, re.S | re.I)
+    in_head = title
+    if rel.startswith("e/") and Path(rel).stem in c.entry_title_overrides():
+        title = c.entry_title_overrides()[Path(rel).stem]
+    if rel.startswith("deeper/"):   # keep the twin distinct from its guide: the marker goes first
+        base = re.sub(r"\s*[—–-]\s*Deeper Dive\s*$", "", strip_title_suffix(title), flags=re.I)
+        if not base.lower().startswith("deeper dive"):
+            base = "Deeper dive: " + base
+        title = base
+    fitted = fit_title(title)
+    if tm and fitted != in_head:    # title policy: <= TITLE_MAX chars, suffix only when it fits
+        head = head[: tm.start()] + f"<title>{html.escape(fitted, quote=False)}</title>" + head[tm.end():]
+        title = fitted
+        tm = re.search(r"<title>(.*?)</title>", head, re.S | re.I)
+    if c.fresh:
+        c.fresh.observe(rel, head + rest)
 
     meta = page_meta(rel, text, c, title)
     block = build_block(meta)
@@ -629,8 +1128,12 @@ def main() -> int:
     ap.add_argument("--check", action="store_true", help="dry run; exit 1 if any page would change")
     args = ap.parse_args()
 
-    c = Ctx()
+    fresh = Freshness()
+    c = Ctx(fresh)
     qmap = {q["page"]: q for q in c.queries}
+    titles: dict[str, str] = {}
+    descs: dict[str, str] = {}
+    faq_nodes = 0
     log_path = DATA / "seo" / "title_changes.json"
     title_log: dict = {}
     stats = defaultdict(lambda: Counter())
@@ -642,6 +1145,10 @@ def main() -> int:
         if not meta:
             stats[d]["no-head"] += 1
             continue
+        tm = re.search(r"<title>(.*?)</title>", new, re.S | re.I)
+        titles[rel] = html.unescape(tm.group(1)) if tm else ""
+        descs[rel] = meta["desc"]
+        faq_nodes += sum(1 for n in meta["graph"] if n.get("@type") == "FAQPage")
         if meta["desc"]:
             stats[d]["described"] += 1
         else:
@@ -673,6 +1180,20 @@ def main() -> int:
             if not args.check:
                 (SITE / rel).write_bytes(new.encode("utf-8"))
 
+    # freshness store + sitemap (lastmod = last real content change, not build date)
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from build_api import sitemap_xml
+    sm_new = sitemap_xml(fresh)
+    sm_path = SITE / "sitemap.xml"
+    sm_old = sm_path.read_text(encoding="utf-8") if sm_path.exists() else ""
+    if sm_new != sm_old:
+        would_change.append("sitemap.xml")
+    if not args.check:
+        fresh.save()
+        write_if_changed(sm_path, sm_new)
+    elif fresh.dirty:
+        would_change.append(str(HASHES_PATH.relative_to(ROOT)))
+
     if title_log and not args.check:
         prev = load_json(log_path, {}) or {}
         prev.update(title_log)
@@ -692,8 +1213,17 @@ def main() -> int:
         print(f"titles rewritten this run: {len(title_log)}")
         for rel, t in sorted(title_log.items()):
             print(f"  {rel}: {t['old']!r} -> {t['new']!r}")
+    lens = sorted(len(x) for x in titles.values())
+    dup_t = sum(n for n in Counter(titles.values()).values() if n > 1)
+    dup_d = Counter(v for v in descs.values() if v)
+    print(f"titles: {len(lens)} · max {lens[-1] if lens else 0} chars · > {TITLE_MAX}: "
+          f"{sum(1 for x in lens if x > TITLE_MAX)} · pages sharing a title: {dup_t}")
+    print(f"descriptions used on more than one page: {sum(1 for v in dup_d.values() if v > 1)} values "
+          f"({sum(v for v in dup_d.values() if v > 1)} pages) · FAQPage nodes: {faq_nodes}")
+    print(f"sitemap: {sm_new.count('<url>')} urls · freshness: {sum(1 for k in fresh.data if k.startswith('http'))} pages tracked, "
+          f"{sum(1 for r in fresh.data.values() if r.get('last_changed') == fresh.today)} changed today")
     if args.check:
-        print(f"[check] {len(would_change)} page(s) would change")
+        print(f"[check] {len(would_change)} page(s) would change" + (f": {would_change[:10]}" if would_change else ""))
         return 1 if would_change else 0
     return 0
 

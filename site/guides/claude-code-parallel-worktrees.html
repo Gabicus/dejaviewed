@@ -1,25 +1,25 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow · DejaViewed</title>
+<title>Claude Code Parallel Worktrees · DejaViewed</title>
 <!-- seo:start -->
 <link rel="canonical" href="https://dejaviewed.dev/guides/claude-code-parallel-worktrees">
-<meta name="description" content="Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree. It is, in his own words, &quot;the single…">
+<meta name="description" content="Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree.">
 <meta property="og:site_name" content="DejaViewed">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Claude Code Parallel Worktrees — Boris Cherny&#x27;s Canonical Workflow">
-<meta property="og:description" content="Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree. It is, in his own words, &quot;the single…">
+<meta property="og:title" content="Claude Code Parallel Worktrees">
+<meta property="og:description" content="Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree.">
 <meta property="og:url" content="https://dejaviewed.dev/guides/claude-code-parallel-worktrees">
 <meta property="og:image" content="https://dejaviewed.dev/og/claude-code-parallel-worktrees.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Claude Code Parallel Worktrees">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Claude Code Parallel Worktrees — Boris Cherny&#x27;s Canonical Workflow">
-<meta name="twitter:description" content="Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree. It is, in his own words, &quot;the single…">
+<meta name="twitter:title" content="Claude Code Parallel Worktrees">
+<meta name="twitter:description" content="Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree.">
 <meta name="twitter:image" content="https://dejaviewed.dev/og/claude-code-parallel-worktrees.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/claude-code-parallel-worktrees#article","headline":"Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow","description":"Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree. It is, in his own words, \"the single…","url":"https://dejaviewed.dev/guides/claude-code-parallel-worktrees","mainEntityOfPage":"https://dejaviewed.dev/guides/claude-code-parallel-worktrees","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/claude-code-parallel-worktrees.jpg","about":[{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"},{"@type":"Thing","name":"BigQuery"},{"@type":"Thing","name":"Ghostty"},{"@type":"Thing","name":"Slack"},{"@type":"Thing","name":"git"},{"@type":"Thing","name":"tmux"},{"@type":"Thing","name":"Anthropic"}],"abstract":"Stand up a working 3-5 session parallel Claude Code workflow on one real repo using git worktrees, with automatic per-worktree ports and databases, a status view of all worktrees, and a measured answer to whether it actually raised your merged-PR throughput."},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/claude-code-parallel-worktrees#faq","mainEntity":[{"@type":"Question","name":"Did I prove two dev servers ran simultaneously on different ports, or just assume it from .env.local?","acceptedAnswer":{"@type":"Answer","text":"Two dev servers from different worktrees both return HTTP 200 when curled at the same moment on their assigned ports."}},{"@type":"Question","name":"What happens when two task names hash to the same port, and does the script detect it?","acceptedAnswer":{"@type":"Answer","text":"Step 2, Build the spawn script with isolation: One command creates an isolated, ready-to-run worktree with its own port, database, and Claude session. Expect: An executable script under 150 lines that spawns a worktree in under two minutes, with shellcheck clean."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","logo":"https://dejaviewed.dev/og/default.png","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"],"founder":{"@id":"https://dejaviewed.dev/#victor"},"publishingPrinciples":"https://dejaviewed.dev/method"},{"@type":"Person","@id":"https://dejaviewed.dev/#victor","name":"Victor","url":"https://www.1gabe.com/","sameAs":["https://github.com/Gabicus","https://instagram.com/6ab3"],"contactPoint":{"@type":"ContactPoint","url":"https://www.1gabe.com/contact/","contactType":"general"}},{"@type":"Article","@id":"https://dejaviewed.dev/guides/claude-code-parallel-worktrees#article","headline":"Claude Code Parallel Worktrees","description":"Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree.","url":"https://dejaviewed.dev/guides/claude-code-parallel-worktrees","mainEntityOfPage":"https://dejaviewed.dev/guides/claude-code-parallel-worktrees","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@id":"https://dejaviewed.dev/#victor"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/claude-code-parallel-worktrees.jpg","about":[{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"},{"@type":"Thing","name":"BigQuery"}],"mentions":[{"@type":"Thing","name":"Ghostty"},{"@type":"Thing","name":"Slack"},{"@type":"Thing","name":"git"},{"@type":"Thing","name":"tmux"},{"@type":"Thing","name":"Anthropic"}],"abstract":"Stand up a working 3-5 session parallel Claude Code workflow on one real repo using git worktrees, with automatic per-worktree ports and databases, a status view of all worktrees, and a measured answer to whether it actually raised your merged-PR throughput."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Claude Code Parallel Worktrees"}]}]}</script>
 <!-- seo:end -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
 <style>
@@ -67,221 +67,314 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <script>DV.mountHeader(document.body, 'home');</script>
 <article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
-  <div id="guide-body"></div>
-</article>
-<footer class="site"><div class="wrap"><a href="../catalog.html#post-DVMmXlME6mZ">← Back to DejaViewed</a> · <a href="../e/DVMmXlME6mZ.html">Entry page</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
-<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+  <div id="guide-body" data-pagefind-body data-pagefind-filter="kind:Guide"><!-- body:start -->
 <h1>Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow</h1>
-<p>In short: Stand up a working 3-5 session parallel Claude Code workflow on one real repo using git worktrees, with automatic per-worktree ports and databases, a status view of all worktrees, and a measured answer to whether it actually raised your merged-PR throughput.</p>
-<p>Category: Claude Code workflow / productivity Confidence: High — documented by Claude Code's creator on X/Threads, shipped as a native --worktree flag, and covered in official Anthropic docs. Primary sources:</p>
-<p>Boris Cherny on X, "Do more in parallel": https://x.com/bcherny/status/2017742743125299476</p>
-<p>Boris Cherny on X, "Use claude --worktree for isolation": https://x.com/bcherny/status/2025007394967957720</p>
-<p>Anthropic official docs, "Orchestrate teams of Claude Code sessions": https://code.claude.com/docs/en/agent-teams</p>
-<p>"How Boris Uses Claude Code": https://howborisusesclaudecode.com/</p>
-<p>Community guides: shareuhack.com, thepromptshelf.dev, botmonster.com</p>
-<h2>What it is</h2>
-<p>Boris Cherny — creator of Claude Code — runs 3 to 15 Claude Code sessions in parallel, each in its own git worktree. It is, in his own words, "the single biggest productivity unlock" and "the top tip from the team." This pattern became the canonical Anthropic-internal workflow in late 2025 / early 2026 and got native CLI support via the claude --worktree flag.</p>
-<p>The core insight is boring and load-bearing: LLM coding is I/O-bound on the human, not the machine. You spend 80% of your time reviewing, 20% typing the next prompt. If you run one Claude at a time, the model is idle while you read. If you run five, you are always reviewing something while the other four work. This is not "multi-agent orchestration" — it is single-operator parallelism. You are a director, not a coder.</p>
-<p>Git worktrees are the enabling primitive because they give each session its own working directory on its own branch, sharing the same .git object store. Five worktrees = five isolated checkouts of the same repo, zero disk duplication of git history, zero merge conflicts between running sessions.</p>
-<h2>How it works</h2>
-<h3>The git worktree primitive</h3>
-<p>git worktree is a vanilla git feature from 2015 that almost nobody uses. It lets one repo have multiple working directories:</p>
-<h1>From inside a normal repo</h1>
-<p>git worktree add ../myproject-feature-a feature-a # new branch git worktree add ../myproject-bugfix main # existing branch git worktree list # show all git worktree remove ../myproject-feature-a # clean up</p>
-<p>Each worktree is a full checkout with its own HEAD, its own index, its own untracked files. They share the .git directory (via .git file pointing back to the main repo), so object storage is deduplicated. Branch safety is enforced: you can't check out the same branch in two worktrees simultaneously.</p>
-<h3>The Boris pattern, step by step</h3>
-<p>Start from a clean main. git checkout main &amp;&amp; git pull.</p>
-<p>Spin up N worktrees, one per independent task:</p>
-<p>git worktree add ../proj-auth -b feat/auth git worktree add ../proj-billing -b feat/billing git worktree add ../proj-refactor -b chore/refactor-api git worktree add ../proj-bugfix -b fix/issue-412</p>
-<p>Open a terminal tab (or tmux pane) per worktree and launch Claude in each:</p>
-<p>cd ../proj-auth &amp;&amp; claude cd ../proj-billing &amp;&amp; claude cd ../proj-refactor &amp;&amp; claude cd ../proj-bugfix &amp;&amp; claude</p>
-<p>Prompt each session with one focused task. One task = one worktree = one session. Do not multiplex tasks inside a single session.</p>
-<p>Cycle through the sessions while they work. When one finishes, review, commit, push, open a PR, then either give it the next task or git worktree remove it.</p>
-<p>Merge back via normal PRs. The worktrees never touch each other's filesystems; all coordination happens through git + PRs, the same as any human team.</p>
-<h3>The claude --worktree shortcut</h3>
+<blockquote>
+<p><strong>In short:</strong> Stand up a working 3-5 session parallel Claude Code workflow on one real repo using git worktrees, with automatic per-worktree ports and databases, a status view of all worktrees, and a measured answer to whether it actually raised your merged-PR throughput.</p>
+</blockquote>
+<p><strong>Category:</strong> Claude Code workflow / productivity
+<strong>Confidence:</strong> High — documented by Claude Code's creator on X/Threads, shipped as a native <code>--worktree</code> flag, and covered in official Anthropic docs.
+<strong>Primary sources:</strong></p>
+<ul>
+<li>Boris Cherny on X, &quot;Do more in parallel&quot;: <a href="https://x.com/bcherny/status/2017742743125299476" target="_blank" rel="noopener">https://x.com/bcherny/status/2017742743125299476</a></li>
+<li>Boris Cherny on X, &quot;Use claude --worktree for isolation&quot;: <a href="https://x.com/bcherny/status/2025007394967957720" target="_blank" rel="noopener">https://x.com/bcherny/status/2025007394967957720</a></li>
+<li>Anthropic official docs, &quot;Orchestrate teams of Claude Code sessions&quot;: <a href="https://code.claude.com/docs/en/agent-teams" target="_blank" rel="noopener">https://code.claude.com/docs/en/agent-teams</a></li>
+<li>&quot;How Boris Uses Claude Code&quot;: <a href="https://howborisusesclaudecode.com/" target="_blank" rel="noopener">https://howborisusesclaudecode.com/</a></li>
+<li>Community guides: shareuhack.com, thepromptshelf.dev, botmonster.com</li>
+</ul>
+<hr />
+<h2 id="what-it-is">What it is</h2>
+<p>Boris Cherny — creator of Claude Code — runs <strong>3 to 15 Claude Code sessions in parallel</strong>, each in its own git worktree. It is, in his own words, &quot;the single biggest productivity unlock&quot; and &quot;the top tip from the team.&quot; This pattern became the canonical Anthropic-internal workflow in late 2025 / early 2026 and got native CLI support via the <code>claude --worktree</code> flag.</p>
+<p>The core insight is boring and load-bearing: <strong>LLM coding is I/O-bound on the human, not the machine.</strong> You spend 80% of your time reviewing, 20% typing the next prompt. If you run one Claude at a time, the model is idle while you read. If you run five, you are always reviewing <em>something</em> while the other four work. This is not &quot;multi-agent orchestration&quot; — it is single-operator parallelism. You are a director, not a coder.</p>
+<p>Git worktrees are the enabling primitive because they give each session its own working directory on its own branch, sharing the same <code>.git</code> object store. Five worktrees = five isolated checkouts of the same repo, zero disk duplication of git history, zero merge conflicts between running sessions.</p>
+<hr />
+<h2 id="how-it-works">How it works</h2>
+<h3 id="the-git-worktree-primitive">The git worktree primitive</h3>
+<p><code>git worktree</code> is a vanilla git feature from 2015 that almost nobody uses. It lets one repo have multiple working directories:</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash"># From inside a normal repo
+git worktree add ../myproject-feature-a feature-a     # new branch
+git worktree add ../myproject-bugfix main             # existing branch
+git worktree list                                      # show all
+git worktree remove ../myproject-feature-a            # clean up
+</code></pre></div>
+<p>Each worktree is a full checkout with its own <code>HEAD</code>, its own index, its own untracked files. They share the <code>.git</code> directory (via <code>.git</code> file pointing back to the main repo), so object storage is deduplicated. Branch safety is enforced: you can't check out the same branch in two worktrees simultaneously.</p>
+<h3 id="the-boris-pattern-step-by-step">The Boris pattern, step by step</h3>
+<ol>
+<li><strong>Start from a clean main.</strong> <code>git checkout main &amp;&amp; git pull</code>.</li>
+<li><strong>Spin up N worktrees</strong>, one per independent task:<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">git worktree add ../proj-auth        -b feat/auth
+git worktree add ../proj-billing     -b feat/billing
+git worktree add ../proj-refactor    -b chore/refactor-api
+git worktree add ../proj-bugfix      -b fix/issue-412
+</code></pre></div>
+</li>
+<li><strong>Open a terminal tab (or tmux pane) per worktree</strong> and launch Claude in each:<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">cd ../proj-auth     &amp;&amp; claude
+cd ../proj-billing  &amp;&amp; claude
+cd ../proj-refactor &amp;&amp; claude
+cd ../proj-bugfix   &amp;&amp; claude
+</code></pre></div>
+</li>
+<li><strong>Prompt each session with one focused task.</strong> One task = one worktree = one session. Do not multiplex tasks inside a single session.</li>
+<li><strong>Cycle through the sessions while they work.</strong> When one finishes, review, commit, push, open a PR, then either give it the next task or <code>git worktree remove</code> it.</li>
+<li><strong>Merge back via normal PRs.</strong> The worktrees never touch each other's filesystems; all coordination happens through git + PRs, the same as any human team.</li>
+</ol>
+<h3 id="the-claude-worktree-shortcut">The <code>claude --worktree</code> shortcut</h3>
 <p>In late 2025 / early 2026 Anthropic shipped native worktree support so you do not have to manage them by hand:</p>
-<p>claude --worktree # auto-creates a worktree, Claude picks the name claude --worktree my-feature-name # explicit name claude --worktree --tmux # also launch inside its own tmux session</p>
-<p>This handles the git worktree add, cd into it, and launches Claude in one command. The Desktop app has had this for longer; it was ported to the CLI because the team realized everyone was doing it manually.</p>
-<h3>Sub-agents with worktree isolation</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">claude --worktree                    # auto-creates a worktree, Claude picks the name
+claude --worktree my-feature-name    # explicit name
+claude --worktree --tmux             # also launch inside its own tmux session
+</code></pre></div>
+<p>This handles the <code>git worktree add</code>, <code>cd</code> into it, and launches Claude in one command. The Desktop app has had this for longer; it was ported to the CLI because the team realized everyone was doing it manually.</p>
+<h3 id="sub-agents-with-worktree-isolation">Sub-agents with worktree isolation</h3>
 <p>The Task tool (sub-agents) can also be worktree-isolated. In your sub-agent frontmatter:</p>
-<p>name: migration-worker isolation: worktree</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-yaml">---
+name: migration-worker
+isolation: worktree
+---
+</code></pre></div>
 <p>When dispatched, the sub-agent gets its own worktree. When it finishes, the worktree path and branch name are returned to the parent agent for review/merge. This is the power move for large batched changes — migrations, codemod-style refactors, mass dependency bumps — where you want 10 sub-agents each handling a subdirectory without stomping on each other.</p>
-<p>This is also the pattern behind Anthropic's "Agent Teams" feature (code.claude.com/docs/en/agent-teams): teammates coordinate through git commits in their respective worktrees.</p>
-<h2>Quick start — 3-worktree minimum viable parallel workflow</h2>
-<h1>1. From your project root on main</h1>
-<p>cd ~/projects/myproject git checkout main &amp;&amp; git pull</p>
-<h1>2. Create three worktrees beside the main checkout</h1>
-<p>git worktree add ../myproject-a -b task/a git worktree add ../myproject-b -b task/b git worktree add ../myproject-c -b task/c</p>
-<h1>3. Open three terminal tabs (or tmux windows) and launch Claude in each</h1>
-<h1>tab 1</h1>
-<p>cd ../myproject-a &amp;&amp; claude</p>
-<h1>tab 2</h1>
-<p>cd ../myproject-b &amp;&amp; claude</p>
-<h1>tab 3</h1>
-<p>cd ../myproject-c &amp;&amp; claude</p>
-<h1>4. Prompt each with one focused task. Cycle between tabs.</h1>
-<h1>5. When a task is done: review, commit, push, open PR</h1>
-<p>cd ../myproject-a git add -A &amp;&amp; git commit -m "feat: task a" git push -u origin task/a gh pr create --fill</p>
-<h1>6. Clean up after merge</h1>
-<p>git worktree remove ../myproject-a</p>
+<p>This is also the pattern behind Anthropic's &quot;Agent Teams&quot; feature (<code>code.claude.com/docs/en/agent-teams</code>): teammates coordinate through git commits in their respective worktrees.</p>
+<hr />
+<h2 id="quick-start-3-worktree-minimum-viable-parallel-workflow">Quick start — 3-worktree minimum viable parallel workflow</h2>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash"># 1. From your project root on main
+cd ~/projects/myproject
+git checkout main &amp;&amp; git pull
+
+# 2. Create three worktrees beside the main checkout
+git worktree add ../myproject-a -b task/a
+git worktree add ../myproject-b -b task/b
+git worktree add ../myproject-c -b task/c
+
+# 3. Open three terminal tabs (or tmux windows) and launch Claude in each
+# tab 1
+cd ../myproject-a &amp;&amp; claude
+# tab 2
+cd ../myproject-b &amp;&amp; claude
+# tab 3
+cd ../myproject-c &amp;&amp; claude
+
+# 4. Prompt each with one focused task. Cycle between tabs.
+
+# 5. When a task is done: review, commit, push, open PR
+cd ../myproject-a
+git add -A &amp;&amp; git commit -m "feat: task a"
+git push -u origin task/a
+gh pr create --fill
+
+# 6. Clean up after merge
+git worktree remove ../myproject-a
+</code></pre></div>
 <p>Or, the native way:</p>
-<p>claude --worktree task-a claude --worktree task-b claude --worktree task-c</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">claude --worktree task-a
+claude --worktree task-b
+claude --worktree task-c
+</code></pre></div>
 <p>Each command spawns a fresh Claude session in its own worktree in one line.</p>
-<h3>With tmux (recommended for 5+ sessions)</h3>
+<h3 id="with-tmux-recommended-for-5-sessions">With tmux (recommended for 5+ sessions)</h3>
 <p>Beyond ~4 terminal tabs, tmux becomes essential — you want a single keystroke to cycle through sessions and a persistent layout that survives terminal closure.</p>
-<p>tmux new -s claude-parallel</p>
-<h1>inside tmux</h1>
-<p>claude --worktree --tmux task-a # spawns in its own tmux window claude --worktree --tmux task-b claude --worktree --tmux task-c</p>
-<h1>Ctrl-b n / Ctrl-b p to cycle windows</h1>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-bash">tmux new -s claude-parallel
+# inside tmux
+claude --worktree --tmux task-a    # spawns in its own tmux window
+claude --worktree --tmux task-b
+claude --worktree --tmux task-c
+# Ctrl-b n / Ctrl-b p to cycle windows
+</code></pre></div>
 <p>Tools worth knowing:</p>
-<p>workmux (github.com/raine/workmux) — turns "create worktree + open tmux window + cd in + launch Claude" into one command.</p>
-<p>claude-tmux (github.com/nielsgroen/claude-tmux) — tmux popup TUI that manages multiple Claude Code sessions, worktrees, and PRs from one view.</p>
-<p>muxtree — simpler alternative with the same idea.</p>
-<h2>When to use it (and when not to)</h2>
-<p>Use parallel worktrees when:</p>
-<p>You have 2+ genuinely independent tasks — different files, different concerns, no shared state.</p>
-<p>You are doing a large migration where chunks can be parallelized (e.g. "convert all 40 React class components to function components").</p>
-<p>You are exploring N alternative approaches to the same problem and want to compare results side-by-side.</p>
-<p>You are bug-hunting across multiple issues and want each fix in its own branch/PR.</p>
-<p>You are reviewing work on one task while another runs — the "director mode" benefit.</p>
-<p>Do not use parallel worktrees when:</p>
-<p>Tasks depend on each other — one needs the other's output. Chain them in a single session instead.</p>
-<p>You are exploring an unfamiliar codebase — you need focus, not five things shouting at you.</p>
-<p>You are debugging a subtle issue — context-switching kills debugging flow.</p>
-<p>You have shared global state outside git (a single dev database, a single running server on a single port). Two worktrees can't both npm run dev on port 3000.</p>
-<p>You are on a laptop with &lt;32GB RAM and each session spawns heavy dev servers. Each worktree is a full checkout; if each runs webpack, you will OOM.</p>
-<h2>What breaks at scale</h2>
+<ul>
+<li><strong><code>workmux</code></strong> (github.com/raine/workmux) — turns &quot;create worktree + open tmux window + cd in + launch Claude&quot; into one command.</li>
+<li><strong><code>claude-tmux</code></strong> (github.com/nielsgroen/claude-tmux) — tmux popup TUI that manages multiple Claude Code sessions, worktrees, and PRs from one view.</li>
+<li><strong><code>muxtree</code></strong> — simpler alternative with the same idea.</li>
+</ul>
+<hr />
+<h2 id="when-to-use-it-and-when-not-to">When to use it (and when not to)</h2>
+<p><strong>Use parallel worktrees when:</strong></p>
+<ul>
+<li>You have <strong>2+ genuinely independent tasks</strong> — different files, different concerns, no shared state.</li>
+<li>You are doing a <strong>large migration</strong> where chunks can be parallelized (e.g. &quot;convert all 40 React class components to function components&quot;).</li>
+<li>You are exploring <strong>N alternative approaches</strong> to the same problem and want to compare results side-by-side.</li>
+<li>You are <strong>bug-hunting across multiple issues</strong> and want each fix in its own branch/PR.</li>
+<li>You are <strong>reviewing work on one task while another runs</strong> — the &quot;director mode&quot; benefit.</li>
+</ul>
+<p><strong>Do not use parallel worktrees when:</strong></p>
+<ul>
+<li>Tasks <strong>depend on each other</strong> — one needs the other's output. Chain them in a single session instead.</li>
+<li>You are <strong>exploring an unfamiliar codebase</strong> — you need focus, not five things shouting at you.</li>
+<li>You are <strong>debugging a subtle issue</strong> — context-switching kills debugging flow.</li>
+<li>You have <strong>shared global state</strong> outside git (a single dev database, a single running server on a single port). Two worktrees can't both <code>npm run dev</code> on port 3000.</li>
+<li>You are on a <strong>laptop with &lt;32GB RAM</strong> and each session spawns heavy dev servers. Each worktree is a full checkout; if each runs webpack, you will OOM.</li>
+</ul>
+<hr />
+<h2 id="what-breaks-at-scale">What breaks at scale</h2>
 <p>Running 10–15 parallel sessions surfaces real problems:</p>
-<p>Port collisions. Dev servers default to the same port. Fix: env vars per worktree (PORT=3001, PORT=3002), or a port-picker script.</p>
-<p>Database state. SQLite is fine (each worktree gets its own file). Postgres/Mysql with a shared dev DB is a disaster — migrations from one worktree break another. Use per-worktree Docker containers, or schema namespaces.</p>
-<p>node_modules duplication. Each worktree gets its own node_modules, which at 500MB–2GB × 10 = bad. Fix: pnpm with shared-workspace-lockfile, or a global store (pnpm store, yarn berry pnp).</p>
-<p>Review bottleneck shifts to you. At ~5 sessions the model is no longer the bottleneck — you are. More parallelism past your review capacity is wasted.</p>
-<p>Context fragmentation in your head. Switching between 10 tasks is exhausting. Most experienced users settle around 3–5 concurrent worktrees, not 15.</p>
-<p>Git hooks that assume one worktree. Pre-commit hooks that write to a shared cache can race. Configure hooks to be worktree-aware.</p>
-<p>IDE confusion. VS Code's git extension can get confused by worktrees; it sometimes shows the wrong branch. Open each worktree as its own window.</p>
-<p>CLAUDE.md drift. If each worktree edits CLAUDE.md, you get conflicts on merge. Convention: only edit CLAUDE.md on main, never in feature worktrees.</p>
-<p>API rate limits / billing. 10 parallel Claude sessions = 10x token spend. On a subscription plan you will hit rate limits fast. Monitor ~/.claude/usage if available.</p>
-<p>Merge conflicts from adjacent edits. If two sessions both edit package.json, you will merge-conflict. Plan tasks to touch disjoint file sets.</p>
-<h2>What we could build with it</h2>
-<p>A spawn-parallel.sh script that takes a list of task descriptions and spawns N worktrees + Claude sessions + tmux windows in one command, with auto port assignment per worktree.</p>
-<p>A review dashboard (tmux statusbar or small TUI) showing the git status of all active worktrees so you know at a glance which ones are ready for review.</p>
-<p>A swarm runner that takes one large migration task, decomposes it into N independent chunks, spawns N worktrees, and reports back when all are done — essentially the Boris pattern behind the /swarm skill.</p>
-<p>A CLAUDE.md rule enforcing "never edit CLAUDE.md outside main" to avoid merge churn.</p>
-<p>A per-worktree env injector that sets PORT, DATABASE_URL, and REDIS_URL to non-colliding values automatically based on the worktree name hash.</p>
-<p>Integration with existing /crank and /codex-team skills: use worktree isolation as the default execution substrate for any multi-task epic.</p>
-<h2>Gotchas and limits</h2>
-<p>git worktree add refuses to check out a branch already checked out elsewhere — this is a feature, not a bug. If you need two worktrees on the same branch, one of them must detach (--detach).</p>
-<p>Worktrees share hooks. Husky/pre-commit hooks live in .git/hooks which is shared. If a hook writes to a cache directory, make that cache worktree-scoped.</p>
-<p>git worktree remove refuses to delete a dirty worktree. Use --force if you really want to, but prefer committing or stashing first.</p>
-<p>Sub-module behavior is awkward. Each worktree initializes its own submodules; this can double disk use.</p>
-<p>The --worktree flag is relatively new. On older Claude Code versions (pre late-2025) you have to do the manual git worktree add dance.</p>
-<p>Native worktree support in the Desktop app predates the CLI. If you use the Desktop app, you already have this; the CLI caught up later.</p>
-<p>The single biggest mistake newcomers make: running parallel sessions on the same task, racing them. Don't. One session per task. Parallelism is across independent tasks, not across attempts at the same task.</p>
-<p>Throughput gains cap around 3-5x, not 15x. Boris personally runs "3-5 at once"; the "10-15" number is the team's ceiling, not a target. Review bandwidth is the binding constraint.</p>
-<h2>Bottom line</h2>
-<p>claude --worktree is the single highest-leverage workflow change you can make to Claude Code usage. Two commands — git worktree add + claude — turn you from a serial coder into a director of 3-5 concurrent agents. Start with 3, add a 4th when you feel idle between reviews, stop when review stops being fun. Use tmux once you exceed 4. Never run parallel sessions on tasks that share state. The gains come from your own time being the bottleneck, not the model's.</p>
-<h2>Prompt system — run this yourself</h2>
+<ol>
+<li><strong>Port collisions.</strong> Dev servers default to the same port. Fix: env vars per worktree (<code>PORT=3001</code>, <code>PORT=3002</code>), or a port-picker script.</li>
+<li><strong>Database state.</strong> SQLite is fine (each worktree gets its own file). Postgres/Mysql with a shared dev DB is a disaster — migrations from one worktree break another. Use per-worktree Docker containers, or schema namespaces.</li>
+<li><strong><code>node_modules</code> duplication.</strong> Each worktree gets its own <code>node_modules</code>, which at 500MB–2GB × 10 = bad. Fix: pnpm with <code>shared-workspace-lockfile</code>, or a global store (<code>pnpm store</code>, <code>yarn berry pnp</code>).</li>
+<li><strong>Review bottleneck shifts to you.</strong> At ~5 sessions the model is no longer the bottleneck — <em>you</em> are. More parallelism past your review capacity is wasted.</li>
+<li><strong>Context fragmentation in your head.</strong> Switching between 10 tasks is exhausting. Most experienced users settle around 3–5 concurrent worktrees, not 15.</li>
+<li><strong>Git hooks that assume one worktree.</strong> Pre-commit hooks that write to a shared cache can race. Configure hooks to be worktree-aware.</li>
+<li><strong>IDE confusion.</strong> VS Code's git extension can get confused by worktrees; it sometimes shows the wrong branch. Open each worktree as its own window.</li>
+<li><strong>CLAUDE.md drift.</strong> If each worktree edits CLAUDE.md, you get conflicts on merge. Convention: only edit CLAUDE.md on main, never in feature worktrees.</li>
+<li><strong>API rate limits / billing.</strong> 10 parallel Claude sessions = 10x token spend. On a subscription plan you will hit rate limits fast. Monitor <code>~/.claude/usage</code> if available.</li>
+<li><strong>Merge conflicts from adjacent edits.</strong> If two sessions both edit <code>package.json</code>, you will merge-conflict. Plan tasks to touch disjoint file sets.</li>
+</ol>
+<hr />
+<h2 id="what-we-could-build-with-it">What we could build with it</h2>
+<ul>
+<li><strong>A <code>spawn-parallel.sh</code> script</strong> that takes a list of task descriptions and spawns N worktrees + Claude sessions + tmux windows in one command, with auto port assignment per worktree.</li>
+<li><strong>A review dashboard</strong> (tmux statusbar or small TUI) showing the git status of all active worktrees so you know at a glance which ones are ready for review.</li>
+<li><strong>A swarm runner</strong> that takes one large migration task, decomposes it into N independent chunks, spawns N worktrees, and reports back when all are done — essentially the Boris pattern behind the <code>/swarm</code> skill.</li>
+<li><strong>A CLAUDE.md rule</strong> enforcing &quot;never edit CLAUDE.md outside main&quot; to avoid merge churn.</li>
+<li><strong>A per-worktree env injector</strong> that sets <code>PORT</code>, <code>DATABASE_URL</code>, and <code>REDIS_URL</code> to non-colliding values automatically based on the worktree name hash.</li>
+<li><strong>Integration with existing <code>/crank</code> and <code>/codex-team</code></strong> skills: use worktree isolation as the default execution substrate for any multi-task epic.</li>
+</ul>
+<hr />
+<h2 id="gotchas-and-limits">Gotchas and limits</h2>
+<ul>
+<li><strong><code>git worktree add</code> refuses to check out a branch already checked out elsewhere</strong> — this is a feature, not a bug. If you need two worktrees on the same branch, one of them must detach (<code>--detach</code>).</li>
+<li><strong>Worktrees share hooks.</strong> Husky/pre-commit hooks live in <code>.git/hooks</code> which is shared. If a hook writes to a cache directory, make that cache worktree-scoped.</li>
+<li><strong><code>git worktree remove</code> refuses to delete a dirty worktree.</strong> Use <code>--force</code> if you really want to, but prefer committing or stashing first.</li>
+<li><strong>Sub-module behavior is awkward.</strong> Each worktree initializes its own submodules; this can double disk use.</li>
+<li><strong>The <code>--worktree</code> flag is relatively new.</strong> On older Claude Code versions (pre late-2025) you have to do the manual <code>git worktree add</code> dance.</li>
+<li><strong>Native worktree support in the Desktop app predates the CLI.</strong> If you use the Desktop app, you already have this; the CLI caught up later.</li>
+<li><strong>The single biggest mistake</strong> newcomers make: running parallel sessions <em>on the same task</em>, racing them. Don't. One session per task. Parallelism is across independent tasks, not across attempts at the same task.</li>
+<li><strong>Throughput gains cap around 3-5x, not 15x.</strong> Boris personally runs &quot;3-5 at once&quot;; the &quot;10-15&quot; number is the team's ceiling, not a target. Review bandwidth is the binding constraint.</li>
+</ul>
+<hr />
+<h2 id="bottom-line">Bottom line</h2>
+<p><code>claude --worktree</code> is the single highest-leverage workflow change you can make to Claude Code usage. Two commands — <code>git worktree add</code> + <code>claude</code> — turn you from a serial coder into a director of 3-5 concurrent agents. Start with 3, add a 4th when you feel idle between reviews, stop when review stops being fun. Use tmux once you exceed 4. Never run parallel sessions on tasks that share state. The gains come from your own time being the bottleneck, not the model's.</p>
+<hr />
+<h2 id="prompt-system">Prompt system — run this yourself</h2>
 <p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
-<p>Mission. Stand up a working 3-5 session parallel Claude Code workflow on one real repo using git worktrees, with automatic per-worktree ports and databases, a status view of all worktrees, and a measured answer to whether it actually raised your merged-PR throughput. Done means at least three independent tasks ran concurrently in isolated worktrees, merged through normal PRs without cross-session conflicts, and a before/after log shows the throughput and review-time numbers for your own work.</p>
-<h3>1 · Deeper, not bigger</h3>
+<p><strong>Mission.</strong> Stand up a working 3-5 session parallel Claude Code workflow on one real repo using git worktrees, with automatic per-worktree ports and databases, a status view of all worktrees, and a measured answer to whether it actually raised your merged-PR throughput. Done means at least three independent tasks ran concurrently in isolated worktrees, merged through normal PRs without cross-session conflicts, and a before/after log shows the throughput and review-time numbers for your own work.</p>
+<h3 id="1-deeper-not-bigger">1 · Deeper, not bigger</h3>
 <p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
-<p>What a top professional would do (that you didn't ask for): An engineering lead would not start by opening fifteen tabs; they would first measure their own baseline (PRs merged per day, minutes of review per PR, idle minutes waiting on the model), then decompose a backlog into tasks with provably disjoint file sets before spawning anything. They would make the environment worktree-safe up front: ports, databases, caches, .env files, and git hooks keyed to the worktree, because those collisions are what actually break parallel runs. And they would treat the guide's own warning seriously: throughput caps around 3-5x because human review is the binding constraint, so the experiment is about finding your personal ceiling.</p>
-<p>Rawest material to start from: Boris Cherny's original posts (x.com/bcherny/status/2017742743125299476 and x.com/bcherny/status/2025007394967957720); the official agent teams page at code.claude.com/docs/en/agent-teams and the CLI reference for --worktree on your installed version (claude --help); the git-worktree man page (git help worktree), especially sections on locking, pruning, and --detach; your own repo's package.json, docker-compose.yml, .env.example, and .husky or .git/hooks, which determine what collides; and your own git log for the last 30 days as the baseline.</p>
-<p>Methods and tools: git worktree add/list/remove/prune/lock; claude --worktree and --tmux if present on your version; tmux with one window per worktree; a port allocator that hashes the worktree name into a range (e.g. 3100-3999) and writes PORT, DATABASE_URL, REDIS_URL into .env.local; per-worktree Postgres via docker compose -p or schema namespaces, SQLite files per worktree; pnpm's content-addressed store to avoid node_modules duplication; gh pr create --fill and gh pr list --json for throughput counts; git diff --name-only main... to verify disjoint file sets.</p>
-<p>What proves it right (other than you or the model): GitHub itself is the oracle: gh pr list --state merged --author @me --json mergedAt,createdAt over the experiment week versus the baseline week gives merged-PR count and cycle time. CI results on each PR show nothing broke from isolation leaks. git worktree list and docker ps show no orphaned worktrees or containers after cleanup. Two dev servers answering on different ports at the same time (curl both) prove port isolation.</p>
-<p>Rewritten prompt — ask for exactly that:</p>
-<p>Act as an engineering lead setting up parallel Claude Code work on my repo at . First measure my baseline: use gh pr list --state merged --author @me --json number,createdAt,mergedAt --limit 100 to compute merged PRs per day and median cycle time over the last 30 days. Then inspect the repo for collision points: dev-server ports, database URLs, Redis, caches, .env files, git hooks (husky, pre-commit), and node_modules size. Check claude --help for the --worktree and --tmux flags on my installed version and document exactly where worktrees are created and what gets copied. Build scripts/wt-spawn.sh that takes a task name, creates a worktree on a new branch, assigns a deterministic port from a hash of the name, creates an isolated database (docker compose project or SQLite file), writes .env.local, installs dependencies via the shared pnpm store, and opens a tmux window running Claude. Build scripts/wt-status.sh showing each worktree's branch, dirty count, ahead/behind, PR state, and port. Build scripts/wt-clean.sh that removes merged worktrees and their containers. Then help me pick three tasks from my backlog whose file sets are disjoint (prove it with a file-ownership list), run them concurrently for one week, log timestamps to worktree-log.csv, and report merged-PR throughput and review time versus baseline. Flag any guide claim (like the 3-5x cap) my data contradicts.</p>
-<h3>2 · One-shot prompt</h3>
-<p>ROLE AND STANCE You are an engineering lead making one developer's repo safe and fast for parallel Claude Code sessions, following Boris Cherny's worktree pattern but measuring whether it works for this person. You prefer boring, deterministic scripts over clever orchestration. You do not trust throughput claims you have not measured.</p>
-<p>CONTEXT</p>
-<p>Pattern: one task = one git worktree = one Claude session; all coordination via branches and PRs. Boris runs 3-5 at once; 10-15 is the team ceiling, not a target. Review bandwidth is the binding constraint.</p>
-<p>Primitives: git worktree add ../proj-x -b feat/x, git worktree list, git worktree remove, git worktree prune; native claude --worktree [name] and --tmux (verify on the installed version with claude --help); subagent frontmatter isolation: worktree (verify it exists in the installed version's subagent docs).</p>
-<p>Tools named in the guide: raine/workmux, nielsgroen/claude-tmux, muxtree, tmux.</p>
-<p>Known collisions from the guide: dev-server ports, shared Postgres/MySQL dev DB, node_modules at 500 MB-2 GB per worktree, shared .git/hooks writing to shared caches, IDE branch confusion, CLAUDE.md edits conflicting on merge, package.json adjacent edits, rate limits from N times token spend.</p>
-<p>Claims to TEST against this repo and this person: 'single biggest productivity unlock'; 'throughput gains cap around 3-5x'; 'zero merge conflicts between running sessions'; 'zero disk duplication of git history'.</p>
-<p>HARD CONSTRAINTS</p>
-<p>Push the current branch before creating or removing any worktree. Never use git worktree remove --force on a dirty worktree without listing its uncommitted changes first and getting confirmation.</p>
-<p>Never git add -A in a worktree whose session is still editing; commit by explicit paths.</p>
-<p>No two concurrent tasks may share a file in their planned change set. Prove it before spawning.</p>
-<p>CLAUDE.md is edited only on main.</p>
-<p>Do not exceed the user's plan rate limits; start with three sessions.</p>
-<p>ORDERED DELIVERABLES</p>
-<p>baseline.md: merged PRs per day and median createdAt-to-mergedAt over the last 30 days from gh pr list --state merged --author @me --json number,createdAt,mergedAt --limit 200; repo size; node_modules size; list of collision points found in package.json scripts, docker-compose.yml, .env.example, and git hooks.</p>
-<p>Native-flag notes in baseline.md: where claude --worktree puts worktrees, branch naming, whether .env files are copied, cleanup behaviour. Tested, not read.</p>
-<p>scripts/wt-spawn.sh : push check, worktree on branch wt/ , deterministic PORT from cksum of the name into 3100-3999, isolated DB (docker compose -p or SQLite file path), .env.local with PORT, DATABASE_URL, REDIS_URL, pnpm install --frozen-lockfile (or the repo's package manager) using the shared store, then tmux new-window -n 'cd &amp;&amp; claude'.</p>
-<p>scripts/wt-status.sh: table of worktree, branch, dirty file count, ahead/behind main, PR number and state via gh, PORT, container status.</p>
-<p>scripts/wt-clean.sh: for worktrees whose PR is merged, show dirty state, remove worktree, delete branch, docker compose -p down -v, then git worktree prune.</p>
-<p>tasks.md: three backlog tasks with planned file sets and a pairwise-overlap check that shows zero shared files.</p>
-<p>worktree-log.csv: task, spawn time, first review time, PR open time, merge time, conflicts (y/n), rework rounds.</p>
-<p>results.md after the trial: merged PRs per day and median cycle time versus baseline, number of sessions at which review became the bottleneck, verdicts on the four claims.</p>
-<p>BUILT-IN GAP ANALYSIS Before declaring done, list in gaps.md: collision points you found but did not isolate (shared caches, external APIs with per-account rate limits, ports hard-coded in source), anything about the native flag you could not determine, tasks that conflicted despite the overlap check and why, and whether the measurement window is long enough to mean anything (one week with three tasks is anecdote; say so). Fix any isolation gap that a script change can fix now.</p>
-<p>SELF-QUESTIONS BEFORE FINISHING</p>
-<p>Did two dev servers actually run at once on different ports, and did I curl both?</p>
-<p>Does any hook in .git/hooks write to a path shared across worktrees?</p>
-<p>What happens to Docker volumes and SQLite files when a worktree is removed?</p>
-<p>Does the repo hard-code port 3000 anywhere that .env.local does not override?</p>
-<p>Did I count review time, or only model time?</p>
-<p>Did any session edit CLAUDE.md, package.json, or a lockfile?</p>
-<p>Does wt-clean refuse to delete unmerged or dirty work?</p>
-<p>STOP CONDITIONS Stop after scripts and tasks.md exist and a dry run of three spawns and one clean succeeds, then hand control to the user for the trial week. Stop and ask before removing any worktree with uncommitted changes, before dropping any database volume that existed before this work, and if the repo needs a shared external resource (single staging DB, single OAuth callback URL) that cannot be isolated.</p>
-<p>RETURN FORMAT One message: baseline numbers table; native-flag findings; the three scripts' paths with usage lines; tasks.md overlap matrix; dry-run output of wt-status.sh with three worktrees; gaps.md contents; the instructions for the trial week, including what to log.</p>
-<h3>3 · Step-by-step prompts</h3>
+<ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> An engineering lead would not start by opening fifteen tabs; they would first measure their own baseline (PRs merged per day, minutes of review per PR, idle minutes waiting on the model), then decompose a backlog into tasks with provably disjoint file sets before spawning anything. They would make the environment worktree-safe up front: ports, databases, caches, .env files, and git hooks keyed to the worktree, because those collisions are what actually break parallel runs. And they would treat the guide's own warning seriously: throughput caps around 3-5x because human review is the binding constraint, so the experiment is about finding your personal ceiling.</li>
+<li><strong>Rawest material to start from:</strong> Boris Cherny's original posts (x.com/bcherny/status/2017742743125299476 and x.com/bcherny/status/2025007394967957720); the official agent teams page at code.claude.com/docs/en/agent-teams and the CLI reference for <code>--worktree</code> on your installed version (<code>claude --help</code>); the git-worktree man page (<code>git help worktree</code>), especially sections on locking, pruning, and --detach; your own repo's package.json, docker-compose.yml, .env.example, and .husky or .git/hooks, which determine what collides; and your own git log for the last 30 days as the baseline.</li>
+<li><strong>Methods and tools:</strong> git worktree add/list/remove/prune/lock; <code>claude --worktree &lt;name&gt;</code> and <code>--tmux</code> if present on your version; tmux with one window per worktree; a port allocator that hashes the worktree name into a range (e.g. 3100-3999) and writes PORT, DATABASE_URL, REDIS_URL into .env.local; per-worktree Postgres via <code>docker compose -p &lt;worktree&gt;</code> or schema namespaces, SQLite files per worktree; pnpm's content-addressed store to avoid node_modules duplication; <code>gh pr create --fill</code> and <code>gh pr list --json</code> for throughput counts; <code>git diff --name-only main...</code> to verify disjoint file sets.</li>
+<li><strong>What proves it right (other than you or the model):</strong> GitHub itself is the oracle: <code>gh pr list --state merged --author @me --json mergedAt,createdAt</code> over the experiment week versus the baseline week gives merged-PR count and cycle time. CI results on each PR show nothing broke from isolation leaks. <code>git worktree list</code> and <code>docker ps</code> show no orphaned worktrees or containers after cleanup. Two dev servers answering on different ports at the same time (curl both) prove port isolation.</li>
+</ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Act as an engineering lead setting up parallel Claude Code work on my repo at &lt;path&gt;. First measure my baseline: use `gh pr list --state merged --author @me --json number,createdAt,mergedAt --limit 100` to compute merged PRs per day and median cycle time over the last 30 days. Then inspect the repo for collision points: dev-server ports, database URLs, Redis, caches, .env files, git hooks (husky, pre-commit), and node_modules size. Check `claude --help` for the --worktree and --tmux flags on my installed version and document exactly where worktrees are created and what gets copied. Build scripts/wt-spawn.sh that takes a task name, creates a worktree on a new branch, assigns a deterministic port from a hash of the name, creates an isolated database (docker compose project or SQLite file), writes .env.local, installs dependencies via the shared pnpm store, and opens a tmux window running Claude. Build scripts/wt-status.sh showing each worktree's branch, dirty count, ahead/behind, PR state, and port. Build scripts/wt-clean.sh that removes merged worktrees and their containers. Then help me pick three tasks from my backlog whose file sets are disjoint (prove it with a file-ownership list), run them concurrently for one week, log timestamps to worktree-log.csv, and report merged-PR throughput and review time versus baseline. Flag any guide claim (like the 3-5x cap) my data contradicts.
+</code></pre></div>
+<h3 id="2-one-shot-prompt">2 · One-shot prompt</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">ROLE AND STANCE
+You are an engineering lead making one developer's repo safe and fast for parallel Claude Code sessions, following Boris Cherny's worktree pattern but measuring whether it works for this person. You prefer boring, deterministic scripts over clever orchestration. You do not trust throughput claims you have not measured.
+
+CONTEXT
+- Pattern: one task = one git worktree = one Claude session; all coordination via branches and PRs. Boris runs 3-5 at once; 10-15 is the team ceiling, not a target. Review bandwidth is the binding constraint.
+- Primitives: `git worktree add ../proj-x -b feat/x`, `git worktree list`, `git worktree remove`, `git worktree prune`; native `claude --worktree [name]` and `--tmux` (verify on the installed version with `claude --help`); subagent frontmatter `isolation: worktree` (verify it exists in the installed version's subagent docs).
+- Tools named in the guide: raine/workmux, nielsgroen/claude-tmux, muxtree, tmux.
+- Known collisions from the guide: dev-server ports, shared Postgres/MySQL dev DB, node_modules at 500 MB-2 GB per worktree, shared .git/hooks writing to shared caches, IDE branch confusion, CLAUDE.md edits conflicting on merge, package.json adjacent edits, rate limits from N times token spend.
+- Claims to TEST against this repo and this person: 'single biggest productivity unlock'; 'throughput gains cap around 3-5x'; 'zero merge conflicts between running sessions'; 'zero disk duplication of git history'.
+
+HARD CONSTRAINTS
+- Push the current branch before creating or removing any worktree. Never use `git worktree remove --force` on a dirty worktree without listing its uncommitted changes first and getting confirmation.
+- Never `git add -A` in a worktree whose session is still editing; commit by explicit paths.
+- No two concurrent tasks may share a file in their planned change set. Prove it before spawning.
+- CLAUDE.md is edited only on main.
+- Do not exceed the user's plan rate limits; start with three sessions.
+
+ORDERED DELIVERABLES
+1. baseline.md: merged PRs per day and median createdAt-to-mergedAt over the last 30 days from `gh pr list --state merged --author @me --json number,createdAt,mergedAt --limit 200`; repo size; node_modules size; list of collision points found in package.json scripts, docker-compose.yml, .env.example, and git hooks.
+2. Native-flag notes in baseline.md: where `claude --worktree` puts worktrees, branch naming, whether .env files are copied, cleanup behaviour. Tested, not read.
+3. scripts/wt-spawn.sh &lt;task&gt;: push check, worktree on branch wt/&lt;task&gt;, deterministic PORT from cksum of the name into 3100-3999, isolated DB (docker compose -p &lt;task&gt; or SQLite file path), .env.local with PORT, DATABASE_URL, REDIS_URL, `pnpm install --frozen-lockfile` (or the repo's package manager) using the shared store, then `tmux new-window -n &lt;task&gt; 'cd &lt;path&gt; &amp;&amp; claude'`.
+4. scripts/wt-status.sh: table of worktree, branch, dirty file count, ahead/behind main, PR number and state via gh, PORT, container status.
+5. scripts/wt-clean.sh: for worktrees whose PR is merged, show dirty state, remove worktree, delete branch, `docker compose -p &lt;task&gt; down -v`, then `git worktree prune`.
+6. tasks.md: three backlog tasks with planned file sets and a pairwise-overlap check that shows zero shared files.
+7. worktree-log.csv: task, spawn time, first review time, PR open time, merge time, conflicts (y/n), rework rounds.
+8. results.md after the trial: merged PRs per day and median cycle time versus baseline, number of sessions at which review became the bottleneck, verdicts on the four claims.
+
+BUILT-IN GAP ANALYSIS
+Before declaring done, list in gaps.md: collision points you found but did not isolate (shared caches, external APIs with per-account rate limits, ports hard-coded in source), anything about the native flag you could not determine, tasks that conflicted despite the overlap check and why, and whether the measurement window is long enough to mean anything (one week with three tasks is anecdote; say so). Fix any isolation gap that a script change can fix now.
+
+SELF-QUESTIONS BEFORE FINISHING
+- Did two dev servers actually run at once on different ports, and did I curl both?
+- Does any hook in .git/hooks write to a path shared across worktrees?
+- What happens to Docker volumes and SQLite files when a worktree is removed?
+- Does the repo hard-code port 3000 anywhere that .env.local does not override?
+- Did I count review time, or only model time?
+- Did any session edit CLAUDE.md, package.json, or a lockfile?
+- Does wt-clean refuse to delete unmerged or dirty work?
+
+STOP CONDITIONS
+Stop after scripts and tasks.md exist and a dry run of three spawns and one clean succeeds, then hand control to the user for the trial week. Stop and ask before removing any worktree with uncommitted changes, before dropping any database volume that existed before this work, and if the repo needs a shared external resource (single staging DB, single OAuth callback URL) that cannot be isolated.
+
+RETURN FORMAT
+One message: baseline numbers table; native-flag findings; the three scripts' paths with usage lines; tasks.md overlap matrix; dry-run output of wt-status.sh with three worktrees; gaps.md contents; the instructions for the trial week, including what to log.
+</code></pre></div>
+<h3 id="3-step-by-step-prompts">3 · Step-by-step prompts</h3>
 <h4>Step 1 — Ground truth: baseline and collision inventory</h4>
-<p>Goal: Measure current throughput and find every resource two worktrees would fight over.</p>
-<p>In the repo at , run gh pr list --state merged --author @me --json number,title,createdAt,mergedAt --limit 200 and compute merged PRs per working day and median hours from createdAt to mergedAt over the last 30 days; write both to baseline.md with the raw counts. Record du -sh .git, du -sh node_modules (or the venv / target dir), and the package manager in use. Then inventory collision points: grep package.json scripts, Procfile, docker-compose.yml, vite/next/webpack configs, and source for hard-coded ports (grep -rnE '(PORT :3000 :5173 :8000 :5432 :6379)' --include='.{js,ts,json,yml,yaml,py,env}'); list database and Redis URLs and where they come from; list .git/hooks and husky or pre-commit configs and any paths they write; list caches (.next, .turbo, .pytest_cache, ~/.cache tool dirs) and whether they are inside or outside the checkout. Read Boris Cherny's two posts linked in the guide and note his own concurrency number. Finally, in a scratch clone, run claude --help grep -iA3 worktree and one claude --worktree probe-a session; record where the worktree lands, its branch name, whether .env files are copied, and what happens on exit, then remove it. Write everything to baseline.md as tables.</p>
-<p>Expect: baseline.md with a throughput table (PRs/day, median cycle hours, sample size) and a collision table (resource, current value, where configured, shared across worktrees yes/no), plus a short native-flag findings list.</p>
-<p>Audit before moving on: Re-count PRs with a second query (for example the GitHub web search is:pr is:merged author:@me merged:&gt;DATE) and confirm the number matches within one. Any port or URL found in source but not in env config is flagged as hard-coded; do not move on until each collision row has a 'how to isolate' note.</p>
+<p><em>Goal:</em> Measure current throughput and find every resource two worktrees would fight over.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">In the repo at &lt;path&gt;, run `gh pr list --state merged --author @me --json number,title,createdAt,mergedAt --limit 200` and compute merged PRs per working day and median hours from createdAt to mergedAt over the last 30 days; write both to baseline.md with the raw counts. Record `du -sh .git`, `du -sh node_modules` (or the venv / target dir), and the package manager in use. Then inventory collision points: grep package.json scripts, Procfile, docker-compose.yml, vite/next/webpack configs, and source for hard-coded ports (`grep -rnE '(PORT|:3000|:5173|:8000|:5432|:6379)' --include='*.{js,ts,json,yml,yaml,py,env*}'`); list database and Redis URLs and where they come from; list .git/hooks and husky or pre-commit configs and any paths they write; list caches (.next, .turbo, .pytest_cache, ~/.cache tool dirs) and whether they are inside or outside the checkout. Read Boris Cherny's two posts linked in the guide and note his own concurrency number. Finally, in a scratch clone, run `claude --help | grep -iA3 worktree` and one `claude --worktree probe-a` session; record where the worktree lands, its branch name, whether .env files are copied, and what happens on exit, then remove it. Write everything to baseline.md as tables.
+</code></pre></div>
+<p><strong>Expect:</strong> baseline.md with a throughput table (PRs/day, median cycle hours, sample size) and a collision table (resource, current value, where configured, shared across worktrees yes/no), plus a short native-flag findings list.</p>
+<p><strong>Audit before moving on:</strong> Re-count PRs with a second query (for example the GitHub web search is:pr is:merged author:@me merged:&gt;DATE) and confirm the number matches within one. Any port or URL found in source but not in env config is flagged as hard-coded; do not move on until each collision row has a 'how to isolate' note.</p>
 <h4>Step 2 — Build the spawn script with isolation</h4>
-<p>Goal: One command creates an isolated, ready-to-run worktree with its own port, database, and Claude session.</p>
-<p>Write scripts/wt-spawn.sh . It must: refuse if the current branch has unpushed commits; refuse if a worktree or branch wt/ exists; create the worktree at ../ - on new branch wt/ from origin/main (or call claude --worktree instead if native-flag.md shows it supports what follows); compute PORT as 3100 + (cksum of the task name mod 900) and check it is free with ss -ltn; create an isolated database per the collision table (for Postgres docker compose -p up -d db with a port also derived from the hash, or a SQLite path inside the worktree); write .env.local with PORT, DATABASE_URL, REDIS_URL, and copy any other .env keys from the main checkout without printing their values; run the repo's install with the shared store (pnpm install --frozen-lockfile, uv sync, or equivalent); run migrations against the isolated DB; finally open tmux new-window -n -c claude. Make it idempotent on failure: if any step fails, print what was created and how to remove it. Run shellcheck.</p>
-<p>Expect: An executable script under 150 lines that spawns a worktree in under two minutes, with shellcheck clean.</p>
-<p>Audit before moving on: Spawn two test tasks, start the dev server in each, and curl both ports at the same time; both must answer. Confirm docker ps shows two separate DB containers or two SQLite files. Grep the script output for any secret value; none may appear. On any fail, fix and re-run both spawns.</p>
+<p><em>Goal:</em> One command creates an isolated, ready-to-run worktree with its own port, database, and Claude session.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write scripts/wt-spawn.sh &lt;task-name&gt;. It must: refuse if the current branch has unpushed commits; refuse if a worktree or branch wt/&lt;task&gt; exists; create the worktree at ../&lt;repo&gt;-&lt;task&gt; on new branch wt/&lt;task&gt; from origin/main (or call `claude --worktree &lt;task&gt;` instead if native-flag.md shows it supports what follows); compute PORT as 3100 + (cksum of the task name mod 900) and check it is free with `ss -ltn`; create an isolated database per the collision table (for Postgres `docker compose -p &lt;task&gt; up -d db` with a port also derived from the hash, or a SQLite path inside the worktree); write .env.local with PORT, DATABASE_URL, REDIS_URL, and copy any other .env keys from the main checkout without printing their values; run the repo's install with the shared store (`pnpm install --frozen-lockfile`, `uv sync`, or equivalent); run migrations against the isolated DB; finally open `tmux new-window -n &lt;task&gt; -c &lt;path&gt; claude`. Make it idempotent on failure: if any step fails, print what was created and how to remove it. Run shellcheck.
+</code></pre></div>
+<p><strong>Expect:</strong> An executable script under 150 lines that spawns a worktree in under two minutes, with shellcheck clean.</p>
+<p><strong>Audit before moving on:</strong> Spawn two test tasks, start the dev server in each, and curl both ports at the same time; both must answer. Confirm <code>docker ps</code> shows two separate DB containers or two SQLite files. Grep the script output for any secret value; none may appear. On any fail, fix and re-run both spawns.</p>
 <h4>Step 3 — Build status and cleanup</h4>
-<p>Goal: See every worktree's state at a glance and remove merged ones safely.</p>
-<p>Write scripts/wt-status.sh that prints one row per worktree from git worktree list --porcelain: path, branch, dirty file count (git -C status --porcelain wc -l), commits ahead/behind origin/main, PR number and state from gh pr list --head --json number,state, PORT from .env.local, and DB container status from docker compose -p ps --format json. Sort with dirty-and-no-PR first, because those need attention. Write scripts/wt-clean.sh that, for each worktree whose PR is MERGED: prints its dirty files; if any exist, skips it and says why; otherwise runs git worktree remove , git branch -d wt/ , docker compose -p down -v (only for projects it created, recognised by the wt/ prefix), and finally git worktree prune. Add --dry-run as the default; require --yes to act. Optionally bind wt-status.sh to a tmux status-right refresh every 30 seconds.</p>
-<p>Expect: Two scripts; a status table for the two test worktrees; a dry-run cleanup listing what would be removed.</p>
-<p>Audit before moving on: Mark one test PR merged (or simulate by merging locally into a throwaway main) and run the cleaner with --yes; verify the worktree, branch, and containers are gone and the other worktree is untouched. Create a dirty file in the remaining worktree and confirm the cleaner skips it.</p>
+<p><em>Goal:</em> See every worktree's state at a glance and remove merged ones safely.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Write scripts/wt-status.sh that prints one row per worktree from `git worktree list --porcelain`: path, branch, dirty file count (`git -C &lt;path&gt; status --porcelain | wc -l`), commits ahead/behind origin/main, PR number and state from `gh pr list --head &lt;branch&gt; --json number,state`, PORT from .env.local, and DB container status from `docker compose -p &lt;task&gt; ps --format json`. Sort with dirty-and-no-PR first, because those need attention. Write scripts/wt-clean.sh that, for each worktree whose PR is MERGED: prints its dirty files; if any exist, skips it and says why; otherwise runs `git worktree remove &lt;path&gt;`, `git branch -d wt/&lt;task&gt;`, `docker compose -p &lt;task&gt; down -v` (only for projects it created, recognised by the wt/ prefix), and finally `git worktree prune`. Add `--dry-run` as the default; require `--yes` to act. Optionally bind wt-status.sh to a tmux status-right refresh every 30 seconds.
+</code></pre></div>
+<p><strong>Expect:</strong> Two scripts; a status table for the two test worktrees; a dry-run cleanup listing what would be removed.</p>
+<p><strong>Audit before moving on:</strong> Mark one test PR merged (or simulate by merging locally into a throwaway main) and run the cleaner with --yes; verify the worktree, branch, and containers are gone and the other worktree is untouched. Create a dirty file in the remaining worktree and confirm the cleaner skips it.</p>
 <h4>Step 4 — Decompose the backlog into disjoint tasks</h4>
-<p>Goal: Pick three real tasks that cannot collide and prove it.</p>
-<p>From the user's open issues (gh issue list --limit 50 --json number,title,body) or a provided list, choose candidates that are independent by the guide's rules: no output dependency between them, no shared global state, not deep debugging of an unfamiliar area. For each candidate, have Claude in read-only mode produce a planned change set: the files it expects to create or modify, derived from grepping the code involved. Build an overlap matrix of planned file sets; reject any pair that shares a file, and treat package.json, lockfiles, CLAUDE.md, shared config, and migration directories as always-conflicting unless only one task touches them. Pick the three with zero overlap and the smallest expected review time. Write tasks.md with, per task: issue link, one-paragraph prompt to give the session, planned files, acceptance test command, and expected review minutes. Include the overlap matrix.</p>
-<p>Expect: tasks.md with three tasks, three prompts, and a 3x3 matrix of shared-file counts all zero.</p>
-<p>Audit before moving on: Re-derive one task's file set independently (grep the identifiers involved) and compare; if the sets differ by more than two files, redo the plan for that task. Any task whose acceptance test cannot run in an isolated worktree is replaced.</p>
+<p><em>Goal:</em> Pick three real tasks that cannot collide and prove it.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">From the user's open issues (`gh issue list --limit 50 --json number,title,body`) or a provided list, choose candidates that are independent by the guide's rules: no output dependency between them, no shared global state, not deep debugging of an unfamiliar area. For each candidate, have Claude in read-only mode produce a planned change set: the files it expects to create or modify, derived from grepping the code involved. Build an overlap matrix of planned file sets; reject any pair that shares a file, and treat package.json, lockfiles, CLAUDE.md, shared config, and migration directories as always-conflicting unless only one task touches them. Pick the three with zero overlap and the smallest expected review time. Write tasks.md with, per task: issue link, one-paragraph prompt to give the session, planned files, acceptance test command, and expected review minutes. Include the overlap matrix.
+</code></pre></div>
+<p><strong>Expect:</strong> tasks.md with three tasks, three prompts, and a 3x3 matrix of shared-file counts all zero.</p>
+<p><strong>Audit before moving on:</strong> Re-derive one task's file set independently (grep the identifiers involved) and compare; if the sets differ by more than two files, redo the plan for that task. Any task whose acceptance test cannot run in an isolated worktree is replaced.</p>
 <h4>Step 5 — Run the parallel trial and log it</h4>
-<p>Goal: Execute the three tasks concurrently and capture the timing data that will judge the workflow.</p>
-<p>Spawn the three tasks with scripts/wt-spawn.sh. In each tmux window, paste that task's prompt from tasks.md, adding: 'Work only in this worktree. Commit by explicit file paths. Do not edit CLAUDE.md, package.json, or lockfiles unless the task requires it, and say so if it does. When done, run the acceptance test, push, and open a PR with gh pr create --fill.' Cycle through windows; while one runs, review another. Log to worktree-log.csv for every task: spawn time, time you first started reviewing, number of review rounds, PR open time, merge time, any merge conflict and its file, minutes you were idle waiting on all sessions. After merging, run wt-clean.sh --yes. If you feel idle between reviews, spawn a fourth task from the backlog with the same overlap check; if review starts queuing, stop spawning and note the session count where that happened.</p>
-<p>Expect: worktree-log.csv with at least three complete rows, three merged PRs, and a note of the session count at which review saturated.</p>
-<p>Audit before moving on: After each merge, run git diff --name-only between each pair of task branches to confirm no shared file slipped in; any conflict gets a row explaining which check missed it. Run wt-status.sh at the end; no orphaned worktrees or containers may remain.</p>
+<p><em>Goal:</em> Execute the three tasks concurrently and capture the timing data that will judge the workflow.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Spawn the three tasks with scripts/wt-spawn.sh. In each tmux window, paste that task's prompt from tasks.md, adding: 'Work only in this worktree. Commit by explicit file paths. Do not edit CLAUDE.md, package.json, or lockfiles unless the task requires it, and say so if it does. When done, run the acceptance test, push, and open a PR with gh pr create --fill.' Cycle through windows; while one runs, review another. Log to worktree-log.csv for every task: spawn time, time you first started reviewing, number of review rounds, PR open time, merge time, any merge conflict and its file, minutes you were idle waiting on all sessions. After merging, run wt-clean.sh --yes. If you feel idle between reviews, spawn a fourth task from the backlog with the same overlap check; if review starts queuing, stop spawning and note the session count where that happened.
+</code></pre></div>
+<p><strong>Expect:</strong> worktree-log.csv with at least three complete rows, three merged PRs, and a note of the session count at which review saturated.</p>
+<p><strong>Audit before moving on:</strong> After each merge, run <code>git diff --name-only</code> between each pair of task branches to confirm no shared file slipped in; any conflict gets a row explaining which check missed it. Run wt-status.sh at the end; no orphaned worktrees or containers may remain.</p>
 <h4>Step 6 — Validate against oracles and write the gap report</h4>
-<p>Goal: Compare to baseline with GitHub's own data and state what the trial proves and does not.</p>
-<p>Re-run the baseline query for the trial window and compute merged PRs per working day and median cycle hours; put them beside baseline.md numbers in results.md. Check CI status on every trial PR (gh pr checks ) and record any failure caused by isolation leaks (wrong port, wrong DB, stale cache). Confirm with git worktree list and docker ps -a --filter name=wt- that cleanup left nothing behind. Give verdicts on the guide's claims with your numbers: productivity unlock (throughput ratio), 3-5x cap (where review saturated for you), zero merge conflicts (count), zero history duplication (du -sh of each worktree versus .git). Write gaps.md: unisolated resources, untested native-flag behaviour, conflicts and their causes, and an honest statement of sample size. Recommend the concurrency number to use going forward, with the evidence.</p>
-<p>Expect: results.md with a before/after table and four claim verdicts; gaps.md; a recommended concurrency number.</p>
-<p>Audit before moving on: If the trial window has fewer than five merged PRs, state that the throughput comparison is not statistically meaningful and recommend extending the trial rather than concluding. Every verdict must cite a number from worktree-log.csv or gh output.</p>
-<h3>4 · Gap analysis and audit</h3>
+<p><em>Goal:</em> Compare to baseline with GitHub's own data and state what the trial proves and does not.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Re-run the baseline query for the trial window and compute merged PRs per working day and median cycle hours; put them beside baseline.md numbers in results.md. Check CI status on every trial PR (`gh pr checks &lt;n&gt;`) and record any failure caused by isolation leaks (wrong port, wrong DB, stale cache). Confirm with `git worktree list` and `docker ps -a --filter name=wt-` that cleanup left nothing behind. Give verdicts on the guide's claims with your numbers: productivity unlock (throughput ratio), 3-5x cap (where review saturated for you), zero merge conflicts (count), zero history duplication (`du -sh` of each worktree versus .git). Write gaps.md: unisolated resources, untested native-flag behaviour, conflicts and their causes, and an honest statement of sample size. Recommend the concurrency number to use going forward, with the evidence.
+</code></pre></div>
+<p><strong>Expect:</strong> results.md with a before/after table and four claim verdicts; gaps.md; a recommended concurrency number.</p>
+<p><strong>Audit before moving on:</strong> If the trial window has fewer than five merged PRs, state that the throughput comparison is not statistically meaningful and recommend extending the trial rather than concluding. Every verdict must cite a number from worktree-log.csv or gh output.</p>
+<h3 id="4-gap-analysis-and-audit">4 · Gap analysis and audit</h3>
 <p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
-<p>You are reviewing a parallel-worktree setup and its trial results that someone else built in . Do not trust results.md. (1) List every claim: each script's guarantees (isolation of port, DB, env, cache; safe cleanup; push-before-destroy), each verdict on the guide's claims, the recommended concurrency. (2) For each, mark verified, unverified, or false with evidence: run the scripts yourself on a scratch task, curl two dev servers concurrently, inspect .env.local files for collisions, grep source for hard-coded ports, check .git/hooks for shared writes, re-run the gh queries. (3) Try to break isolation: spawn two tasks whose names hash to the same port (search for a collision with a quick loop) and see what happens; run migrations in both; run the test suite in both at once; check whether a shared cache under ~/.cache causes flaky results. (4) Try to break cleanup safety: leave an uncommitted file and an unpushed commit in a worktree with a merged PR and run wt-clean.sh --yes. (5) Rank gaps by impact (lost work first, then wrong results, then friction), fix the top three now, re-run, and report what remains with the reproduction command for each.</p>
-<p>Questions the agent must ask itself before it says done:</p>
-<p>Did I prove two dev servers ran simultaneously on different ports, or just assume it from .env.local?</p>
-<p>What happens when two task names hash to the same port, and does the script detect it?</p>
-<p>Do git hooks or husky write to a cache shared by all worktrees?</p>
-<p>Does claude --worktree on this version copy .env files, and did my script duplicate or conflict with that?</p>
-<p>Could wt-clean delete unpushed commits on a branch whose PR merged from an older commit?</p>
-<p>Did any task touch package.json, a lockfile, CLAUDE.md, or migrations despite the plan?</p>
-<p>Is my baseline window comparable in task type and working days to the trial window?</p>
-<p>Did I log human review time and idle time, or only model run time?</p>
-<h3>5 · What proves it right</h3>
-<p>GitHub data: gh pr list --state merged --author @me for baseline and trial windows gives merged PRs per day and median cycle time computed the same way.</p>
-<p>Two dev servers from different worktrees both return HTTP 200 when curled at the same moment on their assigned ports.</p>
-<p>CI checks (gh pr checks) pass on every trial PR with no failures traced to wrong port, DB, or cache.</p>
-<p>git worktree list and docker ps -a show no orphaned worktrees or containers after wt-clean.sh runs.</p>
-<h3>6 · Failure modes</h3>
-<p>Port collisions. Tell: second dev server fails with EADDRINUSE or silently serves the other worktree. Fix: hash-derived ports checked with ss -ltn, and remove hard-coded ports from source.</p>
-<p>Shared dev database corrupted by migrations. Tell: a worktree's tests fail on schema it never changed. Fix: per-worktree docker compose project or SQLite file, migrations per worktree.</p>
-<p>Racing one task in several sessions. Tell: two PRs solving the same issue differently. Fix: one task per worktree, enforce with the tasks.md overlap matrix.</p>
-<p>Review becomes the bottleneck. Tell: PRs wait hours for you while sessions sit idle. Fix: drop to the concurrency where review kept pace, usually 3-5.</p>
-<h3>7 · Agent direction (unattended runs)</h3>
-<p>Work in a scratch clone for all experiments with the native flag and cleanup scripts; touch the user's real checkout only to install the final scripts under scripts/. Push the current branch before creating or removing any worktree, every time. Reach first for git worktree list --porcelain, gh pr list --json, and claude --help; cache baseline query results in baseline.md so they are not recomputed. Never print .env values; copy keys without echoing. Spawn subagents only for read-only planning of each task's change set in step 5, never for the parallel sessions themselves (the user runs those). Stop and ask before removing any dirty worktree, dropping a pre-existing database volume, or if the app depends on an unisolatable shared resource. The trial week requires the user; hand off after the dry run with exact logging instructions. Return files: baseline.md, scripts/wt-spawn.sh, scripts/wt-status.sh, scripts/wt-clean.sh, tasks.md, worktree-log.csv template, and later results.md and gaps.md.</p>
-<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
-</div><!--pagefind:end-->
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">You are reviewing a parallel-worktree setup and its trial results that someone else built in &lt;repo&gt;. Do not trust results.md. (1) List every claim: each script's guarantees (isolation of port, DB, env, cache; safe cleanup; push-before-destroy), each verdict on the guide's claims, the recommended concurrency. (2) For each, mark verified, unverified, or false with evidence: run the scripts yourself on a scratch task, curl two dev servers concurrently, inspect .env.local files for collisions, grep source for hard-coded ports, check .git/hooks for shared writes, re-run the gh queries. (3) Try to break isolation: spawn two tasks whose names hash to the same port (search for a collision with a quick loop) and see what happens; run migrations in both; run the test suite in both at once; check whether a shared cache under ~/.cache causes flaky results. (4) Try to break cleanup safety: leave an uncommitted file and an unpushed commit in a worktree with a merged PR and run wt-clean.sh --yes. (5) Rank gaps by impact (lost work first, then wrong results, then friction), fix the top three now, re-run, and report what remains with the reproduction command for each.
+</code></pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p>
+<ul>
+<li>Did I prove two dev servers ran simultaneously on different ports, or just assume it from .env.local?</li>
+<li>What happens when two task names hash to the same port, and does the script detect it?</li>
+<li>Do git hooks or husky write to a cache shared by all worktrees?</li>
+<li>Does <code>claude --worktree</code> on this version copy .env files, and did my script duplicate or conflict with that?</li>
+<li>Could wt-clean delete unpushed commits on a branch whose PR merged from an older commit?</li>
+<li>Did any task touch package.json, a lockfile, CLAUDE.md, or migrations despite the plan?</li>
+<li>Is my baseline window comparable in task type and working days to the trial window?</li>
+<li>Did I log human review time and idle time, or only model run time?</li>
+</ul>
+<h3 id="5-what-proves-it-right">5 · What proves it right</h3>
+<ul>
+<li>GitHub data: <code>gh pr list --state merged --author @me</code> for baseline and trial windows gives merged PRs per day and median cycle time computed the same way.</li>
+<li>Two dev servers from different worktrees both return HTTP 200 when curled at the same moment on their assigned ports.</li>
+<li>CI checks (<code>gh pr checks</code>) pass on every trial PR with no failures traced to wrong port, DB, or cache.</li>
+<li><code>git worktree list</code> and <code>docker ps -a</code> show no orphaned worktrees or containers after wt-clean.sh runs.</li>
+</ul>
+<h3 id="6-failure-modes">6 · Failure modes</h3>
+<ul>
+<li>Port collisions. Tell: second dev server fails with EADDRINUSE or silently serves the other worktree. Fix: hash-derived ports checked with ss -ltn, and remove hard-coded ports from source.</li>
+<li>Shared dev database corrupted by migrations. Tell: a worktree's tests fail on schema it never changed. Fix: per-worktree docker compose project or SQLite file, migrations per worktree.</li>
+<li>Racing one task in several sessions. Tell: two PRs solving the same issue differently. Fix: one task per worktree, enforce with the tasks.md overlap matrix.</li>
+<li>Review becomes the bottleneck. Tell: PRs wait hours for you while sessions sit idle. Fix: drop to the concurrency where review kept pace, usually 3-5.</li>
+</ul>
+<h3 id="7-agent-direction-unattended-runs">7 · Agent direction (unattended runs)</h3>
+<p>Work in a scratch clone for all experiments with the native flag and cleanup scripts; touch the user's real checkout only to install the final scripts under scripts/. Push the current branch before creating or removing any worktree, every time. Reach first for <code>git worktree list --porcelain</code>, <code>gh pr list --json</code>, and <code>claude --help</code>; cache baseline query results in baseline.md so they are not recomputed. Never print .env values; copy keys without echoing. Spawn subagents only for read-only planning of each task's change set in step 5, never for the parallel sessions themselves (the user runs those). Stop and ask before removing any dirty worktree, dropping a pre-existing database volume, or if the app depends on an unisolatable shared resource. The trial week requires the user; hand off after the dry run with exact logging instructions. Return files: baseline.md, scripts/wt-spawn.sh, scripts/wt-status.sh, scripts/wt-clean.sh, tasks.md, worktree-log.csv template, and later results.md and gaps.md.</p>
+<p><em>Prompt system updated 2026-10-22 · <a href="/prompts">all prompt systems</a> · <a href="/api/prompts.json">JSON</a></em></p>
+<!-- body:end --></div>
+</article>
+<footer class="site"><div class="wrap"><a href="/catalog#post-DVMmXlME6mZ">← Back to DejaViewed</a> · <a href="/e/DVMmXlME6mZ">Entry page</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
 <script id="md" type="text/markdown"># Claude Code Parallel Worktrees — Boris Cherny's Canonical Workflow
 
 <!-- answer:start -->
@@ -687,16 +780,9 @@ You are reviewing a parallel-worktree setup and its trial results that someone e
 
 Work in a scratch clone for all experiments with the native flag and cleanup scripts; touch the user's real checkout only to install the final scripts under scripts/. Push the current branch before creating or removing any worktree, every time. Reach first for `git worktree list --porcelain`, `gh pr list --json`, and `claude --help`; cache baseline query results in baseline.md so they are not recomputed. Never print .env values; copy keys without echoing. Spawn subagents only for read-only planning of each task's change set in step 5, never for the parallel sessions themselves (the user runs those). Stop and ask before removing any dirty worktree, dropping a pre-existing database volume, or if the app depends on an unisolatable shared resource. The trial week requires the user; hand off after the dry run with exact logging instructions. Return files: baseline.md, scripts/wt-spawn.sh, scripts/wt-status.sh, scripts/wt-clean.sh, tasks.md, worktree-log.csv template, and later results.md and gaps.md.
 
-*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+*Prompt system updated 2026-10-22 · [all prompt systems](/prompts) · [JSON](/api/prompts.json)*
 
 <!-- prompt-system:end -->
-</script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script>
-const raw=document.getElementById('md').textContent;
-const html=DOMPurify.sanitize(marked.parse(raw));
-document.getElementById('guide-body').innerHTML=html;
 </script><!-- ps-tail --><style>
 .ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
 .ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
@@ -713,11 +799,8 @@ document.getElementById('guide-body').innerHTML=html;
 .ps-copy:hover{color:#fff;border-color:var(--border-hi)}
 .ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
 </style><script>
-document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
-document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
-p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
-</script><script>
 document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
 const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
-</script><!-- /ps-tail --><!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
+</script><!-- /ps-tail --><!-- sitenav:start --><nav class="sitenav" aria-label="Site" data-pagefind-ignore><style>.sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}.sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}.sitenav a:hover{color:var(--accent,#a78bfa)}</style><a href="/">Home</a><a href="/start-here">Start here</a><a href="/catalog">Catalog</a><a href="/guides/">Guides</a><a href="/prompts">Prompts</a><a href="/e/">All entries</a><a href="/collections/">Collections</a><a href="/search">Search</a><a href="/graph">Graph</a><a href="/graph-cosmos">Cosmos</a><a href="/board">Board</a><a href="/links/">Links</a><a href="/method">How it works</a><a href="/feed.xml">RSS</a><a href="/llms.txt">llms.txt</a></nav><!-- sitenav:end -->
+<!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
 </body></html>

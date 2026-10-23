@@ -1,25 +1,25 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Polymarket 99c Limit Order Arbitrage — Scalping the Resolution Tail · DejaViewed</title>
+<title>Polymarket 99c Limit Order Arbitrage · DejaViewed</title>
 <!-- seo:start -->
 <link rel="canonical" href="https://dejaviewed.dev/guides/polymarket-99c-limit-arbitrage">
-<meta name="description" content="Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). In the hours and days before resolution, many contracts have a…">
+<meta name="description" content="Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). Includes a 6-step prompt system.">
 <meta property="og:site_name" content="DejaViewed">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Polymarket 99c Limit Order Arbitrage — Scalping the Resolution Tail">
-<meta property="og:description" content="Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). In the hours and days before resolution, many contracts have a…">
+<meta property="og:title" content="Polymarket 99c Limit Order Arbitrage">
+<meta property="og:description" content="Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). Includes a 6-step prompt system.">
 <meta property="og:url" content="https://dejaviewed.dev/guides/polymarket-99c-limit-arbitrage">
 <meta property="og:image" content="https://dejaviewed.dev/og/polymarket-99c-limit-arbitrage.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Polymarket 99c Limit Order Arbitrage">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Polymarket 99c Limit Order Arbitrage — Scalping the Resolution Tail">
-<meta name="twitter:description" content="Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). In the hours and days before resolution, many contracts have a…">
+<meta name="twitter:title" content="Polymarket 99c Limit Order Arbitrage">
+<meta name="twitter:description" content="Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). Includes a 6-step prompt system.">
 <meta name="twitter:image" content="https://dejaviewed.dev/og/polymarket-99c-limit-arbitrage.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/polymarket-99c-limit-arbitrage#article","headline":"Polymarket 99c Limit Order Arbitrage — Scalping the Resolution Tail","description":"Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). In the hours and days before resolution, many contracts have a…","url":"https://dejaviewed.dev/guides/polymarket-99c-limit-arbitrage","mainEntityOfPage":"https://dejaviewed.dev/guides/polymarket-99c-limit-arbitrage","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/polymarket-99c-limit-arbitrage.jpg","about":[{"@type":"Thing","name":"Polymarket"}],"abstract":"Decide, with data rather than a story, whether resting 97-99c bids on near-certain Polymarket contracts earns more than the resolution-against tail it is paid to absorb."},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/polymarket-99c-limit-arbitrage#faq","mainEntity":[{"@type":"Question","name":"How many adverse resolutions at 0.99 does my sample contain, and can that sample size bound a 1% loss rate?","acceptedAnswer":{"@type":"Answer","text":"On-chain resolution outcomes for every market in the sample: the fill-conditional loss rate's Wilson 95% upper bound is below break-even for the traded band after multiple-comparison correction."}},{"@type":"Question","name":"Is the fill-conditional loss rate materially higher than the price-conditional one, meaning my bids get picked off?","acceptedAnswer":{"@type":"Answer","text":"Adverse selection: bids fill only when informed sellers know the outcome is in doubt. Tell: fill-conditional loss rate well above price-conditional. Fix: restrict to cells where the gap is small, or no-go."}},{"@type":"Question","name":"What is the current Polymarket fee on the market types I target, from the docs today?","acceptedAnswer":{"@type":"Answer","text":"Step 2, Historical dataset: Build a point-in-time dataset of near-resolution markets, fills, and outcomes. Expect: Four parquet files, coverage.md with counts per month and known gaps, a fills count at 0.97-0.99 sufficient to bound a 1% tail (target 300+ in the 0.99 band)."}},{"@type":"Question","name":"How long from fill to redeemable USDC, including UMA liveness and any dispute escalation?","acceptedAnswer":{"@type":"Answer","text":"Step 3, Tail calibration study: Measure how often near-certain contracts resolve the other way, and where. Expect: tailstudy.md with a table (band x category x H) including n, losses, rate, Wilson CI, break-even, pass flag; an adverse-selection comparison; a dispute subsection."}},{"@type":"Question","name":"Does my dispute watchdog actually see disputes before the price moves, or after?","acceptedAnswer":{"@type":"Answer","text":"Step 5, Read-only paper bot with dispute watchdog: Collect 30 days of forward evidence without risking money. Expect: paperbot/ code with a README, a running process with a heartbeat, paperledger.parquet growing daily, and a dispute-alert log."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Polymarket 99c Limit Order Arbitrage — Scalping the Resolution Tail"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","logo":"https://dejaviewed.dev/og/default.png","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"],"founder":{"@id":"https://dejaviewed.dev/#victor"},"publishingPrinciples":"https://dejaviewed.dev/method"},{"@type":"Person","@id":"https://dejaviewed.dev/#victor","name":"Victor","url":"https://www.1gabe.com/","sameAs":["https://github.com/Gabicus","https://instagram.com/6ab3"],"contactPoint":{"@type":"ContactPoint","url":"https://www.1gabe.com/contact/","contactType":"general"}},{"@type":"Article","@id":"https://dejaviewed.dev/guides/polymarket-99c-limit-arbitrage#article","headline":"Polymarket 99c Limit Order Arbitrage","description":"Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). Includes a 6-step prompt system.","url":"https://dejaviewed.dev/guides/polymarket-99c-limit-arbitrage","mainEntityOfPage":"https://dejaviewed.dev/guides/polymarket-99c-limit-arbitrage","datePublished":"2026-04-09","dateModified":"2026-10-22","author":{"@id":"https://dejaviewed.dev/#victor"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/polymarket-99c-limit-arbitrage.jpg","about":[{"@type":"SoftwareApplication","name":"Polymarket","url":"https://polymarket.com","sameAs":"https://polymarket.com"}],"abstract":"Decide, with data rather than a story, whether resting 97-99c bids on near-certain Polymarket contracts earns more than the resolution-against tail it is paid to absorb."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Polymarket 99c Limit Order Arbitrage"}]}]}</script>
 <!-- seo:end -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
 <script src="../shared.js"></script>
 <style>
@@ -67,217 +67,306 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <script>DV.mountHeader(document.body, 'home');</script>
 <article class="guide">
   <div class="confidence-badge high">Source confidence: high</div>
-  <div id="guide-body"></div>
-</article>
-<footer class="site"><div class="wrap"><a href="../catalog.html#post-DWEfIS9jRgI">← Back to DejaViewed</a> · <a href="../e/DWEfIS9jRgI.html">Entry page</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
-<!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
+  <div id="guide-body" data-pagefind-body data-pagefind-filter="kind:Guide"><!-- body:start -->
 <h1>Polymarket 99c Limit Order Arbitrage — Scalping the Resolution Tail</h1>
-<p>In short: Decide, with data rather than a story, whether resting 97-99c bids on near-certain Polymarket contracts earns more than the resolution-against tail it is paid to absorb.</p>
+<blockquote>
+<p><strong>In short:</strong> Decide, with data rather than a story, whether resting 97-99c bids on near-certain Polymarket contracts earns more than the resolution-against tail it is paid to absorb.</p>
+</blockquote>
 <p>There's a specific, dumb, beautiful trade on Polymarket: post resting 99¢ bids on contracts that are almost certainly going to resolve to $1. When someone panics, needs liquidity, or fat-fingers a market sell, you eat their order at 99¢, wait a day or two, and collect $1. One cent of edge times 30-50 basis points of fee drag nets ~0.5% per cycle — but the cycles are short, the risk is well-characterized, and the capital turnover is extreme.</p>
-<p>This is not alpha in the "predict the future" sense. It is liquidity provision at the tail of a binary distribution. The edge is structural.</p>
-<h2>1. What it is</h2>
-<p>Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). In the hours and days before resolution, many contracts have a near-certain outcome. A political contract where the result is already declared but not yet resolved. A sports contract past the final whistle. A weather contract where the day's high has already been printed. The "true" price is $1, but the order book has people selling at 98, 97, 96 for various reasons: exit-to-redeploy, position-close, loss-harvesting, or panic.</p>
+<p>This is not alpha in the &quot;predict the future&quot; sense. It is <strong>liquidity provision at the tail of a binary distribution</strong>. The edge is structural.</p>
+<hr />
+<h2 id="1-what-it-is">1. What it is</h2>
+<p>Polymarket contracts are binary — they resolve to either $1 (YES wins) or $0 (NO wins). In the hours and days before resolution, many contracts have a near-certain outcome. A political contract where the result is already declared but not yet resolved. A sports contract past the final whistle. A weather contract where the day's high has already been printed. The &quot;true&quot; price is $1, but the order book has people selling at 98, 97, 96 for various reasons: exit-to-redeploy, position-close, loss-harvesting, or panic.</p>
 <p>The trade: post resting limit buy orders at 99¢ (or 98, 97 laddered) and let liquidity takers hit you. When the contract resolves, you redeem for $1.</p>
-<h2>2. How it works — the mechanics</h2>
-<h3>Polymarket's order book</h3>
+<hr />
+<h2 id="2-how-it-works-the-mechanics">2. How it works — the mechanics</h2>
+<h3 id="polymarkets-order-book">Polymarket's order book</h3>
 <p>Polymarket runs a CLOB (Central Limit Order Book) on Polygon. Orders are signed messages held off-chain; fills settle on-chain via the Conditional Tokens Framework (CTF). Key facts:</p>
-<p>Price range: $0.01 to $0.99 (you cannot post at $1.00 exactly).</p>
-<p>Tick size: $0.01 on most markets, sometimes $0.001.</p>
-<p>Fees: scale as min(price, 1 − price) fee_rate. At $0.99, your effective fee is based on 0.01 — essentially free. This is the critical mechanical reason the strategy is even possible.</p>
-<p>Settlement: When a market resolves YES, holders of YES tokens can redeem 1:1 for USDC. NO tokens burn. Redemption is permissionless and instant after resolution.</p>
-<p>Merging: You can also merge YES + NO tokens at any time into 1 USDC via the CTF contract, which is the other exit path.</p>
-<h3>Why resting 99¢ bids get filled</h3>
-<p>Even on a contract "everyone knows" will resolve YES, sellers show up because:</p>
-<p>Capital rotation. Someone with a $10k position wants to redeploy before resolution rather than wait two days — they'll take 99¢ to move on.</p>
-<p>Tax harvesting. Realizing a gain at 99¢ vs waiting for $1 has cleaner bookkeeping.</p>
-<p>Panic / FUD. Rumors of oracle disputes, delays, or manipulation. Occasionally right, usually wrong.</p>
-<p>Fat fingers. Market sells by people who meant to market buy, or by scripts with broken sign logic.</p>
-<p>Resolution risk tail. Actual non-zero probability of a dispute or adverse resolution. This is the one real risk you are being paid for.</p>
-<h3>The math</h3>
+<ul>
+<li><strong>Price range:</strong> $0.01 to $0.99 (you cannot post at $1.00 exactly).</li>
+<li><strong>Tick size:</strong> $0.01 on most markets, sometimes $0.001.</li>
+<li><strong>Fees:</strong> scale as <code>min(price, 1 − price) * fee_rate</code>. At $0.99, your effective fee is based on 0.01 — essentially free. This is the <em>critical</em> mechanical reason the strategy is even possible.</li>
+<li><strong>Settlement:</strong> When a market resolves YES, holders of YES tokens can redeem 1:1 for USDC. NO tokens burn. Redemption is permissionless and instant after resolution.</li>
+<li><strong>Merging:</strong> You can also merge YES + NO tokens at any time into 1 USDC via the CTF contract, which is the other exit path.</li>
+</ul>
+<h3 id="why-resting-99-bids-get-filled">Why resting 99¢ bids get filled</h3>
+<p>Even on a contract &quot;everyone knows&quot; will resolve YES, sellers show up because:</p>
+<ol>
+<li><strong>Capital rotation.</strong> Someone with a $10k position wants to redeploy before resolution rather than wait two days — they'll take 99¢ to move on.</li>
+<li><strong>Tax harvesting.</strong> Realizing a gain at 99¢ vs waiting for $1 has cleaner bookkeeping.</li>
+<li><strong>Panic / FUD.</strong> Rumors of oracle disputes, delays, or manipulation. Occasionally right, usually wrong.</li>
+<li><strong>Fat fingers.</strong> Market sells by people who meant to market buy, or by scripts with broken sign logic.</li>
+<li><strong>Resolution risk tail.</strong> Actual non-zero probability of a dispute or adverse resolution. <em>This is the one real risk you are being paid for.</em></li>
+</ol>
+<h3 id="the-math">The math</h3>
 <p>Round-trip PnL on a single fill:</p>
-<p>PnL = (payout − entry) − fees = ($1.00 − $0.99) − (2 × fee_rate × $0.01) [fees on both sides capped by min(p, 1−p)] ≈ $0.01 − $0.0002 ≈ $0.0098 per share ≈ 0.99% gross return</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code>PnL = (payout − entry) − fees
+    = ($1.00 − $0.99) − (2 × fee_rate × $0.01)   [fees on both sides capped by min(p, 1−p)]
+    ≈ $0.01 − $0.0002
+    ≈ $0.0098 per share ≈ 0.99% gross return
+</code></pre></div>
 <p>But capital turnover is high. If you cycle every 24 hours, that's ~250% annualized simple, compounded. With laddering (bids at 97, 98, 99) you catch more fills at higher gross margin:</p>
-<p>97¢ fill → 3¢ gross, ~2.9¢ net → ~3% return</p>
-<p>98¢ fill → 2¢ gross, ~1.9¢ net → ~1.9% return</p>
-<p>99¢ fill → 1¢ gross, ~0.98¢ net → ~1% return</p>
-<p>Expected weighted return per capital deployed depends entirely on fill distribution, which depends entirely on what kind of "almost-certain" contracts you target.</p>
-<h2>3. Key mechanics — what to target</h2>
+<ul>
+<li>97¢ fill → 3¢ gross, ~2.9¢ net → ~3% return</li>
+<li>98¢ fill → 2¢ gross, ~1.9¢ net → ~1.9% return</li>
+<li>99¢ fill → 1¢ gross, ~0.98¢ net → ~1% return</li>
+</ul>
+<p>Expected weighted return per capital deployed depends entirely on fill distribution, which depends entirely on what kind of &quot;almost-certain&quot; contracts you target.</p>
+<hr />
+<h2 id="3-key-mechanics-what-to-target">3. Key mechanics — what to target</h2>
 <p>Not every contract is tradeable this way. The sweet spot:</p>
-<p>Resolution within 24-72 hours. Longer holds compress annualized return and expose you to more disputes.</p>
-<p>Clean resolution source. Weather station data, election commission, sports final score. Avoid interpretation-heavy markets ("Will X tweet about Y") — those are where disputes happen.</p>
-<p>Liquid enough to fill. You need at least a few dozen USDC of daily volume at the 95-99 range for the strategy to be worth running.</p>
-<p>Post-certainty window. The actual outcome is known but resolution hasn't executed. For elections, this is the 48-72 hours between "AP calls it" and "Polymarket oracle confirms." For sports, it's the 1-24 hours after the game. For weather, it's the post-midnight period after the daily high is recorded.</p>
-<p>Avoid any market with oracle controversy. Check Discord, Twitter, and the market's dispute history.</p>
-<h2>4. Automation — how to replicate</h2>
-<p>The Polymarket CLOB has a Python client (py-clob-client) and a REST/WebSocket API. Full automation takes maybe 300 lines of Python.</p>
-<h3>Minimum viable bot</h3>
-<p>from py_clob_client.client import ClobClient from py_clob_client.clob_types import OrderArgs, OrderType</p>
-<p>client = ClobClient(host="https://clob.polymarket.com", key=PRIVATE_KEY, chain_id=137) client.set_api_creds(client.create_or_derive_api_creds())</p>
-<h1>1. Scan all markets with end_date within 72h</h1>
-<p>markets = client.get_markets() targets = [m for m in markets if is_near_resolution(m) and is_clean_source(m)]</p>
-<h1>2. For each target's YES token, post a laddered bid</h1>
-<p>for m in targets: token_id = m["tokens"][0]["token_id"] # YES for price, size in [(0.99, 100), (0.98, 50), (0.97, 25)]: order = client.create_order(OrderArgs( price=price, size=size, side="BUY", token_id=token_id )) client.post_order(order, OrderType.GTC)</p>
-<h1>3. Watch fills via WS, redeem after resolution</h1>
-<h3>Sizing and risk</h3>
-<p>Cap per market. Never more than ~2% of capital in any single market. Oracle disputes are the tail risk and they hit a single market at a time.</p>
-<p>Diversify across 20-50 concurrent markets. This is the whole point — aggregate the tail so a single bad resolution doesn't blow up the strategy.</p>
-<p>Hard stop on dispute signals. Monitor UMA (Polymarket's oracle) dispute status. If a market enters dispute, cancel orders immediately and consider merging YES/NO to exit.</p>
-<p>Time-based cancel. If a bid hasn't filled within its expected window, cancel and rotate capital.</p>
-<h3>Existing tools</h3>
-<p>direkturcrypto/polymarket-terminal — public repo for copy/scalp/sniper on Polymarket. Not exactly this strategy but the CLOB plumbing is reusable.</p>
-<p>py-clob-client — official Polymarket Python client. The only dependency you actually need.</p>
-<h2>5. Risks — the honest list</h2>
-<p>Oracle disputes. UMA can rule against the "obvious" outcome. Rare but has happened (contested election calls, ambiguous sports outcomes). This is the real risk you're being paid 1¢ for. If UMA rules NO on a contract where you bought YES at 99¢, you lose ~$0.99 per share. One bad resolution can erase months of edge. Mitigation: diversification + hard dispute filter + never touch contested markets.</p>
-<p>Smart contract risk. CTF contract bugs, Polygon bridge issues, Polymarket operator actions.</p>
-<p>Resolution delays. Your capital sits longer than modeled, compressing annualized return. Not catastrophic, just disappointing.</p>
-<p>Front-running / adverse selection. The 1¢ of panic sellers knows something you don't about 5% of the time. That's priced in.</p>
-<p>Regulatory. US persons technically can't trade Polymarket. This is your call, not mine to advise on.</p>
-<p>Competition from other bots. This strategy is known. Depth at 99¢ has thinned as more bots run it. You need to be either faster, or post at 97-98¢ and accept more fill variance.</p>
-<h2>6. How this plugs into your trading-agent-team</h2>
-<p>This is a capital-efficient, low-touch, low-correlation strategy that fits the Unicron multi-strategy arena model well. It doesn't compete with the fast-cycler or Oracle Commander — it runs in parallel on Polymarket collateral while the perp strategies run on Hyperliquid collateral.</p>
-<p>Concrete integration ideas:</p>
-<p>Pure-rules execution, zero AI in the hot path — matches your rule from feedback_rules_vs_agents.md. The selection logic ("clean source, &lt;72h to resolution, not disputed") is 100% deterministic. No LLM, no ML. The AI layer only runs at market-discovery time: nightly, an agent scans new markets and classifies them as eligible / not eligible with reasoning. Humans review the classification before markets go live.</p>
-<p>Watchdog pattern is a perfect fit. Unicron's oversight spec already has a watchdog layer. For this strategy, the watchdog monitors UMA dispute events per open market. Dispute detected → cancel + exit via YES/NO merge immediately. This is the highest-leverage line of code in the whole bot.</p>
-<p>Challenge-game sweep. Parameters: bid ladder shape [97, 98, 99] weights, per-market cap, time-to-resolution threshold, source-cleanliness score. Fitness: Sharpe of simulated PnL on replayed Polymarket historical data (available via their Subgraph). Cheap to evaluate, clear optimum surface.</p>
-<p>Paired with the weather bot. The weather strategy (polymarket-weather-trading.md) builds a stable of positions it wants to exit close to resolution. The 99c bot is the counterparty to those exits. Running both strategies internally means the weather bot's exit cost goes to zero against your own book — that's a genuine operational synergy.</p>
-<p>Low capital to validate. $500-$2000 is enough to run this live and get statistically meaningful fill data in a week. Much lower barrier than the perp strategies.</p>
-<p>Where to file it in the repo: /unicron/strategies/polymarket_99c/ with a shared polymarket_clob.py module also used by the weather strategy. Backtest harness uses Polymarket's Subgraph for historical order-book snapshots — same data layer as the weather bot.</p>
-<h2>7. TL;DR</h2>
-<p>You are selling insurance against Polymarket resolution tail risk at ~1% per cycle. The edge is structural (Polymarket's fee curve + forced liquidity providers on almost-resolved markets). The risk is oracle disputes, which you diversify away by spreading across 30+ concurrent markets and filtering out anything contested. Automation is ~300 lines. Annualized return is in the 30-100% range depending on fill-rate and dispute variance. It is not "free money" — the 1¢ is the premium you're collecting for taking a real, small, well-understood tail.</p>
-<h2>Sources</h2>
-<p>Polymarket Limit Orders Docs</p>
-<p>Polymarket Help Center — Limit Orders</p>
-<p>Polymarket Help Center — How Prices Are Calculated</p>
-<p>How the Order Book Works — Guru Polymarket</p>
-<p>Polymarket Buying NO / Selling YES (Code Pointer)</p>
-<p>direkturcrypto/polymarket-terminal</p>
-<p>Scalping on Polymarket (Straits Markets) (article no longer online)</p>
-<h2>Prompt system — run this yourself</h2>
+<ul>
+<li><strong>Resolution within 24-72 hours.</strong> Longer holds compress annualized return and expose you to more disputes.</li>
+<li><strong>Clean resolution source.</strong> Weather station data, election commission, sports final score. Avoid interpretation-heavy markets (&quot;Will X tweet about Y&quot;) — those are where disputes happen.</li>
+<li><strong>Liquid enough to fill.</strong> You need at least a few dozen USDC of daily volume at the 95-99 range for the strategy to be worth running.</li>
+<li><strong>Post-certainty window.</strong> The actual outcome is known but resolution hasn't executed. For elections, this is the 48-72 hours between &quot;AP calls it&quot; and &quot;Polymarket oracle confirms.&quot; For sports, it's the 1-24 hours after the game. For weather, it's the post-midnight period after the daily high is recorded.</li>
+<li><strong>Avoid any market with oracle controversy.</strong> Check Discord, Twitter, and the market's dispute history.</li>
+</ul>
+<hr />
+<h2 id="4-automation-how-to-replicate">4. Automation — how to replicate</h2>
+<p>The Polymarket CLOB has a Python client (<code>py-clob-client</code>) and a REST/WebSocket API. Full automation takes maybe 300 lines of Python.</p>
+<h3 id="minimum-viable-bot">Minimum viable bot</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-python">from py_clob_client.client import ClobClient
+from py_clob_client.clob_types import OrderArgs, OrderType
+
+client = ClobClient(host="https://clob.polymarket.com", key=PRIVATE_KEY, chain_id=137)
+client.set_api_creds(client.create_or_derive_api_creds())
+
+# 1. Scan all markets with end_date within 72h
+markets = client.get_markets()
+targets = [m for m in markets if is_near_resolution(m) and is_clean_source(m)]
+
+# 2. For each target's YES token, post a laddered bid
+for m in targets:
+    token_id = m["tokens"][0]["token_id"]  # YES
+    for price, size in [(0.99, 100), (0.98, 50), (0.97, 25)]:
+        order = client.create_order(OrderArgs(
+            price=price, size=size, side="BUY",
+            token_id=token_id
+        ))
+        client.post_order(order, OrderType.GTC)
+
+# 3. Watch fills via WS, redeem after resolution
+</code></pre></div>
+<h3 id="sizing-and-risk">Sizing and risk</h3>
+<ul>
+<li><strong>Cap per market.</strong> Never more than ~2% of capital in any single market. Oracle disputes are the tail risk and they hit a single market at a time.</li>
+<li><strong>Diversify across 20-50 concurrent markets.</strong> This is the whole point — aggregate the tail so a single bad resolution doesn't blow up the strategy.</li>
+<li><strong>Hard stop on dispute signals.</strong> Monitor UMA (Polymarket's oracle) dispute status. If a market enters dispute, cancel orders immediately and consider merging YES/NO to exit.</li>
+<li><strong>Time-based cancel.</strong> If a bid hasn't filled within its expected window, cancel and rotate capital.</li>
+</ul>
+<h3 id="existing-tools">Existing tools</h3>
+<ul>
+<li><strong><code>direkturcrypto/polymarket-terminal</code></strong> — public repo for copy/scalp/sniper on Polymarket. Not exactly this strategy but the CLOB plumbing is reusable.</li>
+<li><strong><code>py-clob-client</code></strong> — official Polymarket Python client. The only dependency you actually need.</li>
+</ul>
+<hr />
+<h2 id="5-risks-the-honest-list">5. Risks — the honest list</h2>
+<ol>
+<li><strong>Oracle disputes.</strong> UMA can rule against the &quot;obvious&quot; outcome. Rare but has happened (contested election calls, ambiguous sports outcomes). This is the <em>real</em> risk you're being paid 1¢ for. If UMA rules NO on a contract where you bought YES at 99¢, you lose ~$0.99 per share. One bad resolution can erase months of edge. <strong>Mitigation: diversification + hard dispute filter + never touch contested markets.</strong></li>
+<li><strong>Smart contract risk.</strong> CTF contract bugs, Polygon bridge issues, Polymarket operator actions.</li>
+<li><strong>Resolution delays.</strong> Your capital sits longer than modeled, compressing annualized return. Not catastrophic, just disappointing.</li>
+<li><strong>Front-running / adverse selection.</strong> The 1¢ of panic sellers knows something you don't about 5% of the time. That's priced in.</li>
+<li><strong>Regulatory.</strong> US persons technically can't trade Polymarket. This is your call, not mine to advise on.</li>
+<li><strong>Competition from other bots.</strong> This strategy is known. Depth at 99¢ has thinned as more bots run it. You need to be either faster, or post at 97-98¢ and accept more fill variance.</li>
+</ol>
+<hr />
+<h2 id="6-how-this-plugs-into-your-trading-agent-team">6. How this plugs into your trading-agent-team</h2>
+<p>This is a <strong>capital-efficient, low-touch, low-correlation strategy</strong> that fits the Unicron multi-strategy arena model well. It doesn't compete with the fast-cycler or Oracle Commander — it runs in parallel on Polymarket collateral while the perp strategies run on Hyperliquid collateral.</p>
+<p><strong>Concrete integration ideas:</strong></p>
+<ol>
+<li>
+<p><strong>Pure-rules execution, zero AI in the hot path</strong> — matches your rule from <code>feedback_rules_vs_agents.md</code>. The selection logic (&quot;clean source, &lt;72h to resolution, not disputed&quot;) is 100% deterministic. No LLM, no ML. The AI layer only runs at market-discovery time: nightly, an agent scans new markets and classifies them as eligible / not eligible with reasoning. Humans review the classification before markets go live.</p>
+</li>
+<li>
+<p><strong>Watchdog pattern is a perfect fit.</strong> Unicron's oversight spec already has a watchdog layer. For this strategy, the watchdog monitors UMA dispute events per open market. Dispute detected → cancel + exit via YES/NO merge immediately. This is the highest-leverage line of code in the whole bot.</p>
+</li>
+<li>
+<p><strong>Challenge-game sweep.</strong> Parameters: bid ladder shape <code>[97, 98, 99]</code> weights, per-market cap, time-to-resolution threshold, source-cleanliness score. Fitness: Sharpe of simulated PnL on replayed Polymarket historical data (available via their Subgraph). Cheap to evaluate, clear optimum surface.</p>
+</li>
+<li>
+<p><strong>Paired with the weather bot.</strong> The weather strategy (<code>polymarket-weather-trading.md</code>) builds a stable of positions it wants to exit close to resolution. The 99c bot is the <em>counterparty</em> to those exits. Running both strategies internally means the weather bot's exit cost goes to zero against your own book — that's a genuine operational synergy.</p>
+</li>
+<li>
+<p><strong>Low capital to validate.</strong> $500-$2000 is enough to run this live and get statistically meaningful fill data in a week. Much lower barrier than the perp strategies.</p>
+</li>
+</ol>
+<p><strong>Where to file it in the repo:</strong> <code>/unicron/strategies/polymarket_99c/</code> with a shared <code>polymarket_clob.py</code> module also used by the weather strategy. Backtest harness uses Polymarket's Subgraph for historical order-book snapshots — same data layer as the weather bot.</p>
+<hr />
+<h2 id="7-tldr">7. TL;DR</h2>
+<p>You are selling insurance against Polymarket resolution tail risk at ~1% per cycle. The edge is structural (Polymarket's fee curve + forced liquidity providers on almost-resolved markets). The risk is oracle disputes, which you diversify away by spreading across 30+ concurrent markets and filtering out anything contested. Automation is ~300 lines. Annualized return is in the 30-100% range depending on fill-rate and dispute variance. It is not &quot;free money&quot; — the 1¢ is the premium you're collecting for taking a real, small, well-understood tail.</p>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://docs.polymarket.com/polymarket-learn/trading/limit-orders" target="_blank" rel="noopener">Polymarket Limit Orders Docs</a></li>
+<li><a href="https://help.polymarket.com/en/articles/13364444-limit-orders" target="_blank" rel="noopener">Polymarket Help Center — Limit Orders</a></li>
+<li><a href="https://help.polymarket.com/en/articles/13364488-how-are-prices-calculated" target="_blank" rel="noopener">Polymarket Help Center — How Prices Are Calculated</a></li>
+<li><a href="https://gurupolymarket.com/en/tutorials/how-the-order-book-works/" target="_blank" rel="noopener">How the Order Book Works — Guru Polymarket</a></li>
+<li><a href="https://codepointer.substack.com/p/polymarket-buying-no-selling-yes" target="_blank" rel="noopener">Polymarket Buying NO / Selling YES (Code Pointer)</a></li>
+<li><a href="https://github.com/direkturcrypto/polymarket-terminal" target="_blank" rel="noopener">direkturcrypto/polymarket-terminal</a></li>
+<li>Scalping on Polymarket (Straits Markets) (article no longer online)</li>
+</ul>
+<hr />
+<h2 id="prompt-system">Prompt system — run this yourself</h2>
 <p>Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want the whole result in one run; use the step prompts when you want to steer. Every step carries its own audit, and the gap audit at the end makes the agent find and fill what it missed.</p>
-<p>Mission. Decide, with data rather than a story, whether resting 97-99c bids on near-certain Polymarket contracts earns more than the resolution-against tail it is paid to absorb. Running this produces a historical tail-calibration study, a fill and adverse-selection backtest against a control, and a read-only paper bot with an UMA-dispute watchdog. Done means a written go or no-go: no real money moves until the historical loss rate's upper confidence bound sits below break-even and 30 days of paper trading beat the control after fees.</p>
-<h3>1 · Deeper, not bigger</h3>
+<p><strong>Mission.</strong> Decide, with data rather than a story, whether resting 97-99c bids on near-certain Polymarket contracts earns more than the resolution-against tail it is paid to absorb. Running this produces a historical tail-calibration study, a fill and adverse-selection backtest against a control, and a read-only paper bot with an UMA-dispute watchdog. Done means a written go or no-go: no real money moves until the historical loss rate's upper confidence bound sits below break-even and 30 days of paper trading beat the control after fees.</p>
+<h3 id="1-deeper-not-bigger">1 · Deeper, not bigger</h3>
 <p>Before running anything, make the task deeper rather than larger. Ask: what would a top professional do here that I am not asking for; what is the rawest material; which methods and tools; what, other than the model or me, proves it right. Then ask for exactly that.</p>
-<p>What a top professional would do (that you didn't ask for): Price the tail first. The guide's own math says a 99c fill makes 1c and a bad resolution loses 99c, so break-even is a loss rate just under 1 in 100 fills; a professional measures the historical rate at which contracts trading at 0.97-0.99 within 72 hours of end resolved the other way, by category, with Wilson confidence intervals, before writing any order code. They model adverse selection explicitly: resting bids get filled precisely when informed sellers know something, so the fill-conditional loss rate is worse than the unconditional one. They re-source the fee schedule and measure real time-to-redemption including UMA disputes.</p>
-<p>Rawest material to start from: - Polymarket docs: CLOB API, fee schedule, tick sizes, order types, the Conditional Tokens Framework (CTF) redeem and merge calls, and the UMA Optimistic Oracle resolution and dispute process.</p>
-<p>py-clob-client source (github.com/Polymarket/py-clob-client) for real method names; the guide's sample is illustrative.</p>
-<p>Gamma API market metadata (end dates, resolution source text, categories, closed status) and CLOB prices-history per token.</p>
-<p>On-chain fills: OrderFilled events from the CTF Exchange contracts on Polygon, via a public subgraph or Dune tables.</p>
-<p>UMA Optimistic Oracle request, propose, dispute, and settle events per market.</p>
-<p>Polymarket Terms of Service.</p>
-<p>Methods and tools: Python with httpx, pandas, and pyarrow; parquet cache of markets, price histories, and fills; Wilson score intervals for loss rates by price band (0.97, 0.98, 0.99), category, and hours-to-end; a queue-position fill model (your bid fills only after resting size ahead of you at that price is consumed by sells); event-time joins so no information after the fill timestamp is used; bootstrap confidence intervals on net PnL per fill; capital-days accounting for annualized return; a control arm; a paper bot that reads the live book over WebSocket and logs hypothetical fills without signing orders; a watchdog polling UMA dispute status.</p>
-<p>What proves it right (other than you or the model): Third-party data, not the model: the on-chain resolution outcome of every market in the sample, and on-chain fills at 0.97-0.99. The control arm: the same capital buying at the best ask at a random time in the same window, or simply the unconditional resolution rate, which the strategy must beat after fees. Thirty days of paper fills reconciled against actual later trades on the book (a hypothetical fill only counts if real sell volume crossed your price after your queue position). A second reviewer re-runs the calibration notebook from the parquet cache and gets the same loss rate.</p>
-<p>Rewritten prompt — ask for exactly that:</p>
-<p>Do not build me a Polymarket 99c bot yet. First tell me whether the edge exists after the tail.</p>
-<p>From Polymarket docs and py-clob-client source, confirm the current fee schedule (the guide says fees scale as min(price, 1-price) times fee_rate), tick sizes, price bounds 0.01-0.99, CTF redeem and merge, and the UMA dispute flow. Check the Terms of Service for my jurisdiction and stop if live trading is not permitted.</p>
-<p>Build a dataset of resolved markets with end dates, categories, resolution source text, price histories, on-chain fills at 0.97-0.99 in the final 72 hours, and final outcomes.</p>
-<p>Compute the loss rate (resolved against a 0.97-0.99 buyer) by price band, category, and hours-to-end with Wilson 95% intervals. Compute break-even per band after fees.</p>
-<p>Backtest laddered resting bids at 97/98/99 with a queue-position fill model, 2% per-market cap, 20-50 concurrent markets, dispute exits. Compare against a control that buys at the ask at a random time in the same window. Report return per capital-day, not the guide's 250% annualized.</p>
-<p>Run a read-only paper bot for 30 days with a UMA dispute watchdog.</p>
-<p>Gate: no real money until the upper confidence bound of the loss rate is below break-even and paper beats the control after fees. If it passes, the pilot is capped at $500 total, $25 per market, and halts on the first adverse resolution. Never promise returns.</p>
-<h3>2 · One-shot prompt</h3>
-<p>ROLE: You are a market-microstructure researcher evaluating a liquidity-provision strategy on Polymarket. Your default verdict is no-go; the data has to earn a go. You never place a real order in this run.</p>
-<p>CONTEXT:</p>
-<p>Strategy from the guide: post resting limit bids at 0.99 (laddered 0.98, 0.97) on YES tokens of contracts whose outcome is effectively known but not yet resolved; redeem at $1 after resolution via the Conditional Tokens Framework (CTF). Targets: resolution within 24-72 hours, clean sources (weather station, election commission, final sports score), post-certainty windows, no oracle controversy.</p>
-<p>Claims to test: fees scale as min(price, 1-price) times fee_rate so near-$1 fees are near zero; about 0.98c net per share at 99c; about 250% annualized if capital cycles daily; depth at 99c has thinned as bots compete; UMA disputes are rare.</p>
-<p>Tools: Polymarket CLOB and Gamma APIs, py-clob-client, CTF Exchange OrderFilled events on Polygon, UMA Optimistic Oracle events, direkturcrypto/polymarket-terminal (plumbing only).</p>
-<p>Break-even arithmetic: at entry p, a win pays (1-p) minus fees and a loss costs p. Loss rate must be below roughly (1-p)/1 after fees, about 1% at 0.99, 2% at 0.98, 3% at 0.97.</p>
-<p>HARD CONSTRAINTS:</p>
-<p>No order signing, no private key loaded, no wallet funded in this run. Check key presence with a boolean only, never print it.</p>
-<p>Read Polymarket's Terms of Service; if the user's jurisdiction is excluded, stop the live-path work and say so plainly.</p>
-<p>All analysis uses only information available at each simulated timestamp.</p>
-<p>Report returns per capital-day with confidence intervals; never promise returns.</p>
-<p>Any proposed pilot after a pass: $500 total cap, $25 per market cap, 2% of strategy capital per market maximum, halt on the first adverse resolution or any dispute fill, manual review before restart.</p>
-<p>DELIVERABLES, in order:</p>
-<p>mechanics.md: current fees, tick sizes, price bounds, order types, redeem and merge calls, UMA liveness period and dispute steps, ToS jurisdiction finding, each with a doc URL.</p>
-<p>data/: parquet tables of resolved markets (end date, category, resolution source text, outcome), price histories, and on-chain fills at 0.97-0.99 within 72 hours of end.</p>
-<p>tail_study.md: loss rate by price band x category x hours-to-end bucket with counts and Wilson 95% intervals; break-even line per band after fees; the cells where the upper bound is below break-even.</p>
-<p>backtest.md: laddered resting-bid simulation with queue-position fills, per-market and total caps, dispute exits via cancel and merge; control arm (buy at ask at a random time in the same window); net PnL per capital-day with bootstrap intervals; worst single loss; realized time-to-redemption distribution.</p>
-<p>paper_bot/: read-only WebSocket book watcher that logs hypothetical fills only when real sell volume crosses the price after your queue position, plus a UMA dispute watchdog that cancels hypothetical orders on any dispute.</p>
-<p>gate.md: pass or fail against the oracles, and the pilot spec only if passed.</p>
-<p>GAP ANALYSIS (built in): maintain gaps.md. For each deliverable record what you could not get (fill data incomplete before a date, resolution text missing, dispute history unavailable) and how it biases the result (missing disputes make the tail look safer). Fill what you can from on-chain data; state the rest.</p>
-<p>SELF-QUESTIONS before finishing:</p>
-<p>Is my loss rate measured on fills, or on prices, and how different are they?</p>
-<p>How many adverse resolutions are in the sample; is a zero just a small sample?</p>
-<p>Did I include markets that were voided or resolved 50-50, and how did I treat them?</p>
-<p>Does the queue model assume I am first in line when real bots are ahead of me?</p>
-<p>Is the fee formula current for these market types?</p>
-<p>What is the realized days-to-redemption, including disputes?</p>
-<p>Does the strategy beat the control, or just the market's average drift to $1?</p>
-<p>Which categories carry the losses, and does excluding them overfit the sample?</p>
-<p>STOP CONDITIONS: stop at the gate. Stop early if ToS excludes the jurisdiction, if fewer than 300 qualifying fills exist (insufficient to bound a 1% tail), or if the upper confidence bound of the loss rate exceeds break-even in every band.</p>
-<p>RETURN FORMAT: a markdown report: Verdict (go or no-go, one line), Mechanics, Data coverage, Tail study table, Backtest vs control table, Paper bot status, Gate, Gaps ranked by impact, file paths.</p>
-<h3>3 · Step-by-step prompts</h3>
+<ul>
+<li><strong>What a top professional would do (that you didn't ask for):</strong> Price the tail first. The guide's own math says a 99c fill makes 1c and a bad resolution loses 99c, so break-even is a loss rate just under 1 in 100 fills; a professional measures the historical rate at which contracts trading at 0.97-0.99 within 72 hours of end resolved the other way, by category, with Wilson confidence intervals, before writing any order code. They model adverse selection explicitly: resting bids get filled precisely when informed sellers know something, so the fill-conditional loss rate is worse than the unconditional one. They re-source the fee schedule and measure real time-to-redemption including UMA disputes.</li>
+<li><strong>Rawest material to start from:</strong> - Polymarket docs: CLOB API, fee schedule, tick sizes, order types, the Conditional Tokens Framework (CTF) redeem and merge calls, and the UMA Optimistic Oracle resolution and dispute process.</li>
+<li>py-clob-client source (github.com/Polymarket/py-clob-client) for real method names; the guide's sample is illustrative.</li>
+<li>Gamma API market metadata (end dates, resolution source text, categories, closed status) and CLOB prices-history per token.</li>
+<li>On-chain fills: OrderFilled events from the CTF Exchange contracts on Polygon, via a public subgraph or Dune tables.</li>
+<li>UMA Optimistic Oracle request, propose, dispute, and settle events per market.</li>
+<li>Polymarket Terms of Service.</li>
+<li><strong>Methods and tools:</strong> Python with httpx, pandas, and pyarrow; parquet cache of markets, price histories, and fills; Wilson score intervals for loss rates by price band (0.97, 0.98, 0.99), category, and hours-to-end; a queue-position fill model (your bid fills only after resting size ahead of you at that price is consumed by sells); event-time joins so no information after the fill timestamp is used; bootstrap confidence intervals on net PnL per fill; capital-days accounting for annualized return; a control arm; a paper bot that reads the live book over WebSocket and logs hypothetical fills without signing orders; a watchdog polling UMA dispute status.</li>
+<li><strong>What proves it right (other than you or the model):</strong> Third-party data, not the model: the on-chain resolution outcome of every market in the sample, and on-chain fills at 0.97-0.99. The control arm: the same capital buying at the best ask at a random time in the same window, or simply the unconditional resolution rate, which the strategy must beat after fees. Thirty days of paper fills reconciled against actual later trades on the book (a hypothetical fill only counts if real sell volume crossed your price after your queue position). A second reviewer re-runs the calibration notebook from the parquet cache and gets the same loss rate.</li>
+</ul>
+<p><strong>Rewritten prompt — ask for exactly that:</strong></p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Do not build me a Polymarket 99c bot yet. First tell me whether the edge exists after the tail.
+
+1. From Polymarket docs and py-clob-client source, confirm the current fee schedule (the guide says fees scale as min(price, 1-price) times fee_rate), tick sizes, price bounds 0.01-0.99, CTF redeem and merge, and the UMA dispute flow. Check the Terms of Service for my jurisdiction and stop if live trading is not permitted.
+2. Build a dataset of resolved markets with end dates, categories, resolution source text, price histories, on-chain fills at 0.97-0.99 in the final 72 hours, and final outcomes.
+3. Compute the loss rate (resolved against a 0.97-0.99 buyer) by price band, category, and hours-to-end with Wilson 95% intervals. Compute break-even per band after fees.
+4. Backtest laddered resting bids at 97/98/99 with a queue-position fill model, 2% per-market cap, 20-50 concurrent markets, dispute exits. Compare against a control that buys at the ask at a random time in the same window. Report return per capital-day, not the guide's 250% annualized.
+5. Run a read-only paper bot for 30 days with a UMA dispute watchdog.
+
+Gate: no real money until the upper confidence bound of the loss rate is below break-even and paper beats the control after fees. If it passes, the pilot is capped at $500 total, $25 per market, and halts on the first adverse resolution. Never promise returns.
+</code></pre></div>
+<h3 id="2-one-shot-prompt">2 · One-shot prompt</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">ROLE: You are a market-microstructure researcher evaluating a liquidity-provision strategy on Polymarket. Your default verdict is no-go; the data has to earn a go. You never place a real order in this run.
+
+CONTEXT:
+- Strategy from the guide: post resting limit bids at 0.99 (laddered 0.98, 0.97) on YES tokens of contracts whose outcome is effectively known but not yet resolved; redeem at $1 after resolution via the Conditional Tokens Framework (CTF). Targets: resolution within 24-72 hours, clean sources (weather station, election commission, final sports score), post-certainty windows, no oracle controversy.
+- Claims to test: fees scale as min(price, 1-price) times fee_rate so near-$1 fees are near zero; about 0.98c net per share at 99c; about 250% annualized if capital cycles daily; depth at 99c has thinned as bots compete; UMA disputes are rare.
+- Tools: Polymarket CLOB and Gamma APIs, py-clob-client, CTF Exchange OrderFilled events on Polygon, UMA Optimistic Oracle events, direkturcrypto/polymarket-terminal (plumbing only).
+- Break-even arithmetic: at entry p, a win pays (1-p) minus fees and a loss costs p. Loss rate must be below roughly (1-p)/1 after fees, about 1% at 0.99, 2% at 0.98, 3% at 0.97.
+
+HARD CONSTRAINTS:
+- No order signing, no private key loaded, no wallet funded in this run. Check key presence with a boolean only, never print it.
+- Read Polymarket's Terms of Service; if the user's jurisdiction is excluded, stop the live-path work and say so plainly.
+- All analysis uses only information available at each simulated timestamp.
+- Report returns per capital-day with confidence intervals; never promise returns.
+- Any proposed pilot after a pass: $500 total cap, $25 per market cap, 2% of strategy capital per market maximum, halt on the first adverse resolution or any dispute fill, manual review before restart.
+
+DELIVERABLES, in order:
+1. mechanics.md: current fees, tick sizes, price bounds, order types, redeem and merge calls, UMA liveness period and dispute steps, ToS jurisdiction finding, each with a doc URL.
+2. data/: parquet tables of resolved markets (end date, category, resolution source text, outcome), price histories, and on-chain fills at 0.97-0.99 within 72 hours of end.
+3. tail_study.md: loss rate by price band x category x hours-to-end bucket with counts and Wilson 95% intervals; break-even line per band after fees; the cells where the upper bound is below break-even.
+4. backtest.md: laddered resting-bid simulation with queue-position fills, per-market and total caps, dispute exits via cancel and merge; control arm (buy at ask at a random time in the same window); net PnL per capital-day with bootstrap intervals; worst single loss; realized time-to-redemption distribution.
+5. paper_bot/: read-only WebSocket book watcher that logs hypothetical fills only when real sell volume crosses the price after your queue position, plus a UMA dispute watchdog that cancels hypothetical orders on any dispute.
+6. gate.md: pass or fail against the oracles, and the pilot spec only if passed.
+
+GAP ANALYSIS (built in): maintain gaps.md. For each deliverable record what you could not get (fill data incomplete before a date, resolution text missing, dispute history unavailable) and how it biases the result (missing disputes make the tail look safer). Fill what you can from on-chain data; state the rest.
+
+SELF-QUESTIONS before finishing:
+- Is my loss rate measured on fills, or on prices, and how different are they?
+- How many adverse resolutions are in the sample; is a zero just a small sample?
+- Did I include markets that were voided or resolved 50-50, and how did I treat them?
+- Does the queue model assume I am first in line when real bots are ahead of me?
+- Is the fee formula current for these market types?
+- What is the realized days-to-redemption, including disputes?
+- Does the strategy beat the control, or just the market's average drift to $1?
+- Which categories carry the losses, and does excluding them overfit the sample?
+
+STOP CONDITIONS: stop at the gate. Stop early if ToS excludes the jurisdiction, if fewer than 300 qualifying fills exist (insufficient to bound a 1% tail), or if the upper confidence bound of the loss rate exceeds break-even in every band.
+
+RETURN FORMAT: a markdown report: Verdict (go or no-go, one line), Mechanics, Data coverage, Tail study table, Backtest vs control table, Paper bot status, Gate, Gaps ranked by impact, file paths.
+</code></pre></div>
+<h3 id="3-step-by-step-prompts">3 · Step-by-step prompts</h3>
 <h4>Step 1 — Ground truth: mechanics, fees, oracle, terms</h4>
-<p>Goal: Pin every mechanical fact the strategy depends on to a primary source.</p>
-<p>From Polymarket's official docs and the py-clob-client source (github.com/Polymarket/py-clob-client), document: current fee schedule per market type (test the guide's claim that fees scale as min(price, 1-price) times fee_rate; note any taker-only fees and any fee-free markets); tick sizes (0.01 vs 0.001) and price bounds 0.01-0.99; order types (GTC, GTD, FOK) and how cancels work; the exact client methods for creating, posting, and cancelling orders; CTF redeemPositions and mergePositions; the UMA Optimistic Oracle flow: proposal, liveness window length, dispute, escalation to DVM vote, typical timelines.</p>
-<p>Read the Terms of Service and state which jurisdictions are excluded. Write mechanics.md with one row per fact: fact, value, source URL or source file path:line, date checked. Add a break-even table: for entries 0.97, 0.98, 0.99, the maximum loss rate at which expected PnL per share is zero after fees.</p>
-<p>Expect: mechanics.md with 12+ sourced rows, a jurisdiction finding, and a three-row break-even table.</p>
-<p>Audit before moving on: Every row needs a URL or code path; rows without one are marked unverified. Recompute break-even by hand for 0.99: win (0.01 minus fee) times (1-L) equals loss 0.99 times L. If the jurisdiction is excluded, mark all live-trading steps blocked and continue only with research and paper simulation.</p>
+<p><em>Goal:</em> Pin every mechanical fact the strategy depends on to a primary source.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">From Polymarket's official docs and the py-clob-client source (github.com/Polymarket/py-clob-client), document: current fee schedule per market type (test the guide's claim that fees scale as min(price, 1-price) times fee_rate; note any taker-only fees and any fee-free markets); tick sizes (0.01 vs 0.001) and price bounds 0.01-0.99; order types (GTC, GTD, FOK) and how cancels work; the exact client methods for creating, posting, and cancelling orders; CTF redeemPositions and mergePositions; the UMA Optimistic Oracle flow: proposal, liveness window length, dispute, escalation to DVM vote, typical timelines.
+
+Read the Terms of Service and state which jurisdictions are excluded. Write mechanics.md with one row per fact: fact, value, source URL or source file path:line, date checked. Add a break-even table: for entries 0.97, 0.98, 0.99, the maximum loss rate at which expected PnL per share is zero after fees.
+</code></pre></div>
+<p><strong>Expect:</strong> mechanics.md with 12+ sourced rows, a jurisdiction finding, and a three-row break-even table.</p>
+<p><strong>Audit before moving on:</strong> Every row needs a URL or code path; rows without one are marked unverified. Recompute break-even by hand for 0.99: win (0.01 minus fee) times (1-L) equals loss 0.99 times L. If the jurisdiction is excluded, mark all live-trading steps blocked and continue only with research and paper simulation.</p>
 <h4>Step 2 — Historical dataset</h4>
-<p>Goal: Build a point-in-time dataset of near-resolution markets, fills, and outcomes.</p>
-<p>Using the Gamma API, pull all closed binary markets for the longest window available (target 12+ months): market id, question, category or tags, end date, resolution timestamp, resolution source text, outcome, YES and NO token ids. Using CLOB prices-history, pull price series for the final 7 days of each. From the CTF Exchange OrderFilled events on Polygon (via a public subgraph, Dune, or a Polygon RPC with eth_getLogs in block ranges), pull every fill at price 0.97 or higher on the eventual-winner token and on the eventual-loser token in the final 72 hours.</p>
-<p>From UMA Optimistic Oracle events, flag every market that had a dispute and its timeline. Save parquet: markets.parquet, prices.parquet, fills.parquet, disputes.parquet, with a coverage.md listing date ranges, row counts, and known holes.</p>
-<p>Expect: Four parquet files, coverage.md with counts per month and known gaps, a fills count at 0.97-0.99 sufficient to bound a 1% tail (target 300+ in the 0.99 band).</p>
-<p>Audit before moving on: Reconcile 20 random markets: the outcome in markets.parquet must match the on-chain resolution. Check that fills on the losing side at 0.97+ exist at all; if zero, your sample is suspicious (survivorship or a query bug). Fail if any fill timestamp is after the market's resolution; fix the join.</p>
+<p><em>Goal:</em> Build a point-in-time dataset of near-resolution markets, fills, and outcomes.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Using the Gamma API, pull all closed binary markets for the longest window available (target 12+ months): market id, question, category or tags, end date, resolution timestamp, resolution source text, outcome, YES and NO token ids. Using CLOB prices-history, pull price series for the final 7 days of each. From the CTF Exchange OrderFilled events on Polygon (via a public subgraph, Dune, or a Polygon RPC with eth_getLogs in block ranges), pull every fill at price 0.97 or higher on the eventual-winner token and on the eventual-loser token in the final 72 hours.
+
+From UMA Optimistic Oracle events, flag every market that had a dispute and its timeline. Save parquet: markets.parquet, prices.parquet, fills.parquet, disputes.parquet, with a coverage.md listing date ranges, row counts, and known holes.
+</code></pre></div>
+<p><strong>Expect:</strong> Four parquet files, coverage.md with counts per month and known gaps, a fills count at 0.97-0.99 sufficient to bound a 1% tail (target 300+ in the 0.99 band).</p>
+<p><strong>Audit before moving on:</strong> Reconcile 20 random markets: the outcome in markets.parquet must match the on-chain resolution. Check that fills on the losing side at 0.97+ exist at all; if zero, your sample is suspicious (survivorship or a query bug). Fail if any fill timestamp is after the market's resolution; fix the join.</p>
 <h4>Step 3 — Tail calibration study</h4>
-<p>Goal: Measure how often near-certain contracts resolve the other way, and where.</p>
-<p>From the step 2 parquet, define the event: a buy fill at price p in {0.97, 0.98, 0.99} on a token, within H hours of end (buckets 0-24, 24-48, 48-72). Loss = that token resolved to 0. Compute loss counts, fill counts, loss rate, and Wilson 95% intervals by price band, category (sports, politics, weather, crypto, other), and H bucket. Separately compute the unconditional rate from prices (the token's last price at 0.97+ at each hour boundary) to show the adverse-selection gap between price-conditional and fill-conditional loss rates.</p>
-<p>Treat voided or 50-50 resolutions explicitly: list them and score them at their actual payout. Mark markets with any UMA dispute and report their loss rate separately. Write tail_study.md with the full table and a short list of cells where the upper confidence bound is below break-even from mechanics.md.</p>
-<p>Expect: tail_study.md with a table (band x category x H) including n, losses, rate, Wilson CI, break-even, pass flag; an adverse-selection comparison; a dispute subsection.</p>
-<p>Audit before moving on: Check that the total number of cells you mark as passing is not the result of mining many small cells: count how many cells you tested and apply a Bonferroni or Holm correction to the pass flags. Fail any cell with fewer than 100 fills; small cells cannot bound a 1% tail. Spot-check 5 losses by reading the market question and resolution text.</p>
+<p><em>Goal:</em> Measure how often near-certain contracts resolve the other way, and where.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">From the step 2 parquet, define the event: a buy fill at price p in {0.97, 0.98, 0.99} on a token, within H hours of end (buckets 0-24, 24-48, 48-72). Loss = that token resolved to 0. Compute loss counts, fill counts, loss rate, and Wilson 95% intervals by price band, category (sports, politics, weather, crypto, other), and H bucket. Separately compute the unconditional rate from prices (the token's last price at 0.97+ at each hour boundary) to show the adverse-selection gap between price-conditional and fill-conditional loss rates.
+
+Treat voided or 50-50 resolutions explicitly: list them and score them at their actual payout. Mark markets with any UMA dispute and report their loss rate separately. Write tail_study.md with the full table and a short list of cells where the upper confidence bound is below break-even from mechanics.md.
+</code></pre></div>
+<p><strong>Expect:</strong> tail_study.md with a table (band x category x H) including n, losses, rate, Wilson CI, break-even, pass flag; an adverse-selection comparison; a dispute subsection.</p>
+<p><strong>Audit before moving on:</strong> Check that the total number of cells you mark as passing is not the result of mining many small cells: count how many cells you tested and apply a Bonferroni or Holm correction to the pass flags. Fail any cell with fewer than 100 fills; small cells cannot bound a 1% tail. Spot-check 5 losses by reading the market question and resolution text.</p>
 <h4>Step 4 — Backtest with queue model and control</h4>
-<p>Goal: Simulate the actual strategy with realistic fills, caps, and a control.</p>
-<p>Simulate resting bids at 0.99, 0.98, 0.97 with ladder weights as parameters, on markets passing the guide's filters: end within 72 hours, category in the clean-source set, no dispute at entry. Queue model: when you post, record resting size ahead of you at that price from the book snapshot (or assume the full displayed size if snapshots are missing); your order fills only after that much sell volume trades at your price. Caps: 2% of strategy capital per market, 20-50 concurrent markets, time-based cancel after the expected window. Dispute rule: on a UMA dispute event, cancel resting orders and exit open positions at the then-prevailing price or by merge if you hold both sides.</p>
-<p>Control arm: same markets, same capital, buy at the best ask at a uniformly random time in the same window and hold to resolution. Report per arm: fills, net PnL after fees, PnL per capital-day with bootstrap 95% CI, worst single loss, max drawdown, realized days-to-redemption distribution. Do not fit ladder weights on the reporting period: tune on the first 60% of months, report on the last 40%.</p>
-<p>Expect: backtest.md with strategy versus control table on the held-out period, parameter choices from the tuning period, and a PnL histogram showing the tail.</p>
-<p>Audit before moving on: Re-run with the queue model set to worst case (you are last in line) and best case (first in line); if the conclusion flips between them, the result is not robust and the gate fails. Confirm no future information: entry filters must use only data before each order timestamp.</p>
+<p><em>Goal:</em> Simulate the actual strategy with realistic fills, caps, and a control.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Simulate resting bids at 0.99, 0.98, 0.97 with ladder weights as parameters, on markets passing the guide's filters: end within 72 hours, category in the clean-source set, no dispute at entry. Queue model: when you post, record resting size ahead of you at that price from the book snapshot (or assume the full displayed size if snapshots are missing); your order fills only after that much sell volume trades at your price. Caps: 2% of strategy capital per market, 20-50 concurrent markets, time-based cancel after the expected window. Dispute rule: on a UMA dispute event, cancel resting orders and exit open positions at the then-prevailing price or by merge if you hold both sides.
+
+Control arm: same markets, same capital, buy at the best ask at a uniformly random time in the same window and hold to resolution. Report per arm: fills, net PnL after fees, PnL per capital-day with bootstrap 95% CI, worst single loss, max drawdown, realized days-to-redemption distribution. Do not fit ladder weights on the reporting period: tune on the first 60% of months, report on the last 40%.
+</code></pre></div>
+<p><strong>Expect:</strong> backtest.md with strategy versus control table on the held-out period, parameter choices from the tuning period, and a PnL histogram showing the tail.</p>
+<p><strong>Audit before moving on:</strong> Re-run with the queue model set to worst case (you are last in line) and best case (first in line); if the conclusion flips between them, the result is not robust and the gate fails. Confirm no future information: entry filters must use only data before each order timestamp.</p>
 <h4>Step 5 — Read-only paper bot with dispute watchdog</h4>
-<p>Goal: Collect 30 days of forward evidence without risking money.</p>
-<p>Build paper_bot/ in Python: a market scanner on the Gamma API running hourly that applies the step 4 filters; a WebSocket subscriber to the CLOB book and trade channels for each selected token; a ledger that places hypothetical resting bids and records a hypothetical fill only when real trade volume at or below your price exceeds the resting size ahead of you at post time. No private key is loaded; the client runs in read-only mode.</p>
-<p>Add a watchdog that polls UMA Optimistic Oracle status for every market with an open hypothetical position every 5 minutes; on dispute it cancels hypothetical orders, records the exit at the prevailing bid, and logs an alert. Run a control ledger in parallel (random-time ask buys on the same markets). Write daily rows to paper_ledger.parquet and a daily summary line: fills, open exposure, realized PnL, control PnL, disputes seen. Run for 30 days; keep a systemd user timer or cron entry and a heartbeat file.</p>
-<p>Expect: paper_bot/ code with a README, a running process with a heartbeat, paper_ledger.parquet growing daily, and a dispute-alert log.</p>
-<p>Audit before moving on: Grep the code for any order-signing or private-key call; any hit fails the step. Reconcile 10 hypothetical fills against the public trade tape. If the heartbeat goes stale for more than 1 hour, treat the day as missing in results, not as zero PnL.</p>
+<p><em>Goal:</em> Collect 30 days of forward evidence without risking money.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Build paper_bot/ in Python: a market scanner on the Gamma API running hourly that applies the step 4 filters; a WebSocket subscriber to the CLOB book and trade channels for each selected token; a ledger that places hypothetical resting bids and records a hypothetical fill only when real trade volume at or below your price exceeds the resting size ahead of you at post time. No private key is loaded; the client runs in read-only mode.
+
+Add a watchdog that polls UMA Optimistic Oracle status for every market with an open hypothetical position every 5 minutes; on dispute it cancels hypothetical orders, records the exit at the prevailing bid, and logs an alert. Run a control ledger in parallel (random-time ask buys on the same markets). Write daily rows to paper_ledger.parquet and a daily summary line: fills, open exposure, realized PnL, control PnL, disputes seen. Run for 30 days; keep a systemd user timer or cron entry and a heartbeat file.
+</code></pre></div>
+<p><strong>Expect:</strong> paper_bot/ code with a README, a running process with a heartbeat, paper_ledger.parquet growing daily, and a dispute-alert log.</p>
+<p><strong>Audit before moving on:</strong> Grep the code for any order-signing or private-key call; any hit fails the step. Reconcile 10 hypothetical fills against the public trade tape. If the heartbeat goes stale for more than 1 hour, treat the day as missing in results, not as zero PnL.</p>
 <h4>Step 6 — Validate against oracles, gate, gap report</h4>
-<p>Goal: Decide go or no-go with evidence, and list what remains unknown.</p>
-<p>Evaluate the gate: (1) in at least one tradeable cell after multiple-comparison correction, the Wilson 95% upper bound of the fill-conditional loss rate is below break-even; (2) the held-out backtest beats the control on PnL per capital-day with a bootstrap 95% CI excluding zero, under the worst-case queue model; (3) 30 days of paper trading beat the paper control after fees, with at least 100 hypothetical fills; (4) the ToS permits the user's jurisdiction; (5) a second reviewer re-runs tail_study from parquet and reproduces the loss rates. All five must pass. Otherwise the verdict is no-go and no wallet is funded.</p>
-<p>If go: write the pilot spec: $500 total, $25 per market, 2% per market maximum, halt on first adverse resolution or dispute, daily reconciliation, kill switch that cancels all orders. Write gap_report.md: every claim from the guide and every result, marked verified / unverified / false with evidence, ranked by impact on capital at risk. Fix the top three now.</p>
-<p>Expect: gate.md with five pass/fail rows and evidence, verdict line, pilot spec only if all pass, gap_report.md ranked.</p>
-<p>Audit before moving on: If any oracle is unverified, the verdict is no-go. Check that the verdict line contains no return projection. Confirm the pilot caps appear in code constants, not just prose, if a pilot is proposed.</p>
-<h3>4 · Gap analysis and audit</h3>
+<p><em>Goal:</em> Decide go or no-go with evidence, and list what remains unknown.</p>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">Evaluate the gate: (1) in at least one tradeable cell after multiple-comparison correction, the Wilson 95% upper bound of the fill-conditional loss rate is below break-even; (2) the held-out backtest beats the control on PnL per capital-day with a bootstrap 95% CI excluding zero, under the worst-case queue model; (3) 30 days of paper trading beat the paper control after fees, with at least 100 hypothetical fills; (4) the ToS permits the user's jurisdiction; (5) a second reviewer re-runs tail_study from parquet and reproduces the loss rates. All five must pass. Otherwise the verdict is no-go and no wallet is funded.
+
+If go: write the pilot spec: $500 total, $25 per market, 2% per market maximum, halt on first adverse resolution or dispute, daily reconciliation, kill switch that cancels all orders. Write gap_report.md: every claim from the guide and every result, marked verified / unverified / false with evidence, ranked by impact on capital at risk. Fix the top three now.
+</code></pre></div>
+<p><strong>Expect:</strong> gate.md with five pass/fail rows and evidence, verdict line, pilot spec only if all pass, gap_report.md ranked.</p>
+<p><strong>Audit before moving on:</strong> If any oracle is unverified, the verdict is no-go. Check that the verdict line contains no return projection. Confirm the pilot caps appear in code constants, not just prose, if a pilot is proposed.</p>
+<h3 id="4-gap-analysis-and-audit">4 · Gap analysis and audit</h3>
 <p>Run this after the build. It makes the agent enumerate its own claims, mark what is verified, rank the gaps and fix the top ones.</p>
-<p>You are an independent risk reviewer for a Polymarket 99c resting-bid study. You did not build it. Read mechanics.md, coverage.md, tail_study.md, backtest.md, the paper ledger, gate.md, and gap_report.md.</p>
-<p>Enumerate every claim: fee formula, break-even rates, loss rates and intervals, adverse-selection gap, backtest versus control, paper results, jurisdiction finding. Mark each verified, unverified, or false. Recompute the 0.99 band loss rate and Wilson interval from fills.parquet yourself.</p>
-<p>List missing pieces: unmodeled disputes, missing early fills, voided markets ignored, no worst-case queue run, tuning and reporting on the same months, paper fills not reconciled to the tape.</p>
-<p>Rank by impact on capital at risk: anything that understates the tail first, then anything that overstates fills, then cost and timing.</p>
-<p>Fix the top three now and show the before and after numbers.</p>
-<p>State what you could not fix and why. If any fix moves the verdict from go to no-go, say so in the first line.</p>
-<p>Return a claim table (claim, status, evidence, fix) and the ranked gap list. Never project returns.</p>
-<p>Questions the agent must ask itself before it says done:</p>
-<p>How many adverse resolutions at 0.99 does my sample contain, and can that sample size bound a 1% loss rate?</p>
-<p>Is the fill-conditional loss rate materially higher than the price-conditional one, meaning my bids get picked off?</p>
-<p>What is the current Polymarket fee on the market types I target, from the docs today?</p>
-<p>How long from fill to redeemable USDC, including UMA liveness and any dispute escalation?</p>
-<p>How much resting size sits ahead of me at 0.99 in practice, given other bots run this?</p>
-<p>Does my dispute watchdog actually see disputes before the price moves, or after?</p>
-<p>Does the strategy beat simply buying at the ask, or am I paid only for drift toward $1?</p>
-<p>Is live trading permitted under the Terms of Service in my jurisdiction?</p>
-<p>What single loss would the pilot caps allow, and is it acceptable?</p>
-<h3>5 · What proves it right</h3>
-<p>On-chain resolution outcomes for every market in the sample: the fill-conditional loss rate's Wilson 95% upper bound is below break-even for the traded band after multiple-comparison correction.</p>
-<p>Held-out backtest versus the random-time ask-buy control: PnL per capital-day bootstrap 95% CI excludes zero under the worst-case queue model.</p>
-<p>Thirty-day read-only paper run with 100+ hypothetical fills, each reconciled against the public trade tape, beating the parallel paper control after fees.</p>
-<p>Independent re-run of the tail-study notebook from the parquet cache reproduces the loss rates to the stated precision.</p>
-<p>Polymarket Terms of Service checked for the user's jurisdiction before any live pilot.</p>
-<h3>6 · Failure modes</h3>
-<p>Adverse selection: bids fill only when informed sellers know the outcome is in doubt. Tell: fill-conditional loss rate well above price-conditional. Fix: restrict to cells where the gap is small, or no-go.</p>
-<p>Small-sample illusion: zero losses in 80 fills read as a safe tail. Tell: Wilson upper bound above 3%. Fix: require 300+ fills per traded band.</p>
-<p>Optimistic queue model: backtest assumes first in line. Tell: backtest fills far exceed paper fills. Fix: worst-case queue run decides the gate.</p>
-<p>Capital lock longer than modeled. Tell: realized days-to-redemption median above 3. Fix: report per capital-day and include dispute durations.</p>
-<p>Data leakage from future filters. Tell: excluding categories chosen after seeing losses lifts results. Fix: freeze filters on the tuning period only.</p>
-<h3>7 · Agent direction (unattended runs)</h3>
+<div class="ps-pre"><button type="button" class="md-copy ps-copy" data-pagefind-ignore>Copy</button><pre><code class="language-text">You are an independent risk reviewer for a Polymarket 99c resting-bid study. You did not build it. Read mechanics.md, coverage.md, tail_study.md, backtest.md, the paper ledger, gate.md, and gap_report.md.
+
+1. Enumerate every claim: fee formula, break-even rates, loss rates and intervals, adverse-selection gap, backtest versus control, paper results, jurisdiction finding. Mark each verified, unverified, or false. Recompute the 0.99 band loss rate and Wilson interval from fills.parquet yourself.
+2. List missing pieces: unmodeled disputes, missing early fills, voided markets ignored, no worst-case queue run, tuning and reporting on the same months, paper fills not reconciled to the tape.
+3. Rank by impact on capital at risk: anything that understates the tail first, then anything that overstates fills, then cost and timing.
+4. Fix the top three now and show the before and after numbers.
+5. State what you could not fix and why. If any fix moves the verdict from go to no-go, say so in the first line.
+Return a claim table (claim, status, evidence, fix) and the ranked gap list. Never project returns.
+</code></pre></div>
+<p><strong>Questions the agent must ask itself before it says done:</strong></p>
+<ul>
+<li>How many adverse resolutions at 0.99 does my sample contain, and can that sample size bound a 1% loss rate?</li>
+<li>Is the fill-conditional loss rate materially higher than the price-conditional one, meaning my bids get picked off?</li>
+<li>What is the current Polymarket fee on the market types I target, from the docs today?</li>
+<li>How long from fill to redeemable USDC, including UMA liveness and any dispute escalation?</li>
+<li>How much resting size sits ahead of me at 0.99 in practice, given other bots run this?</li>
+<li>Does my dispute watchdog actually see disputes before the price moves, or after?</li>
+<li>Does the strategy beat simply buying at the ask, or am I paid only for drift toward $1?</li>
+<li>Is live trading permitted under the Terms of Service in my jurisdiction?</li>
+<li>What single loss would the pilot caps allow, and is it acceptable?</li>
+</ul>
+<h3 id="5-what-proves-it-right">5 · What proves it right</h3>
+<ul>
+<li>On-chain resolution outcomes for every market in the sample: the fill-conditional loss rate's Wilson 95% upper bound is below break-even for the traded band after multiple-comparison correction.</li>
+<li>Held-out backtest versus the random-time ask-buy control: PnL per capital-day bootstrap 95% CI excludes zero under the worst-case queue model.</li>
+<li>Thirty-day read-only paper run with 100+ hypothetical fills, each reconciled against the public trade tape, beating the parallel paper control after fees.</li>
+<li>Independent re-run of the tail-study notebook from the parquet cache reproduces the loss rates to the stated precision.</li>
+<li>Polymarket Terms of Service checked for the user's jurisdiction before any live pilot.</li>
+</ul>
+<h3 id="6-failure-modes">6 · Failure modes</h3>
+<ul>
+<li>Adverse selection: bids fill only when informed sellers know the outcome is in doubt. Tell: fill-conditional loss rate well above price-conditional. Fix: restrict to cells where the gap is small, or no-go.</li>
+<li>Small-sample illusion: zero losses in 80 fills read as a safe tail. Tell: Wilson upper bound above 3%. Fix: require 300+ fills per traded band.</li>
+<li>Optimistic queue model: backtest assumes first in line. Tell: backtest fills far exceed paper fills. Fix: worst-case queue run decides the gate.</li>
+<li>Capital lock longer than modeled. Tell: realized days-to-redemption median above 3. Fix: report per capital-day and include dispute durations.</li>
+<li>Data leakage from future filters. Tell: excluding categories chosen after seeing losses lifts results. Fix: freeze filters on the tuning period only.</li>
+</ul>
+<h3 id="7-agent-direction-unattended-runs">7 · Agent direction (unattended runs)</h3>
 <p>Research first, code second, money never in this run. Reach for the Gamma API and on-chain logs before the CLOB client; cache every pull as parquet under data/polymarket_99c/ and never re-query a cached range. Spawn a sub-agent for the on-chain fill extraction (block-range pagination is slow and self-contained) and another to independently recompute tail_study from parquet as the reproduction oracle. Never load or print a private key; the paper bot runs read-only. Stop and ask Victor if the Terms of Service exclude his jurisdiction, if qualifying fills are under 300, or before any step that would sign an order or fund a wallet. Write outputs to docs/polymarket_99c/: mechanics.md, coverage.md, tail_study.md, backtest.md, gate.md, gap_report.md, and paper_bot/. Return the verdict line first, then the gate table, then ranked gaps. Never state an expected return as a promise.</p>
-<p>Prompt system updated 2026-10-22 · all prompt systems · JSON</p>
-</div><!--pagefind:end-->
+<p><em>Prompt system updated 2026-10-22 · <a href="/prompts">all prompt systems</a> · <a href="/api/prompts.json">JSON</a></em></p>
+<!-- body:end --></div>
+</article>
+<footer class="site"><div class="wrap"><a href="/catalog#post-DWEfIS9jRgI">← Back to DejaViewed</a> · <a href="/e/DWEfIS9jRgI">Entry page</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
 <script id="md" type="text/markdown"># Polymarket 99c Limit Order Arbitrage — Scalping the Resolution Tail
 
 <!-- answer:start -->
@@ -658,16 +747,9 @@ Return a claim table (claim, status, evidence, fix) and the ranked gap list. Nev
 
 Research first, code second, money never in this run. Reach for the Gamma API and on-chain logs before the CLOB client; cache every pull as parquet under data/polymarket_99c/ and never re-query a cached range. Spawn a sub-agent for the on-chain fill extraction (block-range pagination is slow and self-contained) and another to independently recompute tail_study from parquet as the reproduction oracle. Never load or print a private key; the paper bot runs read-only. Stop and ask Victor if the Terms of Service exclude his jurisdiction, if qualifying fills are under 300, or before any step that would sign an order or fund a wallet. Write outputs to docs/polymarket_99c/: mechanics.md, coverage.md, tail_study.md, backtest.md, gate.md, gap_report.md, and paper_bot/. Return the verdict line first, then the gate table, then ranked gaps. Never state an expected return as a promise.
 
-*Prompt system updated 2026-10-22 · [all prompt systems](../prompts.html) · [JSON](../api/prompts.json)*
+*Prompt system updated 2026-10-22 · [all prompt systems](/prompts) · [JSON](/api/prompts.json)*
 
 <!-- prompt-system:end -->
-</script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
-<script>
-const raw=document.getElementById('md').textContent;
-const html=DOMPurify.sanitize(marked.parse(raw));
-document.getElementById('guide-body').innerHTML=html;
 </script><!-- ps-tail --><style>
 .ps{margin:40px 0;padding-top:24px;border-top:1px solid var(--border)}
 .ps h2{font-size:20px;font-weight:900;color:#fff;margin:0 0 10px}
@@ -684,11 +766,8 @@ document.getElementById('guide-body').innerHTML=html;
 .ps-copy:hover{color:#fff;border-color:var(--border-hi)}
 .ps-foot{font-size:11.5px;color:var(--text-mute);margin-top:18px}
 </style><script>
-document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
-document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
-p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
-</script><script>
 document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-copy');if(!b)return;
 const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
-</script><!-- /ps-tail --><!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
+</script><!-- /ps-tail --><!-- sitenav:start --><nav class="sitenav" aria-label="Site" data-pagefind-ignore><style>.sitenav{max-width:1100px;margin:28px auto 0;padding:14px 16px 6px;border-top:1px solid var(--border,rgba(255,255,255,.08));text-align:center;font:400 11px/2 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.02em;color:var(--text-mute,#6a6a80)}.sitenav a{color:var(--text-mute,#6a6a80);text-decoration:none;margin:0 7px;white-space:nowrap}.sitenav a:hover{color:var(--accent,#a78bfa)}</style><a href="/">Home</a><a href="/start-here">Start here</a><a href="/catalog">Catalog</a><a href="/guides/">Guides</a><a href="/prompts">Prompts</a><a href="/e/">All entries</a><a href="/collections/">Collections</a><a href="/search">Search</a><a href="/graph">Graph</a><a href="/graph-cosmos">Cosmos</a><a href="/board">Board</a><a href="/links/">Links</a><a href="/method">How it works</a><a href="/feed.xml">RSS</a><a href="/llms.txt">llms.txt</a></nav><!-- sitenav:end -->
+<!-- monetize:start --><footer class="mon" data-pagefind-ignore><div class="mon-in"><p class="mon-cta">DIY: <a href="/go/diy" rel="noopener">free skill on GitHub</a> · Done for you: <a href="/go/service" rel="noopener">get in touch</a></p></div></footer><!-- monetize:end -->
 </body></html>

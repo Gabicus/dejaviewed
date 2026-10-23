@@ -269,31 +269,71 @@ context_md = "\n".join(lines)
 (OUT / "context.md").write_text(context_md)
 print(f"wrote context.md ({len(lines)} lines, {len(context_md)//1024}KB)")
 
-# Also write a llms.txt for LLM-native discovery
-llms_txt = f"""# DejaViewed
-> A curated knowledge catalog of {len(entries)} saved posts, tools, techniques, and repos.
+# llms.txt (llmstxt.org format) — live counts, clean URLs, every guide with its one-line answer
+import sys as _sys
+_sys.path.insert(0, str(ROOT / "scripts"))
+from build_seo import BASE as _BASE, guide_index as _guide_index  # noqa: E402
+try:
+    from build_collections import collection_name as _cname, collection_slug as _cslug  # noqa: E402
+except Exception:
+    _cname = lambda c: c
+    _cslug = lambda c: c
 
-Updated: {GENERATED_DATE}
-
-## Docs
-- [Interactive Catalog](https://dejaviewed.dev/catalog.html): Browse all entries with filters
-- [Context Layer](https://dejaviewed.dev/context.md): Agent-readable knowledge map
-- [Queryable Index](https://dejaviewed.dev/catalog.json): Structured JSON with indices
-- [Full Text Dump](https://dejaviewed.dev/llms-full.txt): Every entry + deep dives as plain text
-- [Prompt Systems](https://dejaviewed.dev/api/prompts.json): One pasteable prompting system per deep dive and guide — deeper-not-bigger rewrite, one-shot prompt, step prompts with audits, gap analysis, validation oracles (human index: https://dejaviewed.dev/prompts.html)
-
-## Stats
-- {len(entries)} entries across {len(collection_index)} collections
-- {sum(1 for e in entries if e['tier'] == 'S')} S-tier, {sum(1 for e in entries if e['tier'] == 'A')} A-tier items
-- {len(tool_index)} tools, {len(technique_index)} techniques, {len(model_index)} models indexed
-- {sum(1 for e in entries if e['has_guide'])} deep-dive guides
-
-## Usage
-Agents can fetch catalog.json and filter by tier, domain, type, tool, or technique.
-Load context.md at session start for domain-triggered knowledge surfacing.
-"""
-(OUT / "llms.txt").write_text(llms_txt)
-print(f"wrote llms.txt")
+_gi = _guide_index()
+_packs = json.loads((DATA / "prompt_systems.json").read_text(encoding="utf-8")) if (DATA / "prompt_systems.json").exists() else {}
+_tiers = Counter(e["tier"] for e in entries)
+_n_tr = sum(1 for p in live if (p.get("transcript") or "").strip())
+_creators = len({e["creator"] for e in entries if e.get("creator")})
+_L = [
+    "# DejaViewed",
+    "",
+    f"> A curated, transcribed archive of {len(entries)} saved posts from {_creators} practitioners on AI tools, "
+    f"agents, creative code, art and quant trading, tiered S to C, with {len(_gi['guides'])} guides that each ship "
+    f"a runnable prompt system.",
+    "",
+    f"Updated: {GENERATED_DATE}. {len(entries)} entries ({_tiers.get('S', 0)} S, {_tiers.get('A', 0)} A, "
+    f"{_tiers.get('B', 0)} B, {_tiers.get('C', 0)} C) in {len(collection_index)} collections; {_n_tr} speech transcripts; "
+    f"{len(_gi['guides'])} guides; {len(_gi['deeper'])} deeper dives; {len(_packs)} prompt systems.",
+    "",
+    "Usage terms: captions, transcripts and media belong to their creators (every entry links its source post); "
+    f"titles, summaries, tiers, tags, guides and prompt systems are DejaViewed's own curation. Details: {_BASE}/method#terms",
+    "",
+    "## Start",
+    f"- [Start here]({_BASE}/start-here): what DejaViewed is, who it is for, how to cite it",
+    f"- [How DejaViewed works]({_BASE}/method): pipeline, tier rubric, update cadence, affiliate policy, who runs it",
+    f"- [Catalog]({_BASE}/catalog): filter every entry by tier, tool, creator and collection",
+    f"- [All entries]({_BASE}/e/): one static page listing every entry",
+    f"- [Guides]({_BASE}/guides/): index of all guides",
+    f"- [Prompt systems]({_BASE}/prompts): one pasteable prompt system per guide",
+    "",
+    "## Guides",
+]
+for _g in _gi["guides"]:
+    _L.append(f"- [{_g['title']}]({_g['url']})" + (f": {_g['answer']}" if _g["answer"] else ""))
+_L += ["", "## Collections"]
+if (OUT / "collections" / "index.html").exists():
+    _L.append(f"- [All collections]({_BASE}/collections/)")
+for _c, _ids in sorted(collection_index.items(), key=lambda kv: -len(kv[1])):
+    if not _c:
+        continue
+    _url = f"{_BASE}/collections/{_cslug(_c)}" if (OUT / "collections" / f"{_cslug(_c)}.html").exists() else f"{_BASE}/catalog"
+    _L.append(f"- [{_cname(_c)}]({_url}): {len(_ids)} entries")
+_L += ["", "## Data",
+       f"- [Catalog JSON]({_BASE}/api/catalog.json): every entry with title, summary, creator, tier, tools, techniques, domains, source URL",
+       f"- [Prompt systems JSON]({_BASE}/api/prompts.json): one-shot prompt, step prompts with audits, gap audit, validation oracles per guide",
+       f"- [Tools index]({_BASE}/api/tools.json): tools, techniques and domains to entry ids",
+       f"- [Creators]({_BASE}/api/creators.json): creator handles with post counts and tier mix",
+       f"- [Collections JSON]({_BASE}/api/collections.json): per-collection counts",
+       f"- [Deep dives JSON]({_BASE}/api/deep_dives.json): curated insight connections behind the guides",
+       "", "## Optional",
+       f"- [Full text]({_BASE}/llms-full.txt): every guide answer, entry and deep dive as plain text",
+       f"- [Context map]({_BASE}/context.md): domain, tool and technique map for session-start context",
+       f"- [RSS feed]({_BASE}/feed.xml): new entries, guides and deeper dives",
+       f"- [Sitemap]({_BASE}/sitemap.xml): every indexable page with its last-changed date",
+       ]
+llms_txt = "\n".join(_L) + "\n"
+(OUT / "llms.txt").write_text(llms_txt, encoding="utf-8")
+print(f"wrote llms.txt ({len(_gi['guides'])} guides, {len(llms_txt)} bytes)")
 
 # Refresh the entry count in the AI plugin manifest (was hardcoded "334+")
 plugin_path = OUT / ".well-known" / "ai-plugin.json"

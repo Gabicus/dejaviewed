@@ -6,64 +6,26 @@ page does), so everything not marked here or by render_entries.py — admin,
 board, graphs, legacy/, e/index.html, guides/index.html — stays out of the index.
 
   guides/*.html with <script id="md" type="text/markdown">
-      The visible body is rendered client-side, which Pagefind never sees. We
-      render the markdown to plain static HTML at build time into a visually
-      clipped, aria-hidden `.sr-index` div (between marker comments, replaced
-      on every run). No markdown dependency: the copy only has to be indexable.
+      #guide-body is server-rendered from the markdown (build_guides.rerender_all,
+      called first here so the body is never stale — e.g. after build_monetize.py
+      rewrote the markdown). #guide-body carries the pagefind attrs. Any legacy
+      hidden `.sr-index` prerender block is removed.
   guides/*.html without markdown (hand-written)  -> first <article> gets the attrs
   deeper/*.html                                  -> <main class="deeper-wrap"> gets the attrs
 """
 from __future__ import annotations
 
-import html
 import re
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_guides import rerender_all  # noqa: E402
 
 SITE = Path(__file__).resolve().parent.parent / "site"
 START, END = "<!--pagefind:start-->", "<!--pagefind:end-->"
 MD_RE = re.compile(r'<script id="md" type="text/markdown">(.*?)</script>', re.S)
 BLOCK_RE = re.compile(re.escape(START) + r".*?" + re.escape(END) + r"\n?", re.S)
-CLIP = ("position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;"
-        "overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap")
-
-
-def inline(text: str) -> str:
-    text = re.sub(r"<[^>]+>", " ", text)                       # raw HTML in markdown
-    text = re.sub(r"!\[([^\]]*)\]\([^)]*\)", r"\1", text)      # images -> alt
-    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)       # links -> label
-    text = re.sub(r"(\*\*|__|\*|`)", "", text)
-    text = text.replace("|", " ")
-    return html.escape(" ".join(text.split()), quote=False)
-
-
-def md_to_html(md: str) -> str:
-    out, para = [], []
-
-    def flush():
-        if para:
-            t = inline(" ".join(para))
-            if t.strip("- "):
-                out.append(f"<p>{t}</p>")
-            para.clear()
-
-    for line in md.splitlines():
-        s = line.strip()
-        m = re.match(r"(#{1,6})\s+(.*)", s)
-        if m:
-            flush()
-            n = len(m.group(1))
-            out.append(f"<h{n}>{inline(m.group(2))}</h{n}>")
-        elif not s or s.startswith("```") or re.fullmatch(r"[-*_|: ]{3,}", s):
-            flush()
-        elif re.match(r"([-*+]|\d+\.)\s+", s):
-            flush()
-            para.append(re.sub(r"^([-*+]|\d+\.)\s+", "", s))
-            flush()
-        else:
-            para.append(s.lstrip("> "))
-    flush()
-    return "\n".join(out)
 
 
 def mark_tag(page: str, tag_re: str, kind: str) -> str | None:
@@ -78,15 +40,13 @@ def mark_tag(page: str, tag_re: str, kind: str) -> str | None:
 
 
 def prep_guide(p: Path) -> str:
-    page = p.read_text(encoding="utf-8")
-    page = BLOCK_RE.sub("", page)
-    m = MD_RE.search(page)
-    if m:
-        block = (f'{START}<div class="sr-index" aria-hidden="true" data-pagefind-body '
-                 f'data-pagefind-filter="kind:Guide" style="{CLIP}">\n'
-                 f'{md_to_html(html.unescape(m.group(1)))}\n</div>{END}\n')
-        page = page[:m.start()] + block + page[m.start():]
-        status = "md"
+    orig = p.read_text(encoding="utf-8")
+    page = BLOCK_RE.sub("", orig)               # legacy hidden prerender
+    if MD_RE.search(page):
+        new = mark_tag(page, r'<div id="guide-body"[^>]*>', "Guide")
+        if new is None:
+            return "skip (md but no #guide-body)"
+        page, status = new, "md"
     else:
         if not re.search(r"<html\b", page, re.I):
             # Hand-written fragment pages: Pagefind skips documents without <html>.
@@ -96,11 +56,14 @@ def prep_guide(p: Path) -> str:
         if new is None:
             return "skip (no <article>)"
         page, status = new, "static"
-    p.write_text(page, encoding="utf-8")
+    if page != orig:
+        p.write_text(page, encoding="utf-8")
     return status
 
 
 def main() -> int:
+    n_pages, n_changed = rerender_all()
+    print(f"[search_prep] rendered #guide-body: {n_pages} pages ({n_changed} changed)")
     counts: dict[str, int] = {}
     for p in sorted((SITE / "guides").glob("*.html")):
         if p.name == "index.html":

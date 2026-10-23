@@ -173,7 +173,7 @@ def _fence(s: str) -> str:
 
 
 def section_markdown(pack: dict) -> str:
-    """Markdown for the guide pages (rendered client-side by marked)."""
+    """Markdown for the guide pages (rendered to #guide-body by build_guides.render_guide_html)."""
     d = pack["deeper_not_bigger"]
     o = ["", "---", "", "## Prompt system — run this yourself", "",
          "Everything below is pasteable into Claude Code, Claude, or any agent. Use the one-shot when you want "
@@ -206,8 +206,8 @@ def section_markdown(pack: dict) -> str:
     o += ["", "### 6 · Failure modes", ""]
     o += [f"- {q.strip()}" for q in pack["failure_modes"]]
     o += ["", "### 7 · Agent direction (unattended runs)", "", pack["agent_direction"].strip(), "",
-          f"*Prompt system updated {pack.get('updated_at', '')} · [all prompt systems](../prompts.html) · "
-          f"[JSON](../api/prompts.json)*", ""]
+          f"*Prompt system updated {pack.get('updated_at', '')} · [all prompt systems](/prompts) · "
+          f"[JSON](/api/prompts.json)*", ""]
     return "\n".join(o)
 
 
@@ -274,12 +274,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('.ps-copy,.md-cop
 const pre=b.parentElement.querySelector('pre');navigator.clipboard.writeText(pre.innerText).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1200)});});
 </script>"""
 
-# For marked-rendered guide pages: wrap every <pre> after render with a copy button.
-GUIDE_COPY_JS = """<script>
-document.querySelectorAll('#guide-body h2').forEach(h=>{if(/^Prompt system/.test(h.textContent))h.id='prompt-system';});
-document.querySelectorAll('#guide-body pre').forEach(p=>{const w=document.createElement('div');w.className='ps-pre';
-p.parentNode.insertBefore(w,p);const b=document.createElement('button');b.type='button';b.className='md-copy ps-copy';b.textContent='Copy';w.appendChild(b);w.appendChild(p);});
-</script>""" + COPY_JS
+# Guide pages: #guide-body is server-rendered by build_guides.render_guide_html (copy buttons and the
+# id="prompt-system" heading are emitted at build time), so only the delegated click handler is needed.
+GUIDE_COPY_JS = COPY_JS
 
 
 def inject_guide(path: Path, pack: dict) -> bool:
@@ -298,6 +295,8 @@ def inject_guide(path: Path, pack: dict) -> bool:
     txt = re.sub(r"<!-- ps-tail -->.*?<!-- /ps-tail -->", "", txt, flags=re.S)
     txt = txt.replace("</body></html>", f"<!-- ps-tail --><style>{PS_CSS}</style>{GUIDE_COPY_JS}<!-- /ps-tail --></body></html>", 1)
     path.write_text(txt)
+    from build_guides import rerender_page  # lazy: build_guides imports this module
+    rerender_page(path)   # keep the server-rendered #guide-body in step with the md script
     return True
 
 
