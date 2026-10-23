@@ -105,6 +105,10 @@ Skip phases with `--skip <phase>[,<phase>...]`. Phases (in order):
 | `og` | `scripts/build_og.py` | 1200×630 share images for guides/deeper/top pages |
 | `seo` | `scripts/build_seo.py` | canonical, description, OG/Twitter, JSON-LD (WebSite, Dataset, Article, FAQPage, Breadcrumb) on every public page — runs last, idempotent |
 | `monetize` | `scripts/build_monetize.py` | `/go/<slug>` redirects (`site/_redirects`), tool links via /go/, footer CTA, disclosure/tip-jar only when configured in `data/monetize/` — after `seo`, idempotent |
+| `collections` | `scripts/build_collections.py` | 18 static collection hubs; every page ≤2 clicks from home |
+| `tools` | `scripts/build_tools.py` | /tools/<slug> hubs from `data/tools/*.json` takes; thresholds decide indexed vs noindex |
+| `compare` | `scripts/build_compare.py` | /compare/, /best/, /system-prompts from `data/compare/*.json` (dated sources) |
+| `links` | `scripts/normalize_links.py` | clean root-absolute URLs + static footer nav — LAST HTML-touching phase |
 | `analytics` | `scripts/analytics_report.py` | Cloudflare GraphQL + Search Console report → `reports/analytics_<date>.md`; skips with exact setup steps when creds absent |
 | `landing` | `scripts/build_landing_meta.py` | `site/landing_meta.js` — guide/deeper slugs the showcase `index.html` links to |
 | `digest` | `scripts/digest.py` | summaries.json / recommendations.json |
@@ -938,6 +942,14 @@ Canvas-based Cosmos visualization:
 - WebGL-accelerated for large datasets
 
 ---
+
+## Phase 14d: SEO review loop (audit → fix → content)
+
+- Guides are server-rendered (markdown-it) from `<script id="md">`; after any markdown edit run `build_guides.py --rerender-only`; after `--force` run `search_prep.py`. Never reintroduce client-side markdown or hidden prerenders.
+- Programmatic pages (tools hubs, comparisons, best-of) need substance: ≥5 entries, ≥2 S/A, ≥1 curated guide, 150+ original words, every paragraph citing /e/<id>; below that → `noindex,follow` and out of the sitemap (build_api skips robots-noindex pages). External facts carry a source URL + date on the page.
+- Generators own `<meta name="description">`; build_seo reuses it for tools/compare/best. `normalize_links.py` runs last. `build_api.py` strips entry blocks → always followed by seo, monetize, links.
+- Quality gate lints agent-note leaks ("sandbox blocked", "Repo path:", TODO…) and private machine paths.
+- Re-audit cadence: re-run the technical audit + content gaps analysis quarterly or when Search Console deltas stall; audits live in `data/seo/audit_<date>.json`, `content_gaps_<date>.json`.
 
 ## Phase 14c: Indexing hubs + monetize layer
 

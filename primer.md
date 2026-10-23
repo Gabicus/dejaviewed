@@ -1,6 +1,6 @@
 # DejaViewed · primer
 
-Updated: 2026-10-22 (night)
+Updated: 2026-10-23 (early)
 
 ## PARKED, FRONT OF MIND — pay-to-crawl / data-as-the-asset (own session)
 
@@ -22,7 +22,7 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 
 ## Current status
 
-846 entries · 18 collections · 324K crosslinks · 219 deep dives (45 curated) · 63 guide pages · 45 deeper pages · 63 prompt systems · **SEO layer on all 961 public pages** (canonical, descriptions, OG images, JSON-LD, FAQ) · start-here page · RSS · IndexNow · entry pages are linked hubs (~17 internal links each) · monetize layer (/go/ redirects, 0 affiliates active) · **analytics LIVE** (Cloudflare + Search Console + Bing; baseline `reports/analytics_2026-10-22.md`) · 63 IG content kits · site search · 0 broken links. Site live at dejaviewed.dev (Cloudflare Pages, auto-deploy from main). Quality gate passes. Everything from the Oct 21 pull is captioned, Whisper-transcribed (medium, GPU), thumbed, LLM-enriched and indexed (api/, sitemap 957 URLs, llms.txt, context.md all live-computed).
+846 entries · 18 collections · 324K crosslinks · 219 deep dives (45 curated) · 64 guide pages · 45 deeper pages · 64 prompt systems · 18 indexed tool hubs (+22 noindex) · 2 comparisons · 2 best-of lists · system-prompt library · 18 collection hubs · method page · **SEO layer on all 961 public pages** (canonical, descriptions, OG images, JSON-LD, FAQ) · start-here page · RSS · IndexNow · entry pages are linked hubs (~17 internal links each) · monetize layer (/go/ redirects, 0 affiliates active) · **analytics LIVE** (Cloudflare + Search Console + Bing; baseline `reports/analytics_2026-10-22.md`) · 63 IG content kits · site search · 0 broken links. Site live at dejaviewed.dev (Cloudflare Pages, auto-deploy from main). Quality gate passes. Everything from the Oct 21 pull is captioned, Whisper-transcribed (medium, GPU), thumbed, LLM-enriched and indexed (api/, sitemap 957 URLs, llms.txt, context.md all live-computed).
 
 ### Oct 21 pull (what changed)
 - **New pipeline path (Phase 0 v3):** Instagram collection-feed API via agent-browser attached to real Chrome over CDP. Scroll-scrape was lossy (quant showed 12 of 31). 340 items pulled, 265 unique new entries ingested with caption/creator/date/media already filled (`ig_collection_api.py` → `ig_download_media.py` → `ingest_api.py`).
@@ -60,6 +60,14 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 - **Monetize layer (Phase B):** `scripts/build_monetize.py` (idempotent, after `seo`): `site/_redirects` with `/go/<slug>` 302s for 26 tools (clicks measurable in Cloudflare path analytics from day one; `analytics_report.py` has a /go/ table), tool pills/lists link via /go/, footer CTA on 961 pages (DIY GitHub · done-for-you → www.1gabe.com/contact/), FTC disclosure + "affiliate link" label + tip-jar/sponsors/prompt-pack links render ONLY when set. Config: `data/monetize/affiliates.json` (all `pending`), `config.json`, README with activation steps. Research: `data/monetize/affiliates_research.json` (62 tools).
 - Ads: rejected (Victor, breaks the design). Pay-to-crawl: still parked (top of file).
 
+### Oct 23 (early) — full SEO review, 3 waves (all live)
+- **Audits (read-only, committed):** `data/seo/audit_2026-10-22.json` (25 technical findings, Lighthouse) and `data/seo/content_gaps_2026-10-22.json` (8 pillars, 20-item build list, affiliate/corpus mismatch).
+- **Wave 2 technical:** guides server-rendered via markdown-it (`build_guides.render_guide_html`, `--rerender-only`; no marked/DOMPurify/hidden prerender; 780→3,043 crawlable links; 1 H1 each); clean root-absolute URLs everywhere (`normalize_links.py`, LAST html-touching phase; 16,486 `.html` links→0; `serve.py` dev server for clean URLs); static footer nav; `/collections/` 18 hubs → every page ≤2 clicks from home; `/method` (how it works, tiers, affiliate policy, Victor as Person author); entry VideoObject/CreativeWork schema + 846 share cards (`site/og/e/`, hashed); content-hash freshness (`data/seo/content_hashes.json`) drives sitemap lastmod + dateModified; sitemap = indexable HTML only; titles ≤65; FAQPage removed (no rich result since 2023); agent-note lint in quality_gate; Lighthouse mobile home 49→100, catalog 55→93 (`catalog.slim.js`, prerendered first 24 cards + landing sections, self-hosted fonts `site/fonts/`, `site/_headers` HSTS/nosniff/caching); thumbs ≤640px; real 404 page (`site/404.html`, suggests nearest entry/guide); "In short" answer block atop every guide (+ Article.abstract).
+- **Wave 3 content:** `/tools/<slug>` hubs (`build_tools.py`, thresholds ≥5 entries, ≥2 S/A, ≥1 curated guide → indexed; 3–4 entries → noindex; takes in `data/tools/*.json`, every paragraph cites /e/; FALSE_TAGS strips word-match mis-tags Cursor/Runway/Llama); `/compare/` (Claude Code vs Codex vs Gemini CLI, AI video generators) and `/best/` (Claude Code skills/plugins 35 items, MCP servers 25) from `data/compare/*.json` via `build_compare.py` with dated sources; `/system-prompts` library (64); Key-facts table on all 64 guides (`data/guides/facts_state.json` last-verified); hooks cookbook rewritten (33 events verified against code.claude.com docs 2026-10-22); new guide `claude-md-examples` (8 pinned public CLAUDE.md files) + pack #64.
+- **Facts verified Oct 22 (sources on pages):** Gemini CLI free tier ended 2026-06-18 (→ Antigravity CLI); Claude Code starts at Pro $20; Anthropic's Jun-15 billing split was paused; Codex on ChatGPT Free/Go $8, CLI Apache-2.0; Sora discontinued (app Apr 26, API Sep 24 2026); Kling 4.0 Oct 15 2026.
+- **Pipeline order now:** … render → collections → tools → compare → … → seo → monetize → links → gate. `build_api.py` strips blocks from entry pages; always followed by seo+monetize+links. `build_guides.py --force` must be followed by `search_prep.py`/`build_search.sh`.
+- Victor's dashboard items (optional): Cloudflare AI Labyrinth off (we WANT AI crawlers), Email Obfuscation off (blocking script), Early Hints on, Rocket Loader off.
+
 ## Next up
 
 **Victor (needs his logins):**
@@ -68,9 +76,11 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 3. Post the first content kit (content/INDEX.md "Next 7"); mark in `content/status.json`.
 
 **Fable:**
+4a. Fix the enricher's word-match tool tagger upstream (Cursor=pointer, Runway=fashion, Llama=Spanish) — `build_tools.FALSE_TAGS` is the stopgap list.
+4b. Confirm with Victor the two /method policy promises (creator removal via contact; reuse with link-back).
 4. Weekly (Mondays): `python3 scripts/analytics_report.py` → deltas; watch GSC indexed count (goal: 13 "discovered" → indexed; sitemap 974), impressions for the 5 query bets (`data/seo/queries.json`), /go/ clicks, AI-crawler hits on llms-full.txt (= pay-to-crawl demand signal).
-5. `site/404.html` (soft-404 fix), llms.txt directory registrations, GitHub README → site, 1gabe.com cross-link.
-6. "Answer in 2 sentences" block at top of each guide (chatbot-citation bait; ChatGPT-User/Perplexity-User already fetch guides).
+5. ~~404~~ ~~answer blocks~~ DONE. llms.txt directory registrations, GitHub README → site, 1gabe.com cross-link.
+6. Content build-list items 9–20 in `data/seo/content_gaps_2026-10-22.json` (token-usage case study, glossary, creator pages ≥4 entries, n8n MCP explained, 'new this week' page) — only after Search Console shows the first wave indexing.
 7. Gumroad/offline prompt pack only if Victor wants it (set `prompt_pack_url`).
 
 **Older queue:**
