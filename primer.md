@@ -58,8 +58,7 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 **Victor (dashboards) — unblocks search measurement:**
 1. ~~Cloudflare Web Analytics~~ DONE (28d of data already flowing).
 2. ~~Cloudflare API token~~ DONE Oct 22 → baseline `reports/analytics_2026-10-22.md` (bot-score fields are Enterprise-only; UA classes used).
-3. Search Console domain property (DNS TXT at Cloudflare) + service-account JSON → `~/.config/google/dejaviewed-gsc.json`; add SA email as Full user. Bing: import from GSC.
-   Full click-paths: `data/analytics/SETUP.md`. Then Fable runs `scripts/analytics_report.py` → baseline.
+3. ~~Search Console~~ DONE Oct 22 (domain property verified, SA = Full user, sitemap submitted via API: 974 URLs, 0 errors; 0 clicks/impressions yet — brand new property, backfills over days). Bing: still to do — bing.com/webmasters → Import from Google Search Console.
 4. Post the first content kit (content/INDEX.md "Next 7"); mark in `content/status.json`.
 
 **Fable next session:**
