@@ -2,6 +2,9 @@
 
 Updated: 2026-10-23 (early)
 
+## MONETIZATION — Victor's current stance (2026-10-23): probably not the point
+Victor: "maybe it's a wrong idea to try to make money with this… I made a skill… I don't see the value in somebody paying $150… keep it as a thought." Fable's honest read, recorded so we don't relitigate: affiliates = $0–15/mo at any traffic we'll see soon; a done-for-you service is legal only via Instagram's official data export (never log in as a customer); "viral" is the wrong target, "cited by answer engines" is the durable one (already 400+ AI-crawler fetches/week vs ~250 human visits). The useful product is the open-source skill + the archive itself; monetization work risks eating the usefulness. Decision: KEEP the instruments (affiliate /go/ links pending, service CTA, tip-jar fields, all free to leave on), DO NOT spend sessions on money until usefulness/traffic says otherwise. Revisit when: a stranger asks to pay, or /go/ clicks > 100/week, or GSC impressions > 10k/month. Full plan (12 workstreams) and the three-lane alternative live in `docs/plans/GROWTH_PLAN_2026-10-23.md` + this session's discussion; treat as a menu, not a mandate.
+
 ## PARKED, FRONT OF MIND — pay-to-crawl / data-as-the-asset (own session)
 
 Victor's thesis (2026-10-22): "the knowledge isn't what's valuable anymore, it's the data behind it" — the
