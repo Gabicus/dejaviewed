@@ -1,6 +1,6 @@
 # DejaViewed · primer
 
-Updated: 2026-10-22 (evening)
+Updated: 2026-10-22 (night)
 
 ## PARKED, FRONT OF MIND — pay-to-crawl / data-as-the-asset (own session)
 
@@ -22,7 +22,7 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 
 ## Current status
 
-846 entries · 18 collections · 324K crosslinks · 219 deep dives (45 curated) · 63 guide pages · 45 deeper pages · 63 prompt systems · **SEO layer on all 961 public pages** (canonical, descriptions, OG images, JSON-LD, FAQ) · start-here page · RSS · IndexNow · analytics instruments (awaiting creds) · 63 IG content kits · site search · 0 broken links. Site live at dejaviewed.dev (Cloudflare Pages, auto-deploy from main). Quality gate passes. Everything from the Oct 21 pull is captioned, Whisper-transcribed (medium, GPU), thumbed, LLM-enriched and indexed (api/, sitemap 957 URLs, llms.txt, context.md all live-computed).
+846 entries · 18 collections · 324K crosslinks · 219 deep dives (45 curated) · 63 guide pages · 45 deeper pages · 63 prompt systems · **SEO layer on all 961 public pages** (canonical, descriptions, OG images, JSON-LD, FAQ) · start-here page · RSS · IndexNow · entry pages are linked hubs (~17 internal links each) · monetize layer (/go/ redirects, 0 affiliates active) · **analytics LIVE** (Cloudflare + Search Console + Bing; baseline `reports/analytics_2026-10-22.md`) · 63 IG content kits · site search · 0 broken links. Site live at dejaviewed.dev (Cloudflare Pages, auto-deploy from main). Quality gate passes. Everything from the Oct 21 pull is captioned, Whisper-transcribed (medium, GPU), thumbed, LLM-enriched and indexed (api/, sitemap 957 URLs, llms.txt, context.md all live-computed).
 
 ### Oct 21 pull (what changed)
 - **New pipeline path (Phase 0 v3):** Instagram collection-feed API via agent-browser attached to real Chrome over CDP. Scroll-scrape was lossy (quant showed 12 of 31). 340 items pulled, 265 unique new entries ingested with caption/creator/date/media already filled (`ig_collection_api.py` → `ig_download_media.py` → `ingest_api.py`).
@@ -53,20 +53,25 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 - **Pipeline:** `rebuild.sh` has a `prompts` phase that stops when any target lacks a pack; `build_guides.py --force` and `deeper_dives.py` embed packs; hand-written guides are patched in place between `<!-- prompt-system:start|end -->` markers (lesson #52).
 - Security-adjacent packs (jailbreak repo, leaked system prompt, injection-CI, headless, OSINT) are defensive-only; money packs carry paper arms + caps + "no real money" gate.
 
+### Oct 22 (night) — measurement live, indexing pass, monetize layer
+- **Creds in:** Cloudflare token (`~/.config/cloudflare/dejaviewed.env`), Search Console service account (Full user on `sc-domain:dejaviewed.dev`, sitemap submitted via API: 974 URLs, 0 errors), Bing (manual add + sitemap processing). `analytics_report.py` runs end-to-end. Bot-score fields are Enterprise-only → UA classes (added `scanner` class).
+- **Baseline (7d):** 290 real page views / 280 visits; human-UA share 58%; AI crawlers weekly: ChatGPT-User 119, ClaudeBot 116, PerplexityBot 79, GPTBot 57, OAI-SearchBot 56, CCBot 45; nobody fetches llms-full.txt or /prompts yet. GSC: 0 impressions (new property), URL-inspection sample 6/20 indexed, 13 "discovered, not indexed".
+- **Indexing pass (Phase A):** 847 entry pages were orphans (2 links each). Now: breadcrumb, Related (crosslink-weighted, top 6), Appears-in (guides/deeper), More-from-creator, prev/next → avg 16.8 internal links; every guide/deeper links `../e/<id>.html` (static nav for crawlers since guide markdown is client-rendered). noindex on admin/rate/legacy; robots.txt no longer Disallows them (noindex must be crawlable). 55 stub summaries re-enriched by Opus (3 drops). IndexNow re-pinged 969 URLs.
+- **Monetize layer (Phase B):** `scripts/build_monetize.py` (idempotent, after `seo`): `site/_redirects` with `/go/<slug>` 302s for 26 tools (clicks measurable in Cloudflare path analytics from day one; `analytics_report.py` has a /go/ table), tool pills/lists link via /go/, footer CTA on 961 pages (DIY GitHub · done-for-you → www.1gabe.com/contact/), FTC disclosure + "affiliate link" label + tip-jar/sponsors/prompt-pack links render ONLY when set. Config: `data/monetize/affiliates.json` (all `pending`), `config.json`, README with activation steps. Research: `data/monetize/affiliates_research.json` (62 tools).
+- Ads: rejected (Victor, breaks the design). Pay-to-crawl: still parked (top of file).
+
 ## Next up
 
-**Victor (dashboards) — unblocks search measurement:**
-1. ~~Cloudflare Web Analytics~~ DONE (28d of data already flowing).
-2. ~~Cloudflare API token~~ DONE Oct 22 → baseline `reports/analytics_2026-10-22.md` (bot-score fields are Enterprise-only; UA classes used).
-3. ~~Search Console~~ DONE Oct 22 (domain property verified, SA = Full user, sitemap submitted via API: 974 URLs, 0 errors; 0 clicks/impressions yet — brand new property, backfills over days). Bing: still to do — bing.com/webmasters → Import from Google Search Console.
-4. Post the first content kit (content/INDEX.md "Next 7"); mark in `content/status.json`.
+**Victor (needs his logins):**
+1. Affiliate signups, in order of (links on site × payout): Runway (36 links, $15/sub), Higgsfield (30, 25% rec.), ElevenLabs (18, 22% rec.), n8n (17, 30% rec.), then TradingView, Kling (verify program). For each: sign up → paste tracking URL into `data/monetize/affiliates.json` `affiliate_url`, set `status: active` → tell Fable (or run `python3 scripts/build_monetize.py` + push). Signup URLs are in that file. Rules: no paid ads, no brand bidding, no coupon framing.
+2. Tip jar / GitHub Sponsors handle → `data/monetize/config.json` (`tip_jar_url`, `sponsors_url`). Empty = nothing renders.
+3. Post the first content kit (content/INDEX.md "Next 7"); mark in `content/status.json`.
 
-**Fable next session:**
-5. ~~IndexNow~~ DONE (974 URLs). Submit sitemap in GSC/Bing once Victor verifies the property.
-5b. Baseline facts (Oct 22, 7d): 18.4K edge req, 290 real page views / 280 visits (Web Analytics), human-UA share 58%, scanners 2.4K (wp-admin/.env probes, all 403 by Cloudflare), AI crawlers present: ChatGPT-User 119, ClaudeBot 116, PerplexityBot 79, GPTBot 57, OAI-SearchBot 56, CCBot 45 — nobody fetches llms-full.txt or /prompts yet; /api/ gets 275 hits (mostly our own pages' fetches). Consider a WAF rule for /wp-*, /.env*, /.git/* → 404 to cut noise.
-6. Register llms.txt on llmstxt.site / directory.llmstxt.cloud; GitHub README → site; 1gabe.com cross-link.
-7. 55 entry pages have stub summaries ("title — @creator") → re-enrich those ids (build_seo prints them).
-8. Baseline report → pick 5 SEO experiments, measure weekly.
+**Fable:**
+4. Weekly (Mondays): `python3 scripts/analytics_report.py` → deltas; watch GSC indexed count (goal: 13 "discovered" → indexed; sitemap 974), impressions for the 5 query bets (`data/seo/queries.json`), /go/ clicks, AI-crawler hits on llms-full.txt (= pay-to-crawl demand signal).
+5. `site/404.html` (soft-404 fix), llms.txt directory registrations, GitHub README → site, 1gabe.com cross-link.
+6. "Answer in 2 sentences" block at top of each guide (chatbot-citation bait; ChatGPT-User/Perplexity-User already fetch guides).
+7. Gumroad/offline prompt pack only if Victor wants it (set `prompt_pack_url`).
 
 **Older queue:**
 
@@ -78,23 +83,6 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 6. Embedding-based clustering (replace keyword dives/crosslinks) — only remaining "deeper version" item.
 7. Prompt systems: run 3 packs end-to-end for real (e.g. claude-second-brain, plotter-loop, polymarket-99c paper arm) and feed what breaks back into SPEC.md. New curated dives need a pack before publish (rebuild.sh enforces).
 
-## Next run — Victor setup items (Oct 21 aside: analytics, money, reach)
-
-**Victor does (needs dashboard/login):**
-1. Cloudflare → Web Analytics → add `dejaviewed.dev` with automatic injection for Pages. Site has NO analytics beacon today → zero page-view data.
-2. Create API token (Account Analytics: Read + Zone Analytics: Read) → save as `CLOUDFLARE_API_TOKEN=...` in `~/.config/cloudflare/dejaviewed.env` (chmod 600), never in chat. Then Fable pulls GraphQL reports: human vs bot share, which crawlers hit /api/ + llms.txt, top pages, Web Vitals.
-3. `! npx wrangler login` (token expired Oct 21) so wrangler deploy fallback works.
-4. Apply for Cloudflare **Pay Per Crawl** (private beta; HTTP 402 for Web-Bot-Auth crawlers). Pocket change at this scale, free to enable.
-5. Google Search Console + Bing Webmaster: submit sitemap.xml (957 URLs).
-
-**Fable does (queued):**
-6. OG/meta description tags on every guide/entry page (unfurls on X/LinkedIn/Discord).
-7. Social: 45 curated dives → one thread each via dejaviewed.social pipeline.
-8. Register llms.txt on llmstxt directories (llmstxt.site, directory.llmstxt.cloud).
-9. `/accessibility-audit` on index/catalog/guides — contrast on dim mono labels likely fails.
-10. RSS/Atom feed for new entries + dives.
-11. Optional: x402 Worker on /api/* (402 + stablecoin price for agents, free for humans). Demand unproven — build only as an experiment.
-
 ## Don't forget
 
 - `cms.py rebuild` BEFORE `enrich_entries.py --sweep` (enrich reads catalog.json, clobbers parquet-only edits) — lesson #50
@@ -103,5 +91,7 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 - Media-info API throttles after ~75 calls; per-post page nav gives stale pk unless you verify returned `code`
 - agent-browser bundled Chromium can't decrypt Chrome ≥136 cookies → CDP attach (Phase 0 v3)
 - Signed CDN URLs expire in hours → download media right after the pull
+- `build_guides.py --force` wipes guide search text → run `search_prep.py` after (rebuild.sh does)
+- Secrets only in `~/.config/{cloudflare,google}/` (mode 600); never in chat, never in repo
 - NEVER commit `references/site-deployment.md`; `data/media/` and `data/*.bak*` are gitignored
 - Chrome window driven over CDP keeps playing whatever post was last opened — park it on about:blank

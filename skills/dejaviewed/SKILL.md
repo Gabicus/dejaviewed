@@ -104,6 +104,7 @@ Skip phases with `--skip <phase>[,<phase>...]`. Phases (in order):
 | `feed` | `scripts/build_feed.py` | `feed.xml` RSS of newest entries + guides |
 | `og` | `scripts/build_og.py` | 1200×630 share images for guides/deeper/top pages |
 | `seo` | `scripts/build_seo.py` | canonical, description, OG/Twitter, JSON-LD (WebSite, Dataset, Article, FAQPage, Breadcrumb) on every public page — runs last, idempotent |
+| `monetize` | `scripts/build_monetize.py` | `/go/<slug>` redirects (`site/_redirects`), tool links via /go/, footer CTA, disclosure/tip-jar only when configured in `data/monetize/` — after `seo`, idempotent |
 | `analytics` | `scripts/analytics_report.py` | Cloudflare GraphQL + Search Console report → `reports/analytics_<date>.md`; skips with exact setup steps when creds absent |
 | `landing` | `scripts/build_landing_meta.py` | `site/landing_meta.js` — guide/deeper slugs the showcase `index.html` links to |
 | `digest` | `scripts/digest.py` | summaries.json / recommendations.json |
@@ -937,6 +938,12 @@ Canvas-based Cosmos visualization:
 - WebGL-accelerated for large datasets
 
 ---
+
+## Phase 14c: Indexing hubs + monetize layer
+
+- Entry pages must be hubs, never orphans: `render_entries.py` adds breadcrumb, Related (crosslink-weighted), Appears-in (guides/deeper), same-creator, prev/next. Guides/deeper link `../e/<id>.html` with a static (non-JS) entry list so crawlers see it. `build_guides.py --force` wipes guide search text → run `search_prep.py` after.
+- Private pages (admin, rate, legacy) get `noindex,follow` via `build_seo.py` and must stay CRAWLABLE (no robots Disallow) or the tag is never seen.
+- Monetize: `scripts/build_monetize.py` runs after `seo`. All tool links route through `/go/<slug>` (`site/_redirects`, 302) so clicks are measurable before any affiliate is active. `data/monetize/affiliates.json` `status: pending|active|skip`; `config.json` tip-jar/sponsors/pack URLs. Nothing with an empty URL renders; FTC disclosure appears only once an affiliate is active. No ads (owner decision). Pay-to-crawl stays parked until llms-full.txt / api demand shows in analytics.
 
 ## Phase 14b: Discoverability — SEO, feeds, analytics (REQUIRED before publish)
 
