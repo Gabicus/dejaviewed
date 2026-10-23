@@ -16,7 +16,7 @@
 <meta name="twitter:description" content="Explains Quake III&#x27;s four-line fast inverse square root: reinterpret float bits as an integer (which behaves logarithmically), shift right to halve the…">
 <meta name="twitter:image" content="https://dejaviewed.dev/thumb/DeHSjhOAMwe.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"All entries","item":"https://dejaviewed.dev/e/"},{"@type":"ListItem","position":3,"name":"Quake III fast inverse square root — the 0x5f3759df bit hack explained"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://dejaviewed.dev/catalog"},{"@type":"ListItem","position":3,"name":"Quake III fast inverse square root — the 0x5f3759df bit hack explained"}]}]}</script>
 <!-- seo:end -->
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,10 +44,30 @@
   details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
+  nav.crumbs { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  nav.crumbs a { color: var(--muted); text-decoration: none; }
+  nav.crumbs a:hover { color: var(--accent); }
+  nav.crumbs .sep { margin: 0 6px; opacity: .6; }
+  .hub { margin-top: 28px; }
+  .hub h2 { margin: 0 0 10px; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--muted); }
+  .hub ul { list-style: none; margin: 0; padding: 0; }
+  .hub li { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+            padding: 10px 14px; margin-bottom: 8px; font-size: 14px; line-height: 1.45; }
+  .hub li a { color: var(--text); text-decoration: none; font-weight: 500; }
+  .hub li a:hover { color: var(--accent); }
+  .hub .why { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+  .hub .links a { margin-right: 14px; }
+  nav.pn { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px;
+           border-top: 1px solid var(--border); padding-top: 16px; font-size: 13px; }
+  nav.pn a { color: var(--muted); text-decoration: none; max-width: 48%; }
+  nav.pn a:hover { color: var(--accent); }
+  nav.pn .next { margin-left: auto; text-align: right; }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
 <main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="../index.html">Home</a><span class="sep">›</span><a href="../catalog.html">Catalog</a><span class="sep">›</span><span>ai8</span><span class="sep">›</span><span aria-current="page">Quake III fast inverse square root — the 0x5f3759df bit hack explained</span></nav>
   <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">resource</span></div>
   <h1>Quake III fast inverse square root — the 0x5f3759df bit hack explained</h1>
@@ -71,5 +91,8 @@ Newton-Raphson iteration, code generation, float bit reinterpretation</div></div
 #quake iii #fast inverse square root #0x5f3759df #computer history #graphics programming #john carmack #algorithms #math explained #software engineering</div></div>
   </section>
   <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">In 1999, ID Software open-sourced Quake 3. Buried inside the game engine was a four-line mathematical mystery. It calculated the inverse square root four times faster than silicon hardware, driven by an unexplained hexadecimal number, 0x5F3759DF, and the developer comments simply read, what the fuck. Why was this function so desperate? In 3D graphics, every ray of light, every shadow and every surface reflection requires normalizing vector angles. You divide the vector by its length, one over the square root of x. But on a 1999 Pentium, floating-point division and square root took over 70 clock cycles. Computing millions of them per frame brought CPUs to their knees. The breakthrough started with a bizarre trick. Inside computer memory, a 32-bit floating-point number has a sine, an exponent and a fraction. If you treat those raw bits not as a float, but as an integer, the number behaves logarithmically. Shifting the bits right by one divides the exponent by two. In other words, a simple bit shift calculates a square root. To get the inverse square root, you negate the exponent and subtract the bits from a magic number. That constant had to balance the floating-point exponent bias of 127 and minimize piecewise linear error. When mathematician Greg Walsh calculated the optimal bias, the formula produced 1,597,463,007 0x5F3759DF. The bit-level hack was fast, but it was only an approximation, with about 1% error. To make it game-ready, the code ran a single pass of…</div></details>
+  <section class="hub related" data-pagefind-ignore><h2>Related</h2><ul><li><span class="tier-pill tier-b">B-TIER</span> <a href="Dau64tdyY4n.html">Time complexity patterns — ten loop shapes to recognize in interviews</a><span class="why">shared domain, technique</span></li><li><span class="tier-pill tier-a">A-TIER</span> <a href="DVYacGjk9G3.html">Mentor-Style GitHub Repos — five repos for terminal, patterns, testing and architecture</a><span class="why">shared domain, technique</span></li><li><span class="tier-pill tier-c">C-TIER</span> <a href="DbIxSSaEtGd.html">AI weekly roundup — Codex Micro controller, LingBot-Map, robot MMA</a><span class="why">shared domain, technique</span></li><li><span class="tier-pill tier-s">S-TIER</span> <a href="DcxV37-CJOC.html">Four GitHub design repos — R3F, liquid glass, shader gradients, liquid chrome</a><span class="why">shared domain, technique</span></li><li><span class="tier-pill tier-a">A-TIER</span> <a href="891906d4212e.html">TouchDesigner Creative Coding — 3D scanning, MediaPipe, Gaussian splats</a><span class="why">shared domain, technique</span></li><li><span class="tier-pill tier-a">A-TIER</span> <a href="DY8TYwpCd8P.html">React — made a little 3D racer that runs right in the browser. anti-grav...</a><span class="why">shared domain, technique</span></li></ul></section>
+  <section class="hub collection" data-pagefind-ignore><h2>Collection: ai8</h2><div class="links"><a href="../catalog.html#post-DeHSjhOAMwe">Find this post in the catalog</a><a href="../catalog.html">Browse the full catalog</a><a href="index.html">All entries</a></div></section>
+  <nav class="pn" aria-label="Previous and next in ai8" data-pagefind-ignore><a class="prev" rel="prev" href="DeC6XtipCQJ.html">← Whop neobank blueprint — one-click fintech with cards and crypto rails</a><a class="next" rel="next" href="DeIOphnT7Yq.html">Open vs closed token share — Friedberg on the 12-week flip and Anthrop →</a></nav>
 </main>
 </body></html>

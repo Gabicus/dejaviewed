@@ -17,7 +17,7 @@
 <meta name="twitter:description" content="MediaPipe&#x27;s body/hand/face tracking combined with TouchDesigner&#x27;s node-based visual programming creates a real-time pipeline where human movement becomes…">
 <meta name="twitter:image" content="https://dejaviewed.dev/og/mediapipe-touchdesigner-pipeline.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/mediapipe-touchdesigner-pipeline#article","headline":"MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline","description":"MediaPipe's body/hand/face tracking combined with TouchDesigner's node-based visual programming creates a real-time pipeline where human movement becomes…","url":"https://dejaviewed.dev/guides/mediapipe-touchdesigner-pipeline","mainEntityOfPage":"https://dejaviewed.dev/guides/mediapipe-touchdesigner-pipeline","datePublished":"2026-07-07","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/mediapipe-touchdesigner-pipeline.jpg","about":[{"@type":"Thing","name":"TouchDesigner"},{"@type":"Thing","name":"MediaPipe"},{"@type":"Thing","name":"Kinect"},{"@type":"Thing","name":"Unreal Engine"},{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Gemini"},{"@type":"Thing","name":"Kling"},{"@type":"Thing","name":"Pika"},{"@type":"Thing","name":"Runway"},{"@type":"Thing","name":"Sora"}]},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/mediapipe-touchdesigner-pipeline#faq","mainEntity":[{"@type":"Question","name":"Which exact landmark indices drive each parameter, and did I verify them against Google's diagram?","acceptedAnswer":{"@type":"Answer","text":"Step 1, Ground truth: landmarks + transport: Confirm MediaPipe and the TD transport actually work before designing anything. Expect: Live landmark values printing with verified indices, at least one value flowing into a TD CHOP and visibly tracking motion, and a measured update rate."}},{"@type":"Question","name":"Is my one-euro filter removing jitter without killing real motion?","acceptedAnswer":{"@type":"Answer","text":"Jittery output: raw landmarks drive parameters with no filter. Tell: the visual twitches when hands rest. Fix: one-euro filter plus dead-zones per channel."}},{"@type":"Question","name":"Does the gesture classifier generalise to a second person's hand, or only mine?","acceptedAnswer":{"@type":"Answer","text":"Works only for the author: classifier trained on one hand. Tell: a second person's gesture never fires. Fix: add second-person samples, raise threshold, debounce."}},{"@type":"Question","name":"Is my fps number measured under live tracking and motion, or at idle?","acceptedAnswer":{"@type":"Answer","text":"Step 5, Measure latency + fps: Quantify that it is actually real-time under live tracking. Expect: A performance table with measured fps (idle and loaded), median end-to-end latency over 10 trials, dropped-frame count, and the hardware spec."}},{"@type":"Question","name":"Is my latency number from paired timestamps, or inferred from fps?","acceptedAnswer":{"@type":"Answer","text":"Measured end-to-end latency (paired gesture/pixel timestamps) is under ~100ms median over 10 trials, and fps holds 30+ under live tracking with motion."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/mediapipe-touchdesigner-pipeline#article","headline":"MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline","description":"MediaPipe's body/hand/face tracking combined with TouchDesigner's node-based visual programming creates a real-time pipeline where human movement becomes…","url":"https://dejaviewed.dev/guides/mediapipe-touchdesigner-pipeline","mainEntityOfPage":"https://dejaviewed.dev/guides/mediapipe-touchdesigner-pipeline","datePublished":"2026-07-07","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/mediapipe-touchdesigner-pipeline.jpg","about":[{"@type":"Thing","name":"TouchDesigner"},{"@type":"Thing","name":"MediaPipe"},{"@type":"Thing","name":"Kinect"},{"@type":"Thing","name":"Unreal Engine"},{"@type":"Thing","name":"VCV Rack"},{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Gemini"},{"@type":"Thing","name":"Kling"},{"@type":"Thing","name":"Pika"},{"@type":"Thing","name":"Runway"}]},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/mediapipe-touchdesigner-pipeline#faq","mainEntity":[{"@type":"Question","name":"Which exact landmark indices drive each parameter, and did I verify them against Google's diagram?","acceptedAnswer":{"@type":"Answer","text":"Step 1, Ground truth: landmarks + transport: Confirm MediaPipe and the TD transport actually work before designing anything. Expect: Live landmark values printing with verified indices, at least one value flowing into a TD CHOP and visibly tracking motion, and a measured update rate."}},{"@type":"Question","name":"Is my one-euro filter removing jitter without killing real motion?","acceptedAnswer":{"@type":"Answer","text":"Jittery output: raw landmarks drive parameters with no filter. Tell: the visual twitches when hands rest. Fix: one-euro filter plus dead-zones per channel."}},{"@type":"Question","name":"Does the gesture classifier generalise to a second person's hand, or only mine?","acceptedAnswer":{"@type":"Answer","text":"Works only for the author: classifier trained on one hand. Tell: a second person's gesture never fires. Fix: add second-person samples, raise threshold, debounce."}},{"@type":"Question","name":"Is my fps number measured under live tracking and motion, or at idle?","acceptedAnswer":{"@type":"Answer","text":"Step 5, Measure latency + fps: Quantify that it is actually real-time under live tracking. Expect: A performance table with measured fps (idle and loaded), median end-to-end latency over 10 trials, dropped-frame count, and the hardware spec."}},{"@type":"Question","name":"Is my latency number from paired timestamps, or inferred from fps?","acceptedAnswer":{"@type":"Answer","text":"Measured end-to-end latency (paired gesture/pixel timestamps) is under ~100ms median over 10 trials, and fps holds 30+ under live tracking with motion."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline"}]}]}</script>
 <!-- seo:end -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
@@ -61,20 +61,21 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div class="confidence-badge high">Source confidence: high</div>
   <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-mediapipe-touchdesigner-pipeline.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline →</a></div>
   <div id="guide-body"></div>
+  <nav class="guide-entries" aria-label="Entries in this guide" style="margin:40px 0 0;padding-top:18px;border-top:1px solid var(--border);font-size:14px"><h2 style="font-size:16px;margin:0 0 8px;border:none">Entries in this guide</h2><ul style="margin:0;padding-left:20px"><li><a href="../e/DW6tpWWMtZV.html">What if Spiders Wove with Strings — hand-tracked audiovisual synth web</a></li><li><a href="../e/DXOWz4yjN--.html">Claude — Also, happy 100 posts to me! Woohoo!!!</a></li><li><a href="../e/DYaNXZJx_L3.html">MediaPipe — Download free at</a></li><li><a href="../e/DYiiwmzpRM7.html">Gemini Omni — Google&#x27;s unified multimodal model family for video</a></li><li><a href="../e/DYpRWC1OO0u.html">MediaPipe — Ongoing R&amp;D at the intersection of art and technology. not a finished...</a></li><li><a href="../e/DFaChZeMdn1.html">MediaPipe TouchDesigner plugin by @blankensmithing</a></li><li><a href="../e/DVoReJNCGxT.html">DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz</a></li><li><a href="../e/891906d4212e.html">TouchDesigner Creative Coding — 3D scanning, MediaPipe, Gaussian splats</a></li><li><a href="../e/DV7jVzkE4NI.html">TouchDesigner — I made this iridescent alien creature using POPS; the mesh was made with...</a></li><li><a href="../e/DY7uFuWtJPL.html">TouchDesigner — - adjust spacing of all particles</a></li></ul></nav>
 </article>
 <footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
 <!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
 <h1>MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline</h1>
-<p>Insight class: Creative Fusion · Difficulty: Medium · Quality: 5/5 Connected entries: 10 · Tools: Claude, Gemini, Kinect, Kling, MediaPipe, Pika, Runway, Sora, TouchDesigner, Unreal Engine, Veo</p>
+<p>Insight class: Creative Fusion · Difficulty: Medium · Quality: 5/5 Connected entries: 10 · Tools: Claude, Gemini, Kinect, Kling, MediaPipe, Pika, Runway, Sora, TouchDesigner, Unreal Engine, VCV Rack, Veo</p>
 <h2>Thesis</h2>
 <p>MediaPipe's body/hand/face tracking combined with TouchDesigner's node-based visual programming creates a real-time pipeline where human movement becomes generative art. Multiple creators are independently converging on this stack — from spider-web string simulations to 3D Gaussian splatting to interactive music visualizers.</p>
 <h2>Why it matters</h2>
 <p>This is the democratization of interactive installation art. What used to require a team, custom hardware, and months of C++ now runs on a laptop with a webcam. The convergence of multiple creators on this exact stack signals it's become the de facto standard for real-time body-reactive art.</p>
 <h2>The evidence — connected entries</h2>
-<h3>MediaPipe — What if Spiders Wove with Strings?🕷️</h3>
-<p>Creator: @pepepepebrick · Tier: A Tools: MediaPipe, TouchDesigner</p>
+<h3>What if Spiders Wove with Strings — hand-tracked audiovisual synth web</h3>
+<p>Creator: @pepepepebrick · Tier: S Tools: MediaPipe, TouchDesigner, VCV Rack</p>
 <p>MediaPipe+TouchDesigner creative pipeline</p>
-<p>🧱 2026/04/09 — @pepepepebrick; uses MediaPipe, TouchDesigner.</p>
+<p>An interactive piece by @pepepepebrick: MediaPipe hand tracking moves two digital spiders across an algorithmically generated 3D web in TouchDesigner, with VCV Rack making the sound. Legs grow near nodes and leg count drives pitch and effects, spider distance changes the waveform, and contact fuses the bodies and shifts color and web structure.</p>
 <p>View original post</p>
 <h3>Claude — Also, happy 100 posts to me! Woohoo!!!</h3>
 <p>Creator: @ojrgb · Tier: A Tools: Claude, MediaPipe, TouchDesigner</p>
@@ -144,6 +145,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Sora</p>
 <p>TouchDesigner</p>
 <p>Unreal Engine</p>
+<p>VCV Rack</p>
 <p>Veo</p>
 <h2>Creators to follow</h2>
 <p>@6ab3</p>
@@ -247,7 +249,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <script id="md" type="text/markdown"># MediaPipe × TouchDesigner: Real-Time Body-to-Art Pipeline
 
 **Insight class:** Creative Fusion · **Difficulty:** Medium · **Quality:** 5/5
-**Connected entries:** 10 · **Tools:** Claude, Gemini, Kinect, Kling, MediaPipe, Pika, Runway, Sora, TouchDesigner, Unreal Engine, Veo
+**Connected entries:** 10 · **Tools:** Claude, Gemini, Kinect, Kling, MediaPipe, Pika, Runway, Sora, TouchDesigner, Unreal Engine, VCV Rack, Veo
 
 ---
 
@@ -265,16 +267,16 @@ This is the democratization of interactive installation art. What used to requir
 
 ## The evidence — connected entries
 
-### MediaPipe — What if Spiders Wove with Strings?🕷️
-**Creator:** [@pepepepebrick](https://instagram.com/pepepepebrick) · **Tier:** A
-**Tools:** MediaPipe, TouchDesigner
+### [What if Spiders Wove with Strings — hand-tracked audiovisual synth web](../e/DW6tpWWMtZV.html)
+**Creator:** [@pepepepebrick](https://instagram.com/pepepepebrick) · **Tier:** S
+**Tools:** MediaPipe, TouchDesigner, VCV Rack
 
 > MediaPipe+TouchDesigner creative pipeline
 
-🧱 2026/04/09 — @pepepepebrick; uses MediaPipe, TouchDesigner.
+An interactive piece by @pepepepebrick: MediaPipe hand tracking moves two digital spiders across an algorithmically generated 3D web in TouchDesigner, with VCV Rack making the sound. Legs grow near nodes and leg count drives pitch and effects, spider distance changes the waveform, and contact fuses the bodies and shifts color and web structure.
 
 [View original post](https://www.instagram.com/p/DW6tpWWMtZV/)
-### Claude — Also, happy 100 posts to me! Woohoo!!!
+### [Claude — Also, happy 100 posts to me! Woohoo!!!](../e/DXOWz4yjN--.html)
 **Creator:** [@ojrgb](https://instagram.com/ojrgb) · **Tier:** A
 **Tools:** Claude, MediaPipe, TouchDesigner
 
@@ -283,7 +285,7 @@ This is the democratization of interactive installation art. What used to requir
 “Claude can do this in 10 minutes!” Is a caption I see a LOT rn and I definitely have mixed feelings about it. On one... — @ojrgb; uses Claude, MediaPipe, TouchDesigner.
 
 [View original post](https://www.instagram.com/p/DXOWz4yjN--/)
-### MediaPipe — Download free at
+### [MediaPipe — Download free at](../e/DYaNXZJx_L3.html)
 **Creator:** [@zerospacelabs](https://instagram.com/zerospacelabs) · **Tier:** A
 **Tools:** MediaPipe, TouchDesigner
 
@@ -292,7 +294,7 @@ This is the democratization of interactive installation art. What used to requir
 Torin & Lyell demo Classifier & PCA visualization TOXs live at DATLAB XIII 12/2025. TouchDesigner plugins for trainin... — @zerospacelabs; uses MediaPipe, TouchDesigner.
 
 [View original post](https://www.instagram.com/p/DYaNXZJx_L3/)
-### Gemini Omni — Google's unified multimodal model family for video
+### [Gemini Omni — Google's unified multimodal model family for video](../e/DYiiwmzpRM7.html)
 **Creator:** [@gigaqian](https://instagram.com/gigaqian) · **Tier:** B
 **Tools:** Gemini, Kling, Pika, Runway, Sora, TouchDesigner, Veo
 
@@ -301,7 +303,7 @@ Torin & Lyell demo Classifier & PCA visualization TOXs live at DATLAB XIII 12/20
 At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. It's a single model that converses across text, image, video and audio, unlike diffusion-only video tools such as Veo, Sora, Runway or Kling. Early testers report that two 10-second generations used about 86% of a Pro plan's daily quota. There's also an aside about Kling's 'Omni' naming.
 
 [View original post](https://www.instagram.com/p/DYiiwmzpRM7/)
-### MediaPipe — Ongoing R&D at the intersection of art and technology. not a finished...
+### [MediaPipe — Ongoing R&D at the intersection of art and technology. not a finished...](../e/DYpRWC1OO0u.html)
 **Creator:** [@touchdesigner](https://instagram.com/touchdesigner) · **Tier:** B
 **Tools:** MediaPipe, TouchDesigner
 
@@ -310,7 +312,7 @@ At Google I/O 2026, Google announced Gemini Omni in Flash, Pro and Ultra tiers. 
 repost @gerrylistudio How does presence reshape what we remember? — @touchdesigner; uses MediaPipe, TouchDesigner.
 
 [View original post](https://www.instagram.com/p/DYpRWC1OO0u/)
-### MediaPipe TouchDesigner plugin by @blankensmithing
+### [MediaPipe TouchDesigner plugin by @blankensmithing](../e/DFaChZeMdn1.html)
 **Creator:** [@neles0n](https://instagram.com/neles0n) · **Tier:** A
 **Tools:** MediaPipe, TouchDesigner
 
@@ -319,7 +321,7 @@ repost @gerrylistudio How does presence reshape what we remember? — @touchdesi
 @neles0n trying the MediaPipe plugin by @blankensmithing inside TouchDesigner. Useful pointer for anyone doing body/hand tracking in TD creative-coding pipelines.
 
 [View original post](https://www.instagram.com/p/DFaChZeMdn1/)
-### DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz
+### [DATA CONTROL — Kinect + TouchDesigner + Unreal scientific viz](../e/DVoReJNCGxT.html)
 **Creator:** [@pala3d](https://instagram.com/pala3d) · **Tier:** B
 **Tools:** Kinect, TouchDesigner, Unreal Engine
 
@@ -328,7 +330,7 @@ repost @gerrylistudio How does presence reshape what we remember? — @touchdesi
 @pala3d's 'DATA CONTROL' project: real-time visualization of NASA/CERN datasets as particle systems, body-controlled via Kinect through TouchDesigner into Unreal Engine. Pipeline explicitly human-made, no AI. Reference for data-viz/creative-coding stack.
 
 [View original post](https://www.instagram.com/p/DVoReJNCGxT/)
-### TouchDesigner Creative Coding — 3D scanning, MediaPipe, Gaussian splats
+### [TouchDesigner Creative Coding — 3D scanning, MediaPipe, Gaussian splats](../e/891906d4212e.html)
 **Creator:** [@6ab3](https://instagram.com/6ab3) · **Tier:** A
 **Tools:** MediaPipe, TouchDesigner
 
@@ -337,7 +339,7 @@ repost @gerrylistudio How does presence reshape what we remember? — @touchdesi
 Sources: @the.poet.engineer, @_sashasokolov | Three techniques: 3D scanning with virtual cameras (Polycam), MediaPipe body tracking for interactive dance art, and Gaussian splats for photorealistic 3D scenes. Includes setup, key concepts, and resources. | TouchDesigner
 
 [View original post](https://derivative.ca)
-### TouchDesigner — I made this iridescent alien creature using POPS; the mesh was made with...
+### [TouchDesigner — I made this iridescent alien creature using POPS; the mesh was made with...](../e/DV7jVzkE4NI.html)
 **Creator:** [@lauraaliceartist](https://instagram.com/lauraaliceartist) · **Tier:** B
 **Tools:** TouchDesigner
 
@@ -346,7 +348,7 @@ Sources: @the.poet.engineer, @_sashasokolov | Three techniques: 3D scanning with
 Biblically accurate alien // Motion sensor in realtime @pipo_interfaces - what an intuitive and fun little tool 🤲 bui... — @Edited; uses TouchDesigner.
 
 [View original post](https://www.instagram.com/p/DV7jVzkE4NI/)
-### TouchDesigner — - adjust spacing of all particles
+### [TouchDesigner — - adjust spacing of all particles](../e/DY7uFuWtJPL.html)
 **Creator:** [@the.poet.engineer](https://instagram.com/the.poet.engineer) · **Tier:** C
 **Tools:** TouchDesigner
 
@@ -390,6 +392,7 @@ particle life in 3d controlled by hands 🪸 — @the.poet.engineer; uses TouchD
 - **Sora**
 - **TouchDesigner**
 - **Unreal Engine**
+- **VCV Rack**
 - **Veo**
 
 ## Creators to follow

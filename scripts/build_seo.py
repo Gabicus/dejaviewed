@@ -47,6 +47,11 @@ BLOCK_RE = re.compile(r"<!-- seo:start -->.*?<!-- seo:end -->\n?", re.S)
 TOP_PAGES = ["index.html", "catalog.html", "prompts.html", "search.html", "start-here.html"]
 SUB_DIRS = ["guides", "deeper", "e"]
 
+# private / superseded pages: get a seo block holding only robots noindex,follow
+# (plus every page Disallowed in site/robots.txt). Never part of the public set.
+NOINDEX_PAGES = ["admin.html", "rate.html"]
+NOINDEX_DIRS = ["legacy"]
+
 OG_W, OG_H = 1200, 630
 
 
@@ -486,7 +491,9 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
             desc = clip(f"{base.rstrip('. ')}. {extra}")
         th = thumb_rel(e) if e else ""
         image = th or image
-        graph.append(breadcrumbs([("Home", BASE + "/"), ("All entries", BASE + "/e/"), (ttl, None)]))
+        # mirrors the visible breadcrumb render_entries writes (Home › Catalog › <collection> › title);
+        # the collection has no URL of its own, so it is left out of the structured list
+        graph.append(breadcrumbs([("Home", BASE + "/"), ("Catalog", canonical_url("catalog.html")), (ttl, None)]))
 
     return {"desc": desc, "og_type": og_type, "image": image or "og/default.png",
             "image_is_og": bool(image and image.startswith("og/")), "graph": graph, "url": url, "og_title": ttl}
@@ -573,6 +580,40 @@ def process(rel: str, c: Ctx, qmap: dict, title_log: dict) -> tuple[str, str, di
     return orig, head + rest, meta
 
 
+def noindex_pages() -> list[str]:
+    rels = {p for p in NOINDEX_PAGES if (SITE / p).is_file()}
+    for d in NOINDEX_DIRS:
+        rels |= {str(p.relative_to(SITE)) for p in (SITE / d).glob("*.html")}
+    robots = SITE / "robots.txt"
+    if robots.exists():
+        for line in robots.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"\s*Disallow:\s*/(\S+)", line, re.I)
+            if not m:
+                continue
+            path = m.group(1).rstrip("$")
+            for cand in (path, path + ".html", path.rstrip("/") + "/index.html"):
+                if cand and (SITE / cand).is_file() and cand.endswith(".html"):
+                    rels.add(cand)
+                    break
+    return sorted(rels)
+
+
+def process_noindex(rel: str) -> tuple[str, str]:
+    """Block = robots noindex,follow only; drop robots metas outside the block."""
+    path = SITE / rel
+    orig = path.read_bytes().decode("utf-8", errors="replace")   # keep CRLF files CRLF
+    nl = "\r\n" if "\r\n" in orig else "\n"
+    text = re.sub(r"<!-- seo:start -->.*?<!-- seo:end -->(\r?\n)?", "", orig, flags=re.S)
+    hi = text.lower().find("</head>")
+    if hi < 0:
+        return orig, orig
+    head, rest = re.sub(r"[ \t]*<meta\b[^>]*\bname=[\"']robots[\"'][^>]*>[ \t]*(\r?\n)?", "", text[:hi], flags=re.I), text[hi:]
+    block = START + nl + '<meta name="robots" content="noindex,follow">' + nl + END + nl
+    tm = re.search(r"<title>.*?</title>(\r?\n)?", head, re.S | re.I) or re.search(r"<head[^>]*>(\r?\n)?", head, re.I)
+    pos = tm.end() if tm else 0
+    return orig, head[:pos] + block + head[pos:] + rest
+
+
 def collect_pages() -> list[str]:
     rels = [p for p in TOP_PAGES if (SITE / p).is_file()]
     for d in SUB_DIRS:
@@ -614,6 +655,20 @@ def main() -> int:
             if not args.check:
                 path = SITE / rel
                 path.write_text(new, encoding="utf-8")
+
+    private = noindex_pages()
+    public = set(collect_pages())
+    for rel in private:
+        if rel in public:
+            print(f"warning: {rel} is both public and noindex; leaving it public", file=sys.stderr)
+            continue
+        orig, new = process_noindex(rel)
+        stats["(noindex)"]["pages"] += 1
+        if new != orig:
+            stats["(noindex)"]["changed"] += 1
+            would_change.append(rel)
+            if not args.check:
+                (SITE / rel).write_bytes(new.encode("utf-8"))
 
     if title_log and not args.check:
         prev = load_json(log_path, {}) or {}

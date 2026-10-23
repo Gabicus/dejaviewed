@@ -117,7 +117,16 @@ def render_html(deeper: dict) -> str:
         thumb_html = f'<a href="{_esc(post_url)}" target="_blank" rel="noopener"><img src="../thumb/{safe_id}.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display=\'none\'"></a>' if post_url else f'<img src="../thumb/{safe_id}.jpg" alt="" class="dd-entry-thumb" onerror="this.style.display=\'none\'">'
         if not has_thumb:  # no file on disk -> no <img> (avoids a 404 per page view)
             thumb_html = ''
-        title_html = f'<a href="{_esc(post_url)}" target="_blank" rel="noopener" class="dd-entry-title">{_esc(e.get("title", e["id"]))}</a>' if post_url else f'<div class="dd-entry-title">{_esc(e.get("title", e["id"]))}</div>'
+        entry_slug = "".join(c if c.isalnum() or c in "-_" else "_" for c in e["id"])  # render_entries.safe_slug
+        has_entry_page = (DEEPER_DIR.parent / "e" / f"{entry_slug}.html").is_file()
+        if has_entry_page:
+            title_html = f'<a href="../e/{entry_slug}.html" class="dd-entry-title">{_esc(e.get("title", e["id"]))}</a>'
+            if post_url:
+                title_html += f' <a href="{_esc(post_url)}" target="_blank" rel="noopener" class="dd-entry-src">original post ↗</a>'
+        elif post_url:
+            title_html = f'<a href="{_esc(post_url)}" target="_blank" rel="noopener" class="dd-entry-title">{_esc(e.get("title", e["id"]))}</a>'
+        else:
+            title_html = f'<div class="dd-entry-title">{_esc(e.get("title", e["id"]))}</div>'
         entries_html += f'''<div class="dd-entry">
   {thumb_html}
   <div class="dd-entry-info">
@@ -159,6 +168,8 @@ body{{background:var(--bg);color:var(--text);font-family:'JetBrains Mono','Fira 
 a.dd-entry-title{{font-size:13px;font-weight:700;color:#fff;text-decoration:none}}
 a.dd-entry-title:hover{{text-decoration:underline;color:var(--accent)}}
 .dd-entry-title{{font-size:13px;font-weight:700;color:var(--text)}}
+.dd-entry-src{{font-size:11px;color:var(--text-mute);text-decoration:none;margin-left:6px}}
+.dd-entry-src:hover{{color:var(--accent);text-decoration:underline}}
 .dd-entry-meta{{font-size:11px;color:var(--text-mute);margin:3px 0}}
 .dd-entry-summary{{font-size:12px;color:var(--text-dim);line-height:1.5}}
 .dd-entry-guide{{display:inline-block;margin-top:6px;padding:3px 10px;font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;text-decoration:none}}

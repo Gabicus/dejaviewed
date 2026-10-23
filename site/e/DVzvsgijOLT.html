@@ -16,7 +16,7 @@
 <meta name="twitter:description" content="@keshavsuki on fixing CLAUDE.md staleness: add a primer.md that Claude rewrites at end of every session (current state, next step, blockers), plus a memory.sh…">
 <meta name="twitter:image" content="https://dejaviewed.dev/thumb/DVzvsgijOLT.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"All entries","item":"https://dejaviewed.dev/e/"},{"@type":"ListItem","position":3,"name":"primer.md + memory.sh — live-updating CLAUDE.md companion"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://dejaviewed.dev/catalog"},{"@type":"ListItem","position":3,"name":"primer.md + memory.sh — live-updating CLAUDE.md companion"}]}]}</script>
 <!-- seo:end -->
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,10 +44,30 @@
   details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
+  nav.crumbs { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  nav.crumbs a { color: var(--muted); text-decoration: none; }
+  nav.crumbs a:hover { color: var(--accent); }
+  nav.crumbs .sep { margin: 0 6px; opacity: .6; }
+  .hub { margin-top: 28px; }
+  .hub h2 { margin: 0 0 10px; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--muted); }
+  .hub ul { list-style: none; margin: 0; padding: 0; }
+  .hub li { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+            padding: 10px 14px; margin-bottom: 8px; font-size: 14px; line-height: 1.45; }
+  .hub li a { color: var(--text); text-decoration: none; font-weight: 500; }
+  .hub li a:hover { color: var(--accent); }
+  .hub .why { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+  .hub .links a { margin-right: 14px; }
+  nav.pn { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px;
+           border-top: 1px solid var(--border); padding-top: 16px; font-size: 13px; }
+  nav.pn a { color: var(--muted); text-decoration: none; max-width: 48%; }
+  nav.pn a:hover { color: var(--accent); }
+  nav.pn .next { margin-left: auto; text-align: right; }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
 <main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="../index.html">Home</a><span class="sep">›</span><a href="../catalog.html">Catalog</a><span class="sep">›</span><span>ai2</span><span class="sep">›</span><span aria-current="page">primer.md + memory.sh — live-updating CLAUDE.md companion</span></nav>
   <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-s">S-TIER</span> <span class="pill">technique</span></div>
   <h1>primer.md + memory.sh — live-updating CLAUDE.md companion</h1>
@@ -81,5 +101,10 @@ Four layers. Every session Claude Code knows exactly where you are. (max context
 Comment “claude” for…</div><div class="tags"><span class="pill">primer-md-pattern</span></div></div>
   </section>
   <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">Your cloud.md file is just static. You write it once and it just sits there. But that&#x27;s the problem. Your project changes every session. Cloud.md doesn&#x27;t. Here&#x27;s the fix. A file called primer.md. It&#x27;s a separate file that cloud could rewrite at the end of every session. Current project will just got done, next steps, and open blockers. Tight, current, and always accurate. You just have to add one rule to your cloud.md file. At the end of every session, rewrite primer.md completely. That&#x27;s it. And after the first session, it handles itself. But there&#x27;s a second layer. Memory.sh. A shell script that injects live git state at launch. S5 commits, modified files, recent errors, and current branch. All of it pulled fresh every time you open a new session. So when you run memory.sh, cloud already knows what&#x27;s changed from last time without even saying a word. And then there&#x27;s a git hook. One line in every commit automatically logs itself to a project memory file. That&#x27;s a zero effort audit trail. Odmd holds your rules and preferences static and always there. Primer.md holds your current state, dynamic, written every session. Memory.sh injects live code-based contacts at launch. Git hook keeps a running log of every commit automatically. Four layers in every session cloud code will know exactly where you are. Comment cloud and I&#x27;ll send you the full memory stack.</div></details>
+  <section class="hub related" data-pagefind-ignore><h2>Related</h2><ul><li><span class="tier-pill tier-b">B-TIER</span> <a href="DV3fvORksud.html">Claude Code dashboard — have Claude set up its own status UI</a><span class="why">shared domain, technique, tool</span></li><li><span class="tier-pill tier-s">S-TIER</span> <a href="DUzg0n1jRK-.html">7 must-install Claude Code repos — Obsidian Skills, n8n-MCP, Superpowers</a><span class="why">shared domain, technique, tool</span></li><li><span class="tier-pill tier-a">A-TIER</span> <a href="DV3lILoEfzS.html">Codex + Claude Code — 3 systems to audit CC output with Codex</a><span class="why">shared domain, technique, tool</span></li><li><span class="tier-pill tier-a">A-TIER</span> <a href="DV8rkpGEbBJ.html">Claude Code hooks — 3 daily-driver hooks from @jens.heitmann</a><span class="why">shared domain, technique, tool</span></li><li><span class="tier-pill tier-b">B-TIER</span> <a href="DWifd94uEe6.html">Claude Code content system — seven skills from research to repurposing</a><span class="why">shared domain, technique, tool</span></li><li><span class="tier-pill tier-s">S-TIER</span> <a href="DW6wPs2DQuK.html">Someone finally put numbers to what developers have been feeling for weeks.</a><span class="why">shared technique, tool</span></li></ul></section>
+  <section class="hub appears" data-pagefind-ignore><h2>Appears in</h2><ul><li><a href="../guides/claude-second-brain.html">Guide: The Self-Improving AI Workspace: Claude Code That Gets Smarter Every Session</a></li><li><a href="../deeper/deeper-insight-claude-second-brain.html">Deeper dive: The Self-Improving AI Workspace: Claude Code That Gets Smarter Every Session</a></li><li><a href="../guides/claude-code-mastery.html">Guide: The Claude Code Power User&#x27;s Toolkit: From Token Waste to Terminal Dominance</a></li><li><a href="../deeper/deeper-insight-claude-code-mastery.html">Deeper dive: The Claude Code Power User&#x27;s Toolkit: From Token Waste to Terminal Dominance</a></li><li><a href="../guides/claude-mastery.html">Guide: Claude Mastery: From First Install to Advanced Agent Architecture</a></li><li><a href="../deeper/deeper-insight-claude-mastery.html">Deeper dive: Claude Mastery: From First Install to Advanced Agent Architecture</a></li><li><a href="../guides/primer-md-pattern.html">Guide: primer.md — The Living Handoff Document Pattern</a></li></ul></section>
+  <section class="hub creator" data-pagefind-ignore><h2>More from @keshavsuki</h2><ul><li><span class="tier-pill tier-s">S-TIER</span> <a href="DV6QY8QjoRW.html">Boris Cherny&#x27;s personal CLAUDE.md — plan-first, self-improving rules</a></li></ul></section>
+  <section class="hub collection" data-pagefind-ignore><h2>Collection: ai2</h2><div class="links"><a href="../catalog.html#post-DVzvsgijOLT">Find this post in the catalog</a><a href="../catalog.html">Browse the full catalog</a><a href="index.html">All entries</a></div></section>
+  <nav class="pn" aria-label="Previous and next in ai2" data-pagefind-ignore><a class="prev" rel="prev" href="DVzqCC0jfH4.html">← AI particle simulator — text-to-science-animation</a><a class="next" rel="next" href="DV3fvORksud.html">Claude Code dashboard — have Claude set up its own status UI →</a></nav>
 </main>
 </body></html>

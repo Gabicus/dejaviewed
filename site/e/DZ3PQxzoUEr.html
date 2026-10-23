@@ -16,7 +16,7 @@
 <meta name="twitter:description" content="Five backend/frontend performance gaps in AI-written apps: uncompressed JSON responses, row-by-row database inserts, a single dependency bottleneck in…">
 <meta name="twitter:image" content="https://dejaviewed.dev/thumb/DZ3PQxzoUEr.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"All entries","item":"https://dejaviewed.dev/e/"},{"@type":"ListItem","position":3,"name":"Vibe-coded app performance — five fixes Claude usually skips"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://dejaviewed.dev/catalog"},{"@type":"ListItem","position":3,"name":"Vibe-coded app performance — five fixes Claude usually skips"}]}]}</script>
 <!-- seo:end -->
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,10 +44,30 @@
   details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
+  nav.crumbs { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  nav.crumbs a { color: var(--muted); text-decoration: none; }
+  nav.crumbs a:hover { color: var(--accent); }
+  nav.crumbs .sep { margin: 0 6px; opacity: .6; }
+  .hub { margin-top: 28px; }
+  .hub h2 { margin: 0 0 10px; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--muted); }
+  .hub ul { list-style: none; margin: 0; padding: 0; }
+  .hub li { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+            padding: 10px 14px; margin-bottom: 8px; font-size: 14px; line-height: 1.45; }
+  .hub li a { color: var(--text); text-decoration: none; font-weight: 500; }
+  .hub li a:hover { color: var(--accent); }
+  .hub .why { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+  .hub .links a { margin-right: 14px; }
+  nav.pn { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px;
+           border-top: 1px solid var(--border); padding-top: 16px; font-size: 13px; }
+  nav.pn a { color: var(--muted); text-decoration: none; max-width: 48%; }
+  nav.pn a:hover { color: var(--accent); }
+  nav.pn .next { margin-left: auto; text-align: right; }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
 <main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="../index.html">Home</a><span class="sep">›</span><a href="../catalog.html">Catalog</a><span class="sep">›</span><span>ai8</span><span class="sep">›</span><span aria-current="page">Vibe-coded app performance — five fixes Claude usually skips</span></nav>
   <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-a">A-TIER</span> <span class="pill">technique</span></div>
   <h1>Vibe-coded app performance — five fixes Claude usually skips</h1>
@@ -68,5 +88,9 @@ batch writes, latency profiling, optimistic UI, response compression, static cac
 <div class="level"><h3>1k ft — Deep-dive / try it</h3><div class="body">5 ways to make your vibecoded app more performant #claudecode #vibecoder #vibecoding #startuphacks #aicoding</div></div>
   </section>
   <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">If Claude writes all of your code, your app is painfully slow and you don&#x27;t even realize it yet. So here are the five things it probably forgot to do. Don&#x27;t worry, all of these are vibe-codable changes you just need to know to ask for them. Number one, your JSON is going over the wire uncompressed, which just makes everybody wait longer for everything your backend server responds with. Number two, your app is writing new rows to your database one at a time, which increases overhead for no reason. This isn&#x27;t something that you would notice at one user, but at a thousand users your app would feel like molasses. Number three, you have a single dependency bottleneck. To identify this, you can audit your roundtrip latency and break it down into specific network events. If one action is taking 90% of the roundtrip time, that is your bottleneck. Number four, every single action the user takes waits on the response from the backend before updating anything in the user interface. Number five, your frontend web server is rebuilding HTML for every visitor that loads up the site. And if you want to fix these issues with copy-pastable prompts, you can drop directly into cloud code, like the video and comment links, and I will send them over to you directly.</div></details>
+  <section class="hub related" data-pagefind-ignore><h2>Related</h2><ul><li><span class="tier-pill tier-a">A-TIER</span> <a href="DasLm6opzIO.html">Scroll-scrubbed product animation — Apple-style image sequence with AI</a><span class="why">shared domain, tool</span></li><li><span class="tier-pill tier-c">C-TIER</span> <a href="DW6ZoqNERB4.html">Agent-first tools — products built for AI agents as the user</a><span class="why">shared domain, tool</span></li><li><span class="tier-pill tier-b">B-TIER</span> <a href="DaojVuSNKno.html">Fable 5 plus GPT-5.6 routing — Codex plugin inside Claude Code</a><span class="why">shared domain, tool</span></li><li><span class="tier-pill tier-a">A-TIER</span> <a href="DToMeKHjuQk.html">Claude Code + Chrome — browser-driven coding combo</a><span class="why">shared domain, tool</span></li><li><span class="tier-pill tier-a">A-TIER</span> <a href="DWtUNNtDJxe.html">Claude chat to Cowork — brainstorm, prototype in chat, then hand off to build</a><span class="why">shared domain, tool</span></li><li><span class="tier-pill tier-b">B-TIER</span> <a href="DawRY1kJ_ch.html">Scroll World skill — one-shot animated scrolling websites</a><span class="why">shared domain, tool</span></li></ul></section>
+  <section class="hub appears" data-pagefind-ignore><h2>Appears in</h2><ul><li><a href="../guides/micro-bending-spoons.html">Guide: Buying Dead Apps — the one-person AI-native rollup</a></li><li><a href="../deeper/deeper-insight-micro-bending-spoons.html">Deeper dive: Buying Dead Apps — the one-person AI-native rollup</a></li></ul></section>
+  <section class="hub collection" data-pagefind-ignore><h2>Collection: ai8</h2><div class="links"><a href="../catalog.html#post-DZ3PQxzoUEr">Find this post in the catalog</a><a href="../catalog.html">Browse the full catalog</a><a href="index.html">All entries</a></div></section>
+  <nav class="pn" aria-label="Previous and next in ai8" data-pagefind-ignore><a class="prev" rel="prev" href="DZfhWxvu3tM.html">← ASCILINE — 30fps video streamed as colored text over WebSockets</a><a class="next" rel="next" href="DaA6cGsyQp3.html">Nvidia closed-loop cooling — why it grows demand for chillers →</a></nav>
 </main>
 </body></html>

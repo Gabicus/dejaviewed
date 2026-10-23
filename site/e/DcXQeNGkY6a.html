@@ -16,7 +16,7 @@
 <meta name="twitter:description" content="Welch Labs explainer clip: estimate how loss changes per parameter (e.g. nudging m2 from 0 to 0.1 drops loss from 2.45 to 2.24), combine all partial…">
 <meta name="twitter:image" content="https://dejaviewed.dev/thumb/DcXQeNGkY6a.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"All entries","item":"https://dejaviewed.dev/e/"},{"@type":"ListItem","position":3,"name":"Backpropagation visualized — gradients as downhill steps on the loss surface"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Catalog","item":"https://dejaviewed.dev/catalog"},{"@type":"ListItem","position":3,"name":"Backpropagation visualized — gradients as downhill steps on the loss surface"}]}]}</script>
 <!-- seo:end -->
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,10 +44,30 @@
   details.level[open] summary { margin-bottom: 8px; }
   .back { color: var(--muted); font-size: 12px; text-decoration: none; }
   .back:hover { color: var(--accent); }
+  nav.crumbs { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  nav.crumbs a { color: var(--muted); text-decoration: none; }
+  nav.crumbs a:hover { color: var(--accent); }
+  nav.crumbs .sep { margin: 0 6px; opacity: .6; }
+  .hub { margin-top: 28px; }
+  .hub h2 { margin: 0 0 10px; font: 600 13px/1 Inter, system-ui; letter-spacing: .08em;
+            text-transform: uppercase; color: var(--muted); }
+  .hub ul { list-style: none; margin: 0; padding: 0; }
+  .hub li { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+            padding: 10px 14px; margin-bottom: 8px; font-size: 14px; line-height: 1.45; }
+  .hub li a { color: var(--text); text-decoration: none; font-weight: 500; }
+  .hub li a:hover { color: var(--accent); }
+  .hub .why { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+  .hub .links a { margin-right: 14px; }
+  nav.pn { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px;
+           border-top: 1px solid var(--border); padding-top: 16px; font-size: 13px; }
+  nav.pn a { color: var(--muted); text-decoration: none; max-width: 48%; }
+  nav.pn a:hover { color: var(--accent); }
+  nav.pn .next { margin-left: auto; text-align: right; }
 </style>
 </head><body>
 <script>DV.mountHeader(document.body, 'entries');</script>
 <main class="entry" data-pagefind-body data-pagefind-filter="kind:Entry">
+  <nav class="crumbs" aria-label="Breadcrumb" data-pagefind-ignore><a href="../index.html">Home</a><span class="sep">›</span><a href="../catalog.html">Catalog</a><span class="sep">›</span><span>ai8</span><span class="sep">›</span><span aria-current="page">Backpropagation visualized — gradients as downhill steps on the loss s</span></nav>
   <a class="back" data-pagefind-ignore href="index.html">← all entries</a>
   <div style="margin:10px 0"><span class="tier-pill tier-b">B-TIER</span> <span class="pill">resource</span></div>
   <h1>Backpropagation visualized — gradients as downhill steps on the loss surface</h1>
@@ -77,5 +97,8 @@ The negative gradient points in the direction of steepest descent. You can think
 The network repeats this process over and over, adjusting its parameters to gradually reduce error and improve…</div></div>
   </section>
   <details class="level transcript"><summary>Transcript excerpt</summary><div class="body">We can do this efficiently by computing the slope of each of our parameters with respect to our loss, combining these slopes into a vector called the gradient, and using the gradient to make iterative updates to our weights. Let&#x27;s explore, as we did last time, how our loss varies with a single model parameter by plotting our loss as a function of m2. Our m2 parameter in our Paris neuron currently has a value of 0, resulting in a loss of 2.45. If we increase the parameter&#x27;s value to 0.1, we can recompute our outputs, and see that this increases our probability of being in Paris, according to the model, to 0.107, reducing our loss to 2.24. Now, with these two computations of our loss for different values of m2, we&#x27;ve effectively estimated the value of our slope, delta L over delta m2. This tells us that if we increase m2, our loss will go down, increasing model performance. We could theoretically do this for all six parameters in our model, and use these estimated slopes to guide the gradient descent learning process.</div></details>
+  <section class="hub related" data-pagefind-ignore><h2>Related</h2><ul><li><span class="tier-pill tier-b">B-TIER</span> <a href="Db03wymJ1OI.html">Database Detective — solve crimes by writing SQL queries</a><span class="why">shared domain</span></li><li><span class="tier-pill tier-b">B-TIER</span> <a href="C84vchvppua.html">TensorBoard Embedding Projector — see what word vectors really associate</a><span class="why">shared domain</span></li><li><span class="tier-pill tier-b">B-TIER</span> <a href="DYQObkHRzmE.html">Eigen-virtue — cosine similarity map of virtues toward flourishing</a><span class="why">shared domain</span></li><li><span class="tier-pill tier-b">B-TIER</span> <a href="Dau64tdyY4n.html">Time complexity patterns — ten loop shapes to recognize in interviews</a><span class="why">shared domain</span></li><li><span class="tier-pill tier-a">A-TIER</span> <a href="Dcl3dEJAjo0.html">Booking.com AI observability — Kafka buffer and PII redaction before Arize</a><span class="why">shared domain</span></li><li><span class="tier-pill tier-a">A-TIER</span> <a href="DeHSjhOAMwe.html">Quake III fast inverse square root — the 0x5f3759df bit hack explained</a><span class="why">shared domain</span></li></ul></section>
+  <section class="hub collection" data-pagefind-ignore><h2>Collection: ai8</h2><div class="links"><a href="../catalog.html#post-DcXQeNGkY6a">Find this post in the catalog</a><a href="../catalog.html">Browse the full catalog</a><a href="index.html">All entries</a></div></section>
+  <nav class="pn" aria-label="Previous and next in ai8" data-pagefind-ignore><a class="prev" rel="prev" href="DcXF5urpmLQ.html">← Moderna–Merck personalized mRNA cancer therapy — first positive Phase </a><a class="next" rel="next" href="DcX_QwDjvH-.html">only-cli/oc — browse websites as a compact numbered CLI for agents →</a></nav>
 </main>
 </body></html>

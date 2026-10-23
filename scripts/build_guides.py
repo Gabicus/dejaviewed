@@ -91,7 +91,7 @@ footer.site code{{background:rgba(0,0,0,.5);border:1px solid var(--border);paddi
 <article class="guide">
   <div class="confidence-badge {confidence}">Source confidence: {confidence}</div>
 {cross_link}  <div id="guide-body"></div>
-</article>
+{entries_nav}</article>
 <footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/{curator}">@{curator}</a> · <code>dejaviewed</code></div></footer>
 <script id="md" type="text/markdown">"""
 
@@ -115,6 +115,59 @@ CROSS_LINK = (
 
 
 # --------------------------------------------------------------------------- helpers
+ENTRY_DIR = SITE / "e"
+
+
+def entry_page(e: dict) -> str | None:
+    """'../e/<slug>.html' when that entry page exists on disk (render_entries.safe_slug)."""
+    rid = e.get("id") or e.get("post_id") or e.get("_dive_key") or ""
+    slug = "".join(c if c.isalnum() or c in "-_" else "_" for c in rid)
+    return f"../e/{slug}.html" if slug and (ENTRY_DIR / f"{slug}.html").exists() else None
+
+
+def entries_nav_html(entries: list[dict]) -> str:
+    """Static (no-JS) list of entry-page links so crawlers see them; the
+    markdown body is rendered client-side."""
+    items = []
+    for e in entries:
+        href = entry_page(e)
+        if href:
+            items.append(f'<li><a href="{html.escape(href, quote=True)}">'
+                         f'{html.escape(e.get("title") or e.get("id") or "entry")}</a></li>')
+    if not items:
+        return ""
+    return ('  <nav class="guide-entries" aria-label="Entries in this guide" '
+            'style="margin:40px 0 0;padding-top:18px;border-top:1px solid var(--border);font-size:14px">'
+            '<h2 style="font-size:16px;margin:0 0 8px;border:none">Entries in this guide</h2>'
+            '<ul style="margin:0;padding-left:20px">' + "".join(items) + "</ul></nav>\n")
+
+
+STANDALONE_LINK_RE = re.compile(
+    r'(<a href="\.\./catalog\.html#post-([A-Za-z0-9_-]+)">[^<]*</a>)(?! · <a href="\.\./e/)')
+
+
+def link_standalone_guides(by_id: dict, skip: set[str], dry_run: bool) -> int:
+    """Hand-written single-entry guides link only to catalog.html#post-<id>;
+    add the entry page next to that link. Idempotent (negative lookahead)."""
+    n = 0
+    for path in sorted(GUIDES.glob("*.html")):
+        if path.stem == "index" or path.stem in skip:
+            continue
+        text = path.read_text(encoding="utf-8")
+
+        def sub(m):
+            e = by_id.get(m.group(2)) or {"id": m.group(2)}
+            href = entry_page(e)
+            return f'{m.group(1)} · <a href="{href}">Entry page</a>' if href else m.group(0)
+
+        new = STANDALONE_LINK_RE.sub(sub, text)
+        if new != text:
+            n += 1
+            if not dry_run:
+                path.write_text(new, encoding="utf-8")
+    return n
+
+
 def load_json(p: Path):
     with p.open() as f:
         return json.load(f)
@@ -208,7 +261,10 @@ def build_markdown(d: dict, entries: list[dict], classes: dict, catalog_total: i
     out += ["## The evidence — connected entries", ""]
     for e in entries:
         eid = e.get("_dive_key")
-        out.append(f"### {e.get('title') or eid}")
+        href = entry_page(e)
+        ttl = e.get('title') or eid
+        ttl_md = str(ttl).replace("[", "\\[").replace("]", "\\]")
+        out.append(f"### [{ttl_md}]({href})" if href else f"### {ttl}")
         out.append(f"**Creator:** {creator_link(e.get('creator'))} · **Tier:** {e.get('tier') or '?'}")
         if e.get("tools"):
             out.append(f"**Tools:** {', '.join(e['tools'])}")
@@ -258,6 +314,7 @@ def build_page(d: dict, entries: list[dict], classes: dict, catalog_total: int) 
         confidence=confidence,
         cross_link=cross,
         curator=CURATOR,
+        entries_nav=entries_nav_html(entries),
     )
     return head + escape_script(build_markdown(d, entries, classes, catalog_total)) + PAGE_TAIL
 
@@ -483,6 +540,10 @@ def main() -> int:
         print("\nWARNING: malformed creator handles (rendered as 'unknown'; fix in catalog):")
         for did, ids in bad_creators.items():
             print(f"  {did}: {', '.join(ids)}")
+
+    if out_dir == GUIDES and not args.dive_id:
+        n_sa = link_standalone_guides(by_id, set(curated), args.dry_run)
+        print(f"standalone guides given an entry-page link: {n_sa}")
 
     if not args.no_index:
         page_slugs = {p.stem for p in GUIDES.glob("*.html") if p.stem != "index"} | set(new)

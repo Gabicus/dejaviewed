@@ -17,7 +17,7 @@
 <meta name="twitter:description" content="Better models won&#x27;t fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness…">
 <meta name="twitter:image" content="https://dejaviewed.dev/og/agent-architecture.jpg">
 <link rel="alternate" type="application/rss+xml" title="DejaViewed: new entries, guides and deeper dives" href="https://dejaviewed.dev/feed.xml">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/agent-architecture#article","headline":"Why Your Agent Sucks: Architecture Patterns That Actually Work","description":"Better models won't fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness…","url":"https://dejaviewed.dev/guides/agent-architecture","mainEntityOfPage":"https://dejaviewed.dev/guides/agent-architecture","datePublished":"2026-05-06","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/agent-architecture.jpg","about":[{"@type":"Thing","name":"Onyx"},{"@type":"Thing","name":"RAG"},{"@type":"Thing","name":"onyx-dot-app/onyx"},{"@type":"Thing","name":"Kimi"},{"@type":"Thing","name":"Claude Code"},{"@type":"Thing","name":"Google Workspace"},{"@type":"Thing","name":"Obsidian"}]},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/agent-architecture#faq","mainEntity":[{"@type":"Question","name":"Did compacting tool outputs remove a field the model needed on any task?","acceptedAnswer":{"@type":"Answer","text":"Step 4, Rebuild the context layer: Give the model the right information in a budget, in a readable form. Expect: context/ code, RETRIEVAL.md comparing Onyx vs baseline, eval results for +context."}},{"@type":"Question","name":"Does memory ever return a stale fact over a newer one, and is there a test for it?","acceptedAnswer":{"@type":"Answer","text":"Step 5, Rebuild the memory layer: Persistent memory with explicit operations and a schema. Expect: memory/ code with tests for each operation, eval results for both variants."}},{"@type":"Question","name":"What is the per-task token budget, and which section blows it most often?","acceptedAnswer":{"@type":"Answer","text":"Step 1, Ground truth: instrument and collect real traces: See exactly what the agent sees and does on real work. Expect: traces/ with 50+ runs and token accounting by section, sources/NOTES.md."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Why Your Agent Sucks: Architecture Patterns That Actually Work"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://dejaviewed.dev/#org","name":"DejaViewed","url":"https://dejaviewed.dev/","sameAs":["https://github.com/Gabicus/dejaviewed","https://instagram.com/6ab3"]},{"@type":"Article","@id":"https://dejaviewed.dev/guides/agent-architecture#article","headline":"Why Your Agent Sucks: Architecture Patterns That Actually Work","description":"Better models won't fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness…","url":"https://dejaviewed.dev/guides/agent-architecture","mainEntityOfPage":"https://dejaviewed.dev/guides/agent-architecture","datePublished":"2026-05-06","dateModified":"2026-10-22","author":{"@type":"Organization","name":"DejaViewed","url":"https://dejaviewed.dev/"},"publisher":{"@id":"https://dejaviewed.dev/#org"},"isPartOf":{"@id":"https://dejaviewed.dev/#website"},"image":"https://dejaviewed.dev/og/agent-architecture.jpg","about":[{"@type":"Thing","name":"Onyx"},{"@type":"Thing","name":"RAG"},{"@type":"Thing","name":"onyx-dot-app/onyx"},{"@type":"Thing","name":"Kimi"},{"@type":"Thing","name":"Claude"},{"@type":"Thing","name":"Claude Code"},{"@type":"Thing","name":"Google Workspace"},{"@type":"Thing","name":"Obsidian"}]},{"@type":"FAQPage","@id":"https://dejaviewed.dev/guides/agent-architecture#faq","mainEntity":[{"@type":"Question","name":"Did compacting tool outputs remove a field the model needed on any task?","acceptedAnswer":{"@type":"Answer","text":"Step 4, Rebuild the context layer: Give the model the right information in a budget, in a readable form. Expect: context/ code, RETRIEVAL.md comparing Onyx vs baseline, eval results for +context."}},{"@type":"Question","name":"Does memory ever return a stale fact over a newer one, and is there a test for it?","acceptedAnswer":{"@type":"Answer","text":"Step 5, Rebuild the memory layer: Persistent memory with explicit operations and a schema. Expect: memory/ code with tests for each operation, eval results for both variants."}},{"@type":"Question","name":"What is the per-task token budget, and which section blows it most often?","acceptedAnswer":{"@type":"Answer","text":"Step 1, Ground truth: instrument and collect real traces: See exactly what the agent sees and does on real work. Expect: traces/ with 50+ runs and token accounting by section, sources/NOTES.md."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dejaviewed.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://dejaviewed.dev/guides/"},{"@type":"ListItem","position":3,"name":"Why Your Agent Sucks: Architecture Patterns That Actually Work"}]}]}</script>
 <!-- seo:end -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared.css">
@@ -61,11 +61,12 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
   <div class="confidence-badge high">Source confidence: high</div>
   <div class="cross-link" style="margin:1.5rem 0;padding:12px 16px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:0.9rem;"><strong style="color:#fbbf24;">See also:</strong> <a href="../deeper/deeper-insight-agent-architecture.html" style="color:#fbbf24;text-decoration:none;font-weight:600;">Deeper Dive — Why Your Agent Sucks: Architecture Patterns That Actually Work →</a></div>
   <div id="guide-body"></div>
+  <nav class="guide-entries" aria-label="Entries in this guide" style="margin:40px 0 0;padding-top:18px;border-top:1px solid var(--border);font-size:14px"><h2 style="font-size:16px;margin:0 0 8px;border:none">Entries in this guide</h2><ul style="margin:0;padding-left:20px"><li><a href="../e/DXStFLkkphz.html">Better models won’t fix your agent</a></li><li><a href="../e/DXx6KhJshmv.html">Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...</a></li><li><a href="../e/DXYSxNLpIAY.html">Agentic OS — Claude Code as engine with Obsidian memory and skill packs</a></li><li><a href="../e/DWtgbzLDgwm.html">Onyx — open-source self-hosted agentic RAG platform</a></li><li><a href="../e/DXKAbR8ETEo.html">AI-first software design — build data layers agents can actually read</a></li><li><a href="../e/MoonshotAI_Kimi-K2_5.html">Kimi K2.5 — Moonshot&#x27;s open multimodal agentic model</a></li></ul></nav>
 </article>
 <footer class="site"><div class="wrap"><a href="../index.html">← Back to DejaViewed</a> · curated by <a href="https://instagram.com/6ab3">@6ab3</a> · <code>dejaviewed</code></div></footer>
 <!--pagefind:start--><div class="sr-index" aria-hidden="true" data-pagefind-body data-pagefind-filter="kind:Guide" style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap">
 <h1>Why Your Agent Sucks: Architecture Patterns That Actually Work</h1>
-<p>Insight class: Emergent Capability · Difficulty: Hard · Quality: 5/5 Connected entries: 6 · Tools: Claude Code, Google Workspace, Kimi, Obsidian, Onyx, RAG, onyx-dot-app/onyx</p>
+<p>Insight class: Emergent Capability · Difficulty: Hard · Quality: 5/5 Connected entries: 6 · Tools: Claude, Claude Code, Google Workspace, Kimi, Obsidian, Onyx, RAG, onyx-dot-app/onyx</p>
 <h2>Thesis</h2>
 <p>Better models won't fix broken agent architecture. The gap between demo agents and production agents is context management, memory hierarchy, and harness engineering — not model capability.</p>
 <h2>Why it matters</h2>
@@ -91,10 +92,10 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <p>Onyx: production-grade self-hosted RAG — the retrieval layer agents actually need</p>
 <p>@marc.kaz flags onyx-dot-app/onyx hitting #1 GitHub trending: self-hostable AI platform with agentic RAG, deep research mode, custom agents, web+code execution, voice/image gen, 50+ connectors. Strong self-hosted AI stack option.</p>
 <p>View original post</p>
-<h3>Kind of like giving your AI glasses lol</h3>
-<p>Creator: @angus.sewell · Tier: A</p>
+<h3>AI-first software design — build data layers agents can actually read</h3>
+<p>Creator: @angus.sewell · Tier: A Tools: Claude</p>
 <p>Giving agents perception: MCP as the sensory bridge to external tools</p>
-<p>Kind of like giving your AI glasses lol — @angus.sewell.</p>
+<p>Dashboards and navbars are built for human eyes; agents only see tool-call text, which is why giving Claude raw database access goes wrong. The fix shown: store raw data plus workflow-generated summaries in separate tables and expose tools that return summary-level context first, pulling full transcripts only when needed.</p>
 <p>View original post</p>
 <h3>Kimi K2.5 — Moonshot's open multimodal agentic model</h3>
 <p>Creator: @6ab3 · Tier: A Tools: Kimi</p>
@@ -106,6 +107,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <h2>Prerequisites</h2>
 <p>Familiarity with LLM APIs, basic understanding of RAG. Claude Code or similar agent framework.</p>
 <h2>Key tools and resources</h2>
+<p>Claude</p>
 <p>Claude Code</p>
 <p>Google Workspace</p>
 <p>Kimi</p>
@@ -224,7 +226,7 @@ footer.site code{background:rgba(0,0,0,.5);border:1px solid var(--border);paddin
 <script id="md" type="text/markdown"># Why Your Agent Sucks: Architecture Patterns That Actually Work
 
 **Insight class:** Emergent Capability · **Difficulty:** Hard · **Quality:** 5/5
-**Connected entries:** 6 · **Tools:** Claude Code, Google Workspace, Kimi, Obsidian, Onyx, RAG, onyx-dot-app/onyx
+**Connected entries:** 6 · **Tools:** Claude, Claude Code, Google Workspace, Kimi, Obsidian, Onyx, RAG, onyx-dot-app/onyx
 
 ---
 
@@ -242,7 +244,7 @@ Everyone's building agents. Almost nobody's building agents that work past the d
 
 ## The evidence — connected entries
 
-### Better models won’t fix your agent
+### [Better models won’t fix your agent](../e/DXStFLkkphz.html)
 **Creator:** [@howard.mov](https://instagram.com/howard.mov) · **Tier:** S
 
 > The thesis: model upgrades mask architecture debt. Fix the scaffold, not the brain.
@@ -250,7 +252,7 @@ Everyone's building agents. Almost nobody's building agents that work past the d
 Better models won’t fix your agent. — @howard.mov; demonstrates AI agents.
 
 [View original post](https://www.instagram.com/p/DXStFLkkphz/)
-### Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...
+### [Context vs Memory vs Harness engineering explained in 40 sec — 💡These 3 disciplines are core to building agents that ...](../e/DXx6KhJshmv.html)
 **Creator:** [@lindavivah](https://instagram.com/lindavivah) · **Tier:** S
 
 > Three disciplines — context, memory, harness — that separate toy agents from real ones
@@ -258,7 +260,7 @@ Better models won’t fix your agent. — @howard.mov; demonstrates AI agents.
 Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Alake ⚡️ — @lindavivah; demonstrates AI agents.
 
 [View original post](https://www.instagram.com/p/DXx6KhJshmv/)
-### Agentic OS — Claude Code as engine with Obsidian memory and skill packs
+### [Agentic OS — Claude Code as engine with Obsidian memory and skill packs](../e/DXYSxNLpIAY.html)
 **Creator:** [@chase.h.ai](https://instagram.com/chase.h.ai) · **Tier:** B
 **Tools:** Claude Code, Google Workspace, Obsidian
 
@@ -267,7 +269,7 @@ Context vs Memory vs Harness engineering explained in 40 seconds by Richmond Ala
 Blueprint for a Claude Code-powered 'agentic OS': Obsidian as memory, Google Workspace connected, skill packs for research and content, plus a dashboard command center you can hand to a team or sell to agency clients.
 
 [View original post](https://www.instagram.com/p/DXYSxNLpIAY/)
-### Onyx — open-source self-hosted agentic RAG platform
+### [Onyx — open-source self-hosted agentic RAG platform](../e/DWtgbzLDgwm.html)
 **Creator:** [@marc.kaz](https://instagram.com/marc.kaz) · **Tier:** A
 **Tools:** Onyx, RAG, onyx-dot-app/onyx
 
@@ -276,15 +278,16 @@ Blueprint for a Claude Code-powered 'agentic OS': Obsidian as memory, Google Wor
 @marc.kaz flags onyx-dot-app/onyx hitting #1 GitHub trending: self-hostable AI platform with agentic RAG, deep research mode, custom agents, web+code execution, voice/image gen, 50+ connectors. Strong self-hosted AI stack option.
 
 [View original post](https://www.instagram.com/p/DWtgbzLDgwm/)
-### Kind of like giving your AI glasses lol
+### [AI-first software design — build data layers agents can actually read](../e/DXKAbR8ETEo.html)
 **Creator:** [@angus.sewell](https://instagram.com/angus.sewell) · **Tier:** A
+**Tools:** Claude
 
 > Giving agents perception: MCP as the sensory bridge to external tools
 
-Kind of like giving your AI glasses lol — @angus.sewell.
+Dashboards and navbars are built for human eyes; agents only see tool-call text, which is why giving Claude raw database access goes wrong. The fix shown: store raw data plus workflow-generated summaries in separate tables and expose tools that return summary-level context first, pulling full transcripts only when needed.
 
 [View original post](https://www.instagram.com/p/DXKAbR8ETEo/)
-### Kimi K2.5 — Moonshot's open multimodal agentic model
+### [Kimi K2.5 — Moonshot's open multimodal agentic model](../e/MoonshotAI_Kimi-K2_5.html)
 **Creator:** [@6ab3](https://instagram.com/6ab3) · **Tier:** A
 **Tools:** Kimi
 
@@ -310,6 +313,7 @@ Familiarity with LLM APIs, basic understanding of RAG. Claude Code or similar ag
 
 ## Key tools and resources
 
+- **Claude**
 - **Claude Code**
 - **Google Workspace**
 - **Kimi**
