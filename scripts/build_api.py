@@ -41,7 +41,8 @@ def _thumb_rel(e: dict) -> str:
 SITEMAP_TOP = [("index.html", "1.0", "weekly"), ("start-here.html", "0.9", "monthly"),
                ("method.html", "0.8", "monthly"), ("catalog.html", "0.9", "weekly"),
                ("prompts.html", "0.8", "weekly")]
-SITEMAP_DIRS = [("collections", "0.7", "weekly"), ("guides", "0.9", "weekly"), ("deeper", "0.8", "monthly")]
+SITEMAP_DIRS = [("collections", "0.7", "weekly"), ("guides", "0.9", "weekly"), ("deeper", "0.8", "monthly"),
+                ("tools", "0.8", "weekly"), ("compare", "0.8", "monthly"), ("best", "0.8", "monthly")]
 
 
 def sitemap_rels() -> list[tuple[str, str, str]]:

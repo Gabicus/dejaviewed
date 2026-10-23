@@ -49,7 +49,7 @@ BLOCK_RE = re.compile(r"<!-- seo:start -->.*?<!-- seo:end -->\n?", re.S)
 # top-level pages processed (everything else at site root is skipped:
 # admin, rate, board, graph*, legacy/, pagefind/, about/, links/, ai_presentation/)
 TOP_PAGES = ["index.html", "catalog.html", "prompts.html", "start-here.html", "method.html"]
-SUB_DIRS = ["guides", "deeper", "e"]  # collections/ writes its own seo block (build_collections.py)
+SUB_DIRS = ["guides", "deeper", "e", "tools", "compare", "best"]  # collections/ writes its own seo block (build_collections.py)
 
 # private / superseded pages: get a seo block holding only robots noindex,follow
 # (plus every page Disallowed in site/robots.txt). Never part of the public set.

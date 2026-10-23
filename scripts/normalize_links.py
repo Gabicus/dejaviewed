@@ -55,7 +55,7 @@ NAV_RE = re.compile(re.escape(NAV_START) + r".*?" + re.escape(NAV_END) + r"\n?",
 NAV_LINKS = [
     ("/", "Home"), ("/start-here", "Start here"), ("/catalog", "Catalog"),
     ("/guides/", "Guides"), ("/prompts", "Prompts"), ("/e/", "All entries"),
-    ("/collections/", "Collections"), ("/search", "Search"), ("/graph", "Graph"),
+    ("/collections/", "Collections"), ("/tools/", "Tools"), ("/compare/", "Compare"), ("/search", "Search"), ("/graph", "Graph"),
     ("/graph-cosmos", "Cosmos"), ("/board", "Board"), ("/links/", "Links"),
     ("/method", "How it works"), ("/feed.xml", "RSS"), ("/llms.txt", "llms.txt"),
 ]
