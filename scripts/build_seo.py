@@ -710,8 +710,8 @@ def top_descriptions(c: Ctx) -> dict[str, str]:
                          f"{c.n_steps} step prompts with audits, gap audits and validation oracles."),
         "method.html": (f"How DejaViewed works: saved posts are captioned, transcribed, enriched and tiered S to C, "
                         f"then curated into {len(c.guides)} guides. Who runs it, update cadence, affiliate policy."),
-        "system-prompts.html": (f"System prompt examples: {c.n_packs} role, stance and constraint blocks lifted from DejaViewed "
-                                f"prompt systems, grouped by pillar, each copyable and linked to its full guide."),
+        "system-prompts.html": (f"{c.n_packs} system prompt examples lifted from DejaViewed prompt systems, grouped by "
+                                f"pillar: role, stance, constraints, each copyable and linked to its guide."),
         "start-here.html": (f"What DejaViewed is, who it is for, how humans and agents use it, how to cite it, "
                             f"and what is inside its {c.n_entries} entries and {c.n_colls} collections."),
         "guides/index.html": (f"{len(c.guides)} DejaViewed guides that connect saved posts into one build plan, "
