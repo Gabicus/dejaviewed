@@ -108,6 +108,7 @@ Skip phases with `--skip <phase>[,<phase>...]`. Phases (in order):
 | `collections` | `scripts/build_collections.py` | 18 static collection hubs; every page ≤2 clicks from home |
 | `tools` | `scripts/build_tools.py` | /tools/<slug> hubs from `data/tools/*.json` takes; thresholds decide indexed vs noindex |
 | `compare` | `scripts/build_compare.py` | /compare/, /best/, /system-prompts from `data/compare/*.json` (dated sources) |
+| `flow` | `scripts/build_flow.py` | /flow zoned Sankey of the archive + gaps (`flow_gaps.json`) — after `compare`, before `seo` |
 | `links` | `scripts/normalize_links.py` | clean root-absolute URLs + static footer nav — LAST HTML-touching phase |
 | `analytics` | `scripts/analytics_report.py` | Cloudflare GraphQL + Search Console report → `reports/analytics_<date>.md`; skips with exact setup steps when creds absent |
 | `landing` | `scripts/build_landing_meta.py` | `site/landing_meta.js` — guide/deeper slugs the showcase `index.html` links to |
