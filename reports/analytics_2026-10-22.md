@@ -1,6 +1,6 @@
 # dejaviewed.dev analytics -- 2026-10-22
 
-Generated 2026-10-22T20:46:02 by `scripts/analytics_report.py`. Raw numbers: `data/analytics/2026-10-22.json`.
+Generated 2026-10-22T21:27:34 by `scripts/analytics_report.py`. Raw numbers: `data/analytics/2026-10-22.json`.
 
 ## Traffic (Cloudflare, edge)
 
@@ -67,12 +67,12 @@ Generated 2026-10-22T20:46:02 by `scripts/analytics_report.py`. Raw numbers: `da
 | dejaviewed.dev | /.git/config | 63 |
 | dejaviewed.dev | /guides/ai-trading-agents.html | 52 |
 | dejaviewed.dev | /api/prompts.json | 52 |
+| dejaviewed.dev | /e/685f44ff3d7b | 48 |
 | dejaviewed.dev | /guides/avellaneda-stoikov-and-hawkes.html | 48 |
 | dejaviewed.dev | /e/DIO37tGNHiD.html | 48 |
 | dejaviewed.dev | /e/CzWiXY2PCrr.html | 48 |
 | dejaviewed.dev | /e/CvSEQAft0zm.html | 48 |
 | dejaviewed.dev | /e/DYQObkHRzmE.html | 48 |
-| dejaviewed.dev | /e/685f44ff3d7b | 48 |
 | dejaviewed.dev | /e/DIQ4GdHI4ZH.html | 48 |
 | dejaviewed.dev | /.env.local | 43 |
 | dejaviewed.dev | /.env.development | 41 |
@@ -170,6 +170,14 @@ Human/browser share of requests: **0.5126**
 | 301 | expired | 12 |
 | 404 | bypass | 10 |
 
+## Outbound (/go/) clicks (7d/28d)
+
+Redirect hits on /go/<slug> (affiliate and CTA links, see data/monetize/README.md). Sampled; 28 day(s) of data (2026-09-25 to 2026-10-22). Human = browser user agent; bot = everything else.
+
+| slug | human 7d | bot 7d | human 28d | bot 28d |
+|---|---|---|---|---|
+| add-on/business-continuity/api/cruise_config | 0 | 0 | 1 | 0 |
+
 ## Web Analytics (real visitors)
 
 **7d:** 266 page views, 252 visits
@@ -223,7 +231,7 @@ Human/browser share of requests: **0.5126**
 
 | window | samples | LCP p75 | CLS p75 | INP p75 |
 |---|---|---|---|---|
-| 7d | 200 | 1,544,000 | 0.0070 | 32,000 |
+| 7d | 206 | 2,508,000 | 0.0960 | 312,000 |
 | 28d | 560 | 2,884,000 | 0.0220 | 296,000 |
 
 ### Cloudflare query errors
