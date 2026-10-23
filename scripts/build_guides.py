@@ -200,6 +200,146 @@ def text_block(v) -> str:
     return str(v or "").strip()
 
 
+# --------------------------------------------------------------------------- "In two sentences" answer block
+# A short, quotable answer at the top of every guide (chatbots that fetch guides cite the opening lines).
+# Source order: prompt-system pack mission -> dive thesis -> first prose paragraph of a hand-written guide.
+# Up to two sentences, hard cap ANSWER_MAX chars, always cut at a sentence boundary; only if no source has a
+# first sentence that fits is the shortest one cut at a clause boundary with an ellipsis.
+ANSWER_MAX = 320
+ANSWER_LABEL = "**In short:**"
+ANSWER_START = "<!-- answer:start -->"
+ANSWER_END = "<!-- answer:end -->"
+MD_SCRIPT_RE = re.compile(r'(<script id="md" type="text/markdown">)(.*?)(</script>)', re.S)
+_ABBR = {"e.g", "i.e", "etc", "vs", "mr", "mrs", "ms", "dr", "st", "jr", "sr", "inc", "ltd", "co",
+         "approx", "fig", "no", "u.s", "cf", "al", "ca", "est", "min", "max", "ver", "v"}
+_SENT_END = re.compile(r'[.!?]["\')\]*]*\s+')
+
+
+def split_sentences(text: str) -> list[str]:
+    """Sentence split that keeps 'e.g.', 'i.e.', 'vs.', single initials and decimals ('3.5') intact."""
+    t = re.sub(r"\s+", " ", str(text or "")).strip()
+    out, start = [], 0
+    for m in _SENT_END.finditer(t):
+        stop = m.start()
+        w = re.search(r"([A-Za-z.]+)$", t[start:stop])
+        word = (w.group(1) if w else "").lower().strip(".")
+        if t[stop] == "." and (word in _ABBR or re.fullmatch(r"[a-z]", word)):
+            continue
+        nxt = t[m.end():m.end() + 1]
+        if nxt and nxt.islower():          # "... approx. three" style continuation
+            continue
+        out.append(t[start:m.end()].strip())
+        start = m.end()
+    if t[start:].strip():
+        out.append(t[start:].strip())
+    return out
+
+
+def strip_md(s: str) -> str:
+    s = re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", str(s or ""))
+    s = re.sub(r"(\*\*|__|`)", "", s)
+    s = re.sub(r"(?<![\w*])\*(?!\s)([^*]+?)\*(?!\w)", r"\1", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def intro_paragraph(md: str) -> str:
+    """First prose paragraph after the H1 of a hand-written guide ('**Why it matters:** ...' label stripped)."""
+    body = md
+    if ANSWER_START in md and ANSWER_END in md:   # ignore our own block (keeps the result idempotent)
+        body = md[:md.index(ANSWER_START)] + md[md.index(ANSWER_END) + len(ANSWER_END):]
+    paras = re.split(r"\n\s*\n", body)
+    seen_h1 = False
+    for p in paras:
+        p = p.strip()
+        if not p:
+            continue
+        if p.startswith("# "):
+            seen_h1 = True
+            continue
+        if not seen_h1 or p.startswith(("#", ">", "-", "*  ", "|", "`", "<", "---", "1.")):
+            continue
+        lines = p.split("\n")
+        if len(lines) > 1 and all(ln.startswith("**") for ln in lines):
+            continue                          # a block of '**Label:** value' metadata lines
+        lab = re.match(r"^\*\*([^*]{1,40}):\*\*\s*", p)
+        if lab:
+            if lab.group(1).strip().lower() not in ("why it matters", "tl;dr", "tldr", "summary", "what it is"):
+                continue                      # '**Author:** ...', '**Repo:** ...' etc. are metadata, not an answer
+            p = p[lab.end():]
+        t = strip_md(p)
+        if len(t) >= 60:
+            return t
+    return ""
+
+
+def _fit(sents: list[str]) -> str:
+    if len(sents) >= 2 and len(sents[0]) + 1 + len(sents[1]) <= ANSWER_MAX:
+        return f"{sents[0]} {sents[1]}"
+    if sents and len(sents[0]) <= ANSWER_MAX:
+        return sents[0]
+    return ""
+
+
+def answer_text(slug: str, dive: dict | None = None, md: str = "") -> str:
+    sources = [(PACKS.get(slug) or {}).get("mission", ""),
+               text_block((dive or {}).get("thesis")).replace("\n- ", " ").lstrip("- "),
+               intro_paragraph(md) if md else ""]
+    split = [split_sentences(strip_md(s)) for s in sources if s and str(s).strip()]
+    for sents in split:
+        a = _fit(sents)
+        if a:
+            break
+    else:
+        if not split:
+            return ""
+        first = min((s[0] for s in split if s), key=len)
+        cut = first[:ANSWER_MAX - 1]
+        pos = max(cut.rfind(sep) for sep in (", ", "; ", " — ", ": ", " - "))
+        a = (cut[:pos] if pos > ANSWER_MAX // 2 else cut[:cut.rfind(" ")]).rstrip(" ,;:—-") + "…"
+    return a.replace("<", "&lt;")
+
+
+def answer_block(answer: str) -> str:
+    return f"{ANSWER_START}\n\n> {ANSWER_LABEL} {answer}\n\n{ANSWER_END}"
+
+
+def put_answer(md: str, block: str) -> str:
+    """Replace the marked block, or insert it right after the first H1 line. Idempotent."""
+    if ANSWER_START in md and ANSWER_END in md:
+        a, b = md.index(ANSWER_START), md.index(ANSWER_END) + len(ANSWER_END)
+        return md[:a] + block + md[b:]
+    m = re.search(r"(?m)^# .*$", md)
+    if not m:
+        return md
+    return md[:m.end()] + "\n\n" + block + md[m.end():]
+
+
+def apply_answers(curated: dict[str, dict], dry_run: bool) -> tuple[int, int]:
+    """Refresh the answer block in every guide page (generated ones already carry it; hand-written ones
+    get it inserted after their H1). Returns (pages with a block, pages changed)."""
+    have = changed = 0
+    for path in sorted(GUIDES.glob("*.html")):
+        if path.stem == "index":
+            continue
+        txt = path.read_text(encoding="utf-8")
+        m = MD_SCRIPT_RE.search(txt)
+        if not m:
+            continue
+        md = m.group(2)
+        # generated pages: same inputs as build_markdown (no intro fallback) so both paths agree
+        ans = answer_text(path.stem, curated.get(path.stem), "" if path.stem in curated else md)
+        if not ans:
+            print(f"WARNING: no answer source for guide {path.stem}")
+            continue
+        new_md = put_answer(md, escape_script(answer_block(ans)))
+        have += 1
+        if new_md != md:
+            changed += 1
+            if not dry_run:
+                path.write_text(txt[:m.start(2)] + new_md + txt[m.end(2):], encoding="utf-8")
+    return have, changed
+
+
 HANDLE_RE = re.compile(r"[a-z0-9._]{1,30}")
 
 
@@ -252,7 +392,7 @@ def build_markdown(d: dict, entries: list[dict], classes: dict, catalog_total: i
     line = f"**Connected entries:** {len(entries)}"
     if tools:
         line += f" · **Tools:** {', '.join(tools)}"
-    out += [line, "", "---", ""]
+    out += [line, "", answer_block(answer_text(slug_of(d["id"]), d)), "", "---", ""]
 
     out += ["## Thesis", "", text_block(d.get("thesis")), "", "---", ""]
     if d.get("why_it_matters"):
@@ -544,6 +684,8 @@ def main() -> int:
     if out_dir == GUIDES and not args.dive_id:
         n_sa = link_standalone_guides(by_id, set(curated), args.dry_run)
         print(f"standalone guides given an entry-page link: {n_sa}")
+        n_ans, n_ch = apply_answers(curated, args.dry_run)
+        print(f"answer blocks: {n_ans} guides ({n_ch} {'would change' if args.dry_run else 'updated'})")
 
     if not args.no_index:
         page_slugs = {p.stem for p in GUIDES.glob("*.html") if p.stem != "index"} | set(new)

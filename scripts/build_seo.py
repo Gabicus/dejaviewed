@@ -49,7 +49,7 @@ SUB_DIRS = ["guides", "deeper", "e"]
 
 # private / superseded pages: get a seo block holding only robots noindex,follow
 # (plus every page Disallowed in site/robots.txt). Never part of the public set.
-NOINDEX_PAGES = ["admin.html", "rate.html"]
+NOINDEX_PAGES = ["admin.html", "rate.html", "404.html"]
 NOINDEX_DIRS = ["legacy"]
 
 OG_W, OG_H = 1200, 630
@@ -434,6 +434,9 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
                "publisher": {"@id": ORG["@id"]}, "isPartOf": WEBSITE_REF,
                "image": BASE + "/" + (image or "og/default.png"),
                "about": [{"@type": "Thing", "name": t} for t in c.guide_tools(slug)]}
+        ans = re.search(r"(?m)^> \*\*In short:\*\* (.+)$", text)
+        if ans:   # the "In two sentences" answer block build_guides.py puts at the top of every guide
+            art["abstract"] = html.unescape(ans.group(1)).strip()
         graph.append(art)
         faqs = faq_pairs(pack)
         if faqs:

@@ -146,7 +146,8 @@ def main():
         sitemap.append(_url(f"api/{name}", pri, "weekly"))
     # every real top-level page, guide and deeper-dive page that exists on disk
     for page in sorted(SITE.glob("*.html")):
-        if page.name in ("index.html", "graph.html", "graph-cosmos.html", "board.html", "admin.html", "rate.html"):
+        if page.name in ("index.html", "graph.html", "graph-cosmos.html", "board.html", "admin.html", "rate.html",
+                         "404.html"):  # 404 is the Cloudflare Pages not-found page (noindex)
             continue
         pri = "0.9" if page.name == "start-here.html" else "0.7"
         sitemap.append(_url(page.name, pri, "weekly"))
