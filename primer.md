@@ -1,6 +1,20 @@
 # DejaViewed · primer
 
-Updated: 2026-10-23 (early)
+Updated: 2026-10-29 (session closed; git clean, in sync with origin/main at 06c9285)
+
+## OPEN ITEMS — read first (2026-10-29)
+
+Done and live (last session): /flow page + gaps panel, footer-nav mobile overflow fix (all pages), SEO waves 2–3, monetize layer, analytics. Nothing uncommitted, nothing half-built.
+
+Left to do, in order:
+1. **Act on the flow gaps** (`site/flow_gaps.json`, 31 total): a guide for Security (65 entries / 3 guides) and Music & art (207 / 5); a guide or section drawing on @tenfoldmarc (17 entries, 0 in guides); fold the 6 unguided S-tier entries into guides; one curated guide each drawing ≥2 entries from Kimi / Llama / NotebookLM / Unreal flips their hubs to indexed.
+2. **Shared `scripts/pillars.py`** — pillar rules exist only inside build_flow.py (content_gaps' rules were never committed); counts for agents/automation (200 vs 119) and prompt-eng (175 vs 132) run high.
+3. **Site-wide favicon** — no site/favicon.ico and only index.html declares an icon, so every other page logs a /favicon.ico 404 (the only console error left on /flow).
+4. Small /flow polish if wanted: data file is ~510 KB (entry lists, gzip helps); mobile bottom sheet covers ~60% of the graph; "open in catalog" goes to /search?q= because /catalog has no filter deep links.
+5. Weekly analytics + Victor's login items + Fable queue → see **Next up** below (unchanged).
+6. Monetization: parked by Victor's stance below — do not start money work unprompted.
+
+Undone on purpose (do not "fix"): rebuild.sh runs `flow` after `compare` (not before `start`) because flow reads tool hubs and compare pages.
 
 ## MONETIZATION — Victor's current stance (2026-10-23): probably not the point
 Victor: "maybe it's a wrong idea to try to make money with this… I made a skill… I don't see the value in somebody paying $150… keep it as a thought." Fable's honest read, recorded so we don't relitigate: affiliates = $0–15/mo at any traffic we'll see soon; a done-for-you service is legal only via Instagram's official data export (never log in as a customer); "viral" is the wrong target, "cited by answer engines" is the durable one (already 400+ AI-crawler fetches/week vs ~250 human visits). The useful product is the open-source skill + the archive itself; monetization work risks eating the usefulness. Decision: KEEP the instruments (affiliate /go/ links pending, service CTA, tip-jar fields, all free to leave on), DO NOT spend sessions on money until usefulness/traffic says otherwise. Revisit when: a stranger asks to pay, or /go/ clicks > 100/week, or GSC impressions > 10k/month. Full plan (12 workstreams) and the three-lane alternative live in `docs/plans/GROWTH_PLAN_2026-10-23.md` + this session's discussion; treat as a menu, not a mandate.
