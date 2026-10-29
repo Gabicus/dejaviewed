@@ -19,7 +19,7 @@ Sources: `reports/analytics_2026-10-29.md` + `data/analytics/2026-10-29.json` (r
 | Largest Contentful Paint p75 (LCP) | 2.5 s | 0.99 s | faster |
 | Cumulative Layout Shift p75 (CLS) | 0.096 | 0.012 | better |
 | Interaction to Next Paint p75 (INP) | 312 ms | 216 ms | better |
-| /go/ outbound clicks, human, 7d | 0 | 111 (diy 21, service 19, notion 10, vercel 8 …) | new |
+| /go/ outbound clicks, human, 7d | 0 | 105 (diy 21, service 19, notion 10, vercel 8 …) | new |
 
 ## Google, by day
 
