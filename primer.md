@@ -11,6 +11,7 @@ Left to do, in order:
 2. **Shared `scripts/pillars.py`** — pillar rules exist only inside build_flow.py (content_gaps' rules were never committed); counts for agents/automation (200 vs 119) and prompt-eng (175 vs 132) run high.
 3. **Site-wide favicon** — no site/favicon.ico and only index.html declares an icon, so every other page logs a /favicon.ico 404 (the only console error left on /flow).
 4. Small /flow polish if wanted: data file is ~510 KB (entry lists, gzip helps); mobile bottom sheet covers ~60% of the graph; "open in catalog" goes to /search?q= because /catalog has no filter deep links.
+5a. **Analytics Oct 29** (`reports/analytics_eval_2026-10-29.md`): real visits/week 252 → 407, Google 0 → 2,685 impressions and 12 clicks, indexed sample 30% → 88%, OpenAI search crawler and ClaudeBot ~1,500 hits/week each. Weak spot: /catalog has 1,861 impressions but 2 clicks — rewrite its title/description next.
 5. Weekly analytics + Victor's login items + Fable queue → see **Next up** below (unchanged).
 6. Monetization: parked by Victor's stance below — do not start money work unprompted.
 
