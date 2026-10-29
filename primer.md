@@ -27,7 +27,7 @@ Left to do, in order:
 3. **Entry pages are the search winners** (9 clicks / 565 impressions vs catalog 2 / 1,861): improve entry titles/summaries.
 4. **Shared `scripts/pillars.py`** — pillar rules live only in build_flow.py; two pillar counts run high.
 5. Small /flow polish if wanted: ~510 KB data file; mobile panel covers ~60% of the graph.
-6. Victor (dashboard): Cloudflare Email Obfuscation off; Victor's login items and the Fable queue are in **Next up** below.
+6. Done 2026-10-29 via API: Cloudflare Email Obfuscation off, Rocket Loader off, Early Hints on. Still Victor (dashboard, no API): AI Labyrinth off; Victor's login items and the Fable queue are in **Next up** below.
 7. Monetization stays parked (stance below). Note: 105 human /go/ clicks/week already, with no affiliate active.
 
 Undone on purpose: rebuild.sh runs `flow` after `compare` (it reads hubs/compare pages); `scorecard` runs after `analytics`.
@@ -100,7 +100,7 @@ aggregated, transcribed, enriched corpus is what people own now. Keep iterating;
 - **Wave 3 content:** `/tools/<slug>` hubs (`build_tools.py`, thresholds ≥5 entries, ≥2 S/A, ≥1 curated guide → indexed; 3–4 entries → noindex; takes in `data/tools/*.json`, every paragraph cites /e/; FALSE_TAGS strips word-match mis-tags Cursor/Runway/Llama); `/compare/` (Claude Code vs Codex vs Gemini CLI, AI video generators) and `/best/` (Claude Code skills/plugins 35 items, MCP servers 25) from `data/compare/*.json` via `build_compare.py` with dated sources; `/system-prompts` library (64); Key-facts table on all 64 guides (`data/guides/facts_state.json` last-verified); hooks cookbook rewritten (33 events verified against code.claude.com docs 2026-10-22); new guide `claude-md-examples` (8 pinned public CLAUDE.md files) + pack #64.
 - **Facts verified Oct 22 (sources on pages):** Gemini CLI free tier ended 2026-06-18 (→ Antigravity CLI); Claude Code starts at Pro $20; Anthropic's Jun-15 billing split was paused; Codex on ChatGPT Free/Go $8, CLI Apache-2.0; Sora discontinued (app Apr 26, API Sep 24 2026); Kling 4.0 Oct 15 2026.
 - **Pipeline order now:** … render → collections → tools → compare → … → seo → monetize → links → gate. `build_api.py` strips blocks from entry pages; always followed by seo+monetize+links. `build_guides.py --force` must be followed by `search_prep.py`/`build_search.sh`.
-- Victor's dashboard items (optional): Cloudflare AI Labyrinth off (we WANT AI crawlers), Email Obfuscation off (blocking script), Early Hints on, Rocket Loader off.
+- Victor's dashboard items (optional): Cloudflare AI Labyrinth off (we WANT AI crawlers). Email Obfuscation off / Early Hints on / Rocket Loader off done 2026-10-29 via API (token now has Zone Settings:Edit).
 
 ### Oct 23 — Flow page
 - `/flow` = zoned Sankey of everything (Sources → Pillars → Tools/models/repos → Techniques → Guides → Outputs; 366 nodes / 1,250 edges), particle layer ported from unicron/atlas, ecosystem lanes (anthropic/openai/google/open-weight/creative/automation/quant), click panel, hash deep links, Gaps panel (`site/flow_gaps.json`, 31 gaps) and Top paths. Built by `scripts/build_flow.py` (phase `flow` after `compare`) → `site/flow_data.json` + `/api/flow.json`. In header nav, footer nav, sitemap, llms.txt.
