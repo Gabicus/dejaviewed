@@ -186,6 +186,21 @@ def main():
         except (json.JSONDecodeError, KeyError) as e:
             print(f"  Warning: deep_dives.json parse failed: {e}")
 
+    # Deeper dives (slim): the board's dive picker needs id/title/thesis/source dive. data/ is not deployed,
+    # so this is the public copy (the board used to fetch ../data/deeper_dives.json and 404).
+    ddd_path = ROOT / "data" / "deeper_dives.json"
+    if ddd_path.exists():
+        try:
+            ddd = json.loads(ddd_path.read_text(encoding="utf-8")).get("deeper_dives", [])
+            slim = [{"id": d.get("id"), "slug": d.get("slug"), "title": d.get("title"), "thesis": d.get("thesis"),
+                     "source_dive_id": d.get("source_dive_id"),
+                     "url": f"/deeper/{d['id']}" if d.get("id") and (SITE / "deeper" / f"{d['id']}.html").exists() else None}
+                    for d in ddd]
+            (API / "deeper_dives.json").write_text(json.dumps({"deeper_dives": slim, "count": len(slim)},
+                                                              ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        except (json.JSONDecodeError, KeyError) as e:
+            print(f"  Warning: deeper_dives.json parse failed: {e}")
+
     # Render per-entry detail pages first, so the sitemap sees every page on disk
     render_script = ROOT / "scripts" / "render_entries.py"
     if render_script.exists():

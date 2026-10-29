@@ -1,21 +1,37 @@
 # DejaViewed · primer
 
-Updated: 2026-10-29 (session closed; git clean, in sync with origin/main at 06c9285)
+Updated: 2026-10-29 (session closed after analytics week-one audit + fixes; git clean, pushed)
 
-## OPEN ITEMS — read first (2026-10-29)
+## OPEN ITEMS — read first (2026-10-29, end of session)
 
-Done and live (last session): /flow page + gaps panel, footer-nav mobile overflow fix (all pages), SEO waves 2–3, monetize layer, analytics. Nothing uncommitted, nothing half-built.
+**Weekly analytics routine (Mondays) — this is how we show growth:**
+`python3 scripts/analytics_report.py --inspect 40 && python3 scripts/analytics_scorecard.py`
+→ open `docs/reports/analytics_scorecard.html` (charts + every metric × every audit, same definitions) and `.md`.
+Then log what you learned in `data/analytics/findings.json` and anything shipped in `data/analytics/changes.json`
+(changes show as markers on the growth charts), re-run with `--no-collect`, commit. Add new metrics by appending to
+`METRICS` in `scripts/analytics_scorecard.py` (never redefine an old key; older audits show n/a).
+Baseline audit 2026-10-22, second 2026-10-29: real visits/week 252 → 407, Google impressions/week 0 → 2,685,
+clicks 0 → 12, indexed sample 30% → 88%, OpenAI search crawler 55 → 1,661/week, ClaudeBot 116 → 1,496, page load (LCP) 2.5 s → 1.0 s.
+
+Fixed and deployed 2026-10-29: favicon set (+ apple-touch-icon), Organization logo in JSON-LD (was a broken
+og/default.png on every page → og/logo.png), Chrome traffic-advice file, security.txt, links-page email opted out of
+Cloudflare obfuscation, catalog title + description rewritten for searchers, board deeper-dive picker (was fetching an
+undeployed file → `api/deeper_dives.json`), `.gitignore` exceptions so the icon/logo PNGs actually deploy.
 
 Left to do, in order:
-1. **Act on the flow gaps** (`site/flow_gaps.json`, 31 total): a guide for Security (65 entries / 3 guides) and Music & art (207 / 5); a guide or section drawing on @tenfoldmarc (17 entries, 0 in guides); fold the 6 unguided S-tier entries into guides; one curated guide each drawing ≥2 entries from Kimi / Llama / NotebookLM / Unreal flips their hubs to indexed.
-2. **Shared `scripts/pillars.py`** — pillar rules exist only inside build_flow.py (content_gaps' rules were never committed); counts for agents/automation (200 vs 119) and prompt-eng (175 vs 132) run high.
-3. **Site-wide favicon** — no site/favicon.ico and only index.html declares an icon, so every other page logs a /favicon.ico 404 (the only console error left on /flow).
-4. Small /flow polish if wanted: data file is ~510 KB (entry lists, gzip helps); mobile bottom sheet covers ~60% of the graph; "open in catalog" goes to /search?q= because /catalog has no filter deep links.
-5a. **Analytics Oct 29** (`reports/analytics_eval_2026-10-29.md`): real visits/week 252 → 407, Google 0 → 2,685 impressions and 12 clicks, indexed sample 30% → 88%, OpenAI search crawler and ClaudeBot ~1,500 hits/week each. Weak spot: /catalog has 1,861 impressions but 2 clicks — rewrite its title/description next.
-5. Weekly analytics + Victor's login items + Fable queue → see **Next up** below (unchanged).
-6. Monetization: parked by Victor's stance below — do not start money work unprompted.
+1. **Next audit (~Nov 2-3):** run the routine; check catalog CTR after the title rewrite, /api/ bot pulls (fell 363 → 164),
+   real-404 count (465 this week, mostly favicon — should drop sharply).
+2. **Act on the flow gaps** (`site/flow_gaps.json`, 31): guides for Security (65 entries / 3 guides) and Music & art (207 / 5);
+   @tenfoldmarc (17 entries, none in guides); 6 unguided S-tier entries; one guide each drawing ≥2 entries from
+   Kimi / Llama / NotebookLM / Unreal flips those hubs to indexed.
+3. **Entry pages are the search winners** (9 clicks / 565 impressions vs catalog 2 / 1,861): improve entry titles/summaries.
+4. **Shared `scripts/pillars.py`** — pillar rules live only in build_flow.py; two pillar counts run high.
+5. Small /flow polish if wanted: ~510 KB data file; mobile panel covers ~60% of the graph.
+6. Victor (dashboard): Cloudflare Email Obfuscation off; Victor's login items and the Fable queue are in **Next up** below.
+7. Monetization stays parked (stance below). Note: 105 human /go/ clicks/week already, with no affiliate active.
 
-Undone on purpose (do not "fix"): rebuild.sh runs `flow` after `compare` (not before `start`) because flow reads tool hubs and compare pages.
+Undone on purpose: rebuild.sh runs `flow` after `compare` (it reads hubs/compare pages); `scorecard` runs after `analytics`.
+Most 404s are hacker probes (.env, wp-admin, credentials files) and correctly fail — the scorecard's "real 404s" metric excludes them.
 
 ## MONETIZATION — Victor's current stance (2026-10-23): probably not the point
 Victor: "maybe it's a wrong idea to try to make money with this… I made a skill… I don't see the value in somebody paying $150… keep it as a thought." Fable's honest read, recorded so we don't relitigate: affiliates = $0–15/mo at any traffic we'll see soon; a done-for-you service is legal only via Instagram's official data export (never log in as a customer); "viral" is the wrong target, "cited by answer engines" is the durable one (already 400+ AI-crawler fetches/week vs ~250 human visits). The useful product is the open-source skill + the archive itself; monetization work risks eating the usefulness. Decision: KEEP the instruments (affiliate /go/ links pending, service CTA, tip-jar fields, all free to leave on), DO NOT spend sessions on money until usefulness/traffic says otherwise. Revisit when: a stranger asks to pay, or /go/ clicks > 100/week, or GSC impressions > 10k/month. Full plan (12 workstreams) and the three-lane alternative live in `docs/plans/GROWTH_PLAN_2026-10-23.md` + this session's discussion; treat as a menu, not a mandate.

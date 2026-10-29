@@ -599,7 +599,7 @@ PERSON = {"@type": "Person", "@id": BASE + "/#victor", "name": OWNER_NAME, "url"
           "sameAs": [OWNER_GITHUB, AUTHOR_URL], "contactPoint": {"@type": "ContactPoint", "url": CONTACT_URL,
                                                                "contactType": "general"}}
 ORG = {"@type": "Organization", "@id": BASE + "/#org", "name": SITE_NAME, "url": BASE + "/",
-       "logo": BASE + "/og/default.png", "sameAs": [REPO_URL, AUTHOR_URL],
+       "logo": BASE + "/og/logo.png", "sameAs": [REPO_URL, AUTHOR_URL],
        "founder": {"@id": PERSON["@id"]}, "publishingPrinciples": BASE + "/method"}
 AUTHOR_REF = {"@id": PERSON["@id"]}
 WEBSITE_REF = {"@id": BASE + "/#website"}
@@ -716,8 +716,8 @@ def top_descriptions(c: Ctx) -> dict[str, str]:
         "flow.html": flow_description(c),
         "index.html": (f"A curated archive of {c.n_entries} saved posts on AI tools, agents, creative code and quant, "
                        f"transcribed and tiered, with {len(c.guides)} guides and {c.n_packs} prompt systems."),
-        "catalog.html": (f"Filter {c.n_entries} curated posts by tier, tool, technique, creator and collection. "
-                         f"{c.n_transcripts} have transcripts; JSON at /api/catalog.json."),
+        "catalog.html": (f"{c.n_entries} creator posts on AI tools, agents, 3D and quant, each summarized and tiered "
+                         f"S to C. Find the tool, see who demoed it, open the source."),
         "prompts.html": (f"{c.n_packs} pasteable prompt systems, one per DejaViewed guide: a one-shot prompt, "
                          f"{c.n_steps} step prompts with audits, gap audits and validation oracles."),
         "method.html": (f"How DejaViewed works: saved posts are captioned, transcribed, enriched and tiered S to C, "
@@ -916,7 +916,7 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
                "url": url, "mainEntityOfPage": url, "datePublished": pub.isoformat(),
                "dateModified": mod.isoformat(), "author": AUTHOR_REF,
                "publisher": {"@id": ORG["@id"]}, "isPartOf": WEBSITE_REF,
-               "image": BASE + "/" + (image or "og/default.png")}
+               "image": BASE + "/" + (image or og_image_rel("default") or "og/default.jpg")}
         if tools:
             art["about"] = tool_nodes(tools[:3])
             if tools[3:]:
@@ -942,7 +942,7 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
                "url": url, "mainEntityOfPage": url, "datePublished": pub.isoformat(),
                "dateModified": mod.isoformat(), "author": AUTHOR_REF,
                "publisher": {"@id": ORG["@id"]}, "isPartOf": WEBSITE_REF,
-               "image": BASE + "/" + (image or "og/default.png")}
+               "image": BASE + "/" + (image or og_image_rel("default") or "og/default.jpg")}
         if tools:
             art["about"] = tool_nodes(tools[:3])
             if tools[3:]:
@@ -973,7 +973,7 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
                "url": url, "mainEntityOfPage": url, "datePublished": pub.isoformat(),
                "dateModified": mod.isoformat(), "author": AUTHOR_REF,
                "publisher": {"@id": ORG["@id"]}, "isPartOf": WEBSITE_REF,
-               "image": BASE + "/" + (image or "og/default.png")}
+               "image": BASE + "/" + (image or og_image_rel("default") or "og/default.jpg")}
         graph.append(art)
         crumbs = [("Home", BASE + "/")]
         if parts[1] != "index.html":
@@ -1019,7 +1019,7 @@ def page_meta(rel: str, text: str, c: Ctx, title: str) -> dict:
         crumbs.append((ttl, None))
         graph.append(breadcrumbs(crumbs))
 
-    image = image or "og/default.png"
+    image = image or og_image_rel("default") or "og/default.jpg"
     return {"desc": desc, "og_type": og_type, "image": image, "image_dims": image_dims(image),
             "image_is_og": image.startswith("og/"), "graph": graph, "url": url, "og_title": ttl}
 

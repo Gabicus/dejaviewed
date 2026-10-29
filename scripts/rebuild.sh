@@ -43,6 +43,7 @@
 #   monetize    scripts/build_monetize.py      /go/ redirects (site/_redirects), tool links, CTA/disclosure footer (idempotent, after seo)
 #   links       scripts/normalize_links.py     internal hrefs -> root-absolute clean URLs + static footer nav (LAST HTML-touching step)
 #   analytics   scripts/analytics_report.py    Cloudflare + Search Console report (needs ~/.config creds; skips cleanly)
+#   scorecard   scripts/analytics_scorecard.py growth scorecard: every audit side by side (docs/reports/analytics_scorecard.{md,html}); logs in data/analytics/{changes,findings}.json
 #   indexnow    scripts/indexnow.py            submit sitemap URLs to IndexNow (after deploy; needs key served)
 #
 # Phases that need a human/agent in the loop (llm, curate, prompts) stop with instructions instead of running.
@@ -149,6 +150,7 @@ run_py monetize scripts/build_monetize.py
 run_py links   scripts/normalize_links.py
 run_py gate    scripts/quality_gate.py
 run_py analytics scripts/analytics_report.py
+run_py scorecard scripts/analytics_scorecard.py
 echo "[note] after deploy: python3 scripts/indexnow.py   (submits sitemap URLs; needs the key file live)"
 
 echo "=== done === $(date -Is)"
